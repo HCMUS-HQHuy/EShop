@@ -1,8 +1,8 @@
-import express from "express";
-import routes from "./routes/index";
 import dotenv from "dotenv";
 dotenv.config();
 
+import express from "express";
+import routes from "./routes/index";
 import seedAdmin from "./config/seedAdmin";
 
 const server = express();

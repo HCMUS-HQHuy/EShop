@@ -12,7 +12,7 @@ export default async function seedAdmin() {
     const result = await client.query(checkQuery, [env.DB_ADMIN_USERNAME]);
 
     if (result.rows.length > 0) {
-      console.log('WARNING: Admin user already exists. Skipping...');
+      console.log('Log: Admin user already exists. Skipping...');
       return;
     }
 

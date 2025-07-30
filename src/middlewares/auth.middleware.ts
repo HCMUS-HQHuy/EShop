@@ -5,11 +5,12 @@ export function authenticateToken(req: express.Request, res: express.Response, n
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
     if (token == null) return res.sendStatus(401);
-    console.log(`Authorization header: ${authHeader}`);
-
     jwt.verify(token, process.env.JWT_SECRET as string, (err, user) => {
-        if (err) return res.sendStatus(403);
-        // req.user = user;
+        if (err) {
+            console.error("Token verification error:", err);
+            return res.sendStatus(403);
+        }
+        req.user = user;
         next();
     });
 }
