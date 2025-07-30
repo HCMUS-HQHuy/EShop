@@ -8,9 +8,9 @@
   },
   "name": "lotusinternproject",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "./src/server.js",
   "scripts": {
-    "dev": "nodemon --watch src -L --exec ts-node src/server.ts",
+    "dev": "nodemon -L",
     "build": "tsc",
     "start:build": "node bin/index.js"
   },
