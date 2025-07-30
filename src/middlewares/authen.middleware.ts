@@ -8,9 +8,10 @@ export function authenticateToken(req: express.Request, res: express.Response, n
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: number; role: string };
         req.user = decoded;
-
+        console.log(`Authenticated user: ${JSON.stringify(req.user)}`);
         next();
     } catch (error) {
+        console.error(`Authentication error: ${error}`);
         return res.status(403).json({ message: 'Invalid Token.' });
     }
 }

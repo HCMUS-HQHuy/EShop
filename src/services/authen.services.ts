@@ -16,6 +16,6 @@ export async function authenticate(username: string, password: string) {
     }
     console.log("User authenticated successfully");
     const user = result.rows[0];
-    const token = jwt.sign({ user_id: user.user_id, username: user.username }, process.env.JWT_SECRET as string, { expiresIn: "15m" });
+    const token = jwt.sign({ user_id: user.user_id, username: user.username, role: user.role }, process.env.JWT_SECRET as string, { expiresIn: "15m" });
     return token;
 }
