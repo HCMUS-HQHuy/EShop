@@ -3,8 +3,12 @@ import routes from "./routes/index";
 import dotenv from "dotenv";
 dotenv.config();
 
+import seedAdmin from "./config/seedAdmin";
+
 const server = express();
 const PORT = process.env.PORT || 3000;
+
+seedAdmin();
 
 server.use("/api", routes);
 
