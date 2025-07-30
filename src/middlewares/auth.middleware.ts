@@ -10,7 +10,8 @@ export function authenticateToken(req: express.Request, res: express.Response, n
             console.error("Token verification error:", err);
             return res.sendStatus(403);
         }
-        req.user = user;
+        (req as any).user = user;
+        console.log("Authenticated user:", (req as any).user);
         next();
     });
 }

@@ -2,8 +2,6 @@ import jwt from "jsonwebtoken";
 import { getConnection } from "../config/db";
 
 export async function authenticate(username: string, password: string) {
-    console.log(`Login attempt with username: ${username} and password: ${password}`);
-
     const db = await getConnection();
 
     const query = "SELECT * FROM users WHERE username = $1 AND password = $2";
@@ -18,6 +16,6 @@ export async function authenticate(username: string, password: string) {
     }
     console.log("User authenticated successfully");
     const user = result.rows[0];
-    const token = jwt.sign({ user_id: user.id, username: user.username }, process.env.JWT_SECRET as string, { expiresIn: "15m" });
+    const token = jwt.sign({ user_id: user.user_id, username: user.username }, process.env.JWT_SECRET as string, { expiresIn: "15m" });
     return token;
 }
