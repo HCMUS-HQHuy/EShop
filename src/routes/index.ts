@@ -2,7 +2,6 @@ import express from "express";
 import authen from "../routes/authen.routes";
 import { authenticateToken } from "../middlewares/auth.middleware";
 
-
 const app = express.Router();
 
 app.use(express.json());

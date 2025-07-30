@@ -5,13 +5,12 @@ export function authenticateToken(req: express.Request, res: express.Response, n
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
     if (token == null) return res.sendStatus(401);
-    jwt.verify(token, process.env.JWT_SECRET as string, (err, user) => {
-        if (err) {
-            console.error("Token verification error:", err);
-            return res.sendStatus(403);
-        }
-        (req as any).user = user;
-        console.log("Authenticated user:", (req as any).user);
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: number; role: string };
+        req.user = decoded;
+
         next();
-    });
+    } catch (error) {
+        return res.status(403).json({ message: 'Invalid Token.' });
+    }
 }

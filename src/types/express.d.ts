@@ -1,12 +1,13 @@
-// src/types/express.d.ts
-import { JwtPayload } from "jsonwebtoken";
-
+// Sử dụng declare global để chắc chắn rằng nó được áp dụng ở mọi nơi
 declare global {
   namespace Express {
     interface Request {
-      user?: string | JwtPayload | undefined;
+      user?: {
+        userId: number;
+        role: string;
+      };
     }
   }
 }
 
-export {}; 
+export {};
