@@ -1,34 +1,24 @@
 import express from "express";
-import auth from "./auth.routes";
-import { authenticateToken } from "../middlewares/auth.middleware";
+import auth from "../middlewares/auth.middleware";
 import { checkRole } from "../middlewares/checkRole.middleware";
-import admin from "../routes/admin.routes";
+import adminRoutes from "./admin.routes";
+import userRoutes from "./user.routes";
+import sellerRoutes from "./seller.routes";
+import * as types from "../types/index";
 
-const USER_ROLES: { [key: string]: string } = {
-    SELLER: 'Seller',
-    BUYER: 'Buyer'
-};
+const router: express.Router = express.Router();
 
-const app: express.Router = express.Router();
+router.use(express.json());
 
-app.use(express.json());
-app.use("/auth", auth);
-app.use("/admin", admin);
-
-app.get('/', (req, res) => {
-    res.status(200).json({ message: "Hello from HQH" });
+router.get('/', (req, res) => {
+    res.status(200).json({ message: "Hello from HQH only // used for testing API" });
 });
 
-app.get("/protected", authenticateToken, (req, res) => {
-    res.status(200).json({ message: "This is a protected route" });
-});
-
-app.get("/admin/protected", authenticateToken, checkRole([]), (req, res) => {
-    res.status(200).json({ message: "This route is accessible only by the admin" });
-});
-
-app.get("/buyer/protected", authenticateToken, checkRole([USER_ROLES.BUYER]), (req, res) => {
-    res.status(200).json({ message: "This route is accessible only by the buyer and admin" });
-});
-
-export default app;
+export default function routes(app: express.Application): void {
+    const prefixApi = process.env.API_PREFIX as string;
+    router.use("/admin", auth, checkRole([types.Role.Admin]), adminRoutes);
+    router.use("/user", auth, checkRole([types.Role.Seller]), userRoutes);
+    router.use("/seller", auth, checkRole([types.Role.Seller]), sellerRoutes);
+    app.use(prefixApi, router);
+    console.log("Routes initialized");
+}
