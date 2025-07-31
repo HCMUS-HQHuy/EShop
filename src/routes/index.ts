@@ -1,5 +1,5 @@
 import express from "express";
-import authen from "./auth.routes";
+import auth from "./auth.routes";
 import { authenticateToken } from "../middlewares/auth.middleware";
 import { checkRole } from "../middlewares/checkRole.middleware";
 import admin from "../routes/admin.routes";
@@ -12,7 +12,7 @@ const USER_ROLES: { [key: string]: string } = {
 const app: express.Router = express.Router();
 
 app.use(express.json());
-app.use("/auth", authen);
+app.use("/auth", auth);
 app.use("/admin", admin);
 
 app.get('/', (req, res) => {
