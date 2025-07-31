@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import { getConnection, releaseConnection } from "../config/db";
-import * as types from "../types/index";
+import * as types from "../types/index.types";
 import { Client } from "pg";
 
-export async function authenticate(credential: types.UserCredentials): Promise<string> {
+export async function login(credential: types.UserCredentials): Promise<string> {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
@@ -23,6 +23,30 @@ export async function authenticate(credential: types.UserCredentials): Promise<s
     } catch (error: any) {
         console.error("Authentication error:", error);
         console.error(`Authentication service error: ${error.message}`);
+        throw error;
+    } finally {
+        if (db) {
+            await releaseConnection(db);
+            console.log("Database connection released.");
+        }
+    }
+}
+
+export async function signup(registrationData: types.UserRegistration): Promise<void> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const query = "INSERT INTO users (username, password, email, fullname, role) VALUES ($1, $2, $3, $4, $5)";
+        await db.query(query, [
+            registrationData.username,
+            registrationData.password,
+            registrationData.email,
+            registrationData.fullname,
+            types.Role.Buyer
+        ]);
+        console.log("User registered successfully");
+    } catch (error: any) {
+        console.error("Registration error:", error);
         throw error;
     } finally {
         if (db) {

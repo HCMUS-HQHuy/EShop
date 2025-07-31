@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import * as types from '../types/index';
+import * as types from '../types/index.types';
 
 export const checkRole = (allowedRoles: types.Role[]) => {
     return (req: types.RequestCustom, res: Response, next: NextFunction) => {

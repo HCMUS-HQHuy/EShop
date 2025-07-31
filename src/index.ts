@@ -2,11 +2,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
-import routes from "./routes/index";
+import routes from "./routes/index.routes";
 import seedAdmin from "./config/seedAdmin";
 
 const server = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8220;
 
 seedAdmin().then(() => {
     routes(server);

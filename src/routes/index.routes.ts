@@ -6,7 +6,7 @@ import authRoutes from "./auth.routes";
 import adminRoutes from "./admin.routes";
 import userRoutes from "./user.routes";
 import sellerRoutes from "./seller.routes";
-import * as types from "../types/index";
+import * as types from "../types/index.types";
 
 const router: express.Router = express.Router();
 
