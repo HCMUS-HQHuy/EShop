@@ -13,6 +13,6 @@ export function auth(req: types.RequestCustom, res: express.Response, next: expr
         next();
     } catch (error) {
         console.error(`Authentication error: ${error}`);
-        return res.status(403).json({ message: 'Invalid Token.' });
+        return res.status(403).json({ errors: 'Invalid Token.' });
     }
 }
