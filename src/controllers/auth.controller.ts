@@ -1,7 +1,7 @@
 import express from "express";
 import { authenticate } from "../services/auth.services";
 
-export async function authenticateUser(req: express.Request, res: express.Response) {
+export async function validateUser(req: express.Request, res: express.Response) {
     const { username, password } = req.body;
     try {
         const token = await authenticate(username, password);
