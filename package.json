@@ -10,7 +10,7 @@
   },
   "name": "lotusinternproject",
   "version": "1.0.0",
-  "main": "./src/server.js",
+  "main": "./src/index.js",
   "scripts": {
     "dev": "nodemon -L",
     "build": "tsc",
