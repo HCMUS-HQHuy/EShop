@@ -2,7 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import * as types from "../types/index.types";
 
-export default function authenticateToken(req: types.RequestCustom, res: express.Response, next: express.NextFunction) {
+export function auth(req: types.RequestCustom, res: express.Response, next: express.NextFunction) {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
     if (token == null) return res.sendStatus(401);

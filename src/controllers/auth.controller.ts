@@ -1,7 +1,7 @@
 import express from "express";
-import { login, signup } from "../services/auth.services";
+import * as service from "../services/index.services";
 import * as types from "../types/index.types";
-import * as util from "../utils/index.utils";
+import * as util from "../utils/index.util";
 
 export async function validateUser(req: express.Request, res: express.Response) {
     const credential: types.UserCredentials = req.body;
@@ -12,7 +12,7 @@ export async function validateUser(req: express.Request, res: express.Response) 
     }
 
     try {
-        const token = await login(credential);
+        const token = await service.login(credential);
         return res.status(201).json({
             message: "Login successful",
             accessToken: token
@@ -32,7 +32,7 @@ export async function registerUser(req: express.Request, res: express.Response) 
     }
 
     try {
-        await signup(registrationData);
+        await service.signup(registrationData);
         return res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
         console.error("Registration error:", error);

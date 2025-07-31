@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
+import { Client } from "pg";
 import { getConnection, releaseConnection } from "../config/db";
 import * as types from "../types/index.types";
-import { Client } from "pg";
+import * as util from "../utils/index.util";
 
 export async function login(credential: types.UserCredentials): Promise<string> {
     let db: Client | undefined = undefined;
@@ -16,8 +17,12 @@ export async function login(credential: types.UserCredentials): Promise<string> 
         if (result.rows.length > 1)
             throw new Error("Multiple users found with the same username and password");
 
-        console.log("User authenticated successfully");
+        const password: string = result.rows[0].password;
+        if (!util.comparePasswords(credential.password, password)) {
+            throw new Error("Invalid credentials");
+        }
         const user: types.UserInfor = result.rows[0];
+        console.log("User authenticated successfully");
         const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "15m" });
         return token;
     } catch (error: any) {
@@ -36,6 +41,14 @@ export async function signup(registrationData: types.UserRegistration): Promise<
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
+        registrationData.password = util.hashPassword(registrationData.password);
+        const existingUserQuery = "SELECT * FROM users WHERE username = $1 OR email = $2";
+        const existingUserResult = await db.query(existingUserQuery, [registrationData.username, registrationData.email]);
+
+        if (existingUserResult.rows.length > 0) {
+            throw new Error("User with this username or email already exists");
+        }
+
         const query = "INSERT INTO users (username, password, email, fullname, role) VALUES ($1, $2, $3, $4, $5)";
         await db.query(query, [
             registrationData.username,
@@ -45,6 +58,7 @@ export async function signup(registrationData: types.UserRegistration): Promise<
             types.Role.Buyer
         ]);
         console.log("User registered successfully");
+        
     } catch (error: any) {
         console.error("Registration error:", error);
         throw error;
