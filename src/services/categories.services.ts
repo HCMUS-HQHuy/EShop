@@ -7,15 +7,21 @@ export async function addCategory(categoryData: types.CategoryUpdate): Promise<v
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-        
-        const existingCategoryQuery = "SELECT * FROM categories WHERE name = $1 and is_deleted = false";
+
+        const existingCategoryQuery =  `
+            SELECT * FROM categories 
+            WHERE name = $1 and is_deleted = false
+        `;
         const existingCategoryResult = await db.query(existingCategoryQuery, [categoryData.name]);
 
         if (existingCategoryResult.rows.length > 0) {
             throw new Error("Category with this name already exists");
         }
 
-        const sql = "INSERT INTO categories (name, description) VALUES ($1, $2)";
+        const sql = `
+            INSERT INTO categories (name, description) 
+            VALUES ($1, $2)
+        `;
         await db.query(sql, [categoryData.name, categoryData.description]);
     } catch (error: any) {
         console.error("Error adding category:", error);
@@ -43,13 +49,13 @@ export async function getCategories(params: types.CategoryParamsRequest): Promis
                 ORDER BY ${params.sortAttribute} ${params.sortOrder}
                 LIMIT $2 OFFSET $3
             `;
-        const limit = Number(process.env.PAGINATION_LIMIT);
-        const offset = (params.page - 1) * limit;
-        const createdFrom = params?.filter?.created_from;
-        const createdTo = params?.filter?.created_to;
-        const deleted_from = params?.filter?.deleted_from;
-        const deletedTo = params?.filter?.deleted_to;
-        const isDeleted = params?.filter?.is_deleted;
+        const limit         = Number(process.env.PAGINATION_LIMIT);
+        const offset        = (params.page - 1) * limit;
+        const createdFrom   = params?.filter?.created_from;
+        const createdTo     = params?.filter?.created_to;
+        const deleted_from  = params?.filter?.deleted_from;
+        const deletedTo     = params?.filter?.deleted_to;
+        const isDeleted     = params?.filter?.is_deleted;
 
         const queryParams = [`%${params.keywords}%`, limit, offset, createdFrom, createdTo, deleted_from, deletedTo, isDeleted];
 
