@@ -23,7 +23,7 @@ export async function login(credential: types.UserCredentials): Promise<string> 
         }
         const user: types.UserInfor = result.rows[0];
         console.log("User authenticated successfully");
-        const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "15m" });
+        const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1h" });
         return token;
     } catch (error: any) {
         console.error("Authentication error:", error);
@@ -58,7 +58,7 @@ export async function signup(registrationData: types.UserRegistration): Promise<
             types.Role.Buyer
         ]);
         console.log("User registered successfully");
-        
+
     } catch (error: any) {
         console.error("Registration error:", error);
         throw error;
