@@ -1,6 +1,8 @@
 import { UserRegistration, ValidationResult } from "../types/validation";
+import { Client } from "pg";
+import { getConnection, releaseConnection } from "../config/db";
 
-export function validateRegistration(input: Partial<UserRegistration>): ValidationResult {
+export async function validateRegistration(input: Partial<UserRegistration>): Promise<ValidationResult> {
     const errors: Partial<Record<keyof UserRegistration, string>> = {};
 
     if (input.username !== undefined) {
@@ -53,7 +55,24 @@ export function validateRegistration(input: Partial<UserRegistration>): Validati
         }
     }
 
-    
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const existingUserQuery = "SELECT * FROM users WHERE username = $1 OR email = $2";
+        const existingUserResult = await db.query(existingUserQuery, [input.username, input.email]);
+
+        if (existingUserResult.rows.length > 0) {
+            throw new Error("User with this username or email already exists");
+        }
+    } catch (error: any) {
+        console.error("Database validation error:", error);
+        errors.username = "Existing user validation failed.";
+    } finally {
+        if (db) {
+            await releaseConnection(db);
+            console.log("Database connection released.");
+        }
+    }
 
     return {
         valid: Object.keys(errors).length === 0,

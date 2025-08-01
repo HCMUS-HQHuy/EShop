@@ -31,7 +31,7 @@ export async function validateUser(req: express.Request, res: express.Response) 
 
 export async function registerUser(req: express.Request, res: express.Response) {
     const registrationData: types.UserRegistration = req.body;
-    const validationResult = util.validateRegistration(registrationData);
+    const validationResult = await util.validateRegistration(registrationData);
 
     if (!validationResult.valid) {
         return res.status(400).json({

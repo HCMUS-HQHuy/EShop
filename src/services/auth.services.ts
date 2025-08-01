@@ -45,13 +45,7 @@ export async function signup(registrationData: types.UserRegistration): Promise<
     try {
         db = await getConnection();
         registrationData.password = util.hashPassword(registrationData.password);
-        const existingUserQuery = "SELECT * FROM users WHERE username = $1 OR email = $2";
-        const existingUserResult = await db.query(existingUserQuery, [registrationData.username, registrationData.email]);
-
-        if (existingUserResult.rows.length > 0) {
-            throw new Error("User with this username or email already exists");
-        }
-
+        
         const query =  `
             INSERT INTO users (username, password, email, fullname, role) 
             VALUES ($1, $2, $3, $4, $5)
