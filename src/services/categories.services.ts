@@ -3,20 +3,28 @@ import { getConnection, releaseConnection } from "../config/db";
 
 import * as types from "../types/index.types";
 
+async function checkCategoryRecord(db: Client, name: string, shouldBeExists: boolean) {
+    const query = `
+        SELECT * FROM categories 
+        WHERE name = $1 AND is_deleted = false
+    `;
+    try {
+        if (await db.query(query, [name]).then(result => result.rows.length > 0) != shouldBeExists) {
+            throw new Error(shouldBeExists 
+                ? "Category with this name does not exist" 
+                : "Category with this name already exists"
+            );    
+        }
+    } catch (error: any) {
+        throw error;
+    }
+}
+
 export async function addCategory(categoryData: types.CategoryUpdate): Promise<void> {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-
-        const existingCategoryQuery =  `
-            SELECT * FROM categories 
-            WHERE name = $1 and is_deleted = false
-        `;
-        const existingCategoryResult = await db.query(existingCategoryQuery, [categoryData.name]);
-
-        if (existingCategoryResult.rows.length > 0) {
-            throw new Error("Category with this name already exists");
-        }
+        await checkCategoryRecord(db, categoryData.name as string, false);
 
         const sql = `
             INSERT INTO categories (name, description) 
@@ -37,7 +45,6 @@ export async function getCategories(params: types.CategoryParamsRequest): Promis
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-
         const sql = `
                 SELECT * FROM categories
                 WHERE name ILIKE $1
@@ -58,12 +65,11 @@ export async function getCategories(params: types.CategoryParamsRequest): Promis
         const isDeleted     = params?.filter?.is_deleted;
 
         const queryParams = [`%${params.keywords}%`, limit, offset, createdFrom, createdTo, deleted_from, deletedTo, isDeleted];
-
         const result = await db.query(sql, queryParams);
         return result.rows as types.Category[];
     } catch (error: any) {
         console.error("Error fetching categories:", error);
-        throw new Error("Error fetching categories: " + error.message);
+        throw error;
     } finally {
         if (db) {
             releaseConnection(db);
@@ -71,29 +77,50 @@ export async function getCategories(params: types.CategoryParamsRequest): Promis
     }
 }
 
-export async function deleteCategory(categoryId: string): Promise<void> {
+export async function updateCategory(name: string, categoryData: types.CategoryUpdate): Promise<void> {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
 
-        const existingCategoryQuery = `
-            SELECT * FROM categories 
-            WHERE id = $1 AND is_deleted = false
-        `;
-        const existingCategoryResult = await db.query(existingCategoryQuery, [categoryId]);
-        if (existingCategoryResult.rows.length === 0) {
-            throw new Error("Category not found or already deleted");
+        await checkCategoryRecord(db, name as string, true);
+        if (categoryData.name && categoryData.name !== name) {
+            await checkCategoryRecord(db, categoryData.name as string, false);
         }
-        
+        if (!categoryData.name) {
+            categoryData.name = name;
+        }
+
         const sql = `
-            UPDATE categories 
-            SET is_deleted = true, deleted_at = NOW() 
-            WHERE id = $1
+            UPDATE categories
+            SET name = $1, description = $2 
+            WHERE name = $3
         `;
-        await db.query(sql, [categoryId]);
+        await db.query(sql, [categoryData.name, categoryData.description, name]);
+    } catch (error: any) {
+        console.error("Error updating category:", error);
+        throw error;
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}
+
+export async function deleteCategory(name: string, userId: number): Promise<void> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        await checkCategoryRecord(db, name, true);
+
+        const sql = `
+            UPDATE categories
+            SET is_deleted = true, deleted_at = NOW(), deleted_by = $2
+            WHERE name = $1
+        `;
+        await db.query(sql, [name, userId]);
     } catch (error: any) {
         console.error("Error deleting category:", error);
-        throw new Error("Error deleting category: " + error.message);
+        throw error;
     } finally {
         if (db) {
             releaseConnection(db);

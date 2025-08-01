@@ -9,7 +9,8 @@ categories.get('/', (req, res) => {
 });
 
 categories.post('/add', controller.addCategory);
-categories.delete('/delete/:id', controller.deleteCategory);
 categories.get('/list', controller.getCategories);
+categories.put('/update/:name', controller.updateCategory);
+categories.delete('/delete/:name', controller.deleteCategory);
 
 export default categories;

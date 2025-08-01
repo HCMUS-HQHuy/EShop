@@ -57,17 +57,48 @@ export async function getCategories(req: express.Request, res: express.Response)
     }
 }
 
-export async function deleteCategory(req: express.Request, res: express.Response) {
-    const categoryId = req.params.id;
+export async function updateCategory(req: express.Request, res: express.Response) {
+    const categoryName = req.params.name;
+    const categoryData: types.CategoryUpdate = req.body;
 
-    if (!categoryId) {
+    if (!categoryName) {
         return res.status(400).json({
-            message: "Category ID is required"
+            message: "Category name is required"
+        });
+    }
+
+    const validationError = util.validateUpdateCategoryInput(categoryData);
+    if (!validationError.valid) {
+        return res.status(400).json({
+            message: "Validation error",
+            errors: validationError.errors
         });
     }
 
     try {
-        await service.deleteCategory(categoryId);
+        await service.updateCategory(categoryName, categoryData);
+        res.status(200).json({
+            message: "Category updated successfully"
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            message: "Error updating category",
+            errors: error.message
+        });
+    }
+}
+
+export async function deleteCategory(req: types.RequestCustom, res: express.Response) {
+    const categoryName = req.params.name;
+
+    if (!categoryName) {
+        return res.status(400).json({
+            message: "Category name is required"
+        });
+    }
+
+    try {
+        await service.deleteCategory(categoryName, req.user?.user_id as number);
         res.status(200).json({
             message: "Category deleted successfully"
         });
