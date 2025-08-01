@@ -32,13 +32,26 @@ export async function getCategories(params: types.CategoryParamsRequest): Promis
     try {
         db = await getConnection();
 
-        const sql = "SELECT * FROM categories" +
-                    " WHERE $1 = '' OR name ILIKE $1" +
-                    " ORDER BY " + params.sortAttribute + " " + params.sortOrder +
-                    " LIMIT $2 OFFSET $3";
+        const sql = `
+                SELECT * FROM categories
+                WHERE name ILIKE $1
+                    AND ($4::date IS NULL OR created_at >= $4::date)
+                    AND ($5::date IS NULL OR created_at <= $5::date)
+                    AND ($6::date IS NULL OR deleted_at >= $6::date)
+                    AND ($7::date IS NULL OR deleted_at <= $7::date)
+                    AND ($8::boolean IS NULL OR is_deleted = $8::boolean)
+                ORDER BY ${params.sortAttribute} ${params.sortOrder}
+                LIMIT $2 OFFSET $3
+            `;
         const limit = Number(process.env.PAGINATION_LIMIT);
         const offset = (params.page - 1) * limit;
-        const queryParams = [`%${params.keywords}%`, limit, offset];
+        const createdFrom = params?.filter?.created_from;
+        const createdTo = params?.filter?.created_to;
+        const deleted_from = params?.filter?.deleted_from;
+        const deletedTo = params?.filter?.deleted_to;
+        const isDeleted = params?.filter?.is_deleted;
+
+        const queryParams = [`%${params.keywords}%`, limit, offset, createdFrom, createdTo, deleted_from, deletedTo, isDeleted];
 
         const result = await db.query(sql, queryParams);
         return result.rows as types.Category[];

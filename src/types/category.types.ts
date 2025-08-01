@@ -9,6 +9,14 @@ export interface CategoryUpdate {
   description?: string;
 }
 
+export interface CategoryFilter {
+  created_from?: string;
+  created_to?: string;
+  deleted_from?: string;
+  deleted_to?: string;
+  is_deleted?: boolean;
+}
+
 export interface ValidationCategoryResult {
   valid: boolean;
   errors: Partial<Record<keyof Category | keyof CategoryUpdate, string>>;
@@ -19,4 +27,6 @@ export interface CategoryParamsRequest {
   page: number;
   sortAttribute: string;
   sortOrder: string;
+  
+  filter?: CategoryFilter;
 }
