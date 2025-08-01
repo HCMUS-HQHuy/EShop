@@ -1,5 +1,9 @@
 import { Client } from "pg";
 
+// hiện tại db chưa sử dụng pool, chỉ sử dụng client đơn giản để test api
+// nếu cần tối ưu hơn có thể sử dụng pool để quản lý kết nối hiệu quả hơn
+// việc điều chỉnh chỉ cần thay đổi trong file này - hàm getConnection và releaseConnection
+
 const dbConfig = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5432,
