@@ -27,12 +27,20 @@ export async function addCategory(categoryData: types.CategoryUpdate): Promise<v
     }
 }
 
-export async function getCategories(): Promise<types.Category[]> {
+export async function getCategories(params: types.CategoryParamsRequest): Promise<types.Category[]> {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-        const sql = "SELECT * FROM categories";
-        const result = await db.query(sql);
+
+        const sql = "SELECT * FROM categories" +
+                    " WHERE $1 = '' OR name ILIKE $1" +
+                    " ORDER BY " + params.sortAttribute + " " + params.sortOrder +
+                    " LIMIT $2 OFFSET $3";
+        const limit = Number(process.env.PAGINATION_LIMIT);
+        const offset = (params.page - 1) * limit;
+        const queryParams = [`%${params.keywords}%`, limit, offset];
+
+        const result = await db.query(sql, queryParams);
         return result.rows as types.Category[];
     } catch (error: any) {
         console.error("Error fetching categories:", error);

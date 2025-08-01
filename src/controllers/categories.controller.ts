@@ -29,7 +29,16 @@ export async function addCategory(req: express.Request, res: express.Response) {
 
 export async function getCategories(req: express.Request, res: express.Response) {
     try {
-        const categories = await service.getCategories();
+        const params: types.CategoryParamsRequest = {
+            page: req.query.page ? Number(req.query.page) : Number(process.env.PAGINATION_DEFAULT_PAGE),
+            sortAttribute: req.query.attribute ? String(req.query.sortAttribute) : (process.env.SORT_ATTRIBUTE as string),
+            sortOrder: req.query.order ? String(req.query.sortOrder) : (process.env.SORT_ORDER as string),
+            keywords: req.query.keywords ? String(req.query.keywords) : (process.env.SEARCH_KEYWORDS as string)
+        };
+
+        console.log("Fetching categories with params:", params);
+
+        const categories = await service.getCategories(params);
         res.status(200).json(categories);
     } catch (error: any) {
         res.status(500).json({
