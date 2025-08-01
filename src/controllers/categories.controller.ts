@@ -45,6 +45,15 @@ export async function getCategories(req: express.Request, res: express.Response)
             }
         };
 
+        const validationError = util.validateCategoryFilters(params);
+
+        if (!validationError.valid) {
+            return res.status(400).json({
+                message: "Validation error",
+                errors: validationError.errors
+            });
+        }
+
         console.log("Fetching categories with params:", params);
 
         const categories = await service.getCategories(params);

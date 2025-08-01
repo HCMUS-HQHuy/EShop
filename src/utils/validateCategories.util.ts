@@ -32,6 +32,41 @@ export function validateCategoryInput(input: Partial<types.CategoryUpdate>): typ
     };
 }
 
+export function validateCategoryFilters(params: types.CategoryParamsRequest): types.ValidationCategoryResult {
+    const errors: Partial<Record<keyof types.CategoryParamsRequest, any>> = {};
+    
+    if (params.keywords.trim() === "") {
+        errors.keywords = "Keywords must not be empty";
+    }
+    if (params.page < 1) {
+        errors.page = "Page must be greater than 0";
+    }
+    if (!["name", "created_at"].includes(params.sortAttribute)) {
+        errors.sortAttribute = "Invalid sort attribute";
+    }
+    if (!["asc", "desc"].includes(params.sortOrder)) {
+        errors.sortOrder = "Invalid sort order";
+    }
+    if (params.filter) {
+        if (params.filter.created_from && isNaN(Date.parse(params.filter.created_from))) {
+            errors.filter.created_from = "Invalid date format for created_from";
+        }
+        if (params.filter.created_to && isNaN(Date.parse(params.filter.created_to))) {
+            errors.filter.created_to = "Invalid date format for created_to";
+        }
+        if (params.filter.deleted_from && isNaN(Date.parse(params.filter.deleted_from))) {
+            errors.filter.deleted_from = "Invalid date format for deleted_from";
+        }
+        if (params.filter.deleted_to && isNaN(Date.parse(params.filter.deleted_to))) {
+            errors.filter.deleted_to = "Invalid date format for deleted_to";
+        }
+    }
+    return {
+        valid: Object.keys(errors).length === 0,
+        errors,
+    };
+}
+
 export async function validateUpdateCategoryInput(currentName: string, input: Partial<types.CategoryUpdate> | undefined = undefined): Promise<types.ValidationCategoryResult> {
     const errors: Partial<Record<keyof types.CategoryUpdate, string>> = {};
     if (input?.name && input.name.trim() === "") {
