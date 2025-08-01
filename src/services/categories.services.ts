@@ -70,3 +70,33 @@ export async function getCategories(params: types.CategoryParamsRequest): Promis
         }
     }
 }
+
+export async function deleteCategory(categoryId: string): Promise<void> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+
+        const existingCategoryQuery = `
+            SELECT * FROM categories 
+            WHERE id = $1 AND is_deleted = false
+        `;
+        const existingCategoryResult = await db.query(existingCategoryQuery, [categoryId]);
+        if (existingCategoryResult.rows.length === 0) {
+            throw new Error("Category not found or already deleted");
+        }
+        
+        const sql = `
+            UPDATE categories 
+            SET is_deleted = true, deleted_at = NOW() 
+            WHERE id = $1
+        `;
+        await db.query(sql, [categoryId]);
+    } catch (error: any) {
+        console.error("Error deleting category:", error);
+        throw new Error("Error deleting category: " + error.message);
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}

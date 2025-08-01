@@ -56,3 +56,25 @@ export async function getCategories(req: express.Request, res: express.Response)
         });
     }
 }
+
+export async function deleteCategory(req: express.Request, res: express.Response) {
+    const categoryId = req.params.id;
+
+    if (!categoryId) {
+        return res.status(400).json({
+            message: "Category ID is required"
+        });
+    }
+
+    try {
+        await service.deleteCategory(categoryId);
+        res.status(200).json({
+            message: "Category deleted successfully"
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            message: "Error deleting category",
+            errors: error.message
+        });
+    }
+}
