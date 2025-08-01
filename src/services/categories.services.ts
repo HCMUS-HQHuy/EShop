@@ -13,7 +13,7 @@ async function checkCategoryRecord(db: Client, name: string, shouldBeExists: boo
             throw new Error(shouldBeExists 
                 ? "Category with this name does not exist" 
                 : "Category with this name already exists"
-            );    
+            );
         }
     } catch (error: any) {
         throw error;
@@ -81,15 +81,9 @@ export async function updateCategory(name: string, categoryData: types.CategoryU
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-
-        await checkCategoryRecord(db, name as string, true);
-        if (categoryData.name && categoryData.name !== name) {
-            await checkCategoryRecord(db, categoryData.name as string, false);
-        }
         if (!categoryData.name) {
             categoryData.name = name;
         }
-
         const sql = `
             UPDATE categories
             SET name = $1, description = $2 
@@ -110,8 +104,6 @@ export async function deleteCategory(name: string, userId: number): Promise<void
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-        await checkCategoryRecord(db, name, true);
-
         const sql = `
             UPDATE categories
             SET is_deleted = true, deleted_at = NOW(), deleted_by = $2

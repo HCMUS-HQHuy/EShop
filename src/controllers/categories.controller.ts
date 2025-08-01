@@ -67,10 +67,10 @@ export async function updateCategory(req: express.Request, res: express.Response
         });
     }
 
-    const validationError = util.validateUpdateCategoryInput(categoryData);
+    const validationError = await util.validateUpdateCategoryInput(categoryName, categoryData);
     if (!validationError.valid) {
         return res.status(400).json({
-            message: "Validation error",
+            message: "Validation update category input error",
             errors: validationError.errors
         });
     }
@@ -90,10 +90,18 @@ export async function updateCategory(req: express.Request, res: express.Response
 
 export async function deleteCategory(req: types.RequestCustom, res: express.Response) {
     const categoryName = req.params.name;
-
+    
     if (!categoryName) {
         return res.status(400).json({
             message: "Category name is required"
+        });
+    }
+
+    const validationError = await util.validateUpdateCategoryInput(categoryName);
+    if (!validationError.valid) {
+        return res.status(400).json({
+            message: "Validation delete category input error",
+            errors: validationError.errors
         });
     }
 
