@@ -26,3 +26,15 @@ export async function addCategory(req: express.Request, res: express.Response) {
     }
     console.log("Category added successfully");
 }
+
+export async function getCategories(req: express.Request, res: express.Response) {
+    try {
+        const categories = await service.getCategories();
+        res.status(200).json(categories);
+    } catch (error: any) {
+        res.status(500).json({
+            message: "Error fetching categories",
+            errors: error.message
+        });
+    }
+}

@@ -9,5 +9,6 @@ categories.get('/', (req, res) => {
 });
 
 categories.post('/add', controller.addCategory);
+categories.get('/list', controller.getCategories);
 
 export default categories;
