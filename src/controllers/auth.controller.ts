@@ -49,7 +49,7 @@ export async function registerUser(req: express.Request, res: express.Response) 
         console.error("Registration error:", error);
         return res.status(500).json({
             message: "Registration failed",
-            errors: error.message || "Registration failed"
+            errors: error.message
         });
     }
 }

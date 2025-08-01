@@ -1,13 +1,13 @@
 import express from 'express';
 
+import * as controller from '../controllers/categories.controller';
+
 const categories = express.Router();
 
 categories.get('/', (req, res) => {
   res.send('List of categories');
 });
 
-categories.post('/', (req, res) => {
-  res.send('Category created');
-});
+categories.post('/add', controller.addCategory);
 
 export default categories;

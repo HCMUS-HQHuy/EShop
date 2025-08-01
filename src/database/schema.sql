@@ -20,7 +20,11 @@ CREATE TABLE categories (
     category_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
     description TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    deleted_by INT,
+    CONSTRAINT fk_category_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 CREATE TABLE products (
@@ -35,9 +39,11 @@ CREATE TABLE products (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     deleted_at TIMESTAMP WITH TIME ZONE,
-    
+    deleted_by INT,
+
     CONSTRAINT fk_product_category FOREIGN KEY (category_id) REFERENCES categories(category_id),
-    CONSTRAINT fk_product_seller FOREIGN KEY (seller_id) REFERENCES users(user_id)
+    CONSTRAINT fk_product_seller FOREIGN KEY (seller_id) REFERENCES users(user_id),
+    CONSTRAINT fg_product_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 CREATE TABLE product_images (
@@ -45,7 +51,10 @@ CREATE TABLE product_images (
     product_id INT NOT NULL,
     image_url VARCHAR(255) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    deleted_by INT,
+    CONSTRAINT fk_image_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(user_id) ON DELETE SET NULL,
     CONSTRAINT fk_image_product FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
 );
 
@@ -56,7 +65,10 @@ CREATE TABLE product_reviews (
     rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
     comment TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    deleted_by INT,
+    CONSTRAINT fk_review_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(user_id) ON DELETE SET NULL,
     CONSTRAINT fk_review_user FOREIGN KEY (user_id) REFERENCES users(user_id),
     CONSTRAINT fk_review_product FOREIGN KEY (product_id) REFERENCES products(product_id),
     UNIQUE (user_id, product_id) -- Mỗi người dùng chỉ đánh giá 1 lần cho 1 sản phẩm

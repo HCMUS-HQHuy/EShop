@@ -53,6 +53,8 @@ export function validateRegistration(input: Partial<UserRegistration>): Validati
         }
     }
 
+    
+
     return {
         valid: Object.keys(errors).length === 0,
         errors,
