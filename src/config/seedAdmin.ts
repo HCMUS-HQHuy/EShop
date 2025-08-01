@@ -2,6 +2,8 @@ import { Client } from 'pg';
 import { getConnection, releaseConnection } from './db';
 import { env } from 'process';
 
+import * as utils from '../utils/index.util';
+
 export default async function seedAdmin() {
     let db: Client | undefined = undefined;
 
@@ -22,9 +24,10 @@ export default async function seedAdmin() {
             INSERT INTO users (username, password, email, fullname, role)
             VALUES ($1, $2, $3, $4, 'Admin')
         `;
+        const password = utils.hashPassword(env.DB_ADMIN_PASSWORD as string);
         await db.query(insertQuery, [
             env.DB_ADMIN_USERNAME,
-            env.DB_ADMIN_PASSWORD,
+            password,
             env.DB_ADMIN_EMAIL,
             'System Administrator',
         ]);
