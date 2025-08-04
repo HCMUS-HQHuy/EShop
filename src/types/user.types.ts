@@ -1,5 +1,5 @@
 ﻿import express from 'express';
-import { user_status } from './account.types';
+import { UserStatus } from './account.types';
 
 export const USER_ROLE = {
     ADMIN: 'Admin',
@@ -27,7 +27,7 @@ export interface UserInfor {
     user_id: number;
     username: string;
     role: UserRole;
-    status: user_status;
+    status: UserStatus;
     shop_name?: string; // Optional, only for sellers
 }
 

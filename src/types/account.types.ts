@@ -10,19 +10,19 @@ export const SELLER_STATUS = {
   CLOSED: 'Closed',
 } as const;
 
-export type user_status = typeof USER_STATUS[keyof typeof USER_STATUS];
+export type UserStatus = typeof USER_STATUS[keyof typeof USER_STATUS];
 
-export type seller_status = typeof SELLER_STATUS[keyof typeof SELLER_STATUS];
+export type SellerStatus = typeof SELLER_STATUS[keyof typeof SELLER_STATUS];
 
 export interface AdminVerifySellerRequest {
     seller_id: number;
-    status: seller_status;
+    status: SellerStatus;
     rejection_reason?: string;
 }
 
 export interface BlockUnblockUserRequest {
     user_id: number;
-    status: user_status;
+    status: UserStatus;
 }
 
 export interface ValidationUpdatingAccountResult {
