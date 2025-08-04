@@ -8,7 +8,10 @@ async function getShopName(userId: number): Promise<string | null> {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-        const sql = 'SELECT shop_name FROM seller_profiles WHERE user_id = $1';
+        const sql = `
+            SELECT shop_name FROM seller_profiles 
+            WHERE user_id = $1 AND status IN ('Active', 'Closed')
+        `;
         const result = await db.query(sql, [userId]);
         if (result.rows.length > 0) {
             return result.rows[0].shop_name;

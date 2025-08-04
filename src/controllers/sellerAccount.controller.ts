@@ -36,3 +36,24 @@ export async function createSellerAccount(req: types.RequestCustom, res: express
         });
     }
 }
+
+export async function reviewSellerAccount(req: express.Request, res: express.Response) {
+    const data: types.AdminVerifySellerRequest = req.body;
+    const validationError = await util.validateAdminRequestUpdateSeller(data);
+
+    if (!validationError.valid) {
+        return res.status(400).json({
+            message: "Validation error",
+            errors: validationError.errors
+        });
+    }
+    try {
+        await service.updateSellerAccount(data.seller_id, data.status, data.rejection_reason);
+        return res.status(200).json({ message: "Seller account updated", sellerId: data.seller_id });
+    } catch (error) {
+        console.error("Error updating seller account:", error);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+}

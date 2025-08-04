@@ -25,7 +25,13 @@ export interface SellerAccountCreationRequest {
     shop_description?: string;
 }
 
+export interface AdminVerifySellerRequest {
+    seller_id: number;
+    status: 'Active' | 'Rejected';
+    rejection_reason?: string;
+}
+
 export interface ValidationSellerAccountResult {
   valid: boolean;
-  errors: Partial<Record<keyof SellerAccountCreationRequest, string>>;
+  errors: Partial<Record<keyof SellerAccountCreationRequest | keyof AdminVerifySellerRequest, string>>;
 }

@@ -50,3 +50,45 @@ export async function validateSellerAccountCreationRequest(data: types.SellerAcc
         errors
     };
 }
+
+export async function validateAdminRequestUpdateSeller(data: types.AdminVerifySellerRequest): Promise<types.ValidationSellerAccountResult> {
+    const errors: Partial<Record<keyof types.AdminVerifySellerRequest, string>> = {};
+
+    if (!data.seller_id || typeof data.seller_id !== 'number') {
+        errors.seller_id = "Invalid seller ID";
+    }
+
+    if (!data.status || (data.status !== 'Active' && data.status !== 'Rejected')) {
+        errors.status = "Status must be either 'Active' or 'Rejected'";
+    }
+
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = `
+            SELECT COUNT(*) FROM seller_profiles 
+            WHERE user_id = $1 AND status = 'PendingVerification'
+        `;
+        const result = await db.query(sql, [data.seller_id]);
+        if (parseInt(result.rows[0].count, 10) === 0) {
+            errors.seller_id = "Seller account not found or not pending verification";
+        }
+        if (data.status === 'Rejected' && (!data.rejection_reason || typeof data.rejection_reason !== 'string' || data.rejection_reason.trim() === "")) {
+            errors.rejection_reason = "Rejection reason is required when status is 'Rejected'";
+        } else if (data.rejection_reason && (data.rejection_reason.length < 10 || data.rejection_reason.length > 200)) {
+            errors.rejection_reason = "Rejection reason must be between 10 and 200 characters";
+        }
+    } catch (error) {
+        console.error("Database error:", error);
+        throw new Error("Database validation failed");
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+
+    return {
+        valid: Object.keys(errors).length === 0,
+        errors
+    };
+}

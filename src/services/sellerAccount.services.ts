@@ -19,3 +19,20 @@ export async function createSellerAccount (data: types.SellerAccountCreationRequ
         }
     }
 }
+
+export async function updateSellerAccount(sellerId: number, status: 'Active' | 'Rejected', rejectionReason?: string) {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = 'UPDATE seller_profiles SET status = $1, rejection_reason = $2 WHERE user_id = $3';
+        const values = [status, rejectionReason || null, sellerId];
+        await db.query(sql, values);
+    } catch (error) {
+        console.error("Error updating seller account:", error);
+        throw new Error("Database error");
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}
