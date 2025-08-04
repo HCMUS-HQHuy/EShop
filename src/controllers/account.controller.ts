@@ -3,6 +3,9 @@ import * as service from "../services/index.services";
 import * as types from "../types/index.types";
 import * as util from "../utils/index.util";
 
+// This function handles the creation of a seller account
+// It validates the request data and creates a new seller account in the database
+// It requires the user to be logged in and have a valid user ID
 export async function createSellerAccount(req: types.RequestCustom, res: express.Response) {
     const requestData: types.SellerAccountCreationRequest = {
         user_id: req.user?.user_id as number,
