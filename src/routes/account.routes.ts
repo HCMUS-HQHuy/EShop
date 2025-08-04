@@ -8,7 +8,7 @@ router.get("/", (req, res) => {
     res.status(200).json({ message: "This route is accessible only by the admin" });
 });
 
-router.post('/review-seller', controller.reviewSellerAccount);
 router.post('/review-user', controller.reviewUserAccount);
+router.post('/review-seller', controller.reviewSellerAccount);
 
 export default router;

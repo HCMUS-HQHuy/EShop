@@ -37,6 +37,9 @@ export async function createSellerAccount(req: types.RequestCustom, res: express
     }
 }
 
+// This function handles the review of seller accounts by the admin
+// It validates the request data and updates the seller account status in the database
+// It updates the seller account status and optionally the rejection reason
 export async function reviewSellerAccount(req: express.Request, res: express.Response) {
     const data: types.AdminVerifySellerRequest = req.body;
     const validationError = await util.validateAdminRequestUpdateSeller(data);
@@ -58,6 +61,9 @@ export async function reviewSellerAccount(req: express.Request, res: express.Res
     }
 }
 
+// This function handles the review of user accounts by the admin
+// It validates the request data and updates the user status in the database
+// It updates the user status to either 'Active' or 'Banned'
 export async function reviewUserAccount(req: express.Request, res: express.Response) {
     const data: types.BlockUnblockUserRequest = req.body;
     const validationError = await util.validateBlockUnblockUserRequest(data);
