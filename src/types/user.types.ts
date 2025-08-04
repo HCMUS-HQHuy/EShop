@@ -1,4 +1,5 @@
 ﻿import express from 'express';
+import { user_status } from './account.types';
 export type UserRole = 'Admin' | 'User';
 
 export interface User {
@@ -19,6 +20,7 @@ export interface UserInfor {
     user_id: number;
     username: string;
     role: UserRole;
+    status: user_status;
     shop_name?: string; // Optional, only for sellers
 }
 
