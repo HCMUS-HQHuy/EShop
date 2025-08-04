@@ -23,7 +23,7 @@ export async function createSellerAccount (data: types.SellerAccountCreationRequ
     }
 }
 
-export async function updateSellerAccount(sellerId: number, status: 'Active' | 'Rejected', rejectionReason?: string) {
+export async function updateSellerAccount(sellerId: number, status: types.seller_status, rejectionReason?: string) {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
@@ -43,7 +43,7 @@ export async function updateSellerAccount(sellerId: number, status: 'Active' | '
     }
 }
 
-export async function UpdateUserStatus(userId: number, status: 'Active' | 'Banned') {
+export async function UpdateUserStatus(userId: number, status: types.user_status) {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
