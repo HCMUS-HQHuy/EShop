@@ -24,13 +24,19 @@ export async function validateSellerAccountCreationRequest(data: types.SellerAcc
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-        const sql = 'SELECT COUNT(*) FROM seller_profiles WHERE user_id = $1';
+        const sql = `
+            SELECT COUNT(*) FROM seller_profiles 
+            WHERE user_id = $1
+        `;
         const result = await db.query(sql, [data.user_id]);
         if (parseInt(result.rows[0].count, 10) > 0) {
             errors.user_id = "User already has a seller account";
         }
         else {
-            const sqlShopName = 'SELECT COUNT(*) FROM seller_profiles WHERE shop_name = $1';
+            const sqlShopName = `
+                SELECT COUNT(*) FROM seller_profiles 
+                WHERE shop_name = $1
+            `;
             const resultShopName = await db.query(sqlShopName, [data.shop_name]);
             if (parseInt(resultShopName.rows[0].count, 10) > 0) {
                 errors.shop_name = "Shop name already exists";
