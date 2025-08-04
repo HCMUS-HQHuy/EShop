@@ -26,7 +26,7 @@ export async function login(credential: types.UserCredentials): Promise<string> 
         }
         const user: types.UserInfor = result.rows[0];
         console.log("User authenticated successfully");
-        const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1h" });
+        const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1y" }); // 1y = 1 year for testing purposes
         return token;
     } catch (error: any) {
         console.error("Authentication error:", error);
@@ -55,7 +55,7 @@ export async function signup(registrationData: types.UserRegistration): Promise<
             registrationData.password,
             registrationData.email,
             registrationData.fullname,
-            types.Role.Buyer
+            types.Role.User
         ]);
         console.log("User registered successfully");
 
