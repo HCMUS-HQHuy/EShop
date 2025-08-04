@@ -6,7 +6,10 @@ export async function createSellerAccount (data: types.SellerAccountCreationRequ
     let db: Client  | undefined = undefined;
     try {
         db = await getConnection();
-        const sql = 'INSERT INTO seller_profiles (user_id, shop_name, shop_description) VALUES ($1, $2, $3)';
+        const sql = `
+            INSERT INTO seller_profiles (user_id, shop_name, shop_description) 
+            VALUES ($1, $2, $3)
+        `;
         const values = [data.user_id, data.shop_name, data.shop_description || null];
         await db.query(sql, values);
 
@@ -24,7 +27,10 @@ export async function updateSellerAccount(sellerId: number, status: 'Active' | '
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-        const sql = 'UPDATE seller_profiles SET status = $1, rejection_reason = $2 WHERE user_id = $3';
+        const sql = `
+            UPDATE seller_profiles SET status = $1, rejection_reason = $2 
+            WHERE user_id = $3
+        `;
         const values = [status, rejectionReason || null, sellerId];
         await db.query(sql, values);
     } catch (error) {
@@ -41,7 +47,10 @@ export async function UpdateUserStatus(userId: number, status: 'Active' | 'Banne
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-        const sql = 'UPDATE users SET status = $1 WHERE user_id = $2';
+        const sql = `
+            UPDATE users SET status = $1
+            WHERE user_id = $2
+        `;
         const values = [status, userId];
         await db.query(sql, values);
     } catch (error) {
