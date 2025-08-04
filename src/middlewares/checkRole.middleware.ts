@@ -10,7 +10,7 @@ async function getShopName(userId: number): Promise<string | null> {
         db = await getConnection();
         const sql = `
             SELECT shop_name FROM seller_profiles 
-            WHERE user_id = $1 AND status IN ('Active', 'Closed')
+            WHERE user_id = $1 AND status IN (${types.SELLER_STATUS.ACTIVE}, ${types.SELLER_STATUS.CLOSED})
         `;
         const result = await db.query(sql, [userId]);
         if (result.rows.length > 0) {
