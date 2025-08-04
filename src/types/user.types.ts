@@ -1,6 +1,13 @@
 ﻿import express from 'express';
 import { user_status } from './account.types';
-export type UserRole = 'Admin' | 'User';
+
+export const USER_ROLE = {
+    ADMIN: 'Admin',
+    SELLER: 'Seller',
+    USER: 'User',
+    GUEST: 'Guest'
+} as const;
+export type UserRole = typeof USER_ROLE[keyof typeof USER_ROLE];
 
 export interface User {
     user_id: number;

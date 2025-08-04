@@ -64,8 +64,8 @@ export async function validateAdminRequestUpdateSeller(data: types.AdminVerifySe
         errors.seller_id = "Invalid seller ID";
     }
 
-    if (!data.status || (data.status !== 'Active' && data.status !== 'Rejected')) {
-        errors.status = "Status must be either 'Active' or 'Rejected'";
+    if (!data.status || (data.status !== types.SELLER_STATUS.ACTIVE && data.status !== types.SELLER_STATUS.REJECTED)) {
+        errors.status = `Status must be either '${types.SELLER_STATUS.ACTIVE}' or '${types.SELLER_STATUS.REJECTED}'`;
     }
 
     let db: Client | undefined = undefined;
@@ -73,13 +73,13 @@ export async function validateAdminRequestUpdateSeller(data: types.AdminVerifySe
         db = await getConnection();
         const sql = `
             SELECT COUNT(*) FROM seller_profiles 
-            WHERE user_id = $1 AND status = 'PendingVerification'
+            WHERE user_id = $1 AND status = '${types.SELLER_STATUS.PENDING_VERIFICATION}'
         `;
         const result = await db.query(sql, [data.seller_id]);
         if (parseInt(result.rows[0].count, 10) === 0) {
             errors.seller_id = "Seller account not found or not pending verification";
         }
-        if (data.status === 'Rejected' && (!data.rejection_reason || typeof data.rejection_reason !== 'string' || data.rejection_reason.trim() === "")) {
+        if (data.status === types.SELLER_STATUS.REJECTED && (!data.rejection_reason || typeof data.rejection_reason !== 'string' || data.rejection_reason.trim() === "")) {
             errors.rejection_reason = "Rejection reason is required when status is 'Rejected'";
         } else if (data.rejection_reason && (data.rejection_reason.length < 10 || data.rejection_reason.length > 200)) {
             errors.rejection_reason = "Rejection reason must be between 10 and 200 characters";
@@ -106,8 +106,8 @@ export async function validateBlockUnblockUserRequest(data: types.BlockUnblockUs
         errors.user_id = "Invalid user ID";
     }
 
-    if (!data.status || (data.status !== 'Active' && data.status !== 'Banned')) {
-        errors.status = "Status must be either 'Active' or 'Banned'";
+    if (!data.status || (data.status !== types.USER_STATUS.ACTIVE && data.status !== types.USER_STATUS.BANNED)) {
+        errors.status = `Status must be either '${types.USER_STATUS.ACTIVE}' or '${types.USER_STATUS.BANNED}'`;
     }
 
     let db: Client | undefined = undefined;
@@ -117,7 +117,7 @@ export async function validateBlockUnblockUserRequest(data: types.BlockUnblockUs
             SELECT COUNT(*) FROM users 
             WHERE user_id = $1 AND status = $2
         `;
-        const status = data.status === 'Banned' ? 'Active' : 'Banned';
+        const status = data.status === types.USER_STATUS.BANNED ? types.USER_STATUS.ACTIVE : types.USER_STATUS.BANNED;
         const result = await db.query(sql, [data.user_id, status]);
         if (parseInt(result.rows[0].count, 10) === 0) {
             errors.user_id = "User account not found or not banned";

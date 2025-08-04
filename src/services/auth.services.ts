@@ -55,7 +55,7 @@ export async function signup(registrationData: types.UserRegistration): Promise<
             registrationData.password,
             registrationData.email,
             registrationData.fullname,
-            types.Role.User
+            types.USER_ROLE.USER
         ]);
         console.log("User registered successfully");
 

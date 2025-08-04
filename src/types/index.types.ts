@@ -4,7 +4,6 @@ export * from './product.types';
 export * from './cart.types';
 export * from './payment.types';
 export * from './order.types';
-export * from './roles.enum';
 export * from './validation';
 export * from './seller.types';
 export * from './account.types';

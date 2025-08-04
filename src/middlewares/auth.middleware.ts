@@ -8,7 +8,7 @@ export function auth(req: types.RequestCustom, res: express.Response, next: expr
     if (token == null) return res.sendStatus(401);
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as types.UserInfor;
-        if (decoded.status === 'Banned') {
+        if (decoded.status === types.USER_STATUS.BANNED) {
             return res.status(403).json({ message: "User is banned" });
         }
         req.user = decoded;

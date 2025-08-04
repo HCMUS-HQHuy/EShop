@@ -26,7 +26,7 @@ async function getShopName(userId: number): Promise<string | null> {
     return null;
 }
 
-export const checkRole = (allowedRoles: types.Role) => {
+export const checkRole = (allowedRoles: types.UserRole) => {
     return async (req: types.RequestCustom, res: express.Response, next: express.NextFunction) => {
         const user = req.user;
         if (!user) {
@@ -36,17 +36,17 @@ export const checkRole = (allowedRoles: types.Role) => {
             return res.status(403).json({ errors: 'Forbidden: User role is not defined.' });
         }
         switch (allowedRoles) {
-            case types.Role.Admin:
-                if (user.role !== types.Role.Admin) {
+            case types.USER_ROLE.ADMIN:
+                if (user.role !== types.USER_ROLE.ADMIN) {
                     return res.status(403).json({ errors: 'Forbidden: You do not have permission to perform this action.' });
                 }
                 break;
-            case types.Role.User:
-                if (user.role as types.Role !== types.Role.User) {
+            case types.USER_ROLE.USER:
+                if (user.role !== types.USER_ROLE.USER) {
                     return res.status(403).json({ errors: 'Forbidden: You do not have permission to perform this action.' });
                 }
                 break;
-            case types.Role.Seller:
+            case types.USER_ROLE.SELLER:
                 const shopName: string|null = await getShopName(user.user_id);
                 if (!shopName) {
                     return res.status(403).json({ errors: 'Forbidden: You do not have permission to perform this action.' });
