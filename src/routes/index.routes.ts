@@ -18,9 +18,9 @@ router.get('/', (req, res) => {
 export default function routes(app: express.Application): void {
     const prefixApi = process.env.API_PREFIX as string;
     router.use("/auth", authRoutes);
-    router.use("/admin",    middleware.auth, middleware.checkRole([types.Role.Admin]),  adminRoutes);
-    router.use("/user",     middleware.auth, middleware.checkRole([types.Role.User]),  userRoutes);
-    router.use("/seller",   middleware.auth, middleware.checkRole([types.Role.Seller]), sellerRoutes);
+    router.use("/admin",    middleware.auth, middleware.checkRole(types.Role.Admin),  adminRoutes);
+    router.use("/user",     middleware.auth, middleware.checkRole(types.Role.User),  userRoutes);
+    router.use("/seller",   middleware.auth, middleware.checkRole(types.Role.Seller), sellerRoutes);
     app.use(prefixApi, router);
     console.log("Routes initialized");
 }

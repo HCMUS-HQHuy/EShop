@@ -1,5 +1,5 @@
 ﻿import express from 'express';
-export type UserRole = 'Admin' | 'Seller' | 'Buyer';
+export type UserRole = 'Admin' | 'User';
 
 export interface User {
     user_id: number;
@@ -19,6 +19,7 @@ export interface UserInfor {
     user_id: number;
     username: string;
     role: UserRole;
+    shop_name?: string; // Optional, only for sellers
 }
 
 export interface RequestCustom extends express.Request {
