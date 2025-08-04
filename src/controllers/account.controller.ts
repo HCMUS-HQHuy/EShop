@@ -57,3 +57,24 @@ export async function reviewSellerAccount(req: express.Request, res: express.Res
         });
     }
 }
+
+export async function reviewUserAccount(req: express.Request, res: express.Response) {
+    const data: types.BlockUnblockUserRequest = req.body;
+    const validationError = await util.validateBlockUnblockUserRequest(data);
+
+    if (!validationError.valid) {
+        return res.status(400).json({
+            message: "Validation error",
+            errors: validationError.errors
+        });
+    }
+    try {
+        await service.UpdateUserStatus(data.user_id, data.status);
+        return res.status(200).json({ message: "User account updated", userId: data.user_id });
+    } catch (error) {
+        console.error("Error updating user account:", error);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+}

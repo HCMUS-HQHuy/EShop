@@ -1,7 +1,7 @@
 import express from "express";
 
 import categories from "./categories.routes";
-import accountManagement from "./accountManagement.routes";
+import accountManagement from "./account.routes";
 
 const admin = express.Router();
 

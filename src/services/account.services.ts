@@ -36,3 +36,20 @@ export async function updateSellerAccount(sellerId: number, status: 'Active' | '
         }
     }
 }
+
+export async function UpdateUserStatus(userId: number, status: 'Active' | 'Banned') {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = 'UPDATE users SET status = $1 WHERE user_id = $2';
+        const values = [status, userId];
+        await db.query(sql, values);
+    } catch (error) {
+        console.error("Error updating user status:", error);
+        throw new Error("Database error");
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}

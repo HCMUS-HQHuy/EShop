@@ -51,7 +51,7 @@ export async function validateSellerAccountCreationRequest(data: types.SellerAcc
     };
 }
 
-export async function validateAdminRequestUpdateSeller(data: types.AdminVerifySellerRequest): Promise<types.ValidationSellerAccountResult> {
+export async function validateAdminRequestUpdateSeller(data: types.AdminVerifySellerRequest): Promise<types.ValidationUpdatingAccountResult> {
     const errors: Partial<Record<keyof types.AdminVerifySellerRequest, string>> = {};
 
     if (!data.seller_id || typeof data.seller_id !== 'number') {
@@ -92,3 +92,42 @@ export async function validateAdminRequestUpdateSeller(data: types.AdminVerifySe
         errors
     };
 }
+
+export async function validateBlockUnblockUserRequest(data: types.BlockUnblockUserRequest): Promise<types.ValidationUpdatingAccountResult> {
+    const errors: Partial<Record<keyof types.BlockUnblockUserRequest, string>> = {};
+
+    if (!data.user_id || typeof data.user_id !== 'number') {
+        errors.user_id = "Invalid user ID";
+    }
+
+    if (!data.status || (data.status !== 'Active' && data.status !== 'Banned')) {
+        errors.status = "Status must be either 'Active' or 'Banned'";
+    }
+
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = `
+            SELECT COUNT(*) FROM users 
+            WHERE user_id = $1 AND status = $2
+        `;
+        const status = data.status === 'Banned' ? 'Active' : 'Banned';
+        const result = await db.query(sql, [data.user_id, status]);
+        if (parseInt(result.rows[0].count, 10) === 0) {
+            errors.user_id = "User account not found or not banned";
+        }
+    } catch (error) {
+        console.error("Database error:", error);
+        throw new Error("Database validation failed");
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+
+    return {
+        valid: Object.keys(errors).length === 0,
+        errors
+    };
+}
+

@@ -9,5 +9,6 @@ router.get("/", (req, res) => {
 });
 
 router.post('/review-seller', controller.reviewSellerAccount);
+router.post('/review-user', controller.reviewUserAccount);
 
 export default router;
