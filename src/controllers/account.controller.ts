@@ -69,7 +69,7 @@ export async function reviewUserAccount(req: express.Request, res: express.Respo
         });
     }
     try {
-        await service.UpdateUserStatus(data.user_id, data.status);
+        await service.updateUserStatus(data.user_id, data.status);
         return res.status(200).json({ message: "User account updated", userId: data.user_id });
     } catch (error) {
         console.error("Error updating user account:", error);

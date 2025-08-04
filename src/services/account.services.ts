@@ -43,7 +43,7 @@ export async function updateSellerAccount(sellerId: number, status: types.seller
     }
 }
 
-export async function UpdateUserStatus(userId: number, status: types.user_status) {
+export async function updateUserStatus(userId: number, status: types.user_status) {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
