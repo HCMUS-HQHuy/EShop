@@ -6,24 +6,14 @@ import * as types from '../types/index.types';
 
 export async function listProducts(req: types.RequestCustom, res: express.Response) {
     console.log("Listing products with params:", req.query);
-
-    const params: types.ProductParamsRequest = {
-        page: req.query.page !== undefined ? Number(req.query.page) : Number(process.env.PAGINATION_DEFAULT_PAGE),
-        sortAttribute: req.query.attribute !== undefined ? String(req.query.sortAttribute) : (process.env.SORT_ATTRIBUTE as string),
-        sortOrder: req.query.order !== undefined ? String(req.query.sortOrder) : (process.env.SORT_ORDER as string),
-        keywords: req.query.keywords !== undefined ? String(req.query.keywords) : (process.env.SEARCH_KEYWORDS as string),
-        filter: {
-            created_from: req.query.created_from !== undefined ? String(req.query.created_from) : undefined,
-            created_to: req.query.created_to !== undefined ? String(req.query.created_to) : undefined,
-            deleted_from: req.query.deleted_from !== undefined ? String(req.query.deleted_from) : undefined,
-            deleted_to: req.query.deleted_to !== undefined ? String(req.query.deleted_to) : undefined,
-            is_deleted: req.query.is_deleted !== undefined ? Boolean(req.query.is_deleted === "true") : undefined,
-
-            shop_id: req.user?.role === types.USER_ROLE.SELLER ? Number(req.user?.shop_id) : undefined, 
-            // dành cho seller (chỉ được truy cập hàng của shop mình cái này xem kĩ hơn)
-            status: req.query.status !== undefined ? String(req.query.status) as types.ProductStatus : undefined,
-        }
-    };
+    const params: types.ProductParamsRequest = utils.getFilterParamsForProducts(req);
+    const validationError = await utils.validateProductFilters(params);
+    if (!validationError.valid) {
+        return res.status(400).json({
+            message: "Validation error",
+            errors: validationError.errors
+        });
+    }
 
     console.log("Listing products with params:", params);
 
