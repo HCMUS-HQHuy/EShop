@@ -1,4 +1,14 @@
-﻿export interface Product {
+﻿export const PRODUCT_STATUS = {
+    PENDING: 'PendingApproval',
+    REJECTED: 'Rejected',
+    ACTIVE: 'Active',
+    INACTIVE: 'Inactive',
+    BANNED: 'Banned'
+} as const;
+
+export type ProductStatus = typeof PRODUCT_STATUS[keyof typeof PRODUCT_STATUS];
+
+export interface Product {
   product_id: number;
   name: string;
   description?: string;
@@ -37,6 +47,27 @@ export interface ProductAddRequest {
   category_id?: number;
   shop_id?: number;
 };
+
+export interface ProductFilterParams {
+  created_from?: string;
+  created_to?: string;
+  deleted_from?: string;
+  deleted_to?: string;
+  is_deleted?: boolean;
+  shop_id?: number;
+
+  status?: ProductStatus;
+}
+
+export interface ProductParamsRequest {
+  keywords: string;
+  page: number;
+  sortAttribute: string;
+  sortOrder: string;
+  
+  filter?: ProductFilterParams;
+}
+
 
 export interface ValidationProductResult {
   valid: boolean;
