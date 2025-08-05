@@ -29,10 +29,10 @@ export async function addProduct(product: types.ProductAddRequest) {
     try {
         db = await getConnection();
         const sql = `
-            INSERT INTO products (name, price, stock_quantity, category_id, seller_id)
+            INSERT INTO products (name, price, stock_quantity, category_id, shop_id)
             VALUES ($1, $2, $3, $4, $5)
         `;
-        const data = [product.name, product.price, product.stock_quantity, product.category_id, product.seller_id];
+        const data = [product.name, product.price, product.stock_quantity, product.category_id, product.shop_id];
         await db.query(sql, data);
     } catch (error) {
         console.error('Error adding product to database:', error);

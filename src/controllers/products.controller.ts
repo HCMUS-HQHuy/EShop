@@ -26,7 +26,7 @@ export async function addProduct(req: types.RequestCustom, res: express.Response
         return res.status(500).send({ error: 'Internal server error' });
     }
     try {
-        product.seller_id = req.user?.user_id as number;
+        product.shop_id = req.user?.shop_id as number;
         await service.addProduct(product);
     }
     catch (error) {

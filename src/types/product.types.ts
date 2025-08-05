@@ -35,7 +35,7 @@ export interface ProductAddRequest {
   stock_quantity?: number;
   image_url?: string;
   category_id?: number;
-  seller_id?: number;
+  shop_id?: number;
 };
 
 export interface ValidationProductResult {

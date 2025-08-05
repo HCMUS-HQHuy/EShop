@@ -27,7 +27,7 @@ export interface UserInfor {
     user_id: number;
     username: string;
     role: UserRole;
-    seller_profile_id?: string; // Optional, only for sellers
+    shop_id?: number; // Optional, only for sellers
 }
 
 export interface RequestCustom extends express.Request {

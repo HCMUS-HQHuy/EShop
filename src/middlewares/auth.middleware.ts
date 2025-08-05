@@ -42,7 +42,7 @@ export async function auth(req: types.RequestCustom, res: express.Response, next
         req.user = {
             user_id: user.user_id,
             role: types.USER_ROLE.USER,
-            seller_profile_id: user.seller_profile_id || null
+            shop_id: user.seller_profile_id || null
         } as types.UserInfor;
         next();
     } catch (error) {

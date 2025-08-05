@@ -5,7 +5,7 @@ import * as types from '../types/index.types';
 export function switchRole(req: types.RequestCustom, res: express.Response, next: express.NextFunction) {
     // Check if the user is an admin
     if (utils.isUser(req)) {
-        if (req.user?.seller_profile_id) {
+        if (req.user?.shop_id) {
             req.user.role = types.USER_ROLE.SELLER;
             return next();
         }
