@@ -37,6 +37,10 @@ export async function listProducts(req: types.RequestCustom, res: express.Respon
 };
 
 export async function addProduct(req: types.RequestCustom, res: express.Response) {
+    if (utils.isSeller(req) === false) {
+        return res.status(403).send({ error: 'Forbidden: Only sellers can add products' });
+    }
+
     const product: types.ProductAddRequest = req.body;
     try {
         const validationResult = await utils.validateProductData(product);
