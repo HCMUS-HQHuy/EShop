@@ -21,10 +21,10 @@ CREATE TABLE users (
 CREATE TABLE seller_profiles (
     seller_profile_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL UNIQUE, -- Mỗi user chỉ có một hồ sơ bán hàng
-    shop_name VARCHAR(100) NOT NULL UNIQUE,
+    shop_name VARCHAR(100) NOT NULL,
     shop_description TEXT,
     -- Trạng thái của việc bán hàng, quyết định quyền truy cập vào Seller Portal
-    status VARCHAR(20) NOT NULL CHECK (status IN ('PendingVerification', 'Active', 'Rejected', 'Closed')) DEFAULT 'PendingVerification',
+    status VARCHAR(20) NOT NULL CHECK (status IN ('PendingVerification', 'Active', 'Rejected', 'Closed', 'Banned')) DEFAULT 'PendingVerification',
     rejection_reason TEXT, -- Lý do bị từ chối, nếu có
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
