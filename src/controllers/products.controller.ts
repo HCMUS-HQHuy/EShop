@@ -6,15 +6,15 @@ import * as types from '../types/index.types';
 
 export async function listProducts(req: types.RequestCustom, res: express.Response) {
     console.log("Listing products with params:", req.query);
-    const params: types.ProductParamsRequest = utils.getFilterParamsForProducts(req);
-    const validationError = await utils.validateProductFilters(params);
+    const validationError = await utils.validateProductFilters(req);
     if (!validationError.valid) {
         return res.status(400).json({
             message: "Validation error",
             errors: validationError.errors
         });
     }
-
+    
+    const params: types.ProductParamsRequest = utils.getFilterParamsForProducts(req);
     console.log("Listing products with params:", params);
 
     try {

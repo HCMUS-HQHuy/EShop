@@ -20,36 +20,44 @@ export async function validateProductData(data: types.ProductAddRequest): Promis
     return { valid: Object.keys(errors).length === 0, errors };
 }
 
-export async function validateProductFilters(params: types.ProductParamsRequest): Promise<types.ValidationProductResult> {
+export async function validateProductFilters(req: types.RequestCustom): Promise<types.ValidationProductResult> {
     const errors: Partial<Record<keyof types.ProductFilterParams, string>> = {};
-    
-    if (params.filter?.created_from && isNaN(Date.parse(params.filter.created_from))) {
+
+    if (req.query.created_from && isNaN(Date.parse(req.query.created_from as string))) {
         errors.created_from = 'Invalid date format for created_from';
     }
-    
-    if (params.filter?.created_to && isNaN(Date.parse(params.filter.created_to))) {
+
+    if (req.query.created_to && isNaN(Date.parse(req.query.created_to as string))) {
         errors.created_to = 'Invalid date format for created_to';
     }
-    
-    if (params.filter?.deleted_from && isNaN(Date.parse(params.filter.deleted_from))) {
+
+    if (req.query.deleted_from && isNaN(Date.parse(req.query.deleted_from as string))) {
         errors.deleted_from = 'Invalid date format for deleted_from';
     }
-    
-    if (params.filter?.deleted_to && isNaN(Date.parse(params.filter.deleted_to))) {
+
+    if (req.query.deleted_to && isNaN(Date.parse(req.query.deleted_to as string))) {
         errors.deleted_to = 'Invalid date format for deleted_to';
     }
-    
-    if (params.filter?.is_deleted !== undefined && typeof params.filter.is_deleted !== 'boolean') {
+
+    if (req.query.is_deleted != undefined && typeof req.query.is_deleted != 'boolean') {
         errors.is_deleted = 'is_deleted must be a boolean';
     }
-    
-    if (params.filter?.shop_id !== undefined && params.filter.shop_id <= 0) {
-        errors.shop_id = 'shop_id must be a positive number';
-    }
 
-    if (params.filter?.status && !Object.values(types.PRODUCT_STATUS).includes(params.filter.status)) {
+    if (req.query.shop_id != undefined) {
+        if (Number(req.query.shop_id) <= 0) {
+            errors.shop_id = 'shop_id must be a positive number';
+        }
+        else if (req.user?.role != types.USER_ROLE.ADMIN && Number(req.query.shop_id) != req.user?.shop_id) {
+            errors.shop_id = 'You do not have permission to access this shop';
+        }
+    }
+    
+    if (req.query.status && !Object.values(types.PRODUCT_STATUS).includes(req.query.status as types.ProductStatus)) {
         errors.status = 'Invalid product status';
     }
-
+    else if (req.user?.role == types.USER_ROLE.USER && req.query.status != types.PRODUCT_STATUS.ACTIVE) {
+        errors.status = "Shop ID can only be used with ACTIVE products for users";
+    }
+    
     return { valid: Object.keys(errors).length === 0, errors };
 }
