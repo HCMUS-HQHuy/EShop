@@ -30,8 +30,9 @@ export async function auth(req: types.RequestCustom, res: express.Response, next
             FROM users as u
                 LEFT JOIN seller_profiles as s
                 ON u.user_id = s.user_id
-            WHERE u.user_id = $1 
+            WHERE u.user_id = $1
                 AND s.status IN ('${types.SELLER_STATUS.ACTIVE}', '${types.SELLER_STATUS.CLOSED}')
+                AND u.status = '${types.USER_STATUS.ACTIVE}'
         `;
         const result = await db.query(sql, [req.user?.user_id]);
         if (result.rows.length === 0) {
