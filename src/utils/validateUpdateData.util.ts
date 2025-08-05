@@ -21,26 +21,6 @@ export async function validateSellerAccountCreationRequest(data: types.SellerAcc
         errors.shop_description = "Shop description must be a string if provided";
     }
 
-    let db: Client | undefined = undefined;
-    try {
-        db = await getConnection();
-        const sqlShopName = `
-            SELECT COUNT(*) FROM seller_profiles 
-            WHERE shop_name = $1
-        `;
-        const resultShopName = await db.query(sqlShopName, [data.shop_name]);
-        if (parseInt(resultShopName.rows[0].count, 10) > 0) {
-            errors.shop_name = "Shop name already exists";
-        }
-    } catch (error) {
-        console.error("Database error:", error);
-        throw new Error("Database validation failed");
-    } finally {
-        if (db) {
-            releaseConnection(db);
-        }
-    }
-
     return {
         valid: Object.keys(errors).length === 0,
         errors
