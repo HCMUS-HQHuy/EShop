@@ -8,6 +8,7 @@ export const SELLER_STATUS = {
   REJECTED: 'Rejected',
   PENDING_VERIFICATION: 'PendingVerification',
   CLOSED: 'Closed',
+  BANNED: 'Banned',
 } as const;
 
 export type UserStatus = typeof USER_STATUS[keyof typeof USER_STATUS];
