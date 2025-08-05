@@ -55,7 +55,7 @@ CREATE TABLE products (
     image_url VARCHAR(255),
     category_id INT NOT NULL,
     shop_id INT NOT NULL,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('PendingApproval', 'Active', 'Inactive')) DEFAULT 'PendingApproval',
+    status VARCHAR(20) NOT NULL CHECK (status IN ('PendingApproval', 'Rejected', 'Active', 'Inactive', 'Banned')) DEFAULT 'PendingApproval',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     deleted_at TIMESTAMP WITH TIME ZONE,
