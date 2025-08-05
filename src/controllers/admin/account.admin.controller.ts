@@ -1,7 +1,7 @@
 import express from "express";
-import * as service from "../services/index.services";
-import * as types from "../types/index.types";
-import * as util from "../utils/index.util";
+import * as service from "../../services/index.services";
+import * as types from "../../types/index.types";
+import * as util from "../../utils/index.util";
 
 // This function handles the creation of a seller account
 // It validates the request data and creates a new seller account in the database

@@ -1,8 +1,8 @@
 import express from 'express';
 
-import * as service from '../services/products.services';
-import * as utils from '../utils/index.util';
-import * as types from '../types/index.types';
+import * as service from '../../services/products.services';
+import * as utils from '../../utils/index.util';
+import * as types from '../../types/index.types';
 
 export async function listProducts(req: types.RequestCustom, res: express.Response) {
     console.log("Listing products with params:", req.query);
