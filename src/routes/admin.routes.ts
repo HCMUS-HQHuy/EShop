@@ -13,8 +13,8 @@ admin.get('/', (req, res) => {
 admin.post("/auth/login", authController.validateUser);
 admin.post("/auth/signup", authController.registerUser);
 
-admin.post('/account-management/review-user', adminController.reviewUserAccount);
-admin.post('/account-management/review-seller', adminController.reviewSellerAccount);
+admin.put('/account-management/review-user', adminController.reviewUserAccount);
+admin.put('/account-management/review-seller', adminController.reviewSellerAccount);
 
 admin.post('/categories/add', adminController.addCategory);
 admin.get('/categories/list', adminController.getCategories);
