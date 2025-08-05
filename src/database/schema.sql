@@ -54,7 +54,7 @@ CREATE TABLE products (
     stock_quantity INT NOT NULL CHECK (stock_quantity >= 0),
     image_url VARCHAR(255),
     category_id INT NOT NULL,
-    seller_id INT NOT NULL, -- Vẫn liên kết với user_id. Logic sẽ kiểm tra xem user này có seller_profile active không.
+    shop_id INT NOT NULL,
     status VARCHAR(20) NOT NULL CHECK (status IN ('PendingApproval', 'Active', 'Inactive')) DEFAULT 'PendingApproval',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -62,7 +62,7 @@ CREATE TABLE products (
     deleted_by INT,
 
     CONSTRAINT fk_product_category FOREIGN KEY (category_id) REFERENCES categories(category_id),
-    CONSTRAINT fk_product_seller FOREIGN KEY (seller_id) REFERENCES users(user_id),
+    CONSTRAINT fk_product_shop FOREIGN KEY (shop_id) REFERENCES seller_profiles(seller_profile_id),
     CONSTRAINT fk_product_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
