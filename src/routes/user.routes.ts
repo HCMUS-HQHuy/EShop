@@ -8,6 +8,9 @@ router.get("/", (req, res) => {
     res.status(200).json({ message: "This route is accessible only by the user" });
 });
 
-router.post("/create-seller-account", controller.createSellerAccount);
+router.post("/auth/login", controller.validateUser);
+router.post("/auth/signup", controller.registerUser);
+
+router.post("/seller/create-seller-account", controller.createSellerAccount);
 
 export default router;

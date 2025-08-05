@@ -1,6 +1,5 @@
 import express from "express";
 
-import authRoutes from "./auth.routes";
 import adminRoutes from "./admin.routes";
 import userRoutes from "./user.routes";
 import sellerRoutes from "./seller.routes";
@@ -16,7 +15,6 @@ router.get('/', (req, res) => {
 
 export default function routes(app: express.Application): void {
     const prefixApi = process.env.API_PREFIX as string;
-    router.use("/auth", authRoutes);
     router.use("/admin",    middleware.auth,  adminRoutes);
     router.use("/user",     middleware.auth,  userRoutes);
     router.use("/seller",   middleware.auth, sellerRoutes);
