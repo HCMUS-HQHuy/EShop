@@ -41,18 +41,28 @@ export async function validateAdminRequestUpdateSeller(data: types.AdminVerifySe
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-        const sql = `
-            SELECT COUNT(*) FROM seller_profiles 
-            WHERE user_id = $1 AND status = '${types.SELLER_STATUS.PENDING_VERIFICATION}'
-        `;
-        const result = await db.query(sql, [data.seller_id]);
-        if (parseInt(result.rows[0].count, 10) === 0) {
-            errors.seller_id = "Seller account not found or not pending verification";
+        if (data.status === types.SELLER_STATUS.ACTIVE) {
+            const sql = `
+                SELECT COUNT(*) FROM seller_profiles
+                WHERE user_id = $1 AND status IN ('${types.SELLER_STATUS.PENDING_VERIFICATION}', '${types.SELLER_STATUS.BANNED}')
+            `;
+            const result = await db.query(sql, [data.seller_id]);
+            if (parseInt(result.rows[0].count, 10) === 0) {
+                errors.seller_id = "Seller account not found or not pending verification or banned";
+            }
         }
-        if (data.status === types.SELLER_STATUS.REJECTED && (!data.rejection_reason || typeof data.rejection_reason !== 'string' || data.rejection_reason.trim() === "")) {
-            errors.rejection_reason = "Rejection reason is required when status is 'Rejected'";
-        } else if (data.rejection_reason && (data.rejection_reason.length < 10 || data.rejection_reason.length > 200)) {
-            errors.rejection_reason = "Rejection reason must be between 10 and 200 characters";
+        else if (data.status === types.SELLER_STATUS.REJECTED) {
+            const sql = `
+                SELECT COUNT(*) FROM seller_profiles
+                WHERE user_id = $1 AND status = '${types.SELLER_STATUS.PENDING_VERIFICATION}'
+            `;
+            const result = await db.query(sql, [data.seller_id]);
+            if (parseInt(result.rows[0].count, 10) === 0) {
+                errors.seller_id = "Seller account not found or not pending verification";
+            }
+        }
+        else {
+            errors.status = "Invalid status for seller account review";
         }
     } catch (error) {
         console.error("Database error:", error);

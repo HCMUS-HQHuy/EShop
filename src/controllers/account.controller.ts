@@ -82,7 +82,7 @@ export async function reviewUserAccount(req: express.Request, res: express.Respo
     if (util.isAdmin(req) === false) {
         return res.status(403).json({ message: "Forbidden: Only admins can review user accounts." });
     }
-    
+
     const data: types.BlockUnblockUserRequest = req.body;
     const validationError = await util.validateBlockUnblockUserRequest(data);
 
