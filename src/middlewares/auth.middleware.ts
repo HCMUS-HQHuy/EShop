@@ -13,6 +13,7 @@ export async function auth(req: types.RequestCustom, res: express.Response, next
     try {
         const { user_id, role } = jwt.verify(token, process.env.JWT_SECRET as string) as types.UserInfor;
         req.user = { user_id, role } as types.UserInfor;
+        console.log(`Authenticated user: ${req.user.user_id}, Role: ${req.user.role}`);
         if (utils.isAdmin(req)) {
             return next();
         }
@@ -25,11 +26,12 @@ export async function auth(req: types.RequestCustom, res: express.Response, next
     try {
         db = await getConnection();
         const sql = `
-            SELECT u.user_id, u.role, u.status, s.seller_profile_id
-            FROM users as u 
+            SELECT u.user_id, u.role, s.seller_profile_id
+            FROM users as u
                 LEFT JOIN seller_profiles as s
                 ON u.user_id = s.user_id
-            WHERE u.user_id = $1 AND u.status = ${types.USER_STATUS.ACTIVE}
+            WHERE u.user_id = $1 
+                AND s.status IN ('${types.SELLER_STATUS.ACTIVE}', '${types.SELLER_STATUS.CLOSED}')
         `;
         const result = await db.query(sql, [req.user?.user_id]);
         if (result.rows.length === 0) {
@@ -39,7 +41,6 @@ export async function auth(req: types.RequestCustom, res: express.Response, next
         req.user = {
             user_id: user.user_id,
             role: types.USER_ROLE.USER,
-            status: user.status,
             seller_profile_id: user.seller_profile_id || null
         } as types.UserInfor;
         next();

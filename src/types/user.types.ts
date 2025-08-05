@@ -27,7 +27,6 @@ export interface UserInfor {
     user_id: number;
     username: string;
     role: UserRole;
-    status: UserStatus;
     seller_profile_id?: string; // Optional, only for sellers
 }
 
