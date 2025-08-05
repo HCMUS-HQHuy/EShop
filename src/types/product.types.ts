@@ -27,3 +27,18 @@ export interface ProductReview {
   comment?: string;
   created_at: string;
 }
+
+export interface ProductAddRequest {
+  name?: string;
+  description?: string;
+  price?: number;
+  stock_quantity?: number;
+  image_url?: string;
+  category_id?: number;
+  seller_id?: number;
+};
+
+export interface ValidationProductResult {
+  valid: boolean;
+  errors: Partial<Record<keyof ProductAddRequest, string>>;
+}

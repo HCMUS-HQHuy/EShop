@@ -12,5 +12,4 @@ router.get("/", (req, res) => {
 router.use(middleware.switchRole);
 router.use("/categories", categories);
 router.use("/products", product);
-
 export default router;
