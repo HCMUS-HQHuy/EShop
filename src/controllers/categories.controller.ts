@@ -4,6 +4,10 @@ import * as types from "../types/index.types";
 import * as util from "../utils/index.util";
 
 export async function addCategory(req: express.Request, res: express.Response) {
+    if (util.isAdmin(req) === false) {
+        return res.status(403).json({ message: "Forbidden: Only admins can add categories." });
+    }
+
     const categoryData: types.CategoryUpdate = req.body;
     const validationError = util.validateCategoryInput(categoryData);
 
@@ -67,6 +71,9 @@ export async function getCategories(req: express.Request, res: express.Response)
 }
 
 export async function updateCategory(req: express.Request, res: express.Response) {
+    if (util.isAdmin(req) === false) {
+        return res.status(403).json({ message: "Forbidden: Only admins can update categories." });
+    }    
     const categoryName = req.params.name;
     const categoryData: types.CategoryUpdate = req.body;
 
@@ -98,6 +105,9 @@ export async function updateCategory(req: express.Request, res: express.Response
 }
 
 export async function deleteCategory(req: types.RequestCustom, res: express.Response) {
+    if (util.isAdmin(req) === false) {
+        return res.status(403).json({ message: "Forbidden: Only admins can delete categories." });
+    }
     const categoryName = req.params.name;
     
     if (!categoryName) {

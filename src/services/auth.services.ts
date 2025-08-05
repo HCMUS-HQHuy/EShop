@@ -9,7 +9,7 @@ export async function login(credential: types.UserCredentials): Promise<string> 
     try {
         db = await getConnection();
         const query =  `
-            SELECT user_id, username, password, role, status
+            SELECT user_id, username, password, role
             FROM users WHERE username = $1
         `;
         const result = await db.query(query, [credential.username]);

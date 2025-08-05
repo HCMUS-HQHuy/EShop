@@ -7,6 +7,13 @@ import * as util from "../utils/index.util";
 // It validates the request data and creates a new seller account in the database
 // It requires the user to be logged in and have a valid user ID
 export async function createSellerAccount(req: types.RequestCustom, res: express.Response) {
+    if (util.isUser(req) === false) {
+        return res.status(403).json({ message: "Forbidden: Only users have permission to create a seller account." });
+    }
+    if (util.isSeller(req)) {
+        return res.status(403).json({ message: "Forbidden: You already have a seller account." });
+    }
+
     const requestData: types.SellerAccountCreationRequest = {
         user_id: req.user?.user_id as number,
         shop_name: req.body.shop_name,
@@ -44,6 +51,10 @@ export async function createSellerAccount(req: types.RequestCustom, res: express
 // It validates the request data and updates the seller account status in the database
 // It updates the seller account status and optionally the rejection reason
 export async function reviewSellerAccount(req: express.Request, res: express.Response) {
+    if (util.isAdmin(req) === false) {
+        return res.status(403).json({ message: "Forbidden: Only admins can review seller accounts." });
+    }
+
     const data: types.AdminVerifySellerRequest = req.body;
     const validationError = await util.validateAdminRequestUpdateSeller(data);
 
@@ -68,6 +79,10 @@ export async function reviewSellerAccount(req: express.Request, res: express.Res
 // It validates the request data and updates the user status in the database
 // It updates the user status to either 'Active' or 'Banned'
 export async function reviewUserAccount(req: express.Request, res: express.Response) {
+    if (util.isAdmin(req) === false) {
+        return res.status(403).json({ message: "Forbidden: Only admins can review user accounts." });
+    }
+    
     const data: types.BlockUnblockUserRequest = req.body;
     const validationError = await util.validateBlockUnblockUserRequest(data);
 
