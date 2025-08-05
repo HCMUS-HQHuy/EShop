@@ -1,6 +1,6 @@
 import express from 'express';
 
-import * as service from '../../services/products.services';
+import { sellerService as service } from '../../services/index.services';
 import * as utils from '../../utils/index.util';
 import * as types from '../../types/index.types';
 

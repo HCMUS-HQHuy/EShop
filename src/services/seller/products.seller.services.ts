@@ -1,8 +1,8 @@
 import express from 'express';
 import { Client } from 'pg';
-import { getConnection, releaseConnection } from '../config/db';
+import { getConnection, releaseConnection } from '../../config/db';
 
-import * as types from '../types/index.types';
+import * as types from '../../types/index.types';
 
 export async function listProducts(params: types.ProductParamsRequest) {
     let db: Client | undefined = undefined;

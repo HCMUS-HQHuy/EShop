@@ -1,7 +1,7 @@
 import { Client } from "pg";
-import { getConnection, releaseConnection } from "../config/db";
+import { getConnection, releaseConnection } from "../../config/db";
 
-import * as types from "../types/index.types";
+import * as types from "../../types/index.types";
 
 async function checkCategoryRecord(db: Client, name: string, shouldBeExists: boolean) {
     const query = `
