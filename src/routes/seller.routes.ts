@@ -1,7 +1,7 @@
 import express from "express";
 
 import * as middleware from "../middlewares/index.middleware";
-import * as controller from "../controllers/index.controller";
+import { sellerController } from "../controllers/index.controller";
 
 const router: express.Router = express.Router();
 
@@ -11,10 +11,10 @@ router.get("/", (req, res) => {
 
 router.use(middleware.switchRole);
 
-router.get('/products/list', controller.listProducts);
-// router.get('/products/:id', controller.getProductById);
-router.post('/products/add', controller.addProduct);
-// router.put('/products/:id', controller.updateProduct);
-// router.delete('/products/:id', controller.deleteProduct);
+router.get('/products/list', sellerController.listProducts);
+// router.get('/products/:id', seller.getProductById);
+router.post('/products/add', sellerController.addProduct);
+// router.put('/products/:id', seller.updateProduct);
+// router.delete('/products/:id', seller.deleteProduct);
 
 export default router;

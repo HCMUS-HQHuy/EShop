@@ -1,8 +1,3 @@
-export * from "./admin/account.admin.controller";
-export * from "./admin/account.admin.controller";
-export * from "./admin/categories.admin.controller";
-
-export * from "./auth.controller";
-
-export * from "./seller/products.seller.controller";
-export * from "./seller/account.seller.controller";
+export * as adminController from "./admin/admin.controller";
+export * as authController from "./auth.controller";
+export * as sellerController from "./seller/seller.controller";
