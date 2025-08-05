@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { Client } from 'pg';
 import { getConnection, releaseConnection } from '../config/db';
 import * as types from "../types/index.types";
+import * as utils from "../utils/index.util";
 
 export async function auth(req: types.RequestCustom, res: express.Response, next: express.NextFunction) {
     const authHeader = req.headers["authorization"];
@@ -12,6 +13,9 @@ export async function auth(req: types.RequestCustom, res: express.Response, next
     try {
         const { user_id, role } = jwt.verify(token, process.env.JWT_SECRET as string) as types.UserInfor;
         req.user = { user_id, role } as types.UserInfor;
+        if (utils.isAdmin(req)) {
+            return next();
+        }
     } catch (error) {
         console.error(`Authentication error: ${error}`);
         return res.status(403).json({ errors: 'Invalid Token.' });
@@ -21,7 +25,7 @@ export async function auth(req: types.RequestCustom, res: express.Response, next
     try {
         db = await getConnection();
         const sql = `
-            SELECT u.user_id, u.role, u.status, s.shop_name
+            SELECT u.user_id, u.role, u.status, s.seller_profile_id
             FROM users as u 
                 LEFT JOIN seller_profiles as s
                 ON u.user_id = s.user_id
@@ -32,7 +36,12 @@ export async function auth(req: types.RequestCustom, res: express.Response, next
             return res.status(403).json({ errors: 'Forbidden: User not found or inactive.' });
         }
         const user = result.rows[0];
-        req.user = user;
+        req.user = {
+            user_id: user.user_id,
+            role: types.USER_ROLE.USER,
+            status: user.status,
+            seller_profile_id: user.seller_profile_id || null
+        } as types.UserInfor;
         next();
     } catch (error) {
         console.error("Database connection error:", error);
