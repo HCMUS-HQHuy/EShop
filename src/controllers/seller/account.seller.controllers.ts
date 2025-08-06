@@ -1,16 +1,16 @@
 import express from "express";
 import {sellerService as service} from "../../services/index.services";
 import * as types from "../../types/index.types";
-import * as util from "../../utils/index.utils";
+import * as utils from "../../utils/index.utils";
 
 // This function handles the creation of a seller account
 // It validates the request data and creates a new seller account in the database
 // It requires the user to be logged in and have a valid user ID
 async function createSellerAccount(req: types.RequestCustom, res: express.Response) {
-    if (util.isUser(req) === false) {
+    if (utils.isUser(req) === false) {
         return res.status(403).json({ message: "Forbidden: Only users have permission to create a seller account." });
     }
-    if (util.isSeller(req)) {
+    if (utils.isSeller(req)) {
         return res.status(403).json({ message: "Forbidden: You already have a seller account." });
     }
 
@@ -20,7 +20,7 @@ async function createSellerAccount(req: types.RequestCustom, res: express.Respon
         shop_description: req.body.shop_description || undefined
     };
     // try {
-        // const validationError = await util.validateSellerAccountCreationRequest(requestData);
+        // const validationError = await utils.validateSellerAccountCreationRequest(requestData);
     
     //     if (!validationError.valid) {
     //         return res.status(400).json({
