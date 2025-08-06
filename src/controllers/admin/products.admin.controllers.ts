@@ -142,8 +142,7 @@ async function listProducts(params: types.ProductParamsRequest) {
     try {
         db = await getConnection();
         const sql = `
-            SELECT product_id, name, price, stock_quantity, category_id, status, created_at
-            FROM products
+            SELECT * FROM products
             WHERE name ILIKE $1
                 AND ($4::numeric IS NULL OR price <= $4)
                 AND ($5::numeric IS NULL OR price >= $5)

@@ -8,19 +8,19 @@
 
 export type ProductStatus = typeof PRODUCT_STATUS[keyof typeof PRODUCT_STATUS];
 
-export interface Product {
-    product_id: number;
-    name: string;
-    description?: string;
-    price: number;
-    stock_quantity: number;
-    image_url?: string;
-    category_id: number;
-    seller_id: number;
-    created_at: string;
-    is_deleted: boolean;
-    deleted_at?: string;
-}
+// export interface Product {
+//     product_id: number;
+//     name: string;
+//     description?: string;
+//     price: number;
+//     stock_quantity: number;
+//     image_url?: string;
+//     category_id: number;
+//     seller_id: number;
+//     created_at: string;
+//     is_deleted: boolean;
+//     deleted_at?: string;
+// }
 
 export interface ProductImage {
     image_id: number;

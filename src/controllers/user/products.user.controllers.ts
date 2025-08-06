@@ -22,7 +22,7 @@ import * as utils from '../../utils/index.utils';
     if (req.query.sortOrder && !["asc", "desc"].includes(String(req.query.sortOrder))) {
         errors.sortOrder = "Invalid sort order";
     }
-    
+
     if (req.query.category_id && (isNaN(Number(req.query.category_id)) || Number(req.query.category_id) <= 0)) {
         errors.category_id = 'Category ID must be a positive number';
     }
@@ -66,7 +66,8 @@ async function listProducts(params: types.ProductParamsRequest) {
     try {
         db = await getConnection();
         const sql = `
-            SELECT * FROM products
+            SELECT product_id, name, price, stock_quantity, category_id, shop_id, image_url
+            FROM products
             WHERE name ILIKE $1
                 AND status = '${types.PRODUCT_STATUS.ACTIVE}'
                 AND is_deleted = FALSE
