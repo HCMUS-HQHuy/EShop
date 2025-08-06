@@ -26,6 +26,22 @@ function validateProductFilters(req: types.RequestCustom): types.ValidationResul
         errors.status = 'Invalid product status';
     }
 
+    if (req.query.category_id && (isNaN(Number(req.query.category_id)) || Number(req.query.category_id) <= 0)) {
+        errors.category_id = 'Category ID must be a positive number';
+    }
+
+    if (req.query.minPrice && (isNaN(Number(req.query.minPrice)) || Number(req.query.minPrice) < 0)) {
+        errors.minPrice = 'Minimum price must be a non-negative number';
+    }
+
+    if (req.query.maxPrice && (isNaN(Number(req.query.maxPrice)) || Number(req.query.maxPrice) < 0)) {
+        errors.maxPrice = 'Maximum price must be a non-negative number';
+    }
+
+    if (req.query.minPrice && req.query.maxPrice && Number(req.query.minPrice) > Number(req.query.maxPrice)) {
+        errors.priceRange = 'Minimum price cannot be greater than maximum price';
+    }
+
     return {
         valid: Object.keys(errors).length === 0, 
         errors
@@ -64,6 +80,9 @@ function getFilterParamsForProducts(req: types.RequestCustom): types.ProductPara
         keywords: req.query.keywords !== undefined ? String(req.query.keywords) : (process.env.SEARCH_KEYWORDS as string),
         filter: {
             status: req.query.status !== undefined ? String(req.query.status) as types.ProductStatus : undefined,
+            category_id: req.query.category_id !== undefined ? Number(req.query.category_id) : undefined,
+            minPrice: req.query.minPrice !== undefined ? Number(req.query.minPrice) : undefined,
+            maxPrice: req.query.maxPrice !== undefined ? Number(req.query.maxPrice) : undefined
         }
     };
     return params;
@@ -136,30 +155,34 @@ async function updateProduct(productId: number, product: types.ProductAddRequest
     }
 }
 
-async function listProducts(params: types.ProductParamsRequest) {
+async function listProducts(shop_id: number, params: types.ProductParamsRequest) {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
         const sql = `
-            SELECT * FROM products
+            SELECT product_id, name, price, stock_quantity, category_id, status, created_at
+            FROM products
             WHERE name ILIKE $1
-                AND ($4::date IS NULL OR created_at >= $4::date)
-                AND ($5::date IS NULL OR created_at <= $5::date)
-                AND ($6::text IS NULL OR (status = $6::text))
+                AND shop_id = ${shop_id}
+                AND ($4::numeric IS NULL OR price <= $4)
+                AND ($5::numeric IS NULL OR price >= $5)
+                AND ($6::integer IS NULL OR category_id = $6)
+                AND ($7::text IS NULL OR status = $7)
                 AND is_deleted = FALSE
             ORDER BY ${params.sortAttribute} ${params.sortOrder}
             LIMIT $2 OFFSET $3
         `;
         const limit         = Number(process.env.PAGINATION_LIMIT);
         const offset        = (params.page - 1) * limit;
-        const filter        = params.filter as types.SellerFilterParams;
+        const filter        = params.filter as types.SellerProductFilter;
         const queryParams = [
             `%${params.keywords}%`,         // $1
             limit,                          // $2
             offset,                         // $3
-            filter?.created_from,           // $4
-            filter?.created_to,             // $5
-            filter?.status,                 // $6
+            filter?.maxPrice,               // $4
+            filter?.minPrice,               // $5
+            filter?.category_id,            // $6
+            filter?.status,                 // $7
         ];
         const result = await db.query(sql, queryParams);
         return result.rows;
@@ -252,7 +275,7 @@ async function list(req: types.RequestCustom, res: express.Response) {
     console.log("Listing products with params:", params);
 
     try {
-        const products = await listProducts(params);
+        const products = await listProducts(req.user?.shop_id as number, params);
         res.send(products);
     } catch (error) {
         console.error('Error listing products:', error);

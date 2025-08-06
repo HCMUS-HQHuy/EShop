@@ -9,67 +9,67 @@
 export type ProductStatus = typeof PRODUCT_STATUS[keyof typeof PRODUCT_STATUS];
 
 export interface Product {
-  product_id: number;
-  name: string;
-  description?: string;
-  price: number;
-  stock_quantity: number;
-  image_url?: string;
-  category_id: number;
-  seller_id: number;
-  created_at: string;
-  is_deleted: boolean;
-  deleted_at?: string;
+    product_id: number;
+    name: string;
+    description?: string;
+    price: number;
+    stock_quantity: number;
+    image_url?: string;
+    category_id: number;
+    seller_id: number;
+    created_at: string;
+    is_deleted: boolean;
+    deleted_at?: string;
 }
 
 export interface ProductImage {
-  image_id: number;
-  product_id: number;
-  image_url: string;
-  created_at: string;
+    image_id: number;
+    product_id: number;
+    image_url: string;
+    created_at: string;
 }
 
 export interface ProductReview {
-  review_id: number;
-  user_id: number;
-  product_id: number;
-  rating: number;
-  comment?: string;
-  created_at: string;
+    review_id: number;
+    user_id: number;
+    product_id: number;
+    rating: number;
+    comment?: string;
+    created_at: string;
 }
 
 export interface ProductAddRequest {
-  name?: string;
-  description?: string;
-  price?: number;
-  stock_quantity?: number;
-  image_url?: string;
-  category_id?: number;
-  shop_id?: number;
+    name?: string;
+    description?: string;
+    price?: number;
+    stock_quantity?: number;
+    image_url?: string;
+    category_id?: number;
+    shop_id?: number;
 };
 
-interface ProductFilterParams {
+interface BaseProductFilter {
     category_id?: number;
-    stars?: number;
-    price_range?: {
-        min?: number;
-        max?: number;
-    };
+    minPrice?: number;
+    maxPrice?: number;
 }
 
-export interface UserFilterParams extends ProductFilterParams {
-    seller_id?: number;
-}
-
-export interface SellerFilterParams extends ProductFilterParams {
-    created_from?: string;
-    created_to?: string;
+export interface AdminProductFilter extends BaseProductFilter {
+    isDeleted?: boolean; // Only admins can see deleted products
+    sellerId?: string;   // Admin can filter by any seller
     status?: ProductStatus;
 }
 
-export interface AdminFilterParams extends SellerFilterParams {
-    seller_id?: number;
-    is_deleted?: boolean;
+export interface SellerProductFilter extends BaseProductFilter {
+    isDeleted?: never;   // Not allowed
+    sellerId?: never;    // Not allowed — implicitly always the current seller
+    status?: ProductStatus; // Seller can filter by their own products' status
+}
+
+export interface UserProductFilter extends BaseProductFilter {
+    isDeleted?: never;
+    sellerId?: never;
+    status?: never;
 }
 
 export interface ProductParamsRequest {
@@ -77,5 +77,5 @@ export interface ProductParamsRequest {
     page: number;
     sortAttribute: string;
     sortOrder: string;
-    filter?: UserFilterParams | SellerFilterParams | AdminFilterParams;
+    filter?: AdminProductFilter | SellerProductFilter | UserProductFilter;
 }
