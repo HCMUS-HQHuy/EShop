@@ -3,22 +3,24 @@ import express from "express";
 import * as middleware from "../middlewares/index.middleware";
 import controller from "../controllers/index.controllers";
 
+import mid from "../middlewares/index.middleware";
+
 const router: express.Router = express.Router();
 
 router.get("/", (req, res) => {
     res.status(200).json({ message: "This route is accessible only by the seller and admin" });
 });
 
-router.use(middleware.switchRole);
+router.use(mid.auth);
 
 // #### ACCOUNT ROUTES ####
 router.post('/account/create', controller.seller.account.create);
 
 // #### PRODUCT ROUTES ####
-router.get('/products/list', controller.seller.product.list);
-router.delete('/products/:id/remove', controller.seller.product.remove);
-router.put('/products/:id/update', controller.seller.product.update);
-router.put('/products/:id/hide', controller.seller.product.hide);
-router.put('/products/:id/display', controller.seller.product.display);
-router.post('/products/add', controller.seller.product.add);
+router.get('/products/list',            mid.switchRole, controller.seller.product.list);
+router.delete('/products/:id/remove',   mid.switchRole, controller.seller.product.remove);
+router.put('/products/:id/update',      mid.switchRole, controller.seller.product.update);
+router.put('/products/:id/hide',        mid.switchRole, controller.seller.product.hide);
+router.put('/products/:id/display',     mid.switchRole, controller.seller.product.display);
+router.post('/products/add',            mid.switchRole, controller.seller.product.add);
 export default router;

@@ -4,7 +4,6 @@ import adminRoutes from "./admin.routes";
 import userRoutes from "./user.routes";
 import sellerRoutes from "./seller.routes";
 import authen from "./auth.route";
-import * as middleware from "../middlewares/index.middleware";
 
 const router: express.Router = express.Router();
 
@@ -17,9 +16,9 @@ router.get('/', (req, res) => {
 export default function routes(app: express.Application): void {
     const prefixApi = process.env.API_PREFIX as string;
     router.use("/auth", authen);
-    router.use("/admin",    middleware.auth,  adminRoutes);
-    router.use("/user",     middleware.auth,  userRoutes);
-    router.use("/seller",   middleware.auth, sellerRoutes);
+    router.use("/admin", adminRoutes);
+    router.use("/user", userRoutes);
+    router.use("/seller", sellerRoutes);
     app.use(prefixApi, router);
     console.log("Routes initialized");
 }
