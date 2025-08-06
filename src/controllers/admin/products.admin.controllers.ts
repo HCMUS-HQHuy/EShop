@@ -99,7 +99,7 @@ async function updateProductStatus(productId: number, status: types.ProductStatu
         db = await getConnection();
         const sql = `
             UPDATE products
-            SET status = $1, updated_at = NOW()
+            SET status = $1
             WHERE product_id = $2 AND is_deleted = FALSE
         `;
         await db.query(sql, [status, productId]);
