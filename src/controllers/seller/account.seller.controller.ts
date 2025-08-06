@@ -19,21 +19,21 @@ async function createSellerAccount(req: types.RequestCustom, res: express.Respon
         shop_name: req.body.shop_name,
         shop_description: req.body.shop_description || undefined
     };
-    try {
-        const validationError = await util.validateSellerAccountCreationRequest(requestData);
+    // try {
+        // const validationError = await util.validateSellerAccountCreationRequest(requestData);
     
-        if (!validationError.valid) {
-            return res.status(400).json({
-                message: "Validation error",
-                errors: validationError.errors
-            });
-        }
-    } catch (error) {
-        console.error("Validation error:", error);
-        return res.status(500).json({
-            message: "Internal server error during validation"
-        });
-    }
+    //     if (!validationError.valid) {
+    //         return res.status(400).json({
+    //             message: "Validation error",
+    //             errors: validationError.errors
+    //         });
+    //     }
+    // } catch (error) {
+    //     console.error("Validation error:", error);
+    //     return res.status(500).json({
+    //         message: "Internal server error during validation"
+    //     });
+    // }
     try {
         await service.createSellerAccount(requestData);
         return res.status(201).json({
