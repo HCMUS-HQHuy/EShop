@@ -8,7 +8,7 @@ import * as utils from '../../utils/index.utils';
 // #### VALIDATION FUNCTIONS ####
 
  function validateProductFilters(req: types.RequestCustom): types.ValidationResult {
-    const errors: Partial<Record<keyof types.ProductParamsRequest, string>> = {};
+    const errors: Partial<Record<string, string>> = {};
 
     if (req.query.keywords && String(req.query.keywords).trim() === "") {
         errors.keywords = "Keywords must not be empty";
@@ -21,6 +21,22 @@ import * as utils from '../../utils/index.utils';
     }
     if (req.query.sortOrder && !["asc", "desc"].includes(String(req.query.sortOrder))) {
         errors.sortOrder = "Invalid sort order";
+    }
+    
+    if (req.query.category_id && (isNaN(Number(req.query.category_id)) || Number(req.query.category_id) <= 0)) {
+        errors.category_id = 'Category ID must be a positive number';
+    }
+
+    if (req.query.minPrice && (isNaN(Number(req.query.minPrice)) || Number(req.query.minPrice) < 0)) {
+        errors.minPrice = 'Minimum price must be a non-negative number';
+    }
+
+    if (req.query.maxPrice && (isNaN(Number(req.query.maxPrice)) || Number(req.query.maxPrice) < 0)) {
+        errors.maxPrice = 'Maximum price must be a non-negative number';
+    }
+
+    if (req.query.minPrice && req.query.maxPrice && Number(req.query.minPrice) > Number(req.query.maxPrice)) {
+        errors.priceRange = 'Minimum price cannot be greater than maximum price';
     }
 
     return {
@@ -54,15 +70,22 @@ async function listProducts(params: types.ProductParamsRequest) {
             WHERE name ILIKE $1
                 AND status = '${types.PRODUCT_STATUS.ACTIVE}'
                 AND is_deleted = FALSE
+                AND ($4::numeric IS NULL OR price <= $4)
+                AND ($5::numeric IS NULL OR price >= $5)
+                AND ($6::integer IS NULL OR category_id = $6)
             ORDER BY ${params.sortAttribute} ${params.sortOrder}
             LIMIT $2 OFFSET $3
         `;
         const limit         = Number(process.env.PAGINATION_LIMIT);
         const offset        = (params.page - 1) * limit;
+        const filter        = params.filter as types.UserProductFilter;
         const queryParams = [
             `%${params.keywords}%`,         // $1
             limit,                          // $2
             offset,                         // $3
+            filter?.max_price,              // $4
+            filter?.min_price,              // $5
+            filter?.category_id,            // $6
         ];
         const result = await db.query(sql, queryParams);
         return result.rows;

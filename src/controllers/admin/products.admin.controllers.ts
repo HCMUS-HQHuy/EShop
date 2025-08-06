@@ -27,6 +27,30 @@ import { getConnection, releaseConnection } from '../../config/db';
         errors.status = 'Invalid product status';
     }
 
+    if (req.query.category_id && (isNaN(Number(req.query.category_id)) || Number(req.query.category_id) <= 0)) {
+        errors.category_id = 'Category ID must be a positive number';
+    }
+
+    if (req.query.minPrice && (isNaN(Number(req.query.minPrice)) || Number(req.query.minPrice) < 0)) {
+        errors.minPrice = 'Minimum price must be a non-negative number';
+    }
+
+    if (req.query.maxPrice && (isNaN(Number(req.query.maxPrice)) || Number(req.query.maxPrice) < 0)) {
+        errors.maxPrice = 'Maximum price must be a non-negative number';
+    }
+
+    if (req.query.minPrice && req.query.maxPrice && Number(req.query.minPrice) > Number(req.query.maxPrice)) {
+        errors.priceRange = 'Minimum price cannot be greater than maximum price';
+    }
+
+    if (req.query.shop_id && (isNaN(Number(req.query.shop_id)) || Number(req.query.shop_id) <= 0)) {
+        errors.shop_id = 'Shop ID must be a positive number';
+    }
+
+    if (req.query.is_deleted && typeof req.query.is_deleted !== 'boolean') {
+        errors.is_deleted = 'is_deleted must be a boolean value';
+    }
+
     return { 
         valid: Object.keys(errors).length === 0, 
         errors
