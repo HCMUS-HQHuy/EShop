@@ -119,7 +119,9 @@ async function updateProduct(productId: number, product: types.ProductAddRequest
         db = await getConnection();
         const sql = `
             UPDATE products
-            SET name = $1, price = $2, stock_quantity = $3, category_id = $4, shop_id = $5, status = '${types.PRODUCT_STATUS.PENDING}'
+            SET name = $1, price = $2, stock_quantity = $3, 
+                category_id = $4, shop_id = $5, 
+                status = '${types.PRODUCT_STATUS.PENDING}'
             WHERE product_id = $6
         `;
         const data = [product.name, product.price, product.stock_quantity, product.category_id, product.shop_id, productId];
