@@ -51,11 +51,7 @@ export interface ProductAddRequest {
 export interface ProductFilterParams {
   created_from?: string;
   created_to?: string;
-  deleted_from?: string;
-  deleted_to?: string;
   is_deleted?: boolean;
-  shop_id?: number;
-
   status?: ProductStatus;
 }
 
@@ -71,5 +67,5 @@ export interface ProductParamsRequest {
 
 export interface ValidationProductResult {
   valid: boolean;
-  errors: Partial<Record<keyof ProductAddRequest, string>>;
+  errors: Partial<Record<keyof ProductParamsRequest | keyof ProductFilterParams | keyof ProductAddRequest | keyof Product, string>>;
 }
