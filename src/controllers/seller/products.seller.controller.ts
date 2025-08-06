@@ -93,12 +93,16 @@ async function checkProductExists(productId: number): Promise<boolean> {
     }
 }
 
-async function removeProduct(productId: number): Promise<void> {
+async function removeProduct(userId: number, productId: number): Promise<void> {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-        const sql = 'DELETE FROM products WHERE product_id = $1';
-        await db.query(sql, [productId]);
+        const sql = `
+            UPDATE products
+            SET is_deleted = TRUE, deleted_at = NOW(), deleted_by = $1
+            WHERE product_id = $2
+        `;
+        await db.query(sql, [userId, productId]);
     } catch (error) {
         console.error('Error removing product:', error);
         throw error;
@@ -234,7 +238,7 @@ async function remove(req: types.RequestCustom, res: express.Response) {
 
     console.log("Removing product with ID:", productId);
     try {
-        await removeProduct(productId);
+        await removeProduct(Number(req.user?.user_id), productId);
         res.status(204).json();
     } catch (error) {
         console.error('Error removing product:', error);
