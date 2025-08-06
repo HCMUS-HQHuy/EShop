@@ -1,7 +1,7 @@
 import express from 'express';
 import { Client } from 'pg';
 import { getConnection, releaseConnection } from '../../config/db';
-import * as utils from '../../utils/index.util';
+import * as utils from '../../utils/index.utils';
 import * as types from '../../types/index.types';
 
 // #### VALIDATION FUNCTIONS ####

@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { Client } from "pg";
 import { getConnection, releaseConnection } from "../config/db";
 import * as types from "../types/index.types";
-import * as util from "../utils/index.util";
+import * as util from "../utils/index.utils";
 
 export async function login(credential: types.UserCredentials): Promise<string> {
     let db: Client | undefined = undefined;

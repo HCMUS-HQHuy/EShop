@@ -2,7 +2,7 @@ import { Client } from 'pg';
 import { getConnection, releaseConnection } from './db';
 import { env } from 'process';
 
-import * as utils from '../utils/index.util';
+import * as utils from '../utils/index.utils';
 
 export default async function seedAdmin() {
     let db: Client | undefined = undefined;

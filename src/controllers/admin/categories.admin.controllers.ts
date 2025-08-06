@@ -1,7 +1,7 @@
 import express from "express";
 import {adminService as service} from "../../services/index.services";
 import * as types from "../../types/index.types";
-import * as util from "../../utils/index.util";
+import * as util from "../../utils/index.utils";
 
 async function add(req: express.Request, res: express.Response) {
     if (util.isAdmin(req) === false) {

@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { Client } from 'pg';
 import { getConnection, releaseConnection } from '../config/db';
 import * as types from "../types/index.types";
-import * as utils from "../utils/index.util";
+import * as utils from "../utils/index.utils";
 
 export async function auth(req: types.RequestCustom, res: express.Response, next: express.NextFunction) {
     const authHeader = req.headers["authorization"];

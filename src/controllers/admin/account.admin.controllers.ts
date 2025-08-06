@@ -4,7 +4,7 @@ import { getConnection, releaseConnection } from "../../config/db";
 
 import {adminService as service} from "../../services/index.services";
 import * as types from "../../types/index.types";
-import * as util from "../../utils/index.util";
+import * as util from "../../utils/index.utils";
 
 
 function validateAdminRequestUpdateSeller(data: types.AdminVerifySellerRequest): types.ValidationUpdatingAccountResult{

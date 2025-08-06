@@ -1,7 +1,7 @@
 import express from "express";
 
 import * as middleware from "../middlewares/index.middleware";
-import controller from "../controllers/index.controller";
+import controller from "../controllers/index.controllers";
 
 const router: express.Router = express.Router();
 

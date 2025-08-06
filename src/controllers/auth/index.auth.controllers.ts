@@ -4,7 +4,7 @@ import { Client } from "pg";
 import { getConnection, releaseConnection } from "../../config/db";
 import { auth as service } from "../../services/index.services";
 import * as types from "../../types/index.types";
-import * as util from "../../utils/index.util";
+import * as util from "../../utils/index.utils";
 
 function validateCredentials(input: Partial<types.UserCredentials>): types.ValidationResult {
     const errors: Partial<Record<keyof types.UserCredentials, string>> = {};
