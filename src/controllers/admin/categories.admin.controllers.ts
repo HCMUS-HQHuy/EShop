@@ -21,6 +21,75 @@ function validateCategoryInput(input: Partial<types.CategoryUpdate>): types.Vali
     };
 }
 
+export function validateCategoryFilters(params: types.CategoryParamsRequest): types.ValidationResult {
+    const errors: Partial<Record<string, string>> = {};
+    
+    if (params.keywords.trim() === "") {
+        errors.keywords = "Keywords must not be empty";
+    }
+    if (params.page < 1) {
+        errors.page = "Page must be greater than 0";
+    }
+    if (!["name", "created_at"].includes(params.sortAttribute)) {
+        errors.sortAttribute = "Invalid sort attribute";
+    }
+    if (!["asc", "desc"].includes(params.sortOrder)) {
+        errors.sortOrder = "Invalid sort order";
+    }
+    if (params.filter) {
+        if (params.filter.created_from && isNaN(Date.parse(params.filter.created_from))) {
+            errors.created_from = "Invalid date format for created_from";
+        }
+        if (params.filter.created_to && isNaN(Date.parse(params.filter.created_to))) {
+            errors.created_to = "Invalid date format for created_to";
+        }
+        if (params.filter.deleted_from && isNaN(Date.parse(params.filter.deleted_from))) {
+            errors.deleted_from = "Invalid date format for deleted_from";
+        }
+        if (params.filter.deleted_to && isNaN(Date.parse(params.filter.deleted_to))) {
+            errors.deleted_to = "Invalid date format for deleted_to";
+        }
+    }
+    return {
+        valid: Object.keys(errors).length === 0,
+        errors,
+    };
+}
+
+function validateUpdateCategoryInput(name: string):types.ValidationResult {
+    const errors: Partial<Record<keyof types.CategoryUpdate, string>> = {};
+    if (name && name.trim() === "") {
+        errors.name = "Name must not be empty";
+    } else if (name && name.length < 3) {
+        errors.name = "Name must be at least 3 characters long";
+    }
+    return {
+        valid: Object.keys(errors).length === 0,
+        errors,
+    };
+}
+async function checkCategoryUpdateInput(currentName: string, name: string | undefined = undefined): Promise<types.ValidationResult> {
+    const errors: Partial<Record<string, string>> = {};
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        await checkCategoryRecord(db, currentName as string, true);
+        if (name && name.trim() !== "" && name !== currentName) {
+            await checkCategoryRecord(db, name as string, false);
+        }
+    } catch (error: any) {
+        errors.name = error.message;
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+    return {
+        valid: Object.keys(errors).length === 0,
+        errors,
+    };
+}
+
 // #### DATABASE FUNCTIONS ####
 
 async function checkCategoryRecord(db: Client, name: string, shouldBeExists: boolean) {
@@ -188,7 +257,7 @@ async function get(req: express.Request, res: express.Response) {
             }
         };
 
-        const validationError = util.validateCategoryFilters(params);
+        const validationError = validateCategoryFilters(params);
 
         if (!validationError.valid) {
             return res.status(400).json({
@@ -222,11 +291,28 @@ async function update(req: express.Request, res: express.Response) {
         });
     }
 
-    const validationError = await util.validateUpdateCategoryInput(categoryName, categoryData);
+    const validationError = validateUpdateCategoryInput(categoryName);
     if (!validationError.valid) {
         return res.status(400).json({
             message: "Validation update category input error",
             errors: validationError.errors
+        });
+    }
+
+    try {
+        const checkError = await checkCategoryUpdateInput(categoryName, categoryData.name);
+        if (!checkError.valid) {
+            return res.status(400).json({
+                message: "Validation error",
+                errors: checkError.errors
+            });
+        }
+        console.log("Updating category:", categoryName, "with data:", categoryData);
+    } catch (error: any) {
+        console.error("Error updating category:", error);
+        return res.status(500).json({
+            message: "Error updating category",
+            errors: error.message
         });
     }
 
@@ -249,13 +335,13 @@ async function remove(req: types.RequestCustom, res: express.Response) {
     }
     const categoryName = req.params.name;
     
-    if (!categoryName) {
+    if (!categoryName || categoryName.trim() === "") {
         return res.status(400).json({
             message: "Category name is required"
         });
     }
 
-    const validationError = await util.validateUpdateCategoryInput(categoryName);
+    const validationError = await checkCategoryUpdateInput(categoryName);
     if (!validationError.valid) {
         return res.status(400).json({
             message: "Validation delete category input error",
