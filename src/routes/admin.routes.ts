@@ -10,7 +10,7 @@ adminRouter.get('/', (req, res) => {
     res.status(200).json({ message: "Hello admin - only use for testing" });
 });
 
-adminRouter.post("/auth/login", controller.auth.validateUser);
+adminRouter.post("/auth/login", controller.auth.login);
 adminRouter.post("/auth/signup", controller.auth.registerUser);
 
 adminRouter.put('/account-management/review-user', controller.admin.account.reviewUser);

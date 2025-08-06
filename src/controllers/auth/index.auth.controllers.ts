@@ -2,9 +2,10 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { Client } from "pg";
 import { getConnection, releaseConnection } from "../../config/db";
-import { auth as service } from "../../services/index.services";
 import * as types from "../../types/index.types";
 import * as util from "../../utils/index.utils";
+
+// #### VALIDATION FUNCTIONS ####
 
 function validateCredentials(input: Partial<types.UserCredentials>): types.ValidationResult {
     const errors: Partial<Record<keyof types.UserCredentials, string>> = {};
@@ -98,6 +99,8 @@ async function validateRegistration(input: Partial<types.UserRegistration>): Pro
     };
 }
 
+// #### DATABASE FUNCTIONS ####
+
 async function checkUserExists(input: Partial<types.UserRegistration>): Promise<types.ValidationResult> {
     const errors: Partial<Record<keyof types.UserRegistration, string>> = {};
     let db: Client | undefined = undefined;
@@ -124,7 +127,39 @@ async function checkUserExists(input: Partial<types.UserRegistration>): Promise<
     };
 }
 
-async function validateUser(req: express.Request, res: express.Response) {
+async function signup(registrationData: types.UserRegistration): Promise<void> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        registrationData.password = util.hashPassword(registrationData.password);
+        
+        const query =  `
+            INSERT INTO users (username, password, email, fullname, role) 
+            VALUES ($1, $2, $3, $4, $5)
+        `;
+        await db.query(query, [
+            registrationData.username,
+            registrationData.password,
+            registrationData.email,
+            registrationData.fullname,
+            types.USER_ROLE.USER
+        ]);
+        console.log("User registered successfully");
+
+    } catch (error: any) {
+        console.error("Registration error:", error);
+        throw error;
+    } finally {
+        if (db) {
+            await releaseConnection(db);
+            console.log("Database connection released.");
+        }
+    }
+}
+
+// #### CONTROLLER FUNCTIONS ####
+
+async function login(req: express.Request, res: express.Response) {
     const credential: types.UserCredentials = req.body;
     const validationResult = validateCredentials(credential);
 
@@ -194,7 +229,7 @@ async function registerUser(req: express.Request, res: express.Response) {
 
     // update data for registration
     try {
-        await service.signup(registrationData);
+        await signup(registrationData);
         return res.status(201).json({
             message: "User registered successfully"
         });
@@ -207,8 +242,8 @@ async function registerUser(req: express.Request, res: express.Response) {
     }
 }
 
-const authenController= {
-    validateUser,
+const authenController = {
+    login,
     registerUser
 }
 
