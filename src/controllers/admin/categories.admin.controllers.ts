@@ -15,6 +15,9 @@ function validateInput(name: string | undefined, description: string | undefined
     } else if (name.length < 3) {
         errors.name = "Name must be at least 3 characters long";
     }
+    if (description && description.length > 500) {
+        errors.description = "Description must not exceed 5000 characters";
+    }
     return {
         valid: Object.keys(errors).length === 0,
         errors,
