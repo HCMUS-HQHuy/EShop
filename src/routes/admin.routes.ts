@@ -21,4 +21,9 @@ adminRouter.get('/categories/list', controller.admin.category.get);
 adminRouter.put('/categories/update/:name', controller.admin.category.update);
 adminRouter.delete('/categories/delete/:name', controller.admin.category.remove);
 
+adminRouter.get('/products/list', controller.admin.product.list);
+adminRouter.put('/products/:id/reject', controller.admin.product.reject);
+adminRouter.put('/products/:id/approve', controller.admin.product.approve);
+adminRouter.put('/products/:id/ban', controller.admin.product.ban);
+
 export default adminRouter;

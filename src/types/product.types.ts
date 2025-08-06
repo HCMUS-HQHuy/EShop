@@ -52,6 +52,7 @@ export interface ProductFilterParams {
   created_from?: string;
   created_to?: string;
   status?: ProductStatus;
+  is_deleted?: boolean;
 }
 
 export interface ProductParamsRequest {
