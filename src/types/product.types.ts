@@ -50,25 +50,25 @@ export interface ProductAddRequest {
 
 interface BaseProductFilter {
     category_id?: number;
-    minPrice?: number;
-    maxPrice?: number;
+    min_price?: number;
+    max_price?: number;
 }
 
 export interface AdminProductFilter extends BaseProductFilter {
-    isDeleted?: boolean; // Only admins can see deleted products
-    sellerId?: string;   // Admin can filter by any seller
+    is_deleted?: boolean; // Only admins can see deleted products
+    shop_id?: string;   // Admin can filter by any seller
     status?: ProductStatus;
 }
 
 export interface SellerProductFilter extends BaseProductFilter {
-    isDeleted?: never;   // Not allowed
-    sellerId?: never;    // Not allowed — implicitly always the current seller
+    is_deleted?: never;   // Not allowed
+    shop_id?: never;    // Not allowed — implicitly always the current seller
     status?: ProductStatus; // Seller can filter by their own products' status
 }
 
 export interface UserProductFilter extends BaseProductFilter {
-    isDeleted?: never;
-    sellerId?: never;
+    is_deleted?: never;
+    shop_id?: never;
     status?: never;
 }
 

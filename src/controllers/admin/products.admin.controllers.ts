@@ -118,26 +118,31 @@ async function listProducts(params: types.ProductParamsRequest) {
     try {
         db = await getConnection();
         const sql = `
-            SELECT * FROM products
+            SELECT product_id, name, price, stock_quantity, category_id, status, created_at
+            FROM products
             WHERE name ILIKE $1
-                AND ($4::date IS NULL OR created_at >= $4::date)
-                AND ($5::date IS NULL OR created_at <= $5::date)
-                AND ($6::text IS NULL OR (status = $6::text))
-                AND ($7::boolean IS NULL OR is_deleted = $7::boolean)
+                AND ($4::numeric IS NULL OR price <= $4)
+                AND ($5::numeric IS NULL OR price >= $5)
+                AND ($6::integer IS NULL OR category_id = $6)
+                AND ($7::text IS NULL OR status = $7)
+                AND ($8::integer IS NULL OR shop_id = $8)
+                AND ($9::boolean IS NULL OR is_deleted = $9)
             ORDER BY ${params.sortAttribute} ${params.sortOrder}
             LIMIT $2 OFFSET $3
         `;
         const limit         = Number(process.env.PAGINATION_LIMIT);
         const offset        = (params.page - 1) * limit;
-        const filter        = params.filter as types.AdminFilterParams;
+        const filter        = params.filter as types.SellerProductFilter;
         const queryParams = [
             `%${params.keywords}%`,         // $1
             limit,                          // $2
             offset,                         // $3
-            filter?.created_from,           // $4
-            filter?.created_to,             // $5
-            filter?.status,                 // $6
-            filter?.is_deleted              // $7
+            filter?.max_price,              // $4
+            filter?.min_price,              // $5
+            filter?.category_id,            // $6
+            filter?.status,                 // $7
+            filter?.shop_id,                // $8
+            filter?.is_deleted              // $9
         ];
         const result = await db.query(sql, queryParams);
         return result.rows;

@@ -81,8 +81,8 @@ function getFilterParamsForProducts(req: types.RequestCustom): types.ProductPara
         filter: {
             status: req.query.status !== undefined ? String(req.query.status) as types.ProductStatus : undefined,
             category_id: req.query.category_id !== undefined ? Number(req.query.category_id) : undefined,
-            minPrice: req.query.minPrice !== undefined ? Number(req.query.minPrice) : undefined,
-            maxPrice: req.query.maxPrice !== undefined ? Number(req.query.maxPrice) : undefined
+            min_price: req.query.minPrice !== undefined ? Number(req.query.minPrice) : undefined,
+            max_price: req.query.maxPrice !== undefined ? Number(req.query.maxPrice) : undefined
         }
     };
     return params;
@@ -179,8 +179,8 @@ async function listProducts(shop_id: number, params: types.ProductParamsRequest)
             `%${params.keywords}%`,         // $1
             limit,                          // $2
             offset,                         // $3
-            filter?.maxPrice,               // $4
-            filter?.minPrice,               // $5
+            filter?.max_price,              // $4
+            filter?.min_price,              // $5
             filter?.category_id,            // $6
             filter?.status,                 // $7
         ];
