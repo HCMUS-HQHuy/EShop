@@ -11,7 +11,8 @@ router.get("/", (req, res) => {
 
 router.use(middleware.switchRole);
 
+// #### PRODUCT ROUTES ####
 router.get('/products/list', controller.seller.product.list);
-// router.get('/products/:id', seller.getProductById);
+router.delete('/products/:id/remove', controller.seller.product.remove);
 router.post('/products/add', controller.seller.product.add);
 export default router;

@@ -75,6 +75,40 @@ function getFilterParamsForProducts(req: types.RequestCustom): types.ProductPara
 }
 
 // #### DATABASE FUNCTIONS ####
+
+async function checkProductExists(productId: number): Promise<boolean> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = 'SELECT COUNT(*) FROM products WHERE product_id = $1';
+        const result = await db.query(sql, [productId]);
+        return result.rows[0].count > 0;
+    } catch (error) {
+        console.error('Error checking product existence:', error);
+        throw error;
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}
+
+async function removeProduct(productId: number): Promise<void> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = 'DELETE FROM products WHERE product_id = $1';
+        await db.query(sql, [productId]);
+    } catch (error) {
+        console.error('Error removing product:', error);
+        throw error;
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}
+
 async function listProducts(params: types.ProductParamsRequest) {
     let db: Client | undefined = undefined;
     try {
@@ -159,6 +193,34 @@ async function list(req: types.RequestCustom, res: express.Response) {
     }
 }
 
+async function remove(req: types.RequestCustom, res: express.Response) {
+    if (utils.isSeller(req) === false) {
+        return res.status(403).json({ error: 'Forbidden: Only sellers can remove products' });
+    }
+    const productId = Number(req.params.id);
+    if (isNaN(productId) || productId <= 0) {
+        return res.status(400).json({ error: 'Invalid product ID' });
+    }
+    try {
+        const productExists = await checkProductExists(productId);
+        if (!productExists) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+    } catch (error) {
+        console.error('Error checking product existence:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    console.log("Removing product with ID:", productId);
+    try {
+        await removeProduct(productId);
+        res.status(204).json();
+    } catch (error) {
+        console.error('Error removing product:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 async function add(req: types.RequestCustom, res: express.Response) {
     if (utils.isSeller(req) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can add products' });
@@ -175,9 +237,8 @@ async function add(req: types.RequestCustom, res: express.Response) {
         return res.status(500).send({ error: 'Internal server error' });
     }
 
-    // Ensure the shop_id is set from the authenticated user
-
     try {
+        // Ensure the shop_id is set from the authenticated user
         product.shop_id = req.user?.shop_id as number;
         await addProduct(product);
     }
@@ -190,7 +251,8 @@ async function add(req: types.RequestCustom, res: express.Response) {
 
 const sellerProductController = {
     list,
-    add
+    add,
+    remove
 };
 
 export default sellerProductController;
