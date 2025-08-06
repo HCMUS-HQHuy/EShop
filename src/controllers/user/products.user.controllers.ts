@@ -61,6 +61,35 @@ function getFilterParamsForProducts(req: types.RequestCustom): types.ProductPara
 
 // #### DATABASE FUNCTIONS ####
 
+async function getProductInforById(productId: number): Promise<any | null> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = `
+            SELECT 
+                product_id, products.name as product_name, products.description as product_description, 
+                price, stock_quantity, categories.name AS category_name, 
+                shop.shop_name AS shop_name, shop.seller_profile_id
+            FROM
+                products
+                JOIN categories ON products.category_id = categories.category_id
+                JOIN seller_profiles as shop ON products.shop_id = shop.seller_profile_id
+            WHERE 
+                product_id = $1 
+                AND products.status = '${types.PRODUCT_STATUS.ACTIVE}' AND products.is_deleted = FALSE
+        `;
+        const result = await db.query(sql, [productId]);
+        return result.rows.length > 0 ? result.rows[0] : null;
+    } catch (error) {
+        console.error('Error fetching product by ID:', error);
+        throw error;
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}
+
 async function listProducts(params: types.ProductParamsRequest) {
     let db: Client | undefined = undefined;
     try {
@@ -103,9 +132,6 @@ async function listProducts(params: types.ProductParamsRequest) {
 // #### CONTROLLER FUNCTIONS ####
 
 async function list(req: types.RequestCustom, res: express.Response) {
-    if (utils.isSeller(req) === false) {
-        return res.status(403).send({ error: 'Forbidden: Only users can list products' });
-    }
     console.log("Listing products with params:", req.query);
     const validationError = validateProductFilters(req);
     if (!validationError.valid) {
@@ -127,7 +153,31 @@ async function list(req: types.RequestCustom, res: express.Response) {
     }
 }
 
+async function getDetailById(req: types.RequestCustom, res: express.Response) {
+    const productId = Number(req.params.id);
+    if (!productId || isNaN(productId)) {
+        return res.status(400).send({ error: 'Product ID is required and must be a number' });
+    }
+    console.log("Fetching product details for ID:", productId);
+    if (productId <= 0) {
+        return res.status(400).send({ error: 'Product ID must be a positive number' });
+    }
+
+    try {
+        const product = await getProductInforById(productId);
+        if (!product) {
+            return res.status(404).send({ error: 'Product not found' });
+        }
+        res.send(product);
+    } catch (error) {
+        console.error('Error fetching product details:', error);
+        return res.status(500).send({ error: 'Internal server error' });
+    }
+}
+
+// #### EXPORTS ####
 const product = {
     list,
+    getDetailById
 };
 export default product;

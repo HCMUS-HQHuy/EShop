@@ -8,8 +8,7 @@ router.get("/", (req, res) => {
     res.status(200).json({ message: "This route is accessible only by the user" });
 });
 
-// router.post("/create-seller-account", authController.createSellerAccount);
-
-// router.post("/products", authController.listProducts);
+router.get("/products", controller.user.product.list);
+router.get("/products/:id", controller.user.product.getDetailById);
 
 export default router;
