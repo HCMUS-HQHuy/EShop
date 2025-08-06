@@ -26,7 +26,7 @@ function validateProductFilters(req: types.RequestCustom): types.ValidationResul
         errors.status = 'Invalid product status';
     }
 
-    return { 
+    return {
         valid: Object.keys(errors).length === 0, 
         errors
     };

@@ -77,6 +77,5 @@ export interface ProductParamsRequest {
     page: number;
     sortAttribute: string;
     sortOrder: string;
-    
     filter?: UserFilterParams | SellerFilterParams | AdminFilterParams;
 }
