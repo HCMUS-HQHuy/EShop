@@ -1,6 +1,6 @@
 import express from 'express';
 import { Client } from 'pg';
-import { getConnection, releaseConnection } from '../../config/db';
+import database from '../../config/db';
 import * as utils from '../../utils/index.utils';
 import * as types from '../../types/index.types';
 
@@ -98,7 +98,7 @@ function getFilterParamsForProducts(req: types.RequestCustom): types.ProductPara
 async function checkProductExists(productId: number, status?: types.ProductStatus): Promise<boolean> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             SELECT COUNT(*)
             FROM products
@@ -112,7 +112,7 @@ async function checkProductExists(productId: number, status?: types.ProductStatu
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -120,7 +120,7 @@ async function checkProductExists(productId: number, status?: types.ProductStatu
 async function removeProduct(userId: number, productId: number): Promise<void> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             UPDATE products
             SET is_deleted = TRUE, deleted_at = NOW(), deleted_by = $1
@@ -132,7 +132,7 @@ async function removeProduct(userId: number, productId: number): Promise<void> {
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -140,7 +140,7 @@ async function removeProduct(userId: number, productId: number): Promise<void> {
 async function updateProduct(productId: number, product: types.ProductAddRequest): Promise<void> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             UPDATE products
             SET name = $1, price = $2, stock_quantity = $3, 
@@ -155,7 +155,7 @@ async function updateProduct(productId: number, product: types.ProductAddRequest
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -163,7 +163,7 @@ async function updateProduct(productId: number, product: types.ProductAddRequest
 async function listProducts(shop_id: number, params: types.ProductParamsRequest) {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             SELECT product_id, name, price, stock_quantity, category_id, status, created_at
             FROM products
@@ -196,7 +196,7 @@ async function listProducts(shop_id: number, params: types.ProductParamsRequest)
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -205,7 +205,7 @@ async function addProduct(product: types.ProductAddRequest) {
     console.log("Product added:", product);
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             INSERT INTO products (name, price, stock_quantity, category_id, shop_id)
             VALUES ($1, $2, $3, $4, $5)
@@ -217,7 +217,7 @@ async function addProduct(product: types.ProductAddRequest) {
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -225,7 +225,7 @@ async function addProduct(product: types.ProductAddRequest) {
 async function hideProduct(productId: number): Promise<void> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             UPDATE products
             SET status = '${types.PRODUCT_STATUS.INACTIVE}'
@@ -237,7 +237,7 @@ async function hideProduct(productId: number): Promise<void> {
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -245,7 +245,7 @@ async function hideProduct(productId: number): Promise<void> {
 async function displayProduct(productId: number): Promise<void> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             UPDATE products
             SET status = '${types.PRODUCT_STATUS.ACTIVE}'
@@ -257,7 +257,7 @@ async function displayProduct(productId: number): Promise<void> {
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }

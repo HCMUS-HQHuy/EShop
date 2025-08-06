@@ -1,7 +1,7 @@
 import express from "express";
 
 import { Client } from "pg";
-import { getConnection, releaseConnection } from "../../config/db";
+import database from "../../config/db";
 
 import * as types from "../../types/index.types";
 import * as utils from "../../utils/index.utils";
@@ -29,7 +29,7 @@ function validateSellerAccountCreationRequest(data: types.SellerAccountCreationR
 async function createSellerAccount(data: types.SellerAccountCreationRequest) {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             INSERT INTO seller_profiles (user_id, shop_name, shop_description) 
             VALUES ($1, $2, $3)
@@ -42,7 +42,7 @@ async function createSellerAccount(data: types.SellerAccountCreationRequest) {
         throw new Error("Database error");
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }

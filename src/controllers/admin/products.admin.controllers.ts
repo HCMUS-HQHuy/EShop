@@ -3,7 +3,7 @@ import * as types from '../../types/index.types';
 import * as utils from '../../utils/index.utils';
 
 import { Client } from 'pg';
-import { getConnection, releaseConnection } from '../../config/db';
+import database from '../../config/db';
 
 // #### VALIDATION FUNCTIONS ####
 
@@ -98,7 +98,7 @@ function getFilterParamsForProducts(req: types.RequestCustom): types.ProductPara
 async function checkProductExists(productId: number, status?: types.ProductStatus): Promise<boolean> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             SELECT COUNT(*)
             FROM products
@@ -112,7 +112,7 @@ async function checkProductExists(productId: number, status?: types.ProductStatu
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -120,7 +120,7 @@ async function checkProductExists(productId: number, status?: types.ProductStatu
 async function updateProductStatus(productId: number, status: types.ProductStatus): Promise<void> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             UPDATE products
             SET status = $1
@@ -132,7 +132,7 @@ async function updateProductStatus(productId: number, status: types.ProductStatu
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -140,7 +140,7 @@ async function updateProductStatus(productId: number, status: types.ProductStatu
 async function listProducts(params: types.ProductParamsRequest) {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             SELECT * FROM products
             WHERE name ILIKE $1
@@ -174,7 +174,7 @@ async function listProducts(params: types.ProductParamsRequest) {
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }

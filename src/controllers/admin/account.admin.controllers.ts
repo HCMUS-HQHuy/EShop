@@ -1,6 +1,6 @@
 import express from "express";
 import { Client } from "pg";
-import { getConnection, releaseConnection } from "../../config/db";
+import database from "../../config/db";
 
 import * as types from "../../types/index.types";
 import * as util from "../../utils/index.utils";
@@ -27,7 +27,7 @@ async function checkSellerStatus(data: types.AdminVerifySellerRequest): Promise<
     const errors: Partial<Record<string, string>> = {};
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         if (data.status === types.SELLER_STATUS.ACTIVE) {
             const sql = `
                 SELECT COUNT(*) FROM seller_profiles
@@ -56,7 +56,7 @@ async function checkSellerStatus(data: types.AdminVerifySellerRequest): Promise<
         throw new Error("Database validation failed");
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 
@@ -86,7 +86,7 @@ async function checkUserCondition(data: types.BlockUnblockUserRequest): Promise<
     const errors: Partial<Record<keyof types.BlockUnblockUserRequest, string>> = {};
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             SELECT COUNT(*) FROM users 
             WHERE user_id = $1 AND status = $2
@@ -101,7 +101,7 @@ async function checkUserCondition(data: types.BlockUnblockUserRequest): Promise<
         throw new Error("Database validation failed");
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 
@@ -116,7 +116,7 @@ async function checkUserCondition(data: types.BlockUnblockUserRequest): Promise<
 async function updateSellerAccount(sellerId: number, status: types.SellerStatus, rejectionReason?: string) {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             UPDATE seller_profiles SET status = $1, rejection_reason = $2 
             WHERE user_id = $3
@@ -128,7 +128,7 @@ async function updateSellerAccount(sellerId: number, status: types.SellerStatus,
         throw new Error("Database error");
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -136,7 +136,7 @@ async function updateSellerAccount(sellerId: number, status: types.SellerStatus,
 async function updateUserStatus(userId: number, status: types.UserStatus) {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             UPDATE users SET status = $1
             WHERE user_id = $2
@@ -148,7 +148,7 @@ async function updateUserStatus(userId: number, status: types.UserStatus) {
         throw new Error("Database error");
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }

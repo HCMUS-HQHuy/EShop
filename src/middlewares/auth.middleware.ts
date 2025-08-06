@@ -2,7 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 
 import { Client } from 'pg';
-import { getConnection, releaseConnection } from '../config/db';
+import database from '../config/db';
 import * as types from "../types/index.types";
 import * as utils from "../utils/index.utils";
 
@@ -24,7 +24,7 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
 
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             SELECT u.user_id, u.role, s.seller_profile_id
             FROM users as u
@@ -50,7 +50,7 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
         return res.status(500).json({ errors: 'Internal server error' });
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }

@@ -1,6 +1,6 @@
 import express from 'express';
 import { Client } from 'pg';
-import { getConnection, releaseConnection } from '../../config/db';
+import database from '../../config/db';
 
 import * as types from '../../types/index.types';
 import * as utils from '../../utils/index.utils';
@@ -64,7 +64,7 @@ function getFilterParamsForProducts(req: types.RequestCustom): types.ProductPara
 async function getProductInforById(productId: number): Promise<any | null> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             SELECT 
                 product_id, products.name as product_name, products.description as product_description, 
@@ -85,7 +85,7 @@ async function getProductInforById(productId: number): Promise<any | null> {
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -93,7 +93,7 @@ async function getProductInforById(productId: number): Promise<any | null> {
 async function listProducts(params: types.ProductParamsRequest) {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             SELECT product_id, name, price, stock_quantity, category_id, shop_id, image_url
             FROM products
@@ -124,7 +124,7 @@ async function listProducts(params: types.ProductParamsRequest) {
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }

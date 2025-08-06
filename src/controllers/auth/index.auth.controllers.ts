@@ -1,7 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { Client } from "pg";
-import { getConnection, releaseConnection } from "../../config/db";
+import database from "../../config/db";
 import * as types from "../../types/index.types";
 import * as util from "../../utils/index.utils";
 
@@ -105,7 +105,7 @@ async function checkUserExists(input: Partial<types.UserRegistration>): Promise<
     const errors: Partial<Record<keyof types.UserRegistration, string>> = {};
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const existingUserQuery = "SELECT * FROM users WHERE username = $1 OR email = $2";
         const existingUserResult = await db.query(existingUserQuery, [input.username, input.email]);
 
@@ -117,7 +117,7 @@ async function checkUserExists(input: Partial<types.UserRegistration>): Promise<
         errors.username = "Existing user validation failed.";
     } finally {
         if (db) {
-            await releaseConnection(db);
+            await database.releaseConnection(db);
             console.log("Database connection released.");
         }
     }
@@ -130,7 +130,7 @@ async function checkUserExists(input: Partial<types.UserRegistration>): Promise<
 async function signup(registrationData: types.UserRegistration): Promise<void> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         registrationData.password = util.hashPassword(registrationData.password);
         
         const query =  `
@@ -151,7 +151,7 @@ async function signup(registrationData: types.UserRegistration): Promise<void> {
         throw error;
     } finally {
         if (db) {
-            await releaseConnection(db);
+            await database.releaseConnection(db);
             console.log("Database connection released.");
         }
     }
@@ -172,7 +172,7 @@ async function login(req: express.Request, res: express.Response) {
 
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const query =  `
             SELECT user_id, username, password, role
             FROM users WHERE username = $1

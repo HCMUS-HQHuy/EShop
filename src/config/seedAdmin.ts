@@ -1,5 +1,5 @@
 import { Client } from 'pg';
-import { getConnection, releaseConnection } from './db';
+import database from './db';
 import { env } from 'process';
 
 import * as utils from '../utils/index.utils';
@@ -8,7 +8,7 @@ export default async function seedAdmin() {
     let db: Client | undefined = undefined;
 
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const checkQuery = `
             SELECT * FROM users 
             WHERE username = $1 AND role = 'Admin'
@@ -36,7 +36,7 @@ export default async function seedAdmin() {
         console.error('Error seeding admin user:', error);
     } finally {
         if (db) {
-            await releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }

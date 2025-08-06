@@ -1,7 +1,7 @@
 import express from "express";
 
 import { Client } from "pg";
-import { getConnection, releaseConnection } from "../../config/db";
+import database from "../../config/db";
 
 import * as types from "../../types/index.types";
 import * as util from "../../utils/index.utils";
@@ -100,7 +100,7 @@ async function checkCategoryRecordExist(name: string) {
 async function countRecordHavingName(name: string) {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const query = `
             SELECT * FROM categories 
             WHERE name = $1 AND is_deleted = false
@@ -111,7 +111,7 @@ async function countRecordHavingName(name: string) {
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -119,7 +119,7 @@ async function countRecordHavingName(name: string) {
 async function addCategory(name: string, description: string | undefined): Promise<void> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             INSERT INTO categories (name, description) 
             VALUES ($1::text, $2::text)
@@ -130,7 +130,7 @@ async function addCategory(name: string, description: string | undefined): Promi
         throw new Error("Error adding category: " + error.message);
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -138,7 +138,7 @@ async function addCategory(name: string, description: string | undefined): Promi
 async function getCategories(params: types.CategoryParamsRequest): Promise<types.Category[]> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
                 SELECT * FROM categories
                 WHERE name ILIKE $1
@@ -166,7 +166,7 @@ async function getCategories(params: types.CategoryParamsRequest): Promise<types
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -174,7 +174,7 @@ async function getCategories(params: types.CategoryParamsRequest): Promise<types
 async function updateCategory(name: string, categoryData: types.CategoryUpdate): Promise<void> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         if (!categoryData.name) {
             categoryData.name = name;
         }
@@ -189,7 +189,7 @@ async function updateCategory(name: string, categoryData: types.CategoryUpdate):
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }
@@ -197,7 +197,7 @@ async function updateCategory(name: string, categoryData: types.CategoryUpdate):
 async function deleteCategory(name: string, userId: number): Promise<void> {
     let db: Client | undefined = undefined;
     try {
-        db = await getConnection();
+        db = await database.getConnection();
         const sql = `
             UPDATE categories
             SET is_deleted = true, deleted_at = NOW(), deleted_by = $2
@@ -209,7 +209,7 @@ async function deleteCategory(name: string, userId: number): Promise<void> {
         throw error;
     } finally {
         if (db) {
-            releaseConnection(db);
+            await database.releaseConnection(db);
         }
     }
 }

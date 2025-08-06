@@ -34,4 +34,9 @@ async function releaseConnection(client: Client): Promise<void> {
     }
 }
 
-export { getConnection, releaseConnection };
+// #### EXPORTS ####
+const db = {
+    getConnection,
+    releaseConnection
+};
+export default db;
