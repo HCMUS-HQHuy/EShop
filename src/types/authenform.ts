@@ -10,8 +10,3 @@ export interface UserRegistration {
   email: string;
   fullname: string;
 }
-
-export interface ValidationResult {
-  valid: boolean;
-  errors: Partial<Record<string, string>>;
-}

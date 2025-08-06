@@ -15,11 +15,16 @@ function validateProductFilters(req: types.RequestCustom): types.ValidationResul
     if (req.query.page && Number(req.query.page) < 1) {
         errors.page = "Page must be greater than 0";
     }
-    if (req.query.sortAttribute && !["name", "created_at"].includes(String(req.query.sortAttribute))) {
-        errors.sortAttribute = "Invalid sort attribute";
+    if (req.query.sortAttribute && !types.SORT_ATTRIBUTES.includes(req.query.sortAttribute as types.SortAttribute)) {
+        errors.sortAttribute = "Invalid sort attribute: must be 'name' or 'created_at'";
+    } else if (req.query.sortAttribute && String(req.query.sortAttribute).trim() === "") {
+        errors.sortAttribute = "Sort attribute must not be empty";
+    } else if (req.query.sortAttribute && (req.query.sortOrder == undefined || !types.SORT_ORDERS.includes(req.query.sortOrder as types.SortOrder))) {
+        errors.sortOrder = "Invalid sort order: must be 'asc' or 'desc' if sort attribute is provided";
     }
-    if (req.query.sortOrder && !["asc", "desc"].includes(String(req.query.sortOrder))) {
-        errors.sortOrder = "Invalid sort order";
+
+    if (req.query.sortOrder && !types.SORT_ORDERS.includes(req.query.sortOrder as types.SortOrder)) {
+        errors.sortOrder = "Invalid sort order: must be 'asc' or 'desc'";
     }
 
     if (req.query.status && !Object.values(types.PRODUCT_STATUS).includes(req.query.status as types.ProductStatus)) {

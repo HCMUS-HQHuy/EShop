@@ -16,10 +16,10 @@ import * as utils from '../../utils/index.utils';
     if (req.query.page && Number(req.query.page) < 1) {
         errors.page = "Page must be greater than 0";
     }
-    if (req.query.sortAttribute && !["name", "created_at"].includes(String(req.query.sortAttribute))) {
+    if (req.query.sortAttribute && !types.SORT_ATTRIBUTES.includes(req.query.sortAttribute as types.SortAttribute)) {
         errors.sortAttribute = "Invalid sort attribute";
     }
-    if (req.query.sortOrder && !["asc", "desc"].includes(String(req.query.sortOrder))) {
+    if (req.query.sortOrder && !types.SORT_ORDERS.includes(req.query.sortOrder as types.SortOrder)) {
         errors.sortOrder = "Invalid sort order";
     }
 

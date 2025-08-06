@@ -30,10 +30,10 @@ function validateCategoryFilters(params: express.Request["query"]): types.Valida
     if (params.page && Number(params.page) < 1) {
         errors.page = "Page must be greater than 0";
     }
-    if (!["name", "created_at"].includes(String(params.sortAttribute))) {
+    if (!types.SORT_ATTRIBUTES.includes(params.sortAttribute as types.SortAttribute)) {
         errors.sortAttribute = "Invalid sort attribute";
     }
-    if (!["asc", "desc"].includes(String(params.sortOrder))) {
+    if (!types.SORT_ORDERS.includes(params.sortOrder as types.SortOrder)) {
         errors.sortOrder = "Invalid sort order";
     }
     if (params.created_from && isNaN(Date.parse(String(params.created_from)))) {

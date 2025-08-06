@@ -26,9 +26,9 @@ adminRouter.put('/categories/update/:name',    mid.auth, controller.admin.catego
 adminRouter.delete('/categories/delete/:name', mid.auth, controller.admin.category.remove);
 
 // #### PRODUCT ROUTES ####
-adminRouter.get('/products/list',        mid.auth, controller.admin.product.list);
-adminRouter.put('/products/:id/reject',  mid.auth, controller.admin.product.reject);
-adminRouter.put('/products/:id/approve', mid.auth, controller.admin.product.approve);
-adminRouter.put('/products/:id/ban',     mid.auth, controller.admin.product.ban);
+adminRouter.get('/products/list',           mid.auth, controller.admin.product.list);
+adminRouter.put('/products/:id/reject',     mid.auth, controller.admin.product.reject);
+adminRouter.put('/products/:id/approve',    mid.auth, controller.admin.product.approve);
+adminRouter.put('/products/:id/ban',        mid.auth, controller.admin.product.ban);
 
 export default adminRouter;
