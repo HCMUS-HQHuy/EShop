@@ -11,6 +11,9 @@ router.get("/", (req, res) => {
 
 router.use(middleware.switchRole);
 
+// #### ACCOUNT ROUTES ####
+router.post('/account/create', controller.seller.account.create);
+
 // #### PRODUCT ROUTES ####
 router.get('/products/list', controller.seller.product.list);
 router.delete('/products/:id/remove', controller.seller.product.remove);
