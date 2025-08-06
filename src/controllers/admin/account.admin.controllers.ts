@@ -2,13 +2,13 @@ import express from "express";
 import { Client } from "pg";
 import { getConnection, releaseConnection } from "../../config/db";
 
-import {adminService as service} from "../../services/index.services";
 import * as types from "../../types/index.types";
 import * as util from "../../utils/index.utils";
 
+// #### VALIDATION FUNCTIONS ####
 
-function validateAdminRequestUpdateSeller(data: types.AdminVerifySellerRequest): types.ValidationUpdatingAccountResult{
-    const errors: Partial<Record<keyof types.AdminVerifySellerRequest, string>> = {};
+function validateAdminRequestUpdateSeller(data: types.AdminVerifySellerRequest): types.ValidationResult {
+    const errors: Partial<Record<string, string>> = {};
 
     if (!data.seller_id || typeof data.seller_id !== 'number') {
         errors.seller_id = "Invalid seller ID";
@@ -23,8 +23,8 @@ function validateAdminRequestUpdateSeller(data: types.AdminVerifySellerRequest):
     };
 }
 
-async function checkSellerStatus(data: types.AdminVerifySellerRequest): Promise<types.ValidationUpdatingAccountResult> {
-    const errors: Partial<Record<keyof types.AdminVerifySellerRequest, string>> = {};
+async function checkSellerStatus(data: types.AdminVerifySellerRequest): Promise<types.ValidationResult> {
+    const errors: Partial<Record<string, string>> = {};
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
@@ -66,6 +66,95 @@ async function checkSellerStatus(data: types.AdminVerifySellerRequest): Promise<
     };
 }
 
+function validateBlockUnblockUserRequest(data: types.BlockUnblockUserRequest): types.ValidationResult {
+    const errors: Partial<Record<keyof types.BlockUnblockUserRequest, string>> = {};
+
+    if (!data.user_id || typeof data.user_id !== 'number') {
+        errors.user_id = "Invalid user ID";
+    }
+
+    if (!data.status || (data.status !== types.USER_STATUS.ACTIVE && data.status !== types.USER_STATUS.BANNED)) {
+        errors.status = `Status must be either '${types.USER_STATUS.ACTIVE}' or '${types.USER_STATUS.BANNED}'`;
+    }
+    return {
+        valid: Object.keys(errors).length === 0,
+        errors
+    };
+}
+
+async function checkUserCondition(data: types.BlockUnblockUserRequest): Promise<types.ValidationResult> {
+    const errors: Partial<Record<keyof types.BlockUnblockUserRequest, string>> = {};
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = `
+            SELECT COUNT(*) FROM users 
+            WHERE user_id = $1 AND status = $2
+        `;
+        const status = data.status === types.USER_STATUS.BANNED ? types.USER_STATUS.ACTIVE : types.USER_STATUS.BANNED;
+        const result = await db.query(sql, [data.user_id, status]);
+        if (parseInt(result.rows[0].count, 10) === 0) {
+            errors.user_id = "User account not found or not banned";
+        }
+    } catch (error) {
+        console.error("Database error:", error);
+        throw new Error("Database validation failed");
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+
+    return {
+        valid: Object.keys(errors).length === 0,
+        errors
+    };
+}
+
+// #### DATABASE FUNCTIONS ####
+
+async function updateSellerAccount(sellerId: number, status: types.SellerStatus, rejectionReason?: string) {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = `
+            UPDATE seller_profiles SET status = $1, rejection_reason = $2 
+            WHERE user_id = $3
+        `;
+        const values = [status, rejectionReason || null, sellerId];
+        await db.query(sql, values);
+    } catch (error) {
+        console.error("Error updating seller account:", error);
+        throw new Error("Database error");
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}
+
+async function updateUserStatus(userId: number, status: types.UserStatus) {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = `
+            UPDATE users SET status = $1
+            WHERE user_id = $2
+        `;
+        const values = [status, userId];
+        await db.query(sql, values);
+    } catch (error) {
+        console.error("Error updating user status:", error);
+        throw new Error("Database error");
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}
+
+// #### CONTROLLER FUNCTIONS ####
+
 // This function handles the review of seller accounts by the admin
 // It validates the request data and updates the seller account status in the database
 // It updates the seller account status and optionally the rejection reason
@@ -103,7 +192,7 @@ async function reviewSeller(req: express.Request, res: express.Response) {
 
     // update the seller account status in the database
     try {
-        await service.updateSellerAccount(data.seller_id, data.status, data.rejection_reason);
+        await updateSellerAccount(data.seller_id, data.status, data.rejection_reason);
         return res.status(200).json({ message: "Seller account updated", sellerId: data.seller_id });
     } catch (error) {
         console.error("Error updating seller account:", error);
@@ -111,51 +200,6 @@ async function reviewSeller(req: express.Request, res: express.Response) {
             message: "Internal server error"
         });
     }
-}
-
-function validateBlockUnblockUserRequest(data: types.BlockUnblockUserRequest): types.ValidationUpdatingAccountResult {
-    const errors: Partial<Record<keyof types.BlockUnblockUserRequest, string>> = {};
-
-    if (!data.user_id || typeof data.user_id !== 'number') {
-        errors.user_id = "Invalid user ID";
-    }
-
-    if (!data.status || (data.status !== types.USER_STATUS.ACTIVE && data.status !== types.USER_STATUS.BANNED)) {
-        errors.status = `Status must be either '${types.USER_STATUS.ACTIVE}' or '${types.USER_STATUS.BANNED}'`;
-    }
-    return {
-        valid: Object.keys(errors).length === 0,
-        errors
-    };
-}
-
-async function checkUserCondition(data: types.BlockUnblockUserRequest): Promise<types.ValidationUpdatingAccountResult> {
-    const errors: Partial<Record<keyof types.BlockUnblockUserRequest, string>> = {};
-    let db: Client | undefined = undefined;
-    try {
-        db = await getConnection();
-        const sql = `
-            SELECT COUNT(*) FROM users 
-            WHERE user_id = $1 AND status = $2
-        `;
-        const status = data.status === types.USER_STATUS.BANNED ? types.USER_STATUS.ACTIVE : types.USER_STATUS.BANNED;
-        const result = await db.query(sql, [data.user_id, status]);
-        if (parseInt(result.rows[0].count, 10) === 0) {
-            errors.user_id = "User account not found or not banned";
-        }
-    } catch (error) {
-        console.error("Database error:", error);
-        throw new Error("Database validation failed");
-    } finally {
-        if (db) {
-            releaseConnection(db);
-        }
-    }
-
-    return {
-        valid: Object.keys(errors).length === 0,
-        errors
-    };
 }
 
 // This function handles the review of user accounts by the admin
@@ -193,7 +237,7 @@ async function reviewUser(req: express.Request, res: express.Response) {
     }
 
     try {
-        await service.updateUserStatus(data.user_id, data.status);
+        await updateUserStatus(data.user_id, data.status);
         return res.status(200).json({ message: "User account updated", userId: data.user_id });
     } catch (error) {
         console.error("Error updating user account:", error);
