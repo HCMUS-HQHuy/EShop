@@ -51,7 +51,6 @@ export interface ProductAddRequest {
 export interface ProductFilterParams {
   created_from?: string;
   created_to?: string;
-  is_deleted?: boolean;
   status?: ProductStatus;
 }
 

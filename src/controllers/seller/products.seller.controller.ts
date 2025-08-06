@@ -22,10 +22,6 @@ import * as types from '../../types/index.types';
         errors.sortOrder = "Invalid sort order";
     }
 
-    if (req.query.is_deleted != undefined && typeof req.query.is_deleted != 'boolean') {
-        errors.is_deleted = 'is_deleted must be a boolean';
-    }
-
     if (req.query.status && !Object.values(types.PRODUCT_STATUS).includes(req.query.status as types.ProductStatus)) {
         errors.status = 'Invalid product status';
     }
@@ -67,7 +63,6 @@ function getFilterParamsForProducts(req: types.RequestCustom): types.ProductPara
         sortOrder: req.query.order !== undefined ? String(req.query.sortOrder) : (process.env.SORT_ORDER as string),
         keywords: req.query.keywords !== undefined ? String(req.query.keywords) : (process.env.SEARCH_KEYWORDS as string),
         filter: {
-            is_deleted: req.query.is_deleted !== undefined ? Boolean(req.query.is_deleted) : undefined,
             status: req.query.status !== undefined ? String(req.query.status) as types.ProductStatus : undefined,
         }
     };
@@ -80,7 +75,11 @@ async function checkProductExists(productId: number): Promise<boolean> {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-        const sql = 'SELECT COUNT(*) FROM products WHERE product_id = $1';
+        const sql = `
+            SELECT COUNT(*)
+            FROM products
+            WHERE product_id = $1 AND is_deleted = FALSE
+        `;
         const result = await db.query(sql, [productId]);
         return result.rows[0].count > 0;
     } catch (error) {
@@ -122,7 +121,7 @@ async function updateProduct(productId: number, product: types.ProductAddRequest
             SET name = $1, price = $2, stock_quantity = $3, 
                 category_id = $4, shop_id = $5, 
                 status = '${types.PRODUCT_STATUS.PENDING}'
-            WHERE product_id = $6
+            WHERE product_id = $6 AND is_deleted = FALSE
         `;
         const data = [product.name, product.price, product.stock_quantity, product.category_id, product.shop_id, productId];
         await db.query(sql, data);
@@ -145,8 +144,8 @@ async function listProducts(params: types.ProductParamsRequest) {
             WHERE name ILIKE $1
                 AND ($4::date IS NULL OR created_at >= $4::date)
                 AND ($5::date IS NULL OR created_at <= $5::date)
-                AND ($6::boolean IS NULL OR is_deleted = $6::boolean)
-                AND ($7::text IS NULL OR (status = $7::text))
+                AND ($6::text IS NULL OR (status = $6::text))
+                AND is_deleted = FALSE
             ORDER BY ${params.sortAttribute} ${params.sortOrder}
             LIMIT $2 OFFSET $3
         `;
@@ -158,8 +157,7 @@ async function listProducts(params: types.ProductParamsRequest) {
             offset,                         // $3
             params.filter?.created_from,    // $4
             params.filter?.created_to,      // $5
-            params.filter?.is_deleted,      // $6
-            params.filter?.status,          // $7
+            params.filter?.status,          // $6
         ];
         const result = await db.query(sql, queryParams);
         return result.rows;
