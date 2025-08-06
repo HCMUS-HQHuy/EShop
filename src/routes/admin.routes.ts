@@ -1,24 +1,25 @@
 import express from "express";
 
-import {authController, adminController } from "../controllers/index.controller";
+import auth from "../controllers/auth/index.auth.controller";
+import admin from "../controllers/admin/index.admin.controller";
 
-const admin = express.Router();
+const adminRouter = express.Router();
 
-admin.use(express.json());
+adminRouter.use(express.json());
 
-admin.get('/', (req, res) => {
+adminRouter.get('/', (req, res) => {
     res.status(200).json({ message: "Hello admin - only use for testing" });
 });
 
-admin.post("/auth/login", authController.validateUser);
-admin.post("/auth/signup", authController.registerUser);
+adminRouter.post("/auth/login", auth.validateUser);
+adminRouter.post("/auth/signup", auth.registerUser);
 
-admin.put('/account-management/review-user', adminController.reviewUserAccount);
-admin.put('/account-management/review-seller', adminController.reviewSellerAccount);
+adminRouter.put('/account-management/review-user', admin.account.reviewUser);
+adminRouter.put('/account-management/review-seller', admin.account.reviewSeller);
 
-admin.post('/categories/add', adminController.addCategory);
-admin.get('/categories/list', adminController.getCategories);
-admin.put('/categories/update/:name', adminController.updateCategory);
-admin.delete('/categories/delete/:name', adminController.deleteCategory);
+adminRouter.post('/categories/add', admin.category.add);
+adminRouter.get('/categories/list', admin.category.get);
+adminRouter.put('/categories/update/:name', admin.category.update);
+adminRouter.delete('/categories/delete/:name', admin.category.remove);
 
-export default admin;
+export default adminRouter;

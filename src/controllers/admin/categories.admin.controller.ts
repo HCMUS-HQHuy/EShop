@@ -3,7 +3,7 @@ import {adminService as service} from "../../services/index.services";
 import * as types from "../../types/index.types";
 import * as util from "../../utils/index.util";
 
-export async function addCategory(req: express.Request, res: express.Response) {
+async function add(req: express.Request, res: express.Response) {
     if (util.isAdmin(req) === false) {
         return res.status(403).json({ message: "Forbidden: Only admins can add categories." });
     }
@@ -31,7 +31,7 @@ export async function addCategory(req: express.Request, res: express.Response) {
     console.log("Category added successfully");
 }
 
-export async function getCategories(req: express.Request, res: express.Response) {
+async function get(req: express.Request, res: express.Response) {
     try {
         console.log("Fetching categories with query parameters:", req.query);
 
@@ -70,7 +70,7 @@ export async function getCategories(req: express.Request, res: express.Response)
     }
 }
 
-export async function updateCategory(req: express.Request, res: express.Response) {
+async function update(req: express.Request, res: express.Response) {
     if (util.isAdmin(req) === false) {
         return res.status(403).json({ message: "Forbidden: Only admins can update categories." });
     }    
@@ -104,7 +104,7 @@ export async function updateCategory(req: express.Request, res: express.Response
     }
 }
 
-export async function deleteCategory(req: types.RequestCustom, res: express.Response) {
+async function remove(req: types.RequestCustom, res: express.Response) {
     if (util.isAdmin(req) === false) {
         return res.status(403).json({ message: "Forbidden: Only admins can delete categories." });
     }
@@ -136,3 +136,12 @@ export async function deleteCategory(req: types.RequestCustom, res: express.Resp
         });
     }
 }
+
+const category = {
+    add,
+    get,
+    update,
+    remove
+};
+
+export default category;

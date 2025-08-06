@@ -6,7 +6,7 @@ import * as util from "../../utils/index.util";
 // This function handles the review of seller accounts by the admin
 // It validates the request data and updates the seller account status in the database
 // It updates the seller account status and optionally the rejection reason
-export async function reviewSellerAccount(req: express.Request, res: express.Response) {
+async function reviewSeller(req: express.Request, res: express.Response) {
     if (util.isAdmin(req) === false) {
         return res.status(403).json({ message: "Forbidden: Only admins can review seller accounts." });
     }
@@ -34,7 +34,7 @@ export async function reviewSellerAccount(req: express.Request, res: express.Res
 // This function handles the review of user accounts by the admin
 // It validates the request data and updates the user status in the database
 // It updates the user status to either 'Active' or 'Banned'
-export async function reviewUserAccount(req: express.Request, res: express.Response) {
+async function reviewUser(req: express.Request, res: express.Response) {
     if (util.isAdmin(req) === false) {
         return res.status(403).json({ message: "Forbidden: Only admins can review user accounts." });
     }
@@ -58,3 +58,10 @@ export async function reviewUserAccount(req: express.Request, res: express.Respo
         });
     }
 }
+
+const account = {
+    reviewSeller,
+    reviewUser
+}
+
+export default account;

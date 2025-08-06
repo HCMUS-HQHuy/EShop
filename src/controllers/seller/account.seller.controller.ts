@@ -6,7 +6,7 @@ import * as util from "../../utils/index.util";
 // This function handles the creation of a seller account
 // It validates the request data and creates a new seller account in the database
 // It requires the user to be logged in and have a valid user ID
-export async function createSellerAccount(req: types.RequestCustom, res: express.Response) {
+async function createSellerAccount(req: types.RequestCustom, res: express.Response) {
     if (util.isUser(req) === false) {
         return res.status(403).json({ message: "Forbidden: Only users have permission to create a seller account." });
     }
@@ -46,3 +46,9 @@ export async function createSellerAccount(req: types.RequestCustom, res: express
         });
     }
 }
+
+const sellerAccountController = {
+    createSellerAccount
+};
+
+export default sellerAccountController;

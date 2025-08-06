@@ -4,7 +4,7 @@ import { sellerService as service } from '../../services/index.services';
 import * as utils from '../../utils/index.util';
 import * as types from '../../types/index.types';
 
-export async function listProducts(req: types.RequestCustom, res: express.Response) {
+async function list(req: types.RequestCustom, res: express.Response) {
     console.log("Listing products with params:", req.query);
     const validationError = await utils.validateProductFilters(req);
     if (!validationError.valid) {
@@ -26,7 +26,7 @@ export async function listProducts(req: types.RequestCustom, res: express.Respon
     }
 };
 
-export async function addProduct(req: types.RequestCustom, res: express.Response) {
+async function add(req: types.RequestCustom, res: express.Response) {
     if (utils.isSeller(req) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can add products' });
     }
@@ -51,3 +51,10 @@ export async function addProduct(req: types.RequestCustom, res: express.Response
     }
     res.status(201).send({ message: 'Product added successfully' });
 };
+
+const sellerProductController = {
+    list,
+    add
+};
+
+export default sellerProductController;

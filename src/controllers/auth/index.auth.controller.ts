@@ -1,8 +1,10 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 import { Client } from "pg";
-import { getConnection, releaseConnection } from "../config/db";
-import { auth as service } from "../services/index.services";
-import * as types from "../types/index.types";
+import { getConnection, releaseConnection } from "../../config/db";
+import { auth as service } from "../../services/index.services";
+import * as types from "../../types/index.types";
+import * as util from "../../utils/index.util";
 
 function validateCredentials(input: Partial<types.UserCredentials>): types.ValidationResult {
     const errors: Partial<Record<keyof types.UserCredentials, string>> = {};
@@ -90,7 +92,14 @@ async function validateRegistration(input: Partial<types.UserRegistration>): Pro
             errors.fullname = "Full name must be between 2 and 100 characters.";
         }
     }
+    return {
+        valid: Object.keys(errors).length === 0,
+        errors,
+    };
+}
 
+async function checkUserExists(input: Partial<types.UserRegistration>): Promise<types.ValidationResult> {
+    const errors: Partial<Record<keyof types.UserRegistration, string>> = {};
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
@@ -109,15 +118,13 @@ async function validateRegistration(input: Partial<types.UserRegistration>): Pro
             console.log("Database connection released.");
         }
     }
-
     return {
         valid: Object.keys(errors).length === 0,
         errors,
     };
 }
 
-
-export async function validateUser(req: express.Request, res: express.Response) {
+async function validateUser(req: express.Request, res: express.Response) {
     const credential: types.UserCredentials = req.body;
     const validationResult = validateCredentials(credential);
 
@@ -128,8 +135,30 @@ export async function validateUser(req: express.Request, res: express.Response) 
         });
     }
 
+    let db: Client | undefined = undefined;
     try {
-        const token = await service.login(credential);
+        db = await getConnection();
+        const query =  `
+            SELECT user_id, username, password, role
+            FROM users WHERE username = $1
+        `;
+        const result = await db.query(query, [credential.username]);
+
+        if (result.rows.length === 0)
+            return res.status(401).json({
+                message: "Invalid credentials"
+            });
+
+        const password: string = result.rows[0].password;
+        if (!util.comparePasswords(credential.password, password)) {
+            return res.status(401).json({
+                message: "Invalid credentials"
+            });
+        }
+        const user: types.UserInfor = result.rows[0];
+        console.log("User authenticated successfully");
+        const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1y" }); // 1y = 1 year for testing purposes
+
         return res.status(201).json({
             message: "Login successful",
             accessToken: token
@@ -143,17 +172,27 @@ export async function validateUser(req: express.Request, res: express.Response) 
     }
 }
 
-export async function registerUser(req: express.Request, res: express.Response) {
+async function registerUser(req: express.Request, res: express.Response) {
     const registrationData: types.UserRegistration = req.body;
     const validationResult = await validateRegistration(registrationData);
-
+    // validate registration data
     if (!validationResult.valid) {
         return res.status(400).json({
-            message: "Invalid input", 
+            message: "Invalid input",
             errors: validationResult.errors 
         });
     }
 
+    // find data and check conditions for existing user
+    const userExistsResult = await checkUserExists(registrationData);
+    if (!userExistsResult.valid) {
+        return res.status(400).json({
+            message: "User already exists",
+            errors: userExistsResult.errors
+        });
+    }
+
+    // update data for registration
     try {
         await service.signup(registrationData);
         return res.status(201).json({
@@ -167,3 +206,10 @@ export async function registerUser(req: express.Request, res: express.Response) 
         });
     }
 }
+
+const authenController= {
+    validateUser,
+    registerUser
+}
+
+export default authenController;
