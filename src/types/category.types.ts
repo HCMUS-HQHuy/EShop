@@ -5,7 +5,7 @@
 }
 
 export interface CategoryUpdate {
-  name?: string;
+  name: string;
   description?: string;
 }
 

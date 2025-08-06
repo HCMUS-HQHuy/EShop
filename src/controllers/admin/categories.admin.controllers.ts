@@ -8,11 +8,11 @@ import * as util from "../../utils/index.utils";
 
 // #### VALIDATION FUNCTIONS ####
 
-function validateCategoryInput(input: Partial<types.CategoryUpdate>): types.ValidationResult {
+function validateInput(name: string | undefined, description: string | undefined): types.ValidationResult {
     const errors: Partial<Record<keyof types.CategoryUpdate, string>> = {};
-    if (!input.name || input.name.trim() === "") {
+    if (!name || name.trim() === "") {
         errors.name = "Name is required";
-    } else if (input.name.length < 3) {
+    } else if (name.length < 3) {
         errors.name = "Name must be at least 3 characters long";
     }
     return {
@@ -21,34 +21,32 @@ function validateCategoryInput(input: Partial<types.CategoryUpdate>): types.Vali
     };
 }
 
-export function validateCategoryFilters(params: types.CategoryParamsRequest): types.ValidationResult {
+function validateCategoryFilters(params: express.Request["query"]): types.ValidationResult {
     const errors: Partial<Record<string, string>> = {};
-    
-    if (params.keywords.trim() === "") {
+
+    if (params.keywords && String(params.keywords).trim() === "") {
         errors.keywords = "Keywords must not be empty";
     }
-    if (params.page < 1) {
+    if (params.page && Number(params.page) < 1) {
         errors.page = "Page must be greater than 0";
     }
-    if (!["name", "created_at"].includes(params.sortAttribute)) {
+    if (!["name", "created_at"].includes(String(params.sortAttribute))) {
         errors.sortAttribute = "Invalid sort attribute";
     }
-    if (!["asc", "desc"].includes(params.sortOrder)) {
+    if (!["asc", "desc"].includes(String(params.sortOrder))) {
         errors.sortOrder = "Invalid sort order";
     }
-    if (params.filter) {
-        if (params.filter.created_from && isNaN(Date.parse(params.filter.created_from))) {
-            errors.created_from = "Invalid date format for created_from";
-        }
-        if (params.filter.created_to && isNaN(Date.parse(params.filter.created_to))) {
-            errors.created_to = "Invalid date format for created_to";
-        }
-        if (params.filter.deleted_from && isNaN(Date.parse(params.filter.deleted_from))) {
-            errors.deleted_from = "Invalid date format for deleted_from";
-        }
-        if (params.filter.deleted_to && isNaN(Date.parse(params.filter.deleted_to))) {
-            errors.deleted_to = "Invalid date format for deleted_to";
-        }
+    if (params.created_from && isNaN(Date.parse(String(params.created_from)))) {
+        errors.created_from = "Invalid date format for created_from";
+    }
+    if (params.created_to && isNaN(Date.parse(String(params.created_to)))) {
+        errors.created_to = "Invalid date format for created_to";
+    }
+    if (params.deleted_from && isNaN(Date.parse(String(params.deleted_from)))) {
+        errors.deleted_from = "Invalid date format for deleted_from";
+    }
+    if (params.deleted_to && isNaN(Date.parse(String(params.deleted_to)))) {
+        errors.deleted_to = "Invalid date format for deleted_to";
     }
     return {
         valid: Object.keys(errors).length === 0,
@@ -56,70 +54,74 @@ export function validateCategoryFilters(params: types.CategoryParamsRequest): ty
     };
 }
 
-function validateUpdateCategoryInput(name: string):types.ValidationResult {
-    const errors: Partial<Record<keyof types.CategoryUpdate, string>> = {};
-    if (name && name.trim() === "") {
-        errors.name = "Name must not be empty";
-    } else if (name && name.length < 3) {
-        errors.name = "Name must be at least 3 characters long";
-    }
-    return {
-        valid: Object.keys(errors).length === 0,
-        errors,
-    };
+// #### HELPER FUNCTIONS ####
+
+function getFilterParamsForCategories(req: express.Request): types.CategoryParamsRequest {
+    const params: types.CategoryParamsRequest = {
+            page: req.query.page !== undefined ? Number(req.query.page) : Number(process.env.PAGINATION_DEFAULT_PAGE),
+            sortAttribute: req.query.attribute !== undefined ? String(req.query.sortAttribute) : (process.env.SORT_ATTRIBUTE as string),
+            sortOrder: req.query.order !== undefined ? String(req.query.sortOrder) : (process.env.SORT_ORDER as string),
+            keywords: req.query.keywords !== undefined ? String(req.query.keywords) : (process.env.SEARCH_KEYWORDS as string),
+            filter: {
+                created_from: req.query.created_from !== undefined ? String(req.query.created_from) : undefined,
+                created_to: req.query.created_to !== undefined ? String(req.query.created_to) : undefined,
+                deleted_from: req.query.deleted_from !== undefined ? String(req.query.deleted_from) : undefined,
+                deleted_to: req.query.deleted_to !== undefined ? String(req.query.deleted_to) : undefined,
+                is_deleted: req.query.is_deleted !== undefined ? Boolean(req.query.is_deleted === "true") : undefined
+            }
+        };
+    return params;
 }
-async function checkCategoryUpdateInput(currentName: string, name: string | undefined = undefined): Promise<types.ValidationResult> {
-    const errors: Partial<Record<string, string>> = {};
-    let db: Client | undefined = undefined;
+
+
+async function checkCategoryRecordNotExist(name: string) {
     try {
-        db = await getConnection();
-        await checkCategoryRecord(db, currentName as string, true);
-        if (name && name.trim() !== "" && name !== currentName) {
-            await checkCategoryRecord(db, name as string, false);
-        }
-    } catch (error: any) {
-        errors.name = error.message;
-    } finally {
-        if (db) {
-            releaseConnection(db);
-        }
-    }
-    return {
-        valid: Object.keys(errors).length === 0,
-        errors,
-    };
-}
-
-// #### DATABASE FUNCTIONS ####
-
-async function checkCategoryRecord(db: Client, name: string, shouldBeExists: boolean) {
-    const query = `
-        SELECT * FROM categories 
-        WHERE name = $1 AND is_deleted = false
-    `;
-    try {
-        if (await db.query(query, [name]).then(result => result.rows.length > 0) != shouldBeExists) {
-            throw new Error(shouldBeExists 
-                ? "Category with this name does not exist" 
-                : "Category with this name already exists"
-            );
-        }
+        const count = await countRecordHavingName(name);
+        return count === 0;
     } catch (error: any) {
         throw error;
     }
 }
 
-async function addCategory(categoryData: types.CategoryUpdate): Promise<void> {
+async function checkCategoryRecordExist(name: string) {
+    try {
+        const count = await countRecordHavingName(name);
+        return count > 0;
+    } catch (error: any) {
+        throw error;
+    }
+}
+
+// #### DATABASE FUNCTIONS ####
+
+async function countRecordHavingName(name: string) {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
-        await checkCategoryRecord(db, categoryData.name as string, false);
+        const query = `
+            SELECT * FROM categories 
+            WHERE name = $1 AND is_deleted = false
+        `;
+        const result = await db.query(query, [name]);
+        return result.rows.length;
+    } catch (error: any) {
+        throw error;
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}
 
+async function addCategory(name: string, description: string | undefined): Promise<void> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
         const sql = `
             INSERT INTO categories (name, description) 
-            VALUES ($1, $2)
+            VALUES ($1::text, $2::text)
         `;
-        await db.query(sql, [categoryData.name, categoryData.description]);
+        await db.query(sql, [name, description]);
     } catch (error: any) {
         console.error("Error adding category:", error);
         throw new Error("Error adding category: " + error.message);
@@ -216,8 +218,9 @@ async function add(req: express.Request, res: express.Response) {
         return res.status(403).json({ message: "Forbidden: Only admins can add categories." });
     }
 
-    const categoryData: types.CategoryUpdate = req.body;
-    const validationError = validateCategoryInput(categoryData);
+    const {name, description}: types.CategoryUpdate = req.body;
+
+    const validationError = validateInput(name, description);
 
     if (!validationError.valid) {
         return res.status(400).json({
@@ -226,7 +229,15 @@ async function add(req: express.Request, res: express.Response) {
         });
     }
     try {
-        await addCategory(categoryData);
+        // they must be string, so no need to check for undefined
+        if (await checkCategoryRecordExist(name)) {
+            return res.status(400).json({
+                message: "Validation error",
+                errors: [`Category with name: "${name}" already exists`]
+            });
+        }
+        
+        await addCategory(name as string, description as string);
         res.status(201).json({
             message: "Category created successfully"
         });
@@ -242,22 +253,8 @@ async function add(req: express.Request, res: express.Response) {
 async function get(req: express.Request, res: express.Response) {
     try {
         console.log("Fetching categories with query parameters:", req.query);
-
-        const params: types.CategoryParamsRequest = {
-            page: req.query.page !== undefined ? Number(req.query.page) : Number(process.env.PAGINATION_DEFAULT_PAGE),
-            sortAttribute: req.query.attribute !== undefined ? String(req.query.sortAttribute) : (process.env.SORT_ATTRIBUTE as string),
-            sortOrder: req.query.order !== undefined ? String(req.query.sortOrder) : (process.env.SORT_ORDER as string),
-            keywords: req.query.keywords !== undefined ? String(req.query.keywords) : (process.env.SEARCH_KEYWORDS as string),
-            filter: {
-                created_from: req.query.created_from !== undefined ? String(req.query.created_from) : undefined,
-                created_to: req.query.created_to !== undefined ? String(req.query.created_to) : undefined,
-                deleted_from: req.query.deleted_from !== undefined ? String(req.query.deleted_from) : undefined,
-                deleted_to: req.query.deleted_to !== undefined ? String(req.query.deleted_to) : undefined,
-                is_deleted: req.query.is_deleted !== undefined ? Boolean(req.query.is_deleted === "true") : undefined
-            }
-        };
-
-        const validationError = validateCategoryFilters(params);
+        const validationError = validateCategoryFilters(req.query);
+        const params: types.CategoryParamsRequest = getFilterParamsForCategories(req);
 
         if (!validationError.valid) {
             return res.status(400).json({
@@ -285,13 +282,13 @@ async function update(req: express.Request, res: express.Response) {
     const categoryName = req.params.name;
     const categoryData: types.CategoryUpdate = req.body;
 
-    if (!categoryName) {
+    if (!categoryName || validateInput(categoryName, undefined).valid === false) {
         return res.status(400).json({
-            message: "Category name is required"
+            message: "Category name is required and must be a valid string"
         });
     }
 
-    const validationError = validateUpdateCategoryInput(categoryName);
+    const validationError = validateInput(categoryData.name, categoryData.description);
     if (!validationError.valid) {
         return res.status(400).json({
             message: "Validation update category input error",
@@ -300,11 +297,16 @@ async function update(req: express.Request, res: express.Response) {
     }
 
     try {
-        const checkError = await checkCategoryUpdateInput(categoryName, categoryData.name);
-        if (!checkError.valid) {
+        if (await checkCategoryRecordNotExist(categoryName)) {
             return res.status(400).json({
                 message: "Validation error",
-                errors: checkError.errors
+                errors: [`Category with name: "${categoryName}" does not exist`]
+            });
+        }
+        if (categoryName !== categoryData.name && await checkCategoryRecordExist(categoryData.name)) {
+            return res.status(400).json({
+                message: "Validation error",
+                errors: [`Category with name: "${categoryData.name}" already exists`]
             });
         }
         console.log("Updating category:", categoryName, "with data:", categoryData);
@@ -341,22 +343,28 @@ async function remove(req: types.RequestCustom, res: express.Response) {
         });
     }
 
-    const validationError = await checkCategoryUpdateInput(categoryName);
+    const validationError = validateInput(categoryName, undefined);
     if (!validationError.valid) {
         return res.status(400).json({
             message: "Validation delete category input error",
             errors: validationError.errors
         });
     }
-
+    
     try {
+        if (await checkCategoryRecordNotExist(categoryName)) {
+            return res.status(400).json({
+                message: "Validation error",
+                errors: [`Category with name: "${categoryName}" does not exist`]
+            });
+        }
         await deleteCategory(categoryName, req.user?.user_id as number);
         res.status(200).json({
             message: "Category deleted successfully"
         });
     } catch (error: any) {
         res.status(500).json({
-            message: "Error deleting category",
+            message: "Server error while deleting category",
             errors: error.message
         });
     }
