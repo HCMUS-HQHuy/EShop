@@ -109,6 +109,27 @@ async function removeProduct(productId: number): Promise<void> {
     }
 }
 
+async function updateProduct(productId: number, product: types.ProductAddRequest): Promise<void> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = `
+            UPDATE products
+            SET name = $1, price = $2, stock_quantity = $3, category_id = $4, shop_id = $5, status = '${types.PRODUCT_STATUS.PENDING}'
+            WHERE product_id = $6
+        `;
+        const data = [product.name, product.price, product.stock_quantity, product.category_id, product.shop_id, productId];
+        await db.query(sql, data);
+    } catch (error) {
+        console.error('Error updating product:', error);
+        throw error;
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}
+
 async function listProducts(params: types.ProductParamsRequest) {
     let db: Client | undefined = undefined;
     try {
@@ -221,6 +242,44 @@ async function remove(req: types.RequestCustom, res: express.Response) {
     }
 }
 
+async function update(req: types.RequestCustom, res: express.Response) {
+    if (utils.isSeller(req) === false) {
+        return res.status(403).send({ error: 'Forbidden: Only sellers can update products' });
+    }
+    const productId = Number(req.params.id);
+    if (isNaN(productId) || productId <= 0) {
+        return res.status(400).send({ error: 'Invalid product ID' });
+    }
+    try {
+        const productExists = await checkProductExists(productId);
+        if (!productExists) {
+            return res.status(404).send({ error: 'Product not found' });
+        }
+    } catch (error) {
+        console.error('Error checking product existence:', error);
+        return res.status(500).send({ error: 'Internal server error' });
+    }
+    const product: types.ProductAddRequest = req.body;
+    try {
+        const validationResult = validateProductData(product);
+        if (!validationResult.valid) {
+            return res.status(400).send({ errors: validationResult.errors });
+        }
+    } catch (error) {
+        console.error('Error validating product:', error);
+        return res.status(500).send({ error: 'Internal server error' });
+    }
+    try {
+        // Ensure the shop_id is set from the authenticated user
+        product.shop_id = req.user?.shop_id as number;
+        await updateProduct(productId, product);
+    } catch (error) {
+        console.error('Error updating product:', error);
+        return res.status(500).send({ error: 'Internal server error' });
+    }
+    res.status(200).send({ message: 'Product updated successfully' });
+}
+
 async function add(req: types.RequestCustom, res: express.Response) {
     if (utils.isSeller(req) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can add products' });
@@ -252,7 +311,8 @@ async function add(req: types.RequestCustom, res: express.Response) {
 const sellerProductController = {
     list,
     add,
-    remove
+    remove,
+    update
 };
 
 export default sellerProductController;
