@@ -71,7 +71,7 @@ function getFilterParamsForProducts(req: types.RequestCustom): types.ProductPara
 
 // #### DATABASE FUNCTIONS ####
 
-async function checkProductExists(productId: number): Promise<boolean> {
+async function checkProductExists(productId: number, status?: types.ProductStatus): Promise<boolean> {
     let db: Client | undefined = undefined;
     try {
         db = await getConnection();
@@ -79,8 +79,9 @@ async function checkProductExists(productId: number): Promise<boolean> {
             SELECT COUNT(*)
             FROM products
             WHERE product_id = $1 AND is_deleted = FALSE
+                AND ($2::text IS NULL OR status = $2)
         `;
-        const result = await db.query(sql, [productId]);
+        const result = await db.query(sql, [productId, status]);
         return result.rows[0].count > 0;
     } catch (error) {
         console.error('Error checking product existence:', error);
@@ -184,6 +185,46 @@ async function addProduct(product: types.ProductAddRequest) {
         await db.query(sql, data);
     } catch (error) {
         console.error('Error adding product to database:', error);
+        throw error;
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}
+
+async function hideProduct(productId: number): Promise<void> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = `
+            UPDATE products
+            SET status = '${types.PRODUCT_STATUS.INACTIVE}'
+            WHERE product_id = $1 AND is_deleted = FALSE AND status = '${types.PRODUCT_STATUS.ACTIVE}'
+        `;
+        await db.query(sql, [productId]);
+    } catch (error) {
+        console.error('Error hiding product:', error);
+        throw error;
+    } finally {
+        if (db) {
+            releaseConnection(db);
+        }
+    }
+}
+
+async function displayProduct(productId: number): Promise<void> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await getConnection();
+        const sql = `
+            UPDATE products
+            SET status = '${types.PRODUCT_STATUS.ACTIVE}'
+            WHERE product_id = $1 AND status = '${types.PRODUCT_STATUS.INACTIVE}' AND is_deleted = FALSE
+        `;
+        await db.query(sql, [productId]);
+    } catch (error) {
+        console.error('Error displaying product:', error);
         throw error;
     } finally {
         if (db) {
@@ -312,11 +353,65 @@ async function add(req: types.RequestCustom, res: express.Response) {
     res.status(201).send({ message: 'Product added successfully' });
 };
 
+async function hide(req: types.RequestCustom, res: express.Response) {
+    if (utils.isSeller(req) === false) {
+        return res.status(403).send({ error: 'Forbidden: Only sellers can hide products' });
+    }
+    const productId = Number(req.params.id);
+    if (isNaN(productId) || productId <= 0) {
+        return res.status(400).send({ error: 'Invalid product ID' });
+    }
+    try {
+        const productExists = await checkProductExists(productId, types.PRODUCT_STATUS.ACTIVE);
+        if (!productExists) {
+            return res.status(404).send({ error: 'Product not found' });
+        }
+    } catch (error) {
+        console.error('Error checking product existence:', error);
+        return res.status(500).send({ error: 'Internal server error' });
+    }
+    try {
+        await hideProduct(productId);
+    } catch (error) {
+        console.error('Error hiding product:', error);
+        return res.status(500).send({ error: 'Internal server error' });
+    }
+    res.status(200).send({ message: 'Product hidden successfully' });
+}
+
+async function display(req: types.RequestCustom, res: express.Response) {
+    if (utils.isSeller(req) === false) {
+        return res.status(403).send({ error: 'Forbidden: Only sellers can display products' });
+    }
+    const productId = Number(req.params.id);
+    if (isNaN(productId) || productId <= 0) {
+        return res.status(400).send({ error: 'Invalid product ID' });
+    }
+    try {
+        const productExists = await checkProductExists(productId, types.PRODUCT_STATUS.INACTIVE);
+        if (!productExists) {
+            return res.status(404).send({ error: 'Product not found' });
+        }
+    } catch (error) {
+        console.error('Error checking product existence:', error);
+        return res.status(500).send({ error: 'Internal server error' });
+    }
+    try {
+        await displayProduct(productId);
+    } catch (error) {
+        console.error('Error displaying product:', error);
+        return res.status(500).send({ error: 'Internal server error' });
+    }
+    res.status(200).send({ message: 'Product displayed successfully' });
+}
+
 const sellerProductController = {
     list,
     add,
     remove,
-    update
+    update,
+    hide,
+    display
 };
 
 export default sellerProductController;
