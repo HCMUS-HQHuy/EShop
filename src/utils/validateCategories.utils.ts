@@ -19,7 +19,7 @@ async function checkCategoryRecord(db: Client, name: string, shouldBeExists: boo
     }
 }
 
-export function validateCategoryInput(input: Partial<types.CategoryUpdate>): types.ValidationCategoryResult {
+export function validateCategoryInput(input: Partial<types.CategoryUpdate>): types.ValidationResult {
     const errors: Partial<Record<keyof types.CategoryUpdate, string>> = {};
     if (!input.name || input.name.trim() === "") {
         errors.name = "Name is required";
@@ -32,7 +32,7 @@ export function validateCategoryInput(input: Partial<types.CategoryUpdate>): typ
     };
 }
 
-export function validateCategoryFilters(params: types.CategoryParamsRequest): types.ValidationCategoryResult {
+export function validateCategoryFilters(params: types.CategoryParamsRequest): types.ValidationResult {
     const errors: Partial<Record<keyof types.CategoryParamsRequest, any>> = {};
     
     if (params.keywords.trim() === "") {
@@ -67,7 +67,7 @@ export function validateCategoryFilters(params: types.CategoryParamsRequest): ty
     };
 }
 
-export async function validateUpdateCategoryInput(currentName: string, input: Partial<types.CategoryUpdate> | undefined = undefined): Promise<types.ValidationCategoryResult> {
+export async function validateUpdateCategoryInput(currentName: string, input: Partial<types.CategoryUpdate> | undefined = undefined): Promise<types.ValidationResult> {
     const errors: Partial<Record<keyof types.CategoryUpdate, string>> = {};
     if (input?.name && input.name.trim() === "") {
         errors.name = "Name must not be empty";

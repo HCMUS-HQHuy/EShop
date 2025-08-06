@@ -7,8 +7,8 @@ import * as utils from '../../utils/index.utils';
 
 // #### VALIDATION FUNCTIONS ####
 
- function validateProductFilters(req: types.RequestCustom): types.ValidationProductResult {
-    const errors: Partial<Record<keyof types.ProductFilterParams | keyof types.ProductParamsRequest, string>> = {};
+ function validateProductFilters(req: types.RequestCustom): types.ValidationResult {
+    const errors: Partial<Record<keyof types.ProductParamsRequest, string>> = {};
 
     if (req.query.keywords && String(req.query.keywords).trim() === "") {
         errors.keywords = "Keywords must not be empty";
@@ -21,10 +21,6 @@ import * as utils from '../../utils/index.utils';
     }
     if (req.query.sortOrder && !["asc", "desc"].includes(String(req.query.sortOrder))) {
         errors.sortOrder = "Invalid sort order";
-    }
-
-    if (req.query.status && !Object.values(types.PRODUCT_STATUS).includes(req.query.status as types.ProductStatus)) {
-        errors.status = 'Invalid product status';
     }
 
     return {

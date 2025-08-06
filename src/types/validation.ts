@@ -13,5 +13,5 @@ export interface UserRegistration {
 
 export interface ValidationResult {
   valid: boolean;
-  errors: Partial<Record<keyof UserCredentials | keyof UserRegistration, string>>;
+  errors: Partial<Record<string, string>>;
 }

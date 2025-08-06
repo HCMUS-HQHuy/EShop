@@ -25,8 +25,3 @@ export interface CategoryParamsRequest {
   
   filter?: CategoryFilter;
 }
-
-export interface ValidationCategoryResult {
-  valid: boolean;
-  errors: Partial<Record<keyof Category | keyof CategoryUpdate | keyof CategoryParamsRequest, string>>;
-}

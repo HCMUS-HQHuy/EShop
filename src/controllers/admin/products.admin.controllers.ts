@@ -7,8 +7,8 @@ import { getConnection, releaseConnection } from '../../config/db';
 
 // #### VALIDATION FUNCTIONS ####
 
- function validateProductFilters(req: types.RequestCustom): types.ValidationProductResult {
-    const errors: Partial<Record<keyof types.ProductFilterParams | keyof types.ProductParamsRequest, string>> = {};
+ function validateProductFilters(req: types.RequestCustom): types.ValidationResult {
+    const errors: Partial<Record<string, string>> = {};
 
     if (req.query.keywords && String(req.query.keywords).trim() === "") {
         errors.keywords = "Keywords must not be empty";
@@ -129,14 +129,15 @@ async function listProducts(params: types.ProductParamsRequest) {
         `;
         const limit         = Number(process.env.PAGINATION_LIMIT);
         const offset        = (params.page - 1) * limit;
+        const filter        = params.filter as types.AdminFilterParams;
         const queryParams = [
             `%${params.keywords}%`,         // $1
             limit,                          // $2
             offset,                         // $3
-            params.filter?.created_from,    // $4
-            params.filter?.created_to,      // $5
-            params.filter?.status,          // $6
-            params.filter?.is_deleted       // $7
+            filter?.created_from,           // $4
+            filter?.created_to,             // $5
+            filter?.status,                 // $6
+            filter?.is_deleted              // $7
         ];
         const result = await db.query(sql, queryParams);
         return result.rows;

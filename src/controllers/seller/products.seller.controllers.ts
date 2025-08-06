@@ -6,8 +6,8 @@ import * as types from '../../types/index.types';
 
 // #### VALIDATION FUNCTIONS ####
 
- function validateProductFilters(req: types.RequestCustom): types.ValidationProductResult {
-    const errors: Partial<Record<keyof types.ProductFilterParams | keyof types.ProductParamsRequest, string>> = {};
+function validateProductFilters(req: types.RequestCustom): types.ValidationResult {
+    const errors: Partial<Record<string, string>> = {};
 
     if (req.query.keywords && String(req.query.keywords).trim() === "") {
         errors.keywords = "Keywords must not be empty";
@@ -32,7 +32,7 @@ import * as types from '../../types/index.types';
     };
 }
 
-function validateProductData(data: types.ProductAddRequest): types.ValidationProductResult {
+function validateProductData(data: types.ProductAddRequest): types.ValidationResult {
     const errors: Partial<Record<keyof types.ProductAddRequest, string>> = {};
     if (data?.name === undefined || data.name.trim() === '') {
         errors.name = 'Name is required';
@@ -152,13 +152,14 @@ async function listProducts(params: types.ProductParamsRequest) {
         `;
         const limit         = Number(process.env.PAGINATION_LIMIT);
         const offset        = (params.page - 1) * limit;
+        const filter        = params.filter as types.SellerFilterParams;
         const queryParams = [
             `%${params.keywords}%`,         // $1
             limit,                          // $2
             offset,                         // $3
-            params.filter?.created_from,    // $4
-            params.filter?.created_to,      // $5
-            params.filter?.status,          // $6
+            filter?.created_from,           // $4
+            filter?.created_to,             // $5
+            filter?.status,                 // $6
         ];
         const result = await db.query(sql, queryParams);
         return result.rows;

@@ -48,24 +48,35 @@ export interface ProductAddRequest {
   shop_id?: number;
 };
 
-export interface ProductFilterParams {
-  created_from?: string;
-  created_to?: string;
-  status?: ProductStatus;
-  is_deleted?: boolean;
+interface ProductFilterParams {
+    category_id?: number;
+    stars?: number;
+    price_range?: {
+        min?: number;
+        max?: number;
+    };
+}
+
+export interface UserFilterParams extends ProductFilterParams {
+    seller_id?: number;
+}
+
+export interface SellerFilterParams extends ProductFilterParams {
+    created_from?: string;
+    created_to?: string;
+    status?: ProductStatus;
+}
+
+export interface AdminFilterParams extends SellerFilterParams {
+    seller_id?: number;
+    is_deleted?: boolean;
 }
 
 export interface ProductParamsRequest {
-  keywords: string;
-  page: number;
-  sortAttribute: string;
-  sortOrder: string;
-  
-  filter?: ProductFilterParams;
-}
-
-
-export interface ValidationProductResult {
-  valid: boolean;
-  errors: Partial<Record<keyof ProductParamsRequest | keyof ProductFilterParams | keyof ProductAddRequest | keyof Product, string>>;
+    keywords: string;
+    page: number;
+    sortAttribute: string;
+    sortOrder: string;
+    
+    filter?: UserFilterParams | SellerFilterParams | AdminFilterParams;
 }
