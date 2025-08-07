@@ -48,7 +48,7 @@ async function removeProduct(userId: number, productId: number): Promise<void> {
     }
 }
 
-async function updateProduct(productId: number, product: types.ProductAddRequest): Promise<void> {
+async function updateProduct(productId: number, product: types.ProductInformation): Promise<void> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -118,7 +118,7 @@ async function listProducts(shop_id: number, params: types.ProductParamsRequest)
     }
 }
 
-async function addProduct(product: types.ProductAddRequest) {
+async function addProduct(product: types.ProductInformation) {
     console.log("Product added:", product);
     let db: Client | undefined = undefined;
     try {
@@ -244,11 +244,11 @@ async function update(req: types.RequestCustom, res: express.Response) {
         console.error('Error checking product existence:', error);
         return res.status(500).send({ error: 'Internal server error' });
     }
-    const parsedBody = types.productSchemas.addRequest.safeParse(req.body);
+    const parsedBody = types.productSchemas.information.safeParse(req.body);
     if (!parsedBody.success) {
         return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
     }
-    const product: types.ProductAddRequest = parsedBody.data;
+    const product: types.ProductInformation = parsedBody.data;
     try {
         // Ensure the shop_id is set from the authenticated user
         product.shop_id = req.user?.shop_id as number;
@@ -265,11 +265,11 @@ async function add(req: types.RequestCustom, res: express.Response) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can add products' });
     }
 
-    const parsedBody = types.productSchemas.addRequest.safeParse(req.body);
+    const parsedBody = types.productSchemas.information.safeParse(req.body);
     if (!parsedBody.success) {
         return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
     }
-    const product: types.ProductAddRequest = parsedBody.data;
+    const product: types.ProductInformation = parsedBody.data;
 
     try {
         // Ensure the shop_id is set from the authenticated user

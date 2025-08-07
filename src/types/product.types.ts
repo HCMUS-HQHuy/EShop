@@ -11,37 +11,7 @@ export const PRODUCT_STATUS = {
 
 export type ProductStatus = typeof PRODUCT_STATUS[keyof typeof PRODUCT_STATUS];
 
-// export interface Product {
-//     product_id: number;
-//     name: string;
-//     description?: string;
-//     price: number;
-//     stock_quantity: number;
-//     image_url?: string;
-//     category_id: number;
-//     seller_id: number;
-//     created_at: string;
-//     is_deleted: boolean;
-//     deleted_at?: string;
-// }
-
-// export interface ProductImage {
-//     image_id: number;
-//     product_id: number;
-//     image_url: string;
-//     created_at: string;
-// }
-
-// export interface ProductReview {
-//     review_id: number;
-//     user_id: number;
-//     product_id: number;
-//     rating: number;
-//     comment?: string;
-//     created_at: string;
-// }
-
-const ProductAddRequestSchema = z.object({
+const ProductSchema = z.object({
     name: z.string().min(1, 'Name is required'),
     description: z.string().optional(),
     price: z.number().nonnegative('Price must be >= 0'),
@@ -102,13 +72,13 @@ const ProductParamsRequestSchema = z.object({
 });
 
 
-export type UserProductFilter = z.infer<typeof UserProductFilterSchema>;
+export type UserProductFilter   = z.infer<typeof UserProductFilterSchema>;
 export type SellerProductFilter = z.infer<typeof SellerProductFilterSchema>;
-export type AdminProductFilter = z.infer<typeof AdminProductFilterSchema>;
-export type ProductAddRequest = z.infer<typeof ProductAddRequestSchema>;
-export type ProductParamsRequest = z.infer<typeof ProductParamsRequestSchema>;
+export type AdminProductFilter  = z.infer<typeof AdminProductFilterSchema>;
+export type ProductInformation  = z.infer<typeof ProductSchema>;
+export type ProductParamsRequest= z.infer<typeof ProductParamsRequestSchema>;
 export const productSchemas = {
-    addRequest: ProductAddRequestSchema,
+    information: ProductSchema,
     productParamsRequest: ProductParamsRequestSchema,
     userProductFilter: UserProductFilterSchema,
     sellerProductFilter: SellerProductFilterSchema,
