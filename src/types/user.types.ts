@@ -1,5 +1,4 @@
 ﻿import express from 'express';
-import { UserStatus } from './account.types';
 
 export const USER_ROLE = {
     ADMIN: 'Admin',

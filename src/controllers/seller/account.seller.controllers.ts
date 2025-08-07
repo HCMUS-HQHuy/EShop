@@ -6,27 +6,9 @@ import database from "../../config/db";
 import * as types from "../../types/index.types";
 import * as utils from "../../utils/index.utils";
 
-// #### VALIDATION FUNCTIONS ####
-
-function validateSellerAccountCreationRequest(data: types.SellerAccountCreationRequest) {
-    const errors: Partial<Record<keyof types.SellerAccountCreationRequest, string>> = {};
-
-    if (!data.shop_name || data.shop_name.trim() === "") {
-        errors.shop_name = "Shop name must not be empty";
-    }
-    if (data.shop_description && data.shop_description.length > 500) {
-        errors.shop_description = "Shop description must not exceed 500 characters";
-    }
-
-    return {
-        valid: Object.keys(errors).length === 0,
-        errors
-    };
-}
-
 // #### DATABASE FUNCTIONS ####
 
-async function createSellerAccount(data: types.SellerAccountCreationRequest) {
+async function createSellerAccount(data: types.ShopCreationRequest) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -58,20 +40,18 @@ async function create(req: types.RequestCustom, res: express.Response) {
         return res.status(403).json({ message: "Forbidden: Only users have permission to create a seller account." });
     }
 
-    const requestData: types.SellerAccountCreationRequest = {
-        user_id: req.user?.user_id as number,
-        shop_name: req.body.shop_name,
-        shop_description: req.body.shop_description || undefined
-    };
-
-    const validationError = validateSellerAccountCreationRequest(requestData);
-
-    if (!validationError.valid) {
-        return res.status(400).json({
-            message: "Validation error",
-            errors: validationError.errors
+    const parsedBody = types.shopSchemas.CreationRequest.safeParse(req.body);
+    if (!parsedBody.success) {
+        return res.status(400).send({ 
+            error: 'Invalid request data', 
+            details: parsedBody.error.format() 
         });
     }
+    const requestData: types.ShopCreationRequest = {
+        user_id: req.user?.user_id as number,
+        shop_name: parsedBody.data.shop_name,
+        shop_description: parsedBody.data.shop_description
+    };
 
     try {
         await createSellerAccount(requestData);

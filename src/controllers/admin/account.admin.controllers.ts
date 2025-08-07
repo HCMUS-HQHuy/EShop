@@ -14,8 +14,8 @@ function validateAdminRequestUpdateSeller(data: types.AdminVerifySellerRequest):
         errors.seller_id = "Invalid seller ID";
     }
 
-    if (!data.status || (data.status !== types.SELLER_STATUS.ACTIVE && data.status !== types.SELLER_STATUS.REJECTED)) {
-        errors.status = `Status must be either '${types.SELLER_STATUS.ACTIVE}' or '${types.SELLER_STATUS.REJECTED}'`;
+    if (!data.status || (data.status !== types.SHOP_STATUS.ACTIVE && data.status !== types.SHOP_STATUS.REJECTED)) {
+        errors.status = `Status must be either '${types.SHOP_STATUS.ACTIVE}' or '${types.SHOP_STATUS.REJECTED}'`;
     }
     return {
         valid: Object.keys(errors).length === 0,
@@ -28,20 +28,20 @@ async function checkSellerStatus(data: types.AdminVerifySellerRequest): Promise<
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
-        if (data.status === types.SELLER_STATUS.ACTIVE) {
+        if (data.status === types.SHOP_STATUS.ACTIVE) {
             const sql = `
                 SELECT COUNT(*) FROM seller_profiles
-                WHERE user_id = $1 AND status IN ('${types.SELLER_STATUS.PENDING_VERIFICATION}', '${types.SELLER_STATUS.BANNED}')
+                WHERE user_id = $1 AND status IN ('${types.SHOP_STATUS.PENDING_VERIFICATION}', '${types.SHOP_STATUS.BANNED}')
             `;
             const result = await db.query(sql, [data.seller_id]);
             if (parseInt(result.rows[0].count, 10) === 0) {
                 errors.seller_id = "Seller account not found or not pending verification or banned";
             }
         }
-        else if (data.status === types.SELLER_STATUS.REJECTED) {
+        else if (data.status === types.SHOP_STATUS.REJECTED) {
             const sql = `
                 SELECT COUNT(*) FROM seller_profiles
-                WHERE user_id = $1 AND status = '${types.SELLER_STATUS.PENDING_VERIFICATION}'
+                WHERE user_id = $1 AND status = '${types.SHOP_STATUS.PENDING_VERIFICATION}'
             `;
             const result = await db.query(sql, [data.seller_id]);
             if (parseInt(result.rows[0].count, 10) === 0) {

@@ -31,7 +31,7 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
                 LEFT JOIN shops as s
                 ON u.user_id = s.user_id
             WHERE u.user_id = $1
-                AND s.status IN ('${types.SELLER_STATUS.ACTIVE}', '${types.SELLER_STATUS.CLOSED}')
+                AND s.status IN ('${types.SHOP_STATUS.ACTIVE}', '${types.SHOP_STATUS.CLOSED}')
                 AND u.status = '${types.USER_STATUS.ACTIVE}'
         `;
         const result = await db.query(sql, [req.user?.user_id]);
