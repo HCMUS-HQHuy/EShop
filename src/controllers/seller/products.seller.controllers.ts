@@ -1,5 +1,4 @@
 import express from 'express';
-import qs from 'qs';
 import { Client } from 'pg';
 import database from '../../config/db';
 import * as utils from '../../utils/index.utils';
@@ -184,25 +183,13 @@ async function displayProduct(productId: number): Promise<void> {
 async function list(req: types.RequestCustom, res: express.Response) {
     if (utils.isSeller(req) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can list products' });
-    }
-    const query = req.query;
-    console.log("Listing products with params:", query);
-    // const validationError = validateProductFilters(req);
-    // if (!validationError.valid) {
-    //     return res.status(400).json({
-    //         message: "Validation error",
-    //         errors: validationError.errors
-    //     });
-    // }
-    
+    }    
     const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
     if (!parsedBody.success) {
         return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
     }
     const params: types.ProductParamsRequest = parsedBody.data;
-    // const params: types.ProductParamsRequest = getFilterParamsForProducts(req);
     console.log("Listing products with params:", params);
-
     try {
         const products = await listProducts(req.user?.shop_id as number, params);
         res.send(products);
