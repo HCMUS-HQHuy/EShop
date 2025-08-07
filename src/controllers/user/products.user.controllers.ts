@@ -89,10 +89,16 @@ async function getRelatedProductsById(productId: number): Promise<any[]> {
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT product_id, name, price, stock_quantity, category_id, shop_id, image_url
+            SELECT product_id, name, price, stock_quantity, shop_id, image_url
             FROM products
-            WHERE category_id = (SELECT category_id FROM products WHERE product_id = $1)
-                AND product_id != $1
+            WHERE product_id != $1
+                AND product_id IN (
+                    SELECT product_id FROM product_categories
+                    WHERE category_id IN (
+                        SELECT category_id FROM product_categories 
+                        WHERE product_id = $1
+                    )
+                )
                 AND status = '${types.PRODUCT_STATUS.ACTIVE}'
                 AND is_deleted = FALSE
             LIMIT 10
