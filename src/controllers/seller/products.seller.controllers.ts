@@ -183,7 +183,7 @@ async function displayProduct(productId: number): Promise<void> {
 async function list(req: types.RequestCustom, res: express.Response) {
     if (utils.isSeller(req) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can list products' });
-    }    
+    }
     const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
     if (!parsedBody.success) {
         return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });

@@ -9,6 +9,30 @@ import * as utils from '../../utils/index.utils';
 
 // #### HELPER FUNCTIONS ####
 
+async function getAllCategoriesId(categories: number[] | undefined): Promise<number[]> {
+    if (!categories || categories.length === 0) {
+        return [];
+    }
+    let db: Client | undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const sql = `
+            SELECT category_id FROM categories
+            WHERE parent_id = ANY($1::int[])
+        `;
+        const result = await db.query(sql, [categories]);
+        const subCategories_id = result.rows.map(row => row.category_id);
+        return [...categories, ...(await getAllCategoriesId(subCategories_id))];
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        throw error;
+    } finally {
+        if (db) {
+            await database.releaseConnection(db);
+        }
+    }
+}
+
 // #### DATABASE FUNCTIONS ####
 
 async function getProductInforById(productId: number): Promise<any | null> {
@@ -64,13 +88,14 @@ async function listProducts(params: types.ProductParamsRequest) {
         const limit         = Number(process.env.PAGINATION_LIMIT);
         const offset        = (params.page - 1) * limit;
         const filter        = params.filter as types.UserProductFilter;
+        const categoriesId  = await getAllCategoriesId(filter?.categories_id);
         const queryParams = [
             `%${params.keywords}%`,         // $1
             limit,                          // $2
             offset,                         // $3
             filter?.max_price,              // $4
             filter?.min_price,              // $5
-            filter?.categories_id,          // $6
+            categoriesId,                   // $6
         ];
         const result = await db.query(sql, queryParams);
         return result.rows;
