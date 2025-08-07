@@ -31,7 +31,7 @@ async function createSellerAccount(data: types.SellerAccountCreationRequest) {
     try {
         db = await database.getConnection();
         const sql = `
-            INSERT INTO seller_profiles (user_id, shop_name, shop_description) 
+            INSERT INTO shops (user_id, shop_name, shop_description) 
             VALUES ($1, $2, $3)
         `;
         const values = [data.user_id, data.shop_name, data.shop_description || null];
