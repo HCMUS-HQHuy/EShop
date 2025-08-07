@@ -33,10 +33,10 @@ function validateCategoryFilters(params: express.Request["query"]): types.Valida
     if (params.page && Number(params.page) < 1) {
         errors.page = "Page must be greater than 0";
     }
-    if (!types.SORT_ATTRIBUTES.includes(params.sortAttribute as types.SortAttribute)) {
+    if (params.sortAttribute && !types.SORT_ATTRIBUTES.includes(params.sortAttribute as types.SortAttribute)) {
         errors.sortAttribute = "Invalid sort attribute";
     }
-    if (!types.SORT_ORDERS.includes(params.sortOrder as types.SortOrder)) {
+    if (params.sortOrder && !types.SORT_ORDERS.includes(params.sortOrder as types.SortOrder)) {
         errors.sortOrder = "Invalid sort order";
     }
     if (params.created_from && isNaN(Date.parse(String(params.created_from)))) {
