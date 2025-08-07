@@ -8,74 +8,7 @@ import * as util from "../../utils/index.utils";
 
 // #### VALIDATION FUNCTIONS ####
 
-function validateInput(name: string | undefined, description: string | undefined): types.ValidationResult {
-    const errors: Partial<Record<keyof types.CategoryUpdate, string>> = {};
-    if (!name || name.trim() === "") {
-        errors.name = "Name is required";
-    } else if (name.length < 3) {
-        errors.name = "Name must be at least 3 characters long";
-    }
-    if (description && description.length > 500) {
-        errors.description = "Description must not exceed 5000 characters";
-    }
-    return {
-        valid: Object.keys(errors).length === 0,
-        errors,
-    };
-}
-
-function validateCategoryFilters(params: express.Request["query"]): types.ValidationResult {
-    const errors: Partial<Record<string, string>> = {};
-
-    if (params.keywords && String(params.keywords).trim() === "") {
-        errors.keywords = "Keywords must not be empty";
-    }
-    if (params.page && Number(params.page) < 1) {
-        errors.page = "Page must be greater than 0";
-    }
-    if (params.sortAttribute && !types.SORT_ATTRIBUTES.includes(params.sortAttribute as types.SortAttribute)) {
-        errors.sortAttribute = "Invalid sort attribute";
-    }
-    if (params.sortOrder && !types.SORT_ORDERS.includes(params.sortOrder as types.SortOrder)) {
-        errors.sortOrder = "Invalid sort order";
-    }
-    if (params.created_from && isNaN(Date.parse(String(params.created_from)))) {
-        errors.created_from = "Invalid date format for created_from";
-    }
-    if (params.created_to && isNaN(Date.parse(String(params.created_to)))) {
-        errors.created_to = "Invalid date format for created_to";
-    }
-    if (params.deleted_from && isNaN(Date.parse(String(params.deleted_from)))) {
-        errors.deleted_from = "Invalid date format for deleted_from";
-    }
-    if (params.deleted_to && isNaN(Date.parse(String(params.deleted_to)))) {
-        errors.deleted_to = "Invalid date format for deleted_to";
-    }
-    return {
-        valid: Object.keys(errors).length === 0,
-        errors,
-    };
-}
-
 // #### HELPER FUNCTIONS ####
-
-function getFilterParamsForCategories(req: express.Request): types.CategoryParamsRequest {
-    const params: types.CategoryParamsRequest = {
-            page: req.query.page !== undefined ? Number(req.query.page) : Number(process.env.PAGINATION_DEFAULT_PAGE),
-            sortAttribute: req.query.attribute !== undefined ? String(req.query.sortAttribute) : (process.env.SORT_ATTRIBUTE as string),
-            sortOrder: req.query.order !== undefined ? String(req.query.sortOrder) : (process.env.SORT_ORDER as string),
-            keywords: req.query.keywords !== undefined ? String(req.query.keywords) : (process.env.SEARCH_KEYWORDS as string),
-            filter: {
-                created_from: req.query.created_from !== undefined ? String(req.query.created_from) : undefined,
-                created_to: req.query.created_to !== undefined ? String(req.query.created_to) : undefined,
-                deleted_from: req.query.deleted_from !== undefined ? String(req.query.deleted_from) : undefined,
-                deleted_to: req.query.deleted_to !== undefined ? String(req.query.deleted_to) : undefined,
-                is_deleted: req.query.is_deleted !== undefined ? Boolean(req.query.is_deleted === "true") : undefined
-            }
-        };
-    return params;
-}
-
 
 async function checkCategoryRecordNotExist(name: string) {
     try {
@@ -135,7 +68,7 @@ async function addCategory(name: string, description: string | undefined): Promi
     }
 }
 
-async function getCategories(params: types.CategoryParamsRequest): Promise<types.Category[]> {
+async function getCategories(params: types.CategoryParamsRequest): Promise<types.CategoryInformation[]> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -159,8 +92,9 @@ async function getCategories(params: types.CategoryParamsRequest): Promise<types
         const isDeleted     = params?.filter?.is_deleted;
 
         const queryParams = [`%${params.keywords}%`, limit, offset, createdFrom, createdTo, deleted_from, deletedTo, isDeleted];
+        console.log("Executing SQL:", sql, "with params:", queryParams);
         const result = await db.query(sql, queryParams);
-        return result.rows as types.Category[];
+        return result.rows as types.CategoryInformation[];
     } catch (error: any) {
         console.error("Error fetching categories:", error);
         throw error;
@@ -171,7 +105,7 @@ async function getCategories(params: types.CategoryParamsRequest): Promise<types
     }
 }
 
-async function updateCategory(name: string, categoryData: types.CategoryUpdate): Promise<void> {
+async function updateCategory(name: string, categoryData: types.CategoryUpdateRequest): Promise<void> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -221,26 +155,22 @@ async function add(req: express.Request, res: express.Response) {
         return res.status(403).json({ message: "Forbidden: Only admins can add categories." });
     }
 
-    const {name, description}: types.CategoryUpdate = req.body;
-
-    const validationError = validateInput(name, description);
-
-    if (!validationError.valid) {
-        return res.status(400).json({
-            message: "Validation error",
-            errors: validationError.errors
-        });
+    const parsedBody = types.categorySchemas.addRequest.safeParse(req.body);
+    if (!parsedBody.success) {
+        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
     }
+    const params: types.CategoryAddRequest = parsedBody.data;
+    console.log("Listing products with params:", params);
     try {
         // they must be string, so no need to check for undefined
-        if (await checkCategoryRecordExist(name)) {
+        if (await checkCategoryRecordExist(params.name)) {
             return res.status(400).json({
                 message: "Validation error",
-                errors: [`Category with name: "${name}" already exists`]
+                errors: [`Category with name: "${params.name}" already exists`]
             });
         }
-        
-        await addCategory(name as string, description as string);
+
+        await addCategory(params.name, params.description);
         res.status(201).json({
             message: "Category created successfully"
         });
@@ -254,20 +184,14 @@ async function add(req: express.Request, res: express.Response) {
 }
 
 async function get(req: express.Request, res: express.Response) {
+    console.log("Fetching categories with query parameters:", req.query);
+    const parsedBody = types.categorySchemas.paramsRequest.safeParse(req.query);
+    if (!parsedBody.success) {
+        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
+    }
+    const params: types.CategoryParamsRequest = parsedBody.data;
+    console.log("Listing categories with params:", params);
     try {
-        console.log("Fetching categories with query parameters:", req.query);
-        const validationError = validateCategoryFilters(req.query);
-        const params: types.CategoryParamsRequest = getFilterParamsForCategories(req);
-
-        if (!validationError.valid) {
-            return res.status(400).json({
-                message: "Validation error",
-                errors: validationError.errors
-            });
-        }
-
-        console.log("Fetching categories with params:", params);
-
         const categories = await getCategories(params);
         res.status(200).json(categories);
     } catch (error: any) {
@@ -281,23 +205,19 @@ async function get(req: express.Request, res: express.Response) {
 async function update(req: express.Request, res: express.Response) {
     if (util.isAdmin(req) === false) {
         return res.status(403).json({ message: "Forbidden: Only admins can update categories." });
-    }    
-    const categoryName = req.params.name;
-    const categoryData: types.CategoryUpdate = req.body;
-
-    if (!categoryName || validateInput(categoryName, undefined).valid === false) {
-        return res.status(400).json({
-            message: "Category name is required and must be a valid string"
-        });
+    }
+    console.log("Updating category with params:", req.params, "and body:", req.body);
+    const parsedParam = types.categorySchemas.updateRequest.safeParse(req.params);
+    if (!parsedParam.success) {
+        return res.status(400).send({ error: 'Invalid category name', details: parsedParam.error.format() });
+    }
+    const parsedBody = types.categorySchemas.updateRequest.safeParse(req.body);
+    if (!parsedBody.success) {
+        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
     }
 
-    const validationError = validateInput(categoryData.name, categoryData.description);
-    if (!validationError.valid) {
-        return res.status(400).json({
-            message: "Validation update category input error",
-            errors: validationError.errors
-        });
-    }
+    const categoryName = parsedParam.data.name;
+    const categoryData: types.CategoryUpdateRequest = parsedBody.data;
 
     try {
         if (await checkCategoryRecordNotExist(categoryName)) {
@@ -338,22 +258,11 @@ async function remove(req: types.RequestCustom, res: express.Response) {
     if (util.isAdmin(req) === false) {
         return res.status(403).json({ message: "Forbidden: Only admins can delete categories." });
     }
-    const categoryName = req.params.name;
-    
-    if (!categoryName || categoryName.trim() === "") {
-        return res.status(400).json({
-            message: "Category name is required"
-        });
+    const parsedParam = types.categorySchemas.updateRequest.safeParse(req.params);
+    if (!parsedParam.success) {
+        return res.status(400).send({ error: 'Invalid category name', details: parsedParam.error.format() });
     }
-
-    const validationError = validateInput(categoryName, undefined);
-    if (!validationError.valid) {
-        return res.status(400).json({
-            message: "Validation delete category input error",
-            errors: validationError.errors
-        });
-    }
-    
+    const categoryName = parsedParam.data.name;
     try {
         if (await checkCategoryRecordNotExist(categoryName)) {
             return res.status(400).json({
