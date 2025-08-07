@@ -5,58 +5,6 @@ import * as utils from '../../utils/index.utils';
 import { Client } from 'pg';
 import database from '../../config/db';
 
-// #### VALIDATION FUNCTIONS ####
-
- function validateProductFilters(req: types.RequestCustom): types.ValidationResult {
-    const errors: Partial<Record<string, string>> = {};
-
-    if (req.query.keywords && String(req.query.keywords).trim() === "") {
-        errors.keywords = "Keywords must not be empty";
-    }
-    if (req.query.page && Number(req.query.page) < 1) {
-        errors.page = "Page must be greater than 0";
-    }
-    if (req.query.sortAttribute && !types.SORT_ATTRIBUTES.includes(req.query.sortAttribute as types.SortAttribute)) {
-        errors.sortAttribute = "Invalid sort attribute";
-    }
-    if (req.query.sortOrder && !types.SORT_ORDERS.includes(req.query.sortOrder as types.SortOrder)) {
-        errors.sortOrder = "Invalid sort order";
-    }
-
-    if (req.query.status && !Object.values(types.PRODUCT_STATUS).includes(req.query.status as types.ProductStatus)) {
-        errors.status = 'Invalid product status';
-    }
-
-    if (req.query.category_id && (isNaN(Number(req.query.category_id)) || Number(req.query.category_id) <= 0)) {
-        errors.category_id = 'Category ID must be a positive number';
-    }
-
-    if (req.query.minPrice && (isNaN(Number(req.query.minPrice)) || Number(req.query.minPrice) < 0)) {
-        errors.minPrice = 'Minimum price must be a non-negative number';
-    }
-
-    if (req.query.maxPrice && (isNaN(Number(req.query.maxPrice)) || Number(req.query.maxPrice) < 0)) {
-        errors.maxPrice = 'Maximum price must be a non-negative number';
-    }
-
-    if (req.query.minPrice && req.query.maxPrice && Number(req.query.minPrice) > Number(req.query.maxPrice)) {
-        errors.priceRange = 'Minimum price cannot be greater than maximum price';
-    }
-
-    if (req.query.shop_id && (isNaN(Number(req.query.shop_id)) || Number(req.query.shop_id) <= 0)) {
-        errors.shop_id = 'Shop ID must be a positive number';
-    }
-
-    if (req.query.is_deleted && typeof req.query.is_deleted !== 'boolean') {
-        errors.is_deleted = 'is_deleted must be a boolean value';
-    }
-
-    return { 
-        valid: Object.keys(errors).length === 0, 
-        errors
-    };
-}
-
 // #### HELPER FUNCTIONS ####
 
 async function review(req: express.Request, res: express.Response, status: types.ProductStatus) {
@@ -146,7 +94,14 @@ async function listProducts(params: types.ProductParamsRequest) {
             WHERE name ILIKE $1
                 AND ($4::numeric IS NULL OR price <= $4)
                 AND ($5::numeric IS NULL OR price >= $5)
-                AND ($6::integer IS NULL OR category_id = $6)
+                AND (
+                    $6::int[] IS NULL 
+                    OR EXISTS (
+                        SELECT 1 FROM product_categories 
+                        WHERE product_categories.product_id = products.product_id
+                        AND product_categories.category_id = ANY($6::int[])
+                    )
+                )
                 AND ($7::text IS NULL OR status = $7)
                 AND ($8::integer IS NULL OR shop_id = $8)
                 AND ($9::boolean IS NULL OR is_deleted = $9)
@@ -185,16 +140,12 @@ async function list(req: types.RequestCustom, res: express.Response) {
     if (utils.isAdmin(req) === false) {
         return res.status(403).send({ error: 'Forbidden: Only admins can access this route' });
     }
-    console.log("Listing products with params:", req.query);
-    const validationError = validateProductFilters(req);
-    if (!validationError.valid) {
-        return res.status(400).json({
-            message: "Validation error",
-            errors: validationError.errors
-        });
+    const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
+    console.log("Parsed body for listing products:", req.query);
+    if (!parsedBody.success) {
+        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
     }
-
-    const params: types.ProductParamsRequest = getFilterParamsForProducts(req);
+    const params: types.ProductParamsRequest = parsedBody.data;
     console.log("Listing products with params:", params);
 
     try {
