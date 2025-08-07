@@ -23,4 +23,5 @@ router.put('/products/:id/update',      mid.switchRole, controller.seller.produc
 router.put('/products/:id/hide',        mid.switchRole, controller.seller.product.hide);
 router.put('/products/:id/display',     mid.switchRole, controller.seller.product.display);
 router.post('/products/add',            mid.switchRole, controller.seller.product.add);
+
 export default router;

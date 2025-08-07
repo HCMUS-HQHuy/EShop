@@ -1,19 +1,19 @@
 import { z } from 'zod';
 import * as types from './index.types';
 
-export interface AdminVerifySellerRequest {
-  seller_id: number;
-  status: types.SellerStatus;
-  rejection_reason?: string;
-}
+const AdminVerifySellerRequestSchema = z.object({
+	shop_id: z.coerce.number().int().positive('Seller ID must be a positive integer'),
+	status: z.enum([types.SHOP_STATUS.REJECTED, types.SHOP_STATUS.ACTIVE], 'Invalid seller status'),
+	admin_note: z.string().max(500, 'Rejection reason must not exceed 500 characters').optional(),
+});
 
-export interface BlockUnblockUserRequest {
-  user_id: number;
-  status: types.UserStatus;
-}
+const BlockUnblockUserRequestSchema = z.object({
+	user_id: z.coerce.number().int().positive('User ID must be a positive integer'),
+	status: z.enum([types.USER_STATUS.BANNED, types.USER_STATUS.ACTIVE], 'Invalid user status'),
+});
 
 const ShopInformationSchema = z.object({
-    user_id: z.number().int().positive('User ID must be a positive integer'),
+    user_id: z.coerce.number().int().positive('User ID must be a positive integer'),
     shop_name: z.string().min(1, 'Shop name is required'),
     shop_description: z.string().optional(),
     status: z.enum(types.SHOP_STATUS).optional(),
@@ -28,7 +28,12 @@ const CreationRequestSchema = z.object({
 
 export type ShopInformation = z.infer<typeof ShopInformationSchema>;
 export type ShopCreationRequest = z.infer<typeof CreationRequestSchema>;
+export type AdminVerifySellerRequest = z.infer<typeof AdminVerifySellerRequestSchema>;
+export type BlockUnblockUserRequest = z.infer<typeof BlockUnblockUserRequestSchema>;
+
 export const shopSchemas = {
     Information: ShopInformationSchema,
-    CreationRequest: CreationRequestSchema
+    CreationRequest: CreationRequestSchema,
+	AdminVerify: AdminVerifySellerRequestSchema,
+	BlockUnblock: BlockUnblockUserRequestSchema,
 };

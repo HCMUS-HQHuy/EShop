@@ -26,12 +26,11 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT u.user_id, u.role, s.shop_id
+            SELECT u.user_id, u.role, s.shop_id, s.status
             FROM users as u
                 LEFT JOIN shops as s
                 ON u.user_id = s.user_id
             WHERE u.user_id = $1
-                AND s.status IN ('${types.SHOP_STATUS.ACTIVE}', '${types.SHOP_STATUS.CLOSED}')
                 AND u.status = '${types.USER_STATUS.ACTIVE}'
         `;
         const result = await db.query(sql, [req.user?.user_id]);
@@ -42,8 +41,9 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
         req.user = {
             user_id: user.user_id,
             role: types.USER_ROLE.USER,
-            shop_id: user.shop_id || null
+            shop_id: user.status === types.SHOP_STATUS.ACTIVE ? user.shop_id : null
         } as types.UserInfor;
+        console.log('request.user in seller account:', req.user);
         next();
     } catch (error) {
         console.error("Database connection error:", error);

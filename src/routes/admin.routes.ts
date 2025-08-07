@@ -16,8 +16,9 @@ adminRouter.post("/auth/login", controller.auth.login);
 adminRouter.post("/auth/signup", controller.auth.registerUser);
 
 // #### ACCOUNT MANAGEMENT ROUTES ####
+adminRouter.get('/account-management/list', mid.auth, controller.admin.account.list);
 adminRouter.put('/account-management/review-user',   mid.auth, controller.admin.account.reviewUser);
-adminRouter.put('/account-management/review-seller', mid.auth, controller.admin.account.reviewSeller);
+adminRouter.put('/account-management/review-shop', mid.auth, controller.admin.account.reviewShop);
 
 // #### CATEGORY ROUTES ####
 adminRouter.post('/categories/add',            mid.auth, controller.admin.category.add);

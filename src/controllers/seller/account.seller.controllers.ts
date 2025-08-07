@@ -53,7 +53,7 @@ async function create(req: types.RequestCustom, res: express.Response) {
     };
 
     try {
-        await createSellerAccount(req.body.user_id, requestData);
+        await createSellerAccount(req.user?.user_id as number, requestData);
         return res.status(201).json({
             message: "Seller account created successfully"
         });
