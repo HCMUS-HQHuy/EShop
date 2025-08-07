@@ -7,6 +7,8 @@ import * as util from "../../utils/index.utils";
 
 // #### VALIDATION FUNCTIONS ####
 
+// #### DATABASE FUNCTIONS ####
+
 async function checkShopStatus(data: types.AdminVerifySellerRequest): Promise<types.ValidationResult> {
     const errors: Partial<Record<string, string>> = {};
     let db: Client | undefined = undefined;
@@ -50,8 +52,6 @@ async function checkShopStatus(data: types.AdminVerifySellerRequest): Promise<ty
     };
 }
 
-
-// #### DATABASE FUNCTIONS ####
 async function checkUserCondition(data: types.BlockUnblockUserRequest): Promise<types.ValidationResult> {
     const errors: Partial<Record<keyof types.BlockUnblockUserRequest, string>> = {};
     let db: Client | undefined = undefined;
