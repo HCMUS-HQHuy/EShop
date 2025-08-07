@@ -129,6 +129,31 @@ async function listProducts(params: types.ProductParamsRequest) {
     }
 }
 
+async function getRelatedProductsById(productId: number): Promise<any[]> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const sql = `
+            SELECT product_id, name, price, stock_quantity, category_id, shop_id, image_url
+            FROM products
+            WHERE category_id = (SELECT category_id FROM products WHERE product_id = $1)
+                AND product_id != $1
+                AND status = '${types.PRODUCT_STATUS.ACTIVE}'
+                AND is_deleted = FALSE
+            LIMIT 10
+        `;
+        const result = await db.query(sql, [productId]);
+        return result.rows;
+    } catch (error) {
+        console.error('Error fetching related products:', error);
+        throw error;
+    } finally {
+        if (db) {
+            await database.releaseConnection(db);
+        }
+    }
+}
+
 // #### CONTROLLER FUNCTIONS ####
 
 async function list(req: types.RequestCustom, res: express.Response) {
@@ -175,9 +200,29 @@ async function getDetailById(req: types.RequestCustom, res: express.Response) {
     }
 }
 
+async function getRelatedProducts(req: types.RequestCustom, res: express.Response) {
+    const productId = Number(req.params.id);
+    if (!productId || isNaN(productId)) {
+        return res.status(400).send({ error: 'Product ID is required and must be a number' });
+    }
+    console.log("Fetching related products for ID:", productId);
+    if (productId <= 0) {
+        return res.status(400).send({ error: 'Product ID must be a positive number' });
+    }
+
+    try {
+        const relatedProducts = await getRelatedProductsById(productId);
+        res.send(relatedProducts);
+    } catch (error) {
+        console.error('Error fetching related products:', error);
+        return res.status(500).send({ error: 'Internal server error' });
+    }
+}
+
 // #### EXPORTS ####
 const product = {
     list,
-    getDetailById
+    getDetailById,
+    getRelatedProducts
 };
 export default product;

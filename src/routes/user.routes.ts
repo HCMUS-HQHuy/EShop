@@ -11,5 +11,6 @@ router.get("/", (req, res) => {
 
 router.get("/products",     controller.user.product.list);
 router.get("/products/:id", controller.user.product.getDetailById);
+router.get("/products/:id/related", controller.user.product.getRelatedProducts);
 
 export default router;

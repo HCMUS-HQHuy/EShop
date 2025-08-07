@@ -8,9 +8,7 @@ CREATE TABLE users (
     fullname VARCHAR(100) NOT NULL,
     address VARCHAR(255),
     phone_number VARCHAR(15),
-    -- Vai trò cơ bản, 'User' cho cả người mua và người bán. 'Admin' là vai trò đặc biệt.
     role VARCHAR(10) NOT NULL CHECK (role IN ('Admin', 'User')) DEFAULT 'User',
-    -- Trạng thái chung của tài khoản
     status VARCHAR(20) NOT NULL CHECK (status IN ('Active', 'Banned')) DEFAULT 'Active',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -18,18 +16,16 @@ CREATE TABLE users (
 );
 
 -- BẢNG MỚI: Chứa thông tin đăng ký bán hàng của một user.
-CREATE TABLE seller_profiles (
-    seller_profile_id SERIAL PRIMARY KEY,
+CREATE TABLE shops (
+    shop_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL UNIQUE, -- Mỗi user chỉ có một hồ sơ bán hàng
     shop_name VARCHAR(100) NOT NULL,
     shop_description TEXT,
     -- Trạng thái của việc bán hàng, quyết định quyền truy cập vào Seller Portal
     status VARCHAR(20) NOT NULL CHECK (status IN ('PendingVerification', 'Active', 'Rejected', 'Closed', 'Banned')) DEFAULT 'PendingVerification',
-    rejection_reason TEXT, -- Lý do bị từ chối, nếu có
+    admin_note TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_seller_profile_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    CONSTRAINT fk_shop_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 
@@ -39,6 +35,7 @@ CREATE TABLE categories (
     category_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
     description TEXT,
+    parent_id INT REFERENCES categories(category_id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     deleted_at TIMESTAMP WITH TIME ZONE,
@@ -53,7 +50,6 @@ CREATE TABLE products (
     price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
     stock_quantity INT NOT NULL CHECK (stock_quantity >= 0),
     image_url VARCHAR(255),
-    category_id INT NOT NULL,
     shop_id INT NOT NULL,
     status VARCHAR(20) NOT NULL CHECK (status IN ('PendingApproval', 'Rejected', 'Active', 'Inactive', 'Banned')) DEFAULT 'PendingApproval',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -61,9 +57,14 @@ CREATE TABLE products (
     deleted_at TIMESTAMP WITH TIME ZONE,
     deleted_by INT,
 
-    CONSTRAINT fk_product_category FOREIGN KEY (category_id) REFERENCES categories(category_id),
-    CONSTRAINT fk_product_shop FOREIGN KEY (shop_id) REFERENCES seller_profiles(seller_profile_id),
+    CONSTRAINT fk_product_shop FOREIGN KEY (shop_id) REFERENCES shops(shop_id),
     CONSTRAINT fk_product_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(user_id) ON DELETE SET NULL
+);
+
+CREATE TABLE product_categories (
+    product_id INT REFERENCES products(product_id) ON DELETE CASCADE,
+    category_id INT REFERENCES categories(category_id) ON DELETE CASCADE,
+    PRIMARY KEY (product_id, category_id)
 );
 
 CREATE TABLE product_images (
