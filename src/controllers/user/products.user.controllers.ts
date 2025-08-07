@@ -68,12 +68,10 @@ async function getProductInforById(productId: number): Promise<any | null> {
         const sql = `
             SELECT 
                 product_id, products.name as product_name, products.description as product_description, 
-                price, stock_quantity, categories.name AS category_name, 
-                shop.shop_name AS shop_name, shop.seller_profile_id
+                price, stock_quantity, shop.shop_name AS shop_name, shop.shop_id AS shop_id
             FROM
                 products
-                JOIN categories ON products.category_id = categories.category_id
-                JOIN seller_profiles as shop ON products.shop_id = shop.seller_profile_id
+                JOIN shops as shop ON products.shop_id = shop.shop_id
             WHERE 
                 product_id = $1 
                 AND products.status = '${types.PRODUCT_STATUS.ACTIVE}' AND products.is_deleted = FALSE
@@ -95,14 +93,21 @@ async function listProducts(params: types.ProductParamsRequest) {
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT product_id, name, price, stock_quantity, category_id, shop_id, image_url
+            SELECT product_id, name, price, stock_quantity, shop_id, image_url
             FROM products
             WHERE name ILIKE $1
                 AND status = '${types.PRODUCT_STATUS.ACTIVE}'
                 AND is_deleted = FALSE
                 AND ($4::numeric IS NULL OR price <= $4)
                 AND ($5::numeric IS NULL OR price >= $5)
-                AND ($6::integer IS NULL OR category_id = $6)
+                AND (
+                    $6::int[] IS NULL 
+                    OR EXISTS (
+                        SELECT 1 FROM product_categories 
+                        WHERE product_categories.product_id = products.product_id
+                        AND product_categories.category_id = ANY($6::int[])
+                    )
+                )
             ORDER BY ${params.sortAttribute} ${params.sortOrder}
             LIMIT $2 OFFSET $3
         `;
@@ -158,15 +163,14 @@ async function getRelatedProductsById(productId: number): Promise<any[]> {
 
 async function list(req: types.RequestCustom, res: express.Response) {
     console.log("Listing products with params:", req.query);
-    const validationError = validateProductFilters(req);
-    if (!validationError.valid) {
-        return res.status(400).json({
-            message: "Validation error",
-            errors: validationError.errors
+    const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
+    if (!parsedBody.success) {
+        return res.status(400).send({ 
+            error: 'Invalid request data', 
+            details: parsedBody.error.format() 
         });
     }
-    
-    const params: types.ProductParamsRequest = getFilterParamsForProducts(req);
+    const params: types.ProductParamsRequest = parsedBody.data;
     console.log("Listing products with params:", params);
 
     try {
