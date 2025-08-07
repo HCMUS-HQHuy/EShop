@@ -81,7 +81,7 @@ async function review(req: express.Request, res: express.Response, status: types
 }
 
 function getFilterParamsForProducts(req: types.RequestCustom): types.ProductParamsRequest  {
-    const params: types.ProductParamsRequest = {
+    const params: types.ProductParamsRequest | any = {
         page: req.query.page !== undefined ? Number(req.query.page) : Number(process.env.PAGINATION_DEFAULT_PAGE),
         sortAttribute: req.query.attribute !== undefined ? String(req.query.sortAttribute) : (process.env.SORT_ATTRIBUTE as string),
         sortOrder: req.query.order !== undefined ? String(req.query.sortOrder) : (process.env.SORT_ORDER as string),
@@ -162,7 +162,7 @@ async function listProducts(params: types.ProductParamsRequest) {
             offset,                         // $3
             filter?.max_price,              // $4
             filter?.min_price,              // $5
-            filter?.category_id,            // $6
+            filter?.categories_id,          // $6
             filter?.status,                 // $7
             filter?.shop_id,                // $8
             filter?.is_deleted              // $9

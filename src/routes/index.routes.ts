@@ -9,6 +9,7 @@ const router: express.Router = express.Router();
 
 router.use(express.json());
 
+
 router.get('/', (req, res) => {
     res.status(200).json({ message: "Hello from HQH only // used for testing API" });
 });

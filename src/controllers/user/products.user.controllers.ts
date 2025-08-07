@@ -47,10 +47,10 @@ import * as utils from '../../utils/index.utils';
 
 // #### HELPER FUNCTIONS ####
 function getFilterParamsForProducts(req: types.RequestCustom): types.ProductParamsRequest  {
-    const params: types.ProductParamsRequest = {
+    const params: any = {
         page: req.query.page !== undefined ? Number(req.query.page) : Number(process.env.PAGINATION_DEFAULT_PAGE),
-        sortAttribute: req.query.attribute !== undefined ? String(req.query.sortAttribute) : (process.env.SORT_ATTRIBUTE as string),
-        sortOrder: req.query.order !== undefined ? String(req.query.sortOrder) : (process.env.SORT_ORDER as string),
+        // sortAttribute: req.query.attribute !== undefined ? String(req.query.sortAttribute) : (process.env.SORT_ATTRIBUTE as string),
+        // sortOrder: req.query.order !== undefined ? String(req.query.sortOrder) : (process.env.SORT_ORDER as string),
         keywords: req.query.keywords !== undefined ? String(req.query.keywords) : (process.env.SEARCH_KEYWORDS as string),
         filter: {
             status: req.query.status !== undefined ? String(req.query.status) as types.ProductStatus : undefined,
@@ -115,7 +115,7 @@ async function listProducts(params: types.ProductParamsRequest) {
             offset,                         // $3
             filter?.max_price,              // $4
             filter?.min_price,              // $5
-            filter?.category_id,            // $6
+            filter?.categories_id,          // $6
         ];
         const result = await db.query(sql, queryParams);
         return result.rows;

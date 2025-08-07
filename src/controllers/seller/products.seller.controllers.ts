@@ -1,97 +1,9 @@
 import express from 'express';
+import qs from 'qs';
 import { Client } from 'pg';
 import database from '../../config/db';
 import * as utils from '../../utils/index.utils';
 import * as types from '../../types/index.types';
-
-// #### VALIDATION FUNCTIONS ####
-
-function validateProductFilters(req: types.RequestCustom): types.ValidationResult {
-    const errors: Partial<Record<string, string>> = {};
-
-    if (req.query.keywords && String(req.query.keywords).trim() === "") {
-        errors.keywords = "Keywords must not be empty";
-    }
-    if (req.query.page && Number(req.query.page) < 1) {
-        errors.page = "Page must be greater than 0";
-    }
-    if (req.query.sortAttribute && !types.SORT_ATTRIBUTES.includes(req.query.sortAttribute as types.SortAttribute)) {
-        errors.sortAttribute = "Invalid sort attribute: must be 'name' or 'created_at'";
-    } else if (req.query.sortAttribute && String(req.query.sortAttribute).trim() === "") {
-        errors.sortAttribute = "Sort attribute must not be empty";
-    } else if (req.query.sortAttribute && (req.query.sortOrder == undefined || !types.SORT_ORDERS.includes(req.query.sortOrder as types.SortOrder))) {
-        errors.sortOrder = "Invalid sort order: must be 'asc' or 'desc' if sort attribute is provided";
-    }
-
-    if (req.query.sortOrder && !types.SORT_ORDERS.includes(req.query.sortOrder as types.SortOrder)) {
-        errors.sortOrder = "Invalid sort order: must be 'asc' or 'desc'";
-    }
-
-    if (req.query.status && !Object.values(types.PRODUCT_STATUS).includes(req.query.status as types.ProductStatus)) {
-        errors.status = 'Invalid product status';
-    }
-
-    if (req.query.category_id && (isNaN(Number(req.query.category_id)) || Number(req.query.category_id) <= 0)) {
-        errors.category_id = 'Category ID must be a positive number';
-    }
-
-    if (req.query.minPrice && (isNaN(Number(req.query.minPrice)) || Number(req.query.minPrice) < 0)) {
-        errors.minPrice = 'Minimum price must be a non-negative number';
-    }
-
-    if (req.query.maxPrice && (isNaN(Number(req.query.maxPrice)) || Number(req.query.maxPrice) < 0)) {
-        errors.maxPrice = 'Maximum price must be a non-negative number';
-    }
-
-    if (req.query.minPrice && req.query.maxPrice && Number(req.query.minPrice) > Number(req.query.maxPrice)) {
-        errors.priceRange = 'Minimum price cannot be greater than maximum price';
-    }
-
-    return {
-        valid: Object.keys(errors).length === 0, 
-        errors
-    };
-}
-
-function validateProductData(data: types.ProductAddRequest): types.ValidationResult {
-    const errors: Partial<Record<keyof types.ProductAddRequest, string>> = {};
-    if (data?.name === undefined || data.name.trim() === '') {
-        errors.name = 'Name is required';
-    }
-
-    if (data?.price === undefined || data.price < 0) {
-        errors.price = 'Price must be a non-negative number';
-    }
-
-    if (data?.stock_quantity === undefined || data.stock_quantity < 0) {
-        errors.stock_quantity = 'Stock quantity must be a non-negative number';
-    }
-
-    if (data?.category_id === undefined || data.category_id <= 0) {
-        errors.category_id = 'Category ID must be a positive number';
-    }
-    return { 
-        valid: Object.keys(errors).length === 0, 
-        errors
-    };
-}
-
-// #### HELPER FUNCTIONS ####
-function getFilterParamsForProducts(req: types.RequestCustom): types.ProductParamsRequest  {
-    const params: types.ProductParamsRequest = {
-        page: req.query.page !== undefined ? Number(req.query.page) : Number(process.env.PAGINATION_DEFAULT_PAGE),
-        sortAttribute: req.query.attribute !== undefined ? String(req.query.sortAttribute) : (process.env.SORT_ATTRIBUTE as string),
-        sortOrder: req.query.order !== undefined ? String(req.query.sortOrder) : (process.env.SORT_ORDER as string),
-        keywords: req.query.keywords !== undefined ? String(req.query.keywords) : (process.env.SEARCH_KEYWORDS as string),
-        filter: {
-            status: req.query.status !== undefined ? String(req.query.status) as types.ProductStatus : undefined,
-            category_id: req.query.category_id !== undefined ? Number(req.query.category_id) : undefined,
-            min_price: req.query.minPrice !== undefined ? Number(req.query.minPrice) : undefined,
-            max_price: req.query.maxPrice !== undefined ? Number(req.query.maxPrice) : undefined
-        }
-    };
-    return params;
-}
 
 // #### DATABASE FUNCTIONS ####
 
@@ -143,12 +55,11 @@ async function updateProduct(productId: number, product: types.ProductAddRequest
         db = await database.getConnection();
         const sql = `
             UPDATE products
-            SET name = $1, price = $2, stock_quantity = $3, 
-                category_id = $4, shop_id = $5, 
+            SET name = $1, price = $2, stock_quantity = $3, shop_id = $4, 
                 status = '${types.PRODUCT_STATUS.PENDING}'
-            WHERE product_id = $6 AND is_deleted = FALSE
+            WHERE product_id = $5 AND is_deleted = FALSE
         `;
-        const data = [product.name, product.price, product.stock_quantity, product.category_id, product.shop_id, productId];
+        const data = [product.name, product.price, product.stock_quantity, product.shop_id, productId];
         await db.query(sql, data);
     } catch (error) {
         console.error('Error updating product:', error);
@@ -165,13 +76,20 @@ async function listProducts(shop_id: number, params: types.ProductParamsRequest)
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT product_id, name, price, stock_quantity, category_id, status, created_at
+            SELECT product_id, name, price, stock_quantity, status, created_at
             FROM products
             WHERE name ILIKE $1
                 AND shop_id = ${shop_id}
                 AND ($4::numeric IS NULL OR price <= $4)
                 AND ($5::numeric IS NULL OR price >= $5)
-                AND ($6::integer IS NULL OR category_id = $6)
+                AND (
+                    $6::int[] IS NULL 
+                    OR EXISTS (
+                        SELECT 1 FROM product_categories 
+                        WHERE product_categories.product_id = products.product_id
+                        AND product_categories.category_id = ANY($6::int[])
+                    )
+                )
                 AND ($7::text IS NULL OR status = $7)
                 AND is_deleted = FALSE
             ORDER BY ${params.sortAttribute} ${params.sortOrder}
@@ -186,7 +104,7 @@ async function listProducts(shop_id: number, params: types.ProductParamsRequest)
             offset,                         // $3
             filter?.max_price,              // $4
             filter?.min_price,              // $5
-            filter?.category_id,            // $6
+            filter?.categories_id,          // $6
             filter?.status,                 // $7
         ];
         const result = await db.query(sql, queryParams);
@@ -207,10 +125,10 @@ async function addProduct(product: types.ProductAddRequest) {
     try {
         db = await database.getConnection();
         const sql = `
-            INSERT INTO products (name, price, stock_quantity, category_id, shop_id)
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO products (name, price, stock_quantity, shop_id)
+            VALUES ($1, $2, $3, $4)
         `;
-        const data = [product.name, product.price, product.stock_quantity, product.category_id, product.shop_id];
+        const data = [product.name, product.price, product.stock_quantity, product.shop_id];
         await db.query(sql, data);
     } catch (error) {
         console.error('Error adding product to database:', error);
@@ -267,16 +185,22 @@ async function list(req: types.RequestCustom, res: express.Response) {
     if (utils.isSeller(req) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can list products' });
     }
-    console.log("Listing products with params:", req.query);
-    const validationError = validateProductFilters(req);
-    if (!validationError.valid) {
-        return res.status(400).json({
-            message: "Validation error",
-            errors: validationError.errors
-        });
-    }
+    const query = req.query;
+    console.log("Listing products with params:", query);
+    // const validationError = validateProductFilters(req);
+    // if (!validationError.valid) {
+    //     return res.status(400).json({
+    //         message: "Validation error",
+    //         errors: validationError.errors
+    //     });
+    // }
     
-    const params: types.ProductParamsRequest = getFilterParamsForProducts(req);
+    const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
+    if (!parsedBody.success) {
+        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
+    }
+    const params: types.ProductParamsRequest = parsedBody.data;
+    // const params: types.ProductParamsRequest = getFilterParamsForProducts(req);
     console.log("Listing products with params:", params);
 
     try {
@@ -333,16 +257,11 @@ async function update(req: types.RequestCustom, res: express.Response) {
         console.error('Error checking product existence:', error);
         return res.status(500).send({ error: 'Internal server error' });
     }
-    const product: types.ProductAddRequest = req.body;
-    try {
-        const validationResult = validateProductData(product);
-        if (!validationResult.valid) {
-            return res.status(400).send({ errors: validationResult.errors });
-        }
-    } catch (error) {
-        console.error('Error validating product:', error);
-        return res.status(500).send({ error: 'Internal server error' });
+    const parsedBody = types.productSchemas.addRequest.safeParse(req.body);
+    if (!parsedBody.success) {
+        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
     }
+    const product: types.ProductAddRequest = parsedBody.data;
     try {
         // Ensure the shop_id is set from the authenticated user
         product.shop_id = req.user?.shop_id as number;
@@ -359,16 +278,11 @@ async function add(req: types.RequestCustom, res: express.Response) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can add products' });
     }
 
-    const product: types.ProductAddRequest = req.body;
-    try {
-        const validationResult = validateProductData(product);
-        if (!validationResult.valid) {
-            return res.status(400).send({ errors: validationResult.errors });
-        }
-    } catch (error) {
-        console.error('Error validating product:', error);
-        return res.status(500).send({ error: 'Internal server error' });
+    const parsedBody = types.productSchemas.addRequest.safeParse(req.body);
+    if (!parsedBody.success) {
+        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
     }
+    const product: types.ProductAddRequest = parsedBody.data;
 
     try {
         // Ensure the shop_id is set from the authenticated user

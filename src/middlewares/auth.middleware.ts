@@ -26,9 +26,9 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT u.user_id, u.role, s.seller_profile_id
+            SELECT u.user_id, u.role, s.shop_id
             FROM users as u
-                LEFT JOIN seller_profiles as s
+                LEFT JOIN shops as s
                 ON u.user_id = s.user_id
             WHERE u.user_id = $1
                 AND s.status IN ('${types.SELLER_STATUS.ACTIVE}', '${types.SELLER_STATUS.CLOSED}')
@@ -42,7 +42,7 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
         req.user = {
             user_id: user.user_id,
             role: types.USER_ROLE.USER,
-            shop_id: user.seller_profile_id || null
+            shop_id: user.shop_id || null
         } as types.UserInfor;
         next();
     } catch (error) {
