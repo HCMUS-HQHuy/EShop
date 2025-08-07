@@ -8,7 +8,7 @@ import * as utils from "../../utils/index.utils";
 
 // #### DATABASE FUNCTIONS ####
 
-async function createSellerAccount(data: types.ShopCreationRequest) {
+async function createSellerAccount(user_id: number, data: types.ShopCreationRequest) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -16,7 +16,7 @@ async function createSellerAccount(data: types.ShopCreationRequest) {
             INSERT INTO shops (user_id, shop_name, shop_description) 
             VALUES ($1, $2, $3)
         `;
-        const values = [data.user_id, data.shop_name, data.shop_description || null];
+        const values = [user_id, data.shop_name, data.shop_description || null];
         await db.query(sql, values);
 
     } catch (error) {
@@ -48,13 +48,12 @@ async function create(req: types.RequestCustom, res: express.Response) {
         });
     }
     const requestData: types.ShopCreationRequest = {
-        user_id: req.user?.user_id as number,
         shop_name: parsedBody.data.shop_name,
         shop_description: parsedBody.data.shop_description
     };
 
     try {
-        await createSellerAccount(requestData);
+        await createSellerAccount(req.body.user_id, requestData);
         return res.status(201).json({
             message: "Seller account created successfully"
         });

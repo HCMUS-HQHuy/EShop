@@ -22,7 +22,6 @@ const ShopInformationSchema = z.object({
 });
 
 const CreationRequestSchema = z.object({
-    user_id: z.number().int().positive('User ID must be a positive integer'),
     shop_name: z.string().min(1, 'Shop name is required'),
     shop_description: z.string().max(500, 'Shop description must not exceed 500 characters').optional(),
 });
