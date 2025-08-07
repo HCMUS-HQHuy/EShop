@@ -7,57 +7,7 @@ import * as utils from '../../utils/index.utils';
 
 // #### VALIDATION FUNCTIONS ####
 
- function validateProductFilters(req: types.RequestCustom): types.ValidationResult {
-    const errors: Partial<Record<string, string>> = {};
-
-    if (req.query.keywords && String(req.query.keywords).trim() === "") {
-        errors.keywords = "Keywords must not be empty";
-    }
-    if (req.query.page && Number(req.query.page) < 1) {
-        errors.page = "Page must be greater than 0";
-    }
-    if (req.query.sortAttribute && !types.SORT_ATTRIBUTES.includes(req.query.sortAttribute as types.SortAttribute)) {
-        errors.sortAttribute = "Invalid sort attribute";
-    }
-    if (req.query.sortOrder && !types.SORT_ORDERS.includes(req.query.sortOrder as types.SortOrder)) {
-        errors.sortOrder = "Invalid sort order";
-    }
-
-    if (req.query.category_id && (isNaN(Number(req.query.category_id)) || Number(req.query.category_id) <= 0)) {
-        errors.category_id = 'Category ID must be a positive number';
-    }
-
-    if (req.query.minPrice && (isNaN(Number(req.query.minPrice)) || Number(req.query.minPrice) < 0)) {
-        errors.minPrice = 'Minimum price must be a non-negative number';
-    }
-
-    if (req.query.maxPrice && (isNaN(Number(req.query.maxPrice)) || Number(req.query.maxPrice) < 0)) {
-        errors.maxPrice = 'Maximum price must be a non-negative number';
-    }
-
-    if (req.query.minPrice && req.query.maxPrice && Number(req.query.minPrice) > Number(req.query.maxPrice)) {
-        errors.priceRange = 'Minimum price cannot be greater than maximum price';
-    }
-
-    return {
-        valid: Object.keys(errors).length === 0, 
-        errors
-    };
-}
-
 // #### HELPER FUNCTIONS ####
-function getFilterParamsForProducts(req: types.RequestCustom): types.ProductParamsRequest  {
-    const params: any = {
-        page: req.query.page !== undefined ? Number(req.query.page) : Number(process.env.PAGINATION_DEFAULT_PAGE),
-        // sortAttribute: req.query.attribute !== undefined ? String(req.query.sortAttribute) : (process.env.SORT_ATTRIBUTE as string),
-        // sortOrder: req.query.order !== undefined ? String(req.query.sortOrder) : (process.env.SORT_ORDER as string),
-        keywords: req.query.keywords !== undefined ? String(req.query.keywords) : (process.env.SEARCH_KEYWORDS as string),
-        filter: {
-            status: req.query.status !== undefined ? String(req.query.status) as types.ProductStatus : undefined,
-        }
-    };
-    return params;
-}
 
 // #### DATABASE FUNCTIONS ####
 
