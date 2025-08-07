@@ -9,8 +9,14 @@ router.get("/", (req, res) => {
     res.status(200).json({ message: "This route is accessible only by the user" });
 });
 
-router.get("/products/list",     controller.user.product.list);
-router.get("/products/:id", controller.user.product.getDetailById);
+// #### PRODUCT ROUTES ####
+router.get("/products/list",        controller.user.product.list);
+router.get("/products/:id",         controller.user.product.getDetailById);
 router.get("/products/:id/related", controller.user.product.getRelatedProducts);
+
+// #### CART ROUTES ####
+router.get("/cart",                 mid.auth, controller.user.cart.get);
+router.post("/cart/add/", mid.auth, controller.user.cart.addProduct);
+// router.delete("/cart/:id/remove", mid.auth, controller.user.cart.removeFromCart);
 
 export default router;

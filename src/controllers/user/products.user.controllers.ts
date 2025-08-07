@@ -90,12 +90,12 @@ async function listProducts(params: types.ProductParamsRequest) {
         const filter        = params.filter as types.UserProductFilter;
         const categoriesId  = await getAllCategoriesId(filter?.categories_id);
         const queryParams = [
-            `%${params.keywords}%`,         // $1
-            limit,                          // $2
-            offset,                         // $3
-            filter?.max_price,              // $4
-            filter?.min_price,              // $5
-            categoriesId,                   // $6
+            `%${params.keywords}%`,                         // $1
+            limit,                                          // $2
+            offset,                                         // $3
+            filter?.max_price,                              // $4
+            filter?.min_price,                              // $5
+            categoriesId.length > 0 ? categoriesId : null,  // $6
         ];
         const result = await db.query(sql, queryParams);
         return result.rows;
