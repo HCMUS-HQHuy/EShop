@@ -11,15 +11,15 @@ async function getCartItems(userId: number): Promise<types.CartItem[]> {
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT 
+            SELECT
                 cart_item_id, user_id, cart_items.product_id, 
                 quantity, products.name AS product_name, 
                 products.image_url AS product_image, price,
                 products.description AS product_description,
                 products.stock_quantity AS product_stock
-            FROM 
+            FROM
                 cart_items
-            JOIN 
+            JOIN
                 products ON cart_items.product_id = products.product_id
             WHERE
                 user_id = $1
