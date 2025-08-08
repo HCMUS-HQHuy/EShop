@@ -63,7 +63,7 @@ async function addProduct(req: types.RequestCustom, res: express.Response) {
     if (!parsedBody.success) {
         return res.status(400).send({ 
             error: 'Invalid request data', 
-            details: parsedBody.error.format() 
+            details: parsedBody.error.format()
         });
     }
     const cartItem: types.CartItem = parsedBody.data;

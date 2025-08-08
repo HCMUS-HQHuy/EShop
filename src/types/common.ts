@@ -1,9 +1,12 @@
 
 export const SORT_ATTRIBUTES = ['name', 'created_at'] as const;
 export const SORT_ORDERS = ['asc', 'desc'] as const;
-
-export type SortAttribute = typeof SORT_ATTRIBUTES[number];
-export type SortOrder = typeof SORT_ORDERS[number];
+export const ORDER_STATUSES = {
+  PENDING: 'Pending',
+  SHIPPED: 'Shipped',
+  DELIVERED: 'Delivered',
+  CANCELLED: 'Cancelled'
+} as const;
 
 export const SHOP_STATUS = {
     ACTIVE: 'Active',
@@ -20,6 +23,9 @@ export const USER_STATUS = {
 
 export type SellerStatus = typeof SHOP_STATUS[keyof typeof SHOP_STATUS];
 export type UserStatus = typeof USER_STATUS[keyof typeof USER_STATUS];
+export type SortAttribute = typeof SORT_ATTRIBUTES[number];
+export type SortOrder = typeof SORT_ORDERS[number];
+export type OrderStatus = typeof ORDER_STATUSES[keyof typeof ORDER_STATUSES];
 
 export interface ValidationResult {
   valid: boolean;

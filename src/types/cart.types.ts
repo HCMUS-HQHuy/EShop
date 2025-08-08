@@ -9,6 +9,7 @@
 // }
 
 const CartItemSchema = z.object({
+  cart_item_id: z.number().min(1).optional(),
   user_id: z.number().min(1),
   product_id: z.number().min(1),
   quantity: z.number().min(1).default(1),
