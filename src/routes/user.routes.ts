@@ -16,7 +16,8 @@ router.get("/products/:id/related", controller.user.product.getRelatedProducts);
 
 // #### CART ROUTES ####
 router.get("/cart",                 mid.auth, controller.user.cart.get);
-router.post("/cart/add/", mid.auth, controller.user.cart.addProduct);
-// router.delete("/cart/:id/remove", mid.auth, controller.user.cart.removeFromCart);
+router.post("/cart/add", mid.auth, controller.user.cart.addProduct);
+router.put("/cart/:id/update", mid.auth, controller.user.cart.updateProduct);
+router.delete("/cart/:id/remove", mid.auth, controller.user.cart.removeProduct);
 
 export default router;
