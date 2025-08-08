@@ -103,12 +103,16 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
 
         const orderItems: types.OrderItemRequest[] = await checkAndLockOrderItems(orderData.items, orderData.user_id, db);
 
+        if(!orderItems || !Array.isArray(orderItems)) {
+            throw Error
+        }
+
         const sql_create_order = `
             INSERT INTO orders (user_id, receiver_name, shipping_address, phone_number, email, total_amount, payment_method_id)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING order_id
         `;
-
+        orderData.total_amount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.price_at_purchase), 0)
         const orderParams = [
             orderData.user_id,
             orderData.receiver_name,

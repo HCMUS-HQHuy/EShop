@@ -128,7 +128,7 @@ CREATE TABLE orders (
     total_amount DECIMAL(10, 2) NOT NULL,
     status VARCHAR(20) NOT NULL CHECK (status IN ('Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled')) DEFAULT 'Pending',
     payment_method_id INT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
     CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES users(user_id),
     CONSTRAINT fk_order_payment_method FOREIGN KEY (payment_method_id) REFERENCES payment_methods(payment_method_id)

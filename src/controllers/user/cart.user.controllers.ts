@@ -3,7 +3,6 @@ import * as types from '../../types/index.types';
 import * as utils from '../../utils/index.utils';
 import database from '../../config/db';
 import { Client } from 'pg';
-import { check } from 'zod';
 
 // #### DATABASE FUNCTIONS ####
 
