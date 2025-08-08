@@ -16,7 +16,7 @@ export const CreatingOrderSchema = z.object({
     total_amount: z.coerce.number().positive('Total amount must be a positive number').optional(),
     payment_method_id: z.coerce.number().int().positive('Payment method ID must be a positive integer'),
     items: z.array(z.number()).min(1, 'At least one order item is required'),
-    order_at: z.string()
+    order_at: z.string().datetime({ offset: true }).nonempty(),
 });
 
 export type CreatingOrderRequest = z.infer<typeof CreatingOrderSchema>;

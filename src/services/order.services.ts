@@ -108,8 +108,8 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
         }
 
         const sql_create_order = `
-            INSERT INTO orders (user_id, receiver_name, shipping_address, phone_number, email, total_amount, payment_method_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO orders (user_id, receiver_name, shipping_address, phone_number, email, total_amount, payment_method_id, created_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING order_id
         `;
         orderData.total_amount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.price_at_purchase), 0)
@@ -120,7 +120,8 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
             orderData.phone_number,
             orderData.email,
             orderData.total_amount,
-            orderData.payment_method_id
+            orderData.payment_method_id,
+            orderData.order_at
         ];
 
         const orderResult = await db.query(sql_create_order, orderParams);
@@ -164,8 +165,11 @@ orderWorker.on('failed', (job: Job | undefined, err: Error) => {
 
 async function create(orderData: types.CreatingOrderRequest) {
     try {
-        console.log("Adding order job to queue with data:", orderData);
-        const job = await orderQueue.add("createOrder", orderData);
+        const hoursAgo = Math.floor((Date.now() - new Date(orderData.order_at).getTime()) / 360000);
+        const priority = Math.max(0, Math.min(1000 - hoursAgo, 1000));
+        const job = await orderQueue.add("createOrder", orderData, {
+            priority: priority
+        });
         console.log(`Order job added with ID: ${job.id}`);
         return job.id;
     } catch (error) {
