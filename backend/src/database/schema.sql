@@ -115,7 +115,8 @@ CREATE TABLE cart_items (
 
 CREATE TABLE payment_methods (
     payment_method_id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE CHECK (name IN ('Cash on Delivery', 'Bank Transfer', 'Credit Card'))
+    name VARCHAR(50) NOT NULL UNIQUE,
+    description TEXT
 );
 
 CREATE TABLE orders (
