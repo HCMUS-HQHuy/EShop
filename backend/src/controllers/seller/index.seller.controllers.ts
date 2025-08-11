@@ -1,5 +1,5 @@
-import product from "./products.seller.controllers";
-import account from "./account.seller.controllers";
+import product from "controllers/seller/products.seller.controllers";
+import account from "controllers/seller/account.seller.controllers";
 
 const sellerController = {
     product,

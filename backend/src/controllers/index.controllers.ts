@@ -1,7 +1,7 @@
-import seller from "./seller/index.seller.controllers";
-import auth from "./auth/index.auth.controllers";
-import user from "./user/index.user.controllers";
-import admin from "./admin/index.admin.controllers";
+import seller from "controllers/seller/index.seller.controllers";
+import auth from   "controllers/auth/index.auth.controllers";
+import user from   "controllers/user/index.user.controllers";
+import admin from  "controllers/admin/index.admin.controllers";
 
 const controller = {
     seller,

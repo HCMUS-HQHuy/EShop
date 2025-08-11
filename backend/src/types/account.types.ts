@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import * as types from './index.types';
+import * as types from 'types/index.types';
 
 const AdminVerifySellerRequestSchema = z.object({
 	shop_id: z.coerce.number().int().positive('Seller ID must be a positive integer'),

@@ -1,5 +1,5 @@
 ﻿import { z } from 'zod';
-import * as types from './common';
+import * as types from 'types/common';
 
 const CategorySchema = z.object({
     name: z.string().min(3, 'Name is required'),

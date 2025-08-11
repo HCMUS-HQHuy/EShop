@@ -1,7 +1,7 @@
 import { Job, Queue, Worker } from "bullmq";
-import * as types from "../types/index.types";
+import * as types from "types/index.types";
 import { Client } from "pg";
-import database from "../config/db";
+import database from "config/db";
 
 const redis_config = {
     host: process.env.REDIS_HOST || "localhost",

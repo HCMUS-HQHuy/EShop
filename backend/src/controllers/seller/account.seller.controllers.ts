@@ -1,10 +1,10 @@
 import express from "express";
 
 import { Client } from "pg";
-import database from "../../config/db";
+import database from "config/db";
 
-import * as types from "../../types/index.types";
-import * as utils from "../../utils/index.utils";
+import * as types from "types/index.types";
+import * as utils from "utils/index.utils";
 
 // #### DATABASE FUNCTIONS ####
 

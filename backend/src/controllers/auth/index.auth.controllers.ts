@@ -1,9 +1,9 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { Client } from "pg";
-import database from "../../config/db";
-import * as types from "../../types/index.types";
-import * as util from "../../utils/index.utils";
+import database from "config/db";
+import * as types from "types/index.types";
+import * as util from "utils/index.utils";
 
 // #### VALIDATION FUNCTIONS ####
 

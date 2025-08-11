@@ -1,6 +1,6 @@
 import express from 'express';
-import * as utils from '../utils/index.utils';
-import * as types from '../types/index.types';
+import * as utils from 'utils/index.utils';
+import * as types from 'types/index.types';
 
 function switchRole(req: types.RequestCustom, res: express.Response, next: express.NextFunction) {
     // Check if the user is an admin

@@ -1,5 +1,5 @@
-import auth from "./auth.middleware";
-import switchRole from "./switchRole.middleware";
+import auth from "middlewares/auth.middleware";
+import switchRole from "middlewares/switchRole.middleware";
 
 const mid = {
     auth,

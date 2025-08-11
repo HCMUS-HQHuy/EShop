@@ -1,9 +1,9 @@
 import express from "express";
 
-import adminRoutes from "./admin.routes";
-import userRoutes from "./user.routes";
-import sellerRoutes from "./seller.routes";
-import authen from "./auth.route";
+import adminRoutes from "routes/admin.routes";
+import userRoutes from "routes/user.routes";
+import sellerRoutes from "routes/seller.routes";
+import authen from "routes/auth.route";
 
 const router: express.Router = express.Router();
 

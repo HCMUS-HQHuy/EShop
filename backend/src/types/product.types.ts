@@ -1,5 +1,5 @@
 ﻿import { z } from 'zod';
-import * as types from './common';
+import * as types from 'types/common';
 
 export const PRODUCT_STATUS = {
     PENDING: 'PendingApproval',
