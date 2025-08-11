@@ -15,10 +15,10 @@ router.get("/products/:id",         controller.user.product.getDetailById);
 router.get("/products/:id/related", controller.user.product.getRelatedProducts);
 
 // #### CART ROUTES ####
-router.get("/cart",                 mid.auth, controller.user.cart.get);
-router.post("/cart/add",            mid.auth, controller.user.cart.addProduct);
-router.put("/cart/:id/update",      mid.auth, controller.user.cart.updateProduct);
-router.delete("/cart/:id/remove",   mid.auth, controller.user.cart.removeProduct);
+// router.get("/cart",                 mid.auth, controller.user.cart.get);
+// router.post("/cart/add",            mid.auth, controller.user.cart.addProduct);
+// router.put("/cart/:id/update",      mid.auth, controller.user.cart.updateProduct);
+// router.delete("/cart/:id/remove",   mid.auth, controller.user.cart.removeProduct);
 
 // #### ORDER ROUTES ####
 // router.get("/orders", mid.auth, controller.user.order.list);

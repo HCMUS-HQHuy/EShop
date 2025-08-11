@@ -21,7 +21,7 @@ async function create(req: types.RequestCustom, res: express.Response) {
         });
     }
     const orderData: types.CreatingOrderRequest = parsedBody.data;
-    
+
     try {
         await services.order.create(orderData);
         res.status(201).json({

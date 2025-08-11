@@ -8,27 +8,32 @@ const redis_config = {
     port: Number(process.env.REDIS_PORT || 6379)
 };
 
-async function checkAndLockOrderItems(cart_items_id: number[], user_id: number, db: Client): Promise<types.OrderItemRequest[]> {
+async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Promise<types.OrderItemRequest[]> {
     try {
         // Check existing of a cart item and gurantee its record doesn't change
         const sql = `
+            WITH cart_data AS (
+                SELECT 
+                    unnest($1::int[]) AS product_id,
+                    unnest($2::int[]) AS quantity
+            )
             SELECT
-                cart_items.product_id,
-                cart_items.quantity,
-                products.price as price_at_purchase
+                p.product_id,
+                c.quantity,
+                p.price AS price_at_purchase
             FROM
-                cart_items
-            JOIN 
-                products ON cart_items.product_id = products.product_id
+                cart_data c
+            JOIN
+                products p ON p.product_id = c.product_id
             WHERE
-                cart_items.cart_item_id = ANY($1::int[])
-                AND cart_items.user_id = $2
-                AND products.status = '${types.PRODUCT_STATUS.ACTIVE}'
-                AND products.stock_quantity >= cart_items.quantity
-            FOR UPDATE OF products;
+                p.status = '${types.PRODUCT_STATUS.ACTIVE}'
+                AND p.stock_quantity >= c.quantity
+            FOR UPDATE OF p;
         `;
-        const result = await db.query(sql, [cart_items_id, user_id]);
-        if (result.rows.length !== cart_items_id.length) {
+        const productIds = items.map(item => item.product_id);
+        const quantities = items.map(item => item.quantity);
+        const result = await db.query(sql, [productIds, quantities]);
+        if (result.rows.length !== items.length) {
             throw new Error("Invalid order items: One or more items are out of stock, inactive, or do not exist.");
         }
         const order_item: types.OrderItemRequest[] = result.rows;
@@ -81,30 +86,17 @@ async function insertOrderItems(orderId: number, orderItems: types.OrderItemRequ
     console.log("All order items inserted.");
 }
 
-async function removeItemsFromCart(itemIds: number[], user_id: number, db: Client): Promise<void> {
-    try {
-        const sql_remove = `
-            DELETE FROM cart_items
-            WHERE cart_item_id = ANY($1) AND user_id = $2
-        `;
-        await db.query(sql_remove, [itemIds, user_id]);
-    } catch (error) {
-        console.error('Error removing items from cart:', error);
-        throw error;
-    }
-}
-
 async function processOrder(job: Job<types.CreatingOrderRequest>) {
     const orderData: types.CreatingOrderRequest = job.data;
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
         await db.query('BEGIN');
-
-        const orderItems: types.OrderItemRequest[] = await checkAndLockOrderItems(orderData.items, orderData.user_id, db);
+        const itemsInCart: types.ItemInCart[] = orderData.items;
+        const orderItems: types.OrderItemRequest[] = await checkAndLockOrderItems(itemsInCart, db);
 
         if(!orderItems || !Array.isArray(orderItems)) {
-            throw Error
+            throw Error;
         }
 
         const sql_create_order = `
@@ -131,7 +123,6 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
         const order_id = orderResult.rows[0].order_id;
         await insertOrderItems(order_id, orderItems, db);
         await reduceStockQuantities(orderItems, db);
-        await removeItemsFromCart(orderData.items, orderData.user_id, db);
         await db.query(`COMMIT`);
         console.log(`Order ${orderData.user_id} created with items:`, orderData.items);
     } catch (error) {
