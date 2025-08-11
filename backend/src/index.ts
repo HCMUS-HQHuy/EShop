@@ -6,7 +6,7 @@ import http from 'http';
 import routes from "routes/index.routes";
 import seedAdmin from "config/seedAdmin";
 import seeddb from "config/seeddbfaker";
-import socket from "sockets/index.sockets";
+import socket from "config/socket";
 import qs from "qs";
 
 const app: express.Application = express();
@@ -30,5 +30,4 @@ seedAdmin().then(async () => {
         console.error('❌ Failed to start server:', error);
         process.exit(1);
     }
-    
 });
