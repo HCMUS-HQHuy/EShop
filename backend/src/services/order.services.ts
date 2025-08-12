@@ -149,7 +149,6 @@ orderWorker.on('completed', (job: Job) => {
 orderWorker.on('failed', (job: Job | undefined, err: Error) => {
     if (job) {
         console.log(`${job.id} has failed with ${err.message}`);
-        socket.sendMessageToUser(job.data.user_id, "order", "your order has failed!");
     } else {
         console.log(`A job has failed with ${err.message}`);
     }
@@ -160,7 +159,14 @@ async function create(orderData: types.CreatingOrderRequest) {
         const hoursAgo = Math.floor((Date.now() - new Date(orderData.order_at).getTime()) / 360000);
         const priority = Math.max(0, Math.min(1000 - hoursAgo, 1000));
         const job = await orderQueue.add("createOrder", orderData, {
-            priority: priority
+            priority: priority,
+            attempts: 3,
+            backoff: {
+                type: 'exponential',
+                delay: 5000
+            },
+            removeOnComplete: true,
+            removeOnFail: false
         });
         console.log(`Order job added with ID: ${job.id}`);
         return job.id;

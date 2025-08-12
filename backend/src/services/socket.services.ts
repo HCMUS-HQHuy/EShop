@@ -1,7 +1,6 @@
 import { Server, Socket, DefaultEventsMap } from 'socket.io';
 import jwt from "jsonwebtoken";
 import * as types from "types/index.types"
-import validateData from "utils/validate.utils"
 
 let ioInstance : Server | undefined = undefined;
 
