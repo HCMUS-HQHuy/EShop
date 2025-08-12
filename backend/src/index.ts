@@ -3,37 +3,43 @@ dotenv.config();
 
 import express from "express";
 import http from 'http';
-import socket from 'config/socket'
+import { Server } from 'socket.io'
+
 import routes from "routes/index.routes";
 import seedAdmin from "config/seedAdmin";
+import services from "services/index.services";
 import seeddb from "config/seeddbfaker";
-import * as types from "types/index.types"
 import qs from "qs";
 
+import mid from "middlewares/index.middlewares";
+
 const app: express.Application = express();
-const server: http.Server = http.createServer(app);
-const io = socket.startServer(server);
+const httpServer: http.Server = http.createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
+
 const PORT = process.env.PORT || 8220;
 
 app.set('query parser', (str: string) => {
     return qs.parse(str, {});
 });
 
-// assign socket to requestCustom
-app.use((req: types.RequestCustom, res: express.Response, next: express.NextFunction)=> {
-    req.io = io;
-    next();
-});
+app.use(mid.addSocketIO(io));
 
-seedAdmin().then(async () => {
+seedAdmin().then(() => {
     try {
         // await seeddb(); // Seed database with sample data
         routes(app);
-        server.listen(PORT, () => {
+        services.socket.connect(io);
+        httpServer.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
     } catch (error) {
-        console.error('❌ Failed to start server:', error);
+        console.error('❌ Failed to start httpServer:', error);
         process.exit(1);
     }
 });

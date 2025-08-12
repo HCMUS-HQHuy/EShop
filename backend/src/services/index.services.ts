@@ -1,7 +1,8 @@
 import order from "services/order.services";
-
+import socket from "./socket.services";
 const services = {
-    order
+    order,
+    socket
 };
 
 export default services;

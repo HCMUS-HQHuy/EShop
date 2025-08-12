@@ -1,7 +1,7 @@
 import express from "express";
 
 import controller from "controllers/index.controllers";
-import mid from "middlewares/index.middleware";
+import mid from "middlewares/index.middlewares";
 
 const adminRouter = express.Router();
 

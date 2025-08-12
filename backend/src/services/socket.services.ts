@@ -1,14 +1,12 @@
-import { Server, Socket } from 'socket.io';
-import http from 'http';
+import { Server, Socket, DefaultEventsMap } from 'socket.io';
 import jwt from "jsonwebtoken";
 import * as types from "types/index.types"
 
 let ioInstance : Server | undefined = undefined;
 
-function startServer(httpServer: http.Server) {
-    const io = new Server(httpServer, {});
+function connect(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>): void {
     ioInstance = io;
-    console.log("Socket.IO initialized.");
+    console.log("Socket Server is running");
     // authen before connecting.
     io.use((socket, next) => {
         try {
@@ -27,14 +25,13 @@ function startServer(httpServer: http.Server) {
     // connect to socket
     io.on('connection', (socket: Socket) => {
         const user = socket.data.user as types.UserInfor;
-        console.log(`🔌 New client connected: ${socket.id} for user ${user.user_id}`);
+        console.log(`🔌 New client connected: ${socket.id} infor: ${user}`);
         socket.join(`user_room_${user.user_id}`);
 
         socket.on('disconnect', () => {
             console.log(`✖️ Client disconnected: ${socket.id} for user ${user.user_id}`);
         });
     });
-    return io;
 }
 
 function sendMessageToUser(userId: number, event: string, data: any) {
@@ -53,7 +50,7 @@ function getInstance(): Server {
 }
 
 const socket = {
-    startServer,
+    connect,
     sendMessageToUser,
     getInstance
 };

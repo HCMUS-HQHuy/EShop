@@ -2,6 +2,7 @@ import { Job, Queue, Worker } from "bullmq";
 import * as types from "types/index.types";
 import { Client } from "pg";
 import database from "config/db";
+import socket from "services/socket.services";
 
 const redis_config = {
     host: process.env.REDIS_HOST || "localhost",
@@ -141,14 +142,14 @@ const orderQueue = new Queue("orderQueue", {connection: redis_config});
 const orderWorker = new Worker("orderQueue", processOrder, { connection: redis_config });
 
 orderWorker.on('completed', (job: Job) => {
-    // add socket handling here for real-time updates
+    socket.sendMessageToUser(job.data.user_id, "order", "your order has completed!");
     console.log(`${job.id} has completed!`);
 });
 
 orderWorker.on('failed', (job: Job | undefined, err: Error) => {
-    // add socket handling here for real-time updates
     if (job) {
         console.log(`${job.id} has failed with ${err.message}`);
+        socket.sendMessageToUser(job.data.user_id, "order", "your order has failed!");
     } else {
         console.log(`A job has failed with ${err.message}`);
     }
