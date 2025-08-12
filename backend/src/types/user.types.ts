@@ -1,4 +1,5 @@
 ﻿import express from 'express';
+import { Server, DefaultEventsMap } from 'socket.io';
 
 export const USER_ROLE = {
     ADMIN: 'Admin',
@@ -31,4 +32,5 @@ export interface UserInfor {
 
 export interface RequestCustom extends express.Request {
     user?: UserInfor;
+    io?: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
 }

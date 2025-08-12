@@ -5,4 +5,5 @@ const mid = {
     auth,
     switchRole
 };
+
 export default mid;
