@@ -4,8 +4,11 @@ export const USER_ROLE = {
     USER: 'User',
     GUEST: 'Guest'
 } as const;
+
 export const SORT_ATTRIBUTES = ['name', 'created_at'] as const;
+
 export const SORT_ORDERS = ['asc', 'desc'] as const;
+
 export const ORDER_STATUSES = {
     PENDING: 'Pending',
     SHIPPED: 'Shipped',
