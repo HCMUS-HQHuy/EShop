@@ -1,16 +1,13 @@
-import dotenv from "dotenv";
-dotenv.config();
-
+import 'dotenv/config'
 import express from "express";
 import http from 'http';
 import { Server } from 'socket.io'
 
-import routes from "routes/index.routes";
 import seedAdmin from "config/seedAdmin";
-import services from "services/index.services";
 import seeddb from "config/seeddbfaker";
-import qs from "qs";
-
+import configQueryParser from 'config/queryparser.config'
+import routes from "routes/index.routes";
+import services from "services/index.services";
 import mid from "middlewares/index.middlewares";
 
 const app: express.Application = express();
@@ -24,10 +21,7 @@ const io = new Server(httpServer, {
 
 const PORT = process.env.PORT || 8220;
 
-app.set('query parser', (str: string) => {
-    return qs.parse(str, {});
-});
-
+configQueryParser(app);
 app.use(mid.addSocketIO(io));
 
 seedAdmin().then(() => {
