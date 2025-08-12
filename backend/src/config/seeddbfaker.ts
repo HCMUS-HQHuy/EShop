@@ -2,7 +2,7 @@
 
 import { Client } from 'pg';
 import { faker } from '@faker-js/faker';
-import database from './db'; // Đường dẫn tới file cấu hình DB của bạn
+import database from '../database/index.database'; // Đường dẫn tới file cấu hình DB của bạn
 import * as utils from 'utils/index.utils'; // Đường dẫn tới file utils của bạn
 
 /**

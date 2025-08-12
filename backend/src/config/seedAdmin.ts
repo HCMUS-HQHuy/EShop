@@ -1,5 +1,5 @@
 import { Client } from 'pg';
-import database from './db';
+import database from '../database/index.database';
 import { env } from 'process';
 
 import * as utils from '../utils/index.utils';

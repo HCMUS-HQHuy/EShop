@@ -3,7 +3,7 @@ import * as types from 'types/index.types';
 import * as utils from 'utils/index.utils';
 
 import { Client } from 'pg';
-import database from 'config/db';
+import database from 'database/index.database';
 
 // #### HELPER FUNCTIONS ####
 
