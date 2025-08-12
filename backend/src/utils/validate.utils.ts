@@ -3,13 +3,9 @@ import { ZodObject } from "zod";
 function validateData(data: any, schema: ZodObject) {
     const parsedBody = schema.safeParse(data);
     if (!parsedBody.success) {
-        return {
-            message: "error",
-            error: true, 
-            data: [parsedBody.error.format()]
-        }
+        return new Error(String(parsedBody.error.format()))
     }
-    return null;
+    return parsedBody.data;
 }
 
 export default validateData;
