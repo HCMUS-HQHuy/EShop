@@ -3,7 +3,6 @@ import axios from 'axios';
 import * as types from "types/index.types"
 
 async function create(order_code: string, orderData: types.CreatingOrderRequest) {
-    // console.log('orderdata:', orderData);
     var partnerCode = process.env.MOMO_PARTNER_CODE as string;
     var accessKey = process.env.MOMO_ACCESS_KEY as string;
     var secretKey = process.env.MOMO_SECRET_KEY as string;

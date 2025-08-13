@@ -141,7 +141,7 @@ CREATE TABLE orders (
     payment_status VARCHAR(20) NOT NULL DEFAULT 'Unpaid' 
         CHECK (payment_status IN (
             'Unpaid', 
-            'Paid', 
+            'Paid',
             'Failed'
         )),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
