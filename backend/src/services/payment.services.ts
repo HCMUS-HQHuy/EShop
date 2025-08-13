@@ -2,41 +2,32 @@ import axios from 'axios';
 
 import * as types from "types/index.types"
 
-async function create(order_id: number, orderData: types.CreatingOrderRequest) {
+async function create(order_code: string, orderData: types.CreatingOrderRequest) {
     // console.log('orderdata:', orderData);
-    var accessKey = 'F8BBA842ECF85';
-    var secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
+    var partnerCode = process.env.MOMO_PARTNER_CODE as string;
+    var accessKey = process.env.MOMO_ACCESS_KEY as string;
+    var secretKey = process.env.MOMO_SECRET_KEY as string;
     var orderInfo = 'pay with MoMo user hqh';
-    var partnerCode = 'MOMO';
     var redirectUrl = '';
-    var ipnUrl = 'https://f7bf9f643f24.ngrok-free.app/api/v1/user/payment/test';
-    var requestType = "payWithMethod"; // captureWallet
+    var ipnUrl = `${process.env.HOST_SERVER}${process.env.API_PREFIX}/user/payment/test`;
+    var requestType = "payWithMethod";
     var amount = orderData.total_amount as number * 100;
-    var orderId = partnerCode + order_id;
+    var orderId = partnerCode + '-' + order_code;
     var requestId = orderId;
-    var extraData ='';
-    var orderGroupId ='';
-    var autoCapture =true;
+    var extraData = '';
+    var orderGroupId = '';
+    var autoCapture = true;
     var lang = 'vi';
-
-    //before sign HMAC SHA256 with format
-    //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
+    
     var rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl + "&requestId=" + requestId + "&requestType=" + requestType;
-    //puts raw signature
-    console.log("--------------------RAW SIGNATURE----------------")
-    console.log(rawSignature)
-    //signature
     const crypto = require('crypto');
     var signature = crypto.createHmac('sha256', secretKey)
         .update(rawSignature)
         .digest('hex');
-    console.log("--------------------SIGNATURE----------------")
     console.log(signature)
     
-    //json object send to MoMo endpoint
     const requestBody = JSON.stringify({
         partnerCode : partnerCode,
-        partnerName : "Test",
         storeId : "MomoTestStore",
         requestId : requestId,
         amount : amount,

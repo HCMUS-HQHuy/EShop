@@ -121,6 +121,7 @@ CREATE TABLE payment_methods (
 
 CREATE TABLE orders (
     order_id SERIAL PRIMARY KEY,
+    order_code VARCHAR(20) UNIQUE NOT NULL,
     user_id INT NOT NULL,
     receiver_name VARCHAR(100) NOT NULL,
     shipping_address VARCHAR(255) NOT NULL,

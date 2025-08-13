@@ -4,6 +4,7 @@ import { Client } from "pg";
 
 import services from "./index.services";
 import database from "database/index.database";
+import { generateCode } from "utils/gencode.utils";
 
 const redis_config = {
     host: process.env.REDIS_HOST || "localhost",
@@ -101,15 +102,17 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
             throw Error;
         }
 
-        const sql_create_order = `
-            INSERT INTO orders (user_id, receiver_name, shipping_address, phone_number, email, total_amount, payment_method_id, created_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        const sqlCreateOrder = `
+            INSERT INTO orders (user_id, order_code, receiver_name, shipping_address, phone_number, email, total_amount, payment_method_id, created_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING order_id
         `;
+        const orderCode = generateCode("ORD", String(orderData.user_id));
         orderData.items = orderItems;
         orderData.total_amount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.price_at_purchase), 0)
         const orderParams = [
             orderData.user_id,
+            orderCode,
             orderData.receiver_name,
             orderData.shipping_address,
             orderData.phone_number,
@@ -119,15 +122,15 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
             orderData.order_at
         ];
 
-        const orderResult = await db.query(sql_create_order, orderParams);
+        const orderResult = await db.query(sqlCreateOrder, orderParams);
         if (!orderResult.rows.length) {
             throw new Error("Failed to create order");
         }
-        const order_id = orderResult.rows[0].order_id;
-        await insertOrderItems(order_id, orderItems, db);
+        const orderId = orderResult.rows[0].order_id;
+        await insertOrderItems(orderId, orderItems, db);
         await reduceStockQuantities(orderItems, db);
         await db.query(`COMMIT`);
-        services.payment.create(order_id, orderData);
+        services.payment.create(orderCode, orderData);
         console.log(`Order ${orderData.user_id} created with items:`, orderData.items);
     } catch (error) {
         if (db) {
