@@ -56,6 +56,42 @@ CREATE TABLE products (
     CONSTRAINT fk_product_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
+CREATE TABLE product_categories (
+    product_id INT REFERENCES products(product_id) ON DELETE CASCADE,
+    category_id INT REFERENCES categories(category_id) ON DELETE CASCADE,
+    PRIMARY KEY (product_id, category_id)
+);
+
+CREATE TABLE product_images (
+    image_id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    deleted_by INT,
+
+    CONSTRAINT fk_image_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(user_id) ON DELETE SET NULL,
+    CONSTRAINT fk_image_product FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
+);
+
+CREATE TABLE product_reviews (
+    review_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    deleted_by INT,
+
+    CONSTRAINT fk_review_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(user_id) ON DELETE SET NULL,
+    CONSTRAINT fk_review_user FOREIGN KEY (user_id) REFERENCES users(user_id),
+    CONSTRAINT fk_review_product FOREIGN KEY (product_id) REFERENCES products(product_id),
+    UNIQUE (user_id, product_id)
+);
+
 -- ========= BẢNG QUẢN LÝ ĐƠN HÀNG VÀ THANH TOÁN =========
 
 -- Bảng các phương thức thanh toán mà hệ thống hỗ trợ
@@ -95,7 +131,7 @@ CREATE TABLE orders (
     shipping_fee DECIMAL(12, 2) NOT NULL DEFAULT 0,
     final_amount DECIMAL(12, 2) NOT NULL,
     
-    status VARCHAR(20) NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded')),
+    status VARCHAR(20) NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Processing', 'Shipping', 'Delivered', 'Cancelled')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_order_checkout FOREIGN KEY (checkout_id) REFERENCES checkouts(checkout_id) ON DELETE CASCADE,
