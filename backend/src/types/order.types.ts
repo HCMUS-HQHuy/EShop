@@ -9,7 +9,8 @@ export const OrderItemSchema = z.object({
 
 export const ItemInCartSchema = z.object({
     product_id: z.coerce.number().int().positive('Product ID must be a positive integer'),
-    quantity: z.coerce.number().int().positive('Quantity must be a positive integer')
+    quantity: z.coerce.number().int().positive('Quantity must be a positive integer'),
+    price_at_purchase: z.coerce.number().positive('Price at purchase must be a positive number').optional(),
 });
 
 export const CreatingOrderSchema = z.object({

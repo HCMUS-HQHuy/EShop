@@ -1,8 +1,9 @@
 import { Job, Queue, Worker } from "bullmq";
 import * as types from "types/index.types";
 import { Client } from "pg";
+
+import services from "./index.services";
 import database from "database/index.database";
-import socket from "services/socket.services";
 
 const redis_config = {
     host: process.env.REDIS_HOST || "localhost",
@@ -105,6 +106,7 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING order_id
         `;
+        orderData.items = orderItems;
         orderData.total_amount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.price_at_purchase), 0)
         const orderParams = [
             orderData.user_id,
@@ -125,6 +127,7 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
         await insertOrderItems(order_id, orderItems, db);
         await reduceStockQuantities(orderItems, db);
         await db.query(`COMMIT`);
+        services.payment.create(order_id, orderData);
         console.log(`Order ${orderData.user_id} created with items:`, orderData.items);
     } catch (error) {
         if (db) {
@@ -142,14 +145,14 @@ const orderQueue = new Queue("orderQueue", {connection: redis_config});
 const orderWorker = new Worker("orderQueue", processOrder, { connection: redis_config });
 
 orderWorker.on('completed', (job: Job) => {
-    socket.sendMessageToUser(job.data.user_id, "order", "your order has completed!");
+    services.socket.sendMessageToUser(job.data.user_id, "order", "your order has completed!");
     console.log(`${job.id} has completed!`);
 });
 
 // đoạn này cần xử lý thêm gì khi nó failed không? vì vẫn có TH nó failed nhưng không biết nó là từ job nào ?
 orderWorker.on('failed', (job: Job | undefined, err: Error) => {
     if (job) {
-        socket.sendMessageToUser(job.data.user_id, "order", err.message);
+        services.socket.sendMessageToUser(job.data.user_id, "order", err.message);
         console.log(`${job.id} has failed with ${err.message}`);
     } else {
         console.log(`A job has failed with ${err.message}`);
