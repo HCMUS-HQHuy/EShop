@@ -101,6 +101,21 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
         if(!orderItems || !Array.isArray(orderItems)) {
             throw Error;
         }
+// {
+//   partnerCode: 'MOMO',
+//   orderId: 'MOMO25',
+//   requestId: 'MOMO25',
+//   amount: 81129,
+//   orderInfo: 'pay with MoMo user hqh',
+//   orderType: 'momo_wallet',
+//   transId: 4562322486,
+//   resultCode: 0,
+//   message: 'Successful.',
+//   payType: 'napas',
+//   responseTime: 1755060654065,
+//   extraData: '',
+//   signature: '558e4ae430d3b30829d554f161f88915e5ef8841c349a7b46101f44afa730fee'
+// }
 
         const sqlCreateOrder = `
             INSERT INTO orders (user_id, order_code, receiver_name, shipping_address, phone_number, email, total_amount, payment_method_id, created_at)

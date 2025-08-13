@@ -90,15 +90,18 @@ async function login(req: express.Request, res: express.Response) {
             return res.status(401).json({
                 message: "Invalid credentials"
             });
-
+        const parsedUser = types.userSchemas.infor.safeParse(result.rows[0]);
+        if (parsedUser.success === false)
+            throw Error("Invalid user data");
+        
         const password: string = result.rows[0].password;
         if (!util.comparePasswords(credential.password, password)) {
             return res.status(401).json({
                 message: "Invalid credentials"
             });
         }
-        const user: types.UserInfor = result.rows[0];
-        console.log("User authenticated successfully");
+        const user: types.UserInfor = parsedUser.data;
+        console.log("User authenticated successfully", user);
         const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1y" }); // 1y = 1 year for testing purposes
 
         return res.status(201).json({
