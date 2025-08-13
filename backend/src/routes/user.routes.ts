@@ -26,8 +26,9 @@ router.get("/products/:id/related", controller.user.product.getRelatedProducts);
 router.post("/orders/create", mid.auth, controller.user.order.create);
 
 // #### PAYMENT TEST ####
-router.post("payment/test", (req: any, res: any) => {
-    console.log(req.body);
+router.post("/payment/test", (req: any, res: any) => {
+    console.log('Payment test:', req.body);
+    res.send();
 })
 
 export default router;

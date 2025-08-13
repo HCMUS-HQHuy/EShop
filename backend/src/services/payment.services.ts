@@ -9,16 +9,16 @@ async function create(order_id: number, orderData: types.CreatingOrderRequest) {
     var orderInfo = 'pay with MoMo user hqh';
     var partnerCode = 'MOMO';
     var redirectUrl = '';
-    var ipnUrl = 'http://localhost:8220/api/v1/user/payment/test';
+    var ipnUrl = 'https://f7bf9f643f24.ngrok-free.app/api/v1/user/payment/test';
     var requestType = "payWithMethod"; // captureWallet
-    var amount = orderData.total_amount as number * 230;
+    var amount = orderData.total_amount as number * 100;
     var orderId = partnerCode + order_id;
     var requestId = orderId;
     var extraData ='';
     var orderGroupId ='';
     var autoCapture =true;
     var lang = 'vi';
-    
+
     //before sign HMAC SHA256 with format
     //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
     var rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl + "&requestId=" + requestId + "&requestType=" + requestType;
@@ -60,31 +60,6 @@ async function create(order_id: number, orderData: types.CreatingOrderRequest) {
     }).catch(error => {
         console.error('❌ Lỗi khi gọi MoMo:', error.response?.data || error.message);
     });
-    //Create the HTTPS objects
-    // const https = require('https');
-    //Send the request and get the response
-    // const req = https.request(options, res => {
-    //     console.log(`Status: ${res.statusCode}`);
-    //     console.log(`Headers: ${JSON.stringify(res.headers)}`);
-    //     res.setEncoding('utf8');
-    //     res.on('data', (body) => {
-    //         console.log('Body: ');
-    //         console.log(body);
-    //         console.log('resultCode: ');
-    //         console.log(JSON.parse(body).resultCode);
-    //     });
-    //     res.on('end', () => {
-    //         console.log('No more data in response.');
-    //     });
-    // })
-    
-    // req.on('error', (e) => {
-    //     console.log(`problem with request: ${e.message}`);
-    // });
-    // // write data to request body
-    // console.log("Sending....")
-    // req.write(requestBody);
-    // req.end();
 }
 
 const payment = {

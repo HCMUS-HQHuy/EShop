@@ -22,6 +22,11 @@ const io = new Server(httpServer, {
 const PORT = process.env.PORT || 8220;
 
 configQueryParser(app);
+
+app.get('/', (res: any, req: any)=> {
+    req.send('hello from hqh');
+});
+
 app.use(mid.addSocketIO(io));
 
 seedAdmin().then(() => {
