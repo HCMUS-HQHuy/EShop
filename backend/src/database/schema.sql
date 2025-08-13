@@ -127,8 +127,22 @@ CREATE TABLE orders (
     phone_number VARCHAR(15) NOT NULL,
     email VARCHAR(100) NOT NULL,
     total_amount DECIMAL(10, 2) NOT NULL,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('Pending', 'Shipped', 'Delivered', 'Cancelled')) DEFAULT 'Pending',
+    status VARCHAR(20) NOT NULL DEFAULT 'Pending'
+        CHECK (status IN (
+            'Pending',
+            'Awaiting Pickup',
+            'Shipping',
+            'Delivered',
+            'Cancelled',
+            'Payment Failed'
+        )),
     payment_method_id INT NOT NULL,
+    payment_status VARCHAR(20) NOT NULL DEFAULT 'Unpaid' 
+        CHECK (payment_status IN (
+            'Unpaid', 
+            'Paid', 
+            'Failed'
+        )),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
     CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES users(user_id),
