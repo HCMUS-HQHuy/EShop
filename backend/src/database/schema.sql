@@ -127,7 +127,7 @@ CREATE TABLE orders (
     phone_number VARCHAR(15) NOT NULL,
     email VARCHAR(100) NOT NULL,
     total_amount DECIMAL(10, 2) NOT NULL,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled')) DEFAULT 'Pending',
+    status VARCHAR(20) NOT NULL CHECK (status IN ('Pending', 'Shipped', 'Delivered', 'Cancelled')) DEFAULT 'Pending',
     payment_method_id INT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
 

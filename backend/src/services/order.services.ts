@@ -146,8 +146,10 @@ orderWorker.on('completed', (job: Job) => {
     console.log(`${job.id} has completed!`);
 });
 
+// đoạn này cần xử lý thêm gì khi nó failed không? vì vẫn có TH nó failed nhưng không biết nó là từ job nào ?
 orderWorker.on('failed', (job: Job | undefined, err: Error) => {
     if (job) {
+        socket.sendMessageToUser(job.data.user_id, "order", err.message);
         console.log(`${job.id} has failed with ${err.message}`);
     } else {
         console.log(`A job has failed with ${err.message}`);
@@ -160,11 +162,11 @@ async function create(orderData: types.CreatingOrderRequest) {
         const priority = Math.max(0, Math.min(1000 - hoursAgo, 1000));
         const job = await orderQueue.add("createOrder", orderData, {
             priority: priority,
-            attempts: 3,
-            backoff: {
-                type: 'exponential',
-                delay: 5000
-            },
+            attempts: 1, // attempts 3 có vẻ không hợp lý vì log lại user quá nhiều lần ! làm sao để xủ lý.
+            // backoff: {
+            //     type: 'exponential',
+            //     delay: 5000
+            // },
             removeOnComplete: true,
             removeOnFail: false
         });
