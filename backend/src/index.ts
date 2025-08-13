@@ -4,7 +4,6 @@ import http from 'http';
 import { Server } from 'socket.io'
 
 import seedAdmin from "config/seedAdmin";
-import seeddb from "config/seeddbfaker";
 import configQueryParser from 'config/queryparser.config'
 import routes from "routes/index.routes";
 import services from "services/index.services";
@@ -31,7 +30,6 @@ app.use(mid.addSocketIO(io));
 
 seedAdmin().then(() => {
     try {
-        // await seeddb(); // Seed database with sample data
         routes(app);
         services.socket.connect(io);
         httpServer.listen(PORT, () => {
