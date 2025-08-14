@@ -55,14 +55,13 @@ async function signup(registrationData: types.UserRegistration): Promise<void> {
         registrationData.password = util.hashPassword(registrationData.password);
         
         const query =  `
-            INSERT INTO users (username, password, email, fullname, role) 
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO users (username, password, email, role) 
+            VALUES ($1, $2, $3, $4)
         `;
         await db.query(query, [
             registrationData.username,
             registrationData.password,
             registrationData.email,
-            registrationData.fullname,
             types.USER_ROLE.USER
         ]);
         console.log("User registered successfully");
@@ -133,13 +132,14 @@ async function login(req: express.Request, res: express.Response) {
 }
 
 async function registerUser(req: express.Request, res: express.Response) {
+    console.log("Register request received:", req.body);
     const parsedBody = types.autheFormSchemas.userRegistration.safeParse(req.body);
     if (!parsedBody.success) {
-        return res.status(200).json({
+        return res.status(400).json({
             message: "error",
             error: true,
             data: [parsedBody.error.format()]
-        })
+        });
     }
     const registrationData: types.UserRegistration = parsedBody.data;
 
@@ -147,7 +147,7 @@ async function registerUser(req: express.Request, res: express.Response) {
     try {
         const { usernameExists, emailExists } = await checkUserExists(registrationData);
         if (usernameExists || emailExists) {
-            return res.status(200).json({
+            return res.status(400).json({
                 message: "error",
                 error: true,
                 data: [{
@@ -158,7 +158,7 @@ async function registerUser(req: express.Request, res: express.Response) {
         }
     } catch (error: any) {
         console.error("Error checking user existence:", error);
-        return res.status(200).json({
+        return res.status(500).json({
             message: "error",
             errors: true,
             data: [error.message]

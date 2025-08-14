@@ -35,10 +35,6 @@ export const UserCredentialsSchema = z.object({
 export const UserRegistrationSchema = UserCredentialsSchema.extend({
   confirmPassword: z.string(),
   email: z.string().email("Invalid email address."),
-  fullname: z
-    .string()
-    .min(2, "Full name must be at least 2 characters.")
-    .max(100, "Full name must not exceed 100 characters."),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match.",
   path: ["confirmPassword"],
