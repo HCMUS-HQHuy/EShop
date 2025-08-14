@@ -78,7 +78,7 @@ const Header = () => {
               <p>Support 24/7: 0868694377</p>
             </div>
             <p style={{ fontSize: "15px", color: "white" }}>
-              Email: dangtienqqqq@gmail.com
+              Email: huynhquochuy06012005@gmail.com
             </p>
           </div>
         </div>
