@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import "./style.css";
-import { products } from "../data/Products";
+import { products } from "data/Products";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 
 const Header = () => {
@@ -75,7 +75,7 @@ const Header = () => {
             }}
           >
             <div className="col-md-6 d-flex align-items-center display-none">
-              <p>Support 24/7: 0868694377</p>
+              <p>Support 24/7: 0787768224</p>
             </div>
             <p style={{ fontSize: "15px", color: "white" }}>
               Email: huynhquochuy06012005@gmail.com
@@ -85,7 +85,7 @@ const Header = () => {
       </div>
 
       {/* Header */}
-      {!pathname.includes("/login") && (
+      {!pathname.includes("/login") && !pathname.includes("/register") && (
         <div className="header">
           <div className="container">
             <div className="pc-header">
@@ -137,7 +137,7 @@ const Header = () => {
                   )}
                 </div>
 
-                {user && (
+                {user ? (
                   <div className="col-md-3 d-flex align-items-center justify-content-end Login-Register">
                     <div className="btn-group">
                       <button
@@ -161,6 +161,16 @@ const Header = () => {
                     <Link to="/cart">
                       <i className="fas fa-shopping-bag"></i>
                       <span className="badge">{cartCount}</span>
+                    </Link>
+                  </div>
+                ) : (
+                  // ----- Phần 2: NẾU `user` KHÔNG TỒN TẠI (Chưa đăng nhập) -----
+                  <div className="col-md-3 d-flex align-items-center justify-content-end Login-Register">
+                    <Link to="/register">
+                      Register
+                    </Link>
+                    <Link to="/login">
+                      Login
                     </Link>
                   </div>
                 )}
