@@ -118,6 +118,7 @@ async function login(req: express.Request, res: express.Response) {
         console.log("User authenticated successfully", user);
         const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1y" }); // 1y = 1 year for testing purposes
         res.cookie("auth_jwt", token, {
+            path: "/",
             httpOnly: true,
             secure: true,
             sameSite: "strict",

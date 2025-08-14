@@ -29,7 +29,8 @@ app.get('/', (res: any, req: any)=> {
 });
 
 app.use(cors({
-    origin: '*', // Or specify your allowed origin(s)
+    origin: process.env.FRONT_END_URL, // Or specify your allowed origin(s)
+    credentials: true, 
     methods: ['GET', 'POST'],
 }));
 
