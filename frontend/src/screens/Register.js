@@ -4,23 +4,27 @@ import Header from "../components/Header";
 import apiClient from "utils/axios";
 
 const Register = () => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   const history = useHistory();
 
-  // 1. Cải tiến State: Dùng một object để lưu lỗi cho từng trường
+  // 1. Kiểm tra nếu người dùng đã đăng nhập thì điều hướng về trang chủ
+  useEffect(() => {
+    const userInfo = localStorage.getItem("user");
+    if (userInfo) {
+      history.push("/");
+    }
+    window.scrollTo(0, 0);
+  }, [history]);
+
+  // 2. Thêm `fullname` vào state của form
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // Hàm helper để cập nhật form data
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -28,8 +32,6 @@ const Register = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-
-    // Xóa lỗi cũ mỗi khi submit lại
     setErrors({});
 
     if (formData.password !== formData.confirmPassword) {
@@ -41,7 +43,7 @@ const Register = () => {
 
     try {
       const { data } = await apiClient.post(
-        '/auth/register',
+        '/auth/register', // Đảm bảo URL là chính xác
         { 
           username: formData.username,
           email: formData.email,
@@ -49,44 +51,16 @@ const Register = () => {
           confirmPassword: formData.confirmPassword
         }
       );
+      console.log("Registration successful:", data);
       setLoading(false);
-
-      if (data.error === true) {
-        const errorData = data.data[0];
-        const newErrors = {};
-        if (errorData.username) {
-          newErrors.username = errorData.username;
-        }
-        if (errorData.email) {
-          newErrors.email = errorData.email;
-        }
-        setErrors(newErrors);
-        console.log(errorData);
-        return;
-      }
       history.push("/login");
-    } catch (err) {
-      setLoading(false);
 
-      // 2. Cải tiến Logic `catch` để đọc cấu trúc lỗi mới
-      if (err.response && err.response.data.error === true) {
-        // Nếu backend trả về lỗi_đã_biết (username/email tồn tại)
-        const errorData = err.response.data.data[0];
-        const newErrors = {};
-        if (errorData.username) {
-          newErrors.username = errorData.username;
-        }
-        if (errorData.email) {
-          newErrors.email = errorData.email;
-        }
-        setErrors(newErrors);
-      } else {
-        // Nếu là lỗi khác (lỗi mạng, lỗi server 500...)
-        const message = err.response && err.response.data.message
-          ? err.response.data.message
-          : "An unexpected error occurred.";
-        setErrors({ form: message }); // Gán lỗi vào một key chung là 'form'
-      }
+    } catch (err) {
+      console.error("Registration error:", err);
+      setLoading(false);
+      const errorData = err.response.data.data[0] || {};
+      console.log(errorData);
+      setErrors('form an error occurred during registration.');
     }
   };
 
@@ -95,15 +69,19 @@ const Register = () => {
       <Header />
       <div className="container d-flex flex-column justify-content-center align-items-center login-center">
         <form className="Login col-md-8 col-lg-4 col-11" onSubmit={submitHandler}>
-          {/* Hiển thị lỗi chung của form (nếu có) */}
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <h2>Create Account</h2>
+          </div>
+          
           {errors.form && <div className="alert alert-danger">{errors.form}</div>}
-          {loading && <div className="alert alert-info">Loading...</div>}
+          {loading && <div className="alert alert-info">Registering...</div>}
 
-          {/* 3. Cải tiến JSX để hiển thị lỗi ngay dưới mỗi input */}
+          {errors.fullname && <p className="text-danger small">{errors.fullname}</p>}
+
           <input
             type="text"
             placeholder="Username"
-            name="username" // Thêm `name` để `handleInputChange` hoạt động
+            name="username"
             value={formData.username}
             onChange={handleInputChange}
             required
