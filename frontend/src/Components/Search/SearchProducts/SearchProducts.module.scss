@@ -1,0 +1,6 @@
+@use "src/Styles/mixins" as m;
+
+.message {
+  font-size: 1rem;
+  color: var(--black);
+}

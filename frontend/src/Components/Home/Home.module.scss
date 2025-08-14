@@ -1,0 +1,46 @@
+@use "src/Styles/mixins" as m;
+
+.container {
+  width: var(--container-width);
+  margin: 0 auto;
+}
+
+@include m.small {
+  .container {
+    width: var(--container-mobile-width);
+  }
+}
+
+.introductionContainer {
+  display: flex;
+  margin-top: 60px;
+  margin-bottom: 140px;
+}
+
+@include m.large {
+  .introductionContainer {
+    flex-direction: column-reverse;
+  }
+}
+
+@include m.small {
+  .introductionContainer {
+    margin-bottom: 80px;
+  }
+}
+
+.line {
+  width: 1px;
+  height: 404px;
+  margin-inline-end: 40px;
+  background-color: var(--medium-light-gray);
+  position: relative;
+  top: -60px;
+  user-select: none;
+}
+
+@include m.large {
+  .line {
+    display: none;
+  }
+}

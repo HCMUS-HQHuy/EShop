@@ -1,0 +1,122 @@
+@use "src/Styles/mixins" as m;
+
+.heroSection {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  margin-top: 40px;
+}
+
+@include m.medium {
+  .heroSection {
+    flex-direction: column;
+  }
+}
+
+.content {
+  width: 720px;
+  min-width: 500px;
+}
+
+@media (max-width: 1600px) {
+  .content {
+    width: 525px;
+  }
+}
+
+@include m.large {
+  .content {
+    min-width: auto;
+  }
+}
+
+@include m.medium {
+  .content {
+    width: 630px;
+  }
+}
+
+@include m.small {
+  .content {
+    width: 100%;
+  }
+}
+
+.content>h2 {
+  font: 600 3.375rem "Inter", sans-serif;
+  letter-spacing: .06rem;
+  width: fit-content;
+  margin-bottom: 40px;
+}
+
+@include m.large {
+  .content>h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+}
+
+@include m.small {
+  .content>h2 {
+    font-size: 2rem;
+  }
+}
+
+.content>p {
+  text-wrap: pretty;
+
+  &:not(:last-child) {
+    margin-bottom: 20px;
+  }
+}
+
+@include m.small {
+  .content>p {
+    font-size: .9rem;
+  }
+}
+
+.imgHolder {
+  flex-grow: 1;
+  aspect-ratio: 22/16;
+  user-select: none;
+}
+
+@media (max-width: 1500px) {
+  .imgHolder {
+    aspect-ratio: 26/20;
+  }
+}
+
+@media (max-width: 1300px) {
+  .imgHolder {
+    aspect-ratio: 16/20;
+  }
+}
+
+@include m.large {
+  .imgHolder {
+    aspect-ratio: 16/18;
+  }
+}
+
+@include m.medium {
+  .imgHolder {
+    aspect-ratio: unset;
+    max-width: 630px;
+    height: auto;
+  }
+}
+
+@include m.small {
+  .imgHolder {
+    max-width: 100%;
+    aspect-ratio: 22/20;
+  }
+}
+
+@include m.very-small {
+  .imgHolder {
+    aspect-ratio: 20/24;
+  }
+}

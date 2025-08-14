@@ -1,0 +1,6 @@
+@use "src/Styles/mixins" as m;
+
+.detailsPage {
+  margin: var(--page-margin);
+  position: relative;
+}

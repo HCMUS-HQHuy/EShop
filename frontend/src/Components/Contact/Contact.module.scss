@@ -1,0 +1,17 @@
+@use "src/Styles/mixins" as m;
+
+.contactPage {
+  margin: 60px 0;
+}
+
+.contactContent {
+  display: flex;
+  gap: 30px;
+  margin-top: 100px;
+}
+
+@include m.medium {
+  .contactContent {
+    flex-direction: column;
+  }
+}

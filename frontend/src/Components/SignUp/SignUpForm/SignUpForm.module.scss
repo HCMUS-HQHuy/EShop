@@ -1,0 +1,42 @@
+@use "src/Styles/mixins" as m;
+
+.form {
+  max-width: 371px;
+  width: 371px;
+  margin: 0 120px;
+}
+
+@media (max-width: 1300px) {
+  .form {
+    margin: 0 60px;
+  }
+}
+
+@include m.medium {
+  .form {
+    margin: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .form {
+    max-width: none;
+  }
+}
+
+.form>h2 {
+  font: 500 2.25rem/30px "Inter", sans-serif;
+  letter-spacing: .04rem;
+  width: max-content;
+}
+
+@include m.small {
+  .form>h2 {
+    font-size: 1.8rem;
+  }
+}
+
+.form>p {
+  margin: 20px 0 30px;
+}

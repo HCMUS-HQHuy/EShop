@@ -1,0 +1,24 @@
+@use "src/Styles/mixins" as m;
+
+.features {
+  display: flex;
+  align-items: center;
+  margin-bottom: 120px;
+  gap: 30px;
+}
+
+@include m.medium {
+  .features {
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+}
+
+// Multi language styles
+@include m.large {
+  :where([lang=fr], [lang=ru], [lang=hu], [lang=ar]) .features {
+    flex-direction: column;
+    align-items: center;
+  }
+}

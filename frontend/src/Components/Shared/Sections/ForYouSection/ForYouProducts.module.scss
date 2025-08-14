@@ -1,0 +1,44 @@
+@use "src/Styles/mixins" as m;
+
+.forYouProducts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  min-height: 351px;
+}
+
+@media (max-width: 1300px) {
+  .forYouProducts {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@include m.large {
+  .forYouProducts {
+    grid-template-columns: repeat(2, 322px);
+  }
+}
+
+@include m.small {
+  .forYouProducts {
+    grid-template-columns: 1fr;
+  }
+}
+
+@include m.large {
+  .forYouProducts>* {
+    width: 322px;
+  }
+}
+
+@include m.small {
+  .forYouProducts>* {
+    width: 322px;
+  }
+}
+
+@media (max-width: 520px) {
+  .forYouProducts>* {
+    width: 100%;
+  }
+}
