@@ -117,10 +117,16 @@ async function login(req: express.Request, res: express.Response) {
         const user: types.UserInfor = parsedUser.data;
         console.log("User authenticated successfully", user);
         const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1y" }); // 1y = 1 year for testing purposes
-
+        res.cookie("auth_jwt", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 365 * 24 * 60 * 60 * 1000 // 1 year in milliseconds
+        });
         return res.status(201).json({
-            message: "Login successful",
-            accessToken: token
+            message: "successful",
+            error: false,
+            data: [user]
         });
     } catch (error: any) {
         console.error("Authentication error:", error);
@@ -160,7 +166,7 @@ async function registerUser(req: express.Request, res: express.Response) {
         console.error("Error checking user existence:", error);
         return res.status(500).json({
             message: "error",
-            errors: true,
+            error: true,
             data: [error.message]
         });
     }
@@ -175,14 +181,25 @@ async function registerUser(req: express.Request, res: express.Response) {
         console.error("Registration error:", error);
         return res.status(500).json({
             message: "Registration failed",
-            errors: error.message
+            error: true,
+            data: [error.message]
         });
     }
 }
 
+function logout(req: express.Request, res: express.Response) {
+    res.clearCookie("auth_jwt");
+    return res.status(200).json({
+        message: "successful",
+        error: false,
+        data: []
+    });
+}
+
 const authenController = {
     login,
-    registerUser
+    registerUser,
+    logout
 }
 
 export default authenController;

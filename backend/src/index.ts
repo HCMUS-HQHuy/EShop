@@ -3,6 +3,7 @@ import express from "express";
 import http from 'http';
 import { Server } from 'socket.io'
 import cors from "cors";
+import cookieParser from 'cookie-parser';
 
 import seedAdmin from "config/seedAdmin";
 import configQueryParser from 'config/queryparser.config'
@@ -31,7 +32,10 @@ app.use(cors({
     origin: '*', // Or specify your allowed origin(s)
     methods: ['GET', 'POST'],
 }));
+
+app.use(cookieParser());
 app.use(mid.addSocketIO(io));
+
 seedAdmin().then(() => {
     try {
         routes(app);
