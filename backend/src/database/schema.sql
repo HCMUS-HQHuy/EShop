@@ -5,7 +5,6 @@ CREATE TABLE users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password TEXT NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    fullname VARCHAR(100) NOT NULL,
     address VARCHAR(255),
     phone_number VARCHAR(15),
     role VARCHAR(10) NOT NULL CHECK (role IN ('Admin', 'User')) DEFAULT 'User',
