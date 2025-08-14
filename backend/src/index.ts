@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express from "express";
 import http from 'http';
 import { Server } from 'socket.io'
+import cors from "cors";
 
 import seedAdmin from "config/seedAdmin";
 import configQueryParser from 'config/queryparser.config'
@@ -26,8 +27,11 @@ app.get('/', (res: any, req: any)=> {
     req.send('hello from hqh');
 });
 
+app.use(cors({
+    origin: '*', // Or specify your allowed origin(s)
+    methods: ['GET', 'POST'],
+}));
 app.use(mid.addSocketIO(io));
-
 seedAdmin().then(() => {
     try {
         routes(app);

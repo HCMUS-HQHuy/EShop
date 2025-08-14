@@ -9,30 +9,43 @@ import * as util from "utils/index.utils";
 
 // #### DATABASE FUNCTIONS ####
 
-async function checkUserExists(input: Partial<types.UserRegistration>): Promise<types.ValidationResult> {
-    const errors: Partial<Record<keyof types.UserRegistration, string>> = {};
-    let db: Client | undefined = undefined;
+async function checkUserExists(input: Partial<types.UserRegistration>): Promise<{
+    usernameExists: boolean;
+    emailExists: boolean;
+}> {
+    let db: Client | undefined;
+    const result = {
+        usernameExists: false,
+        emailExists: false
+    };
     try {
         db = await database.getConnection();
-        const existingUserQuery = "SELECT * FROM users WHERE username = $1 OR email = $2";
-        const existingUserResult = await db.query(existingUserQuery, [input.username, input.email]);
 
-        if (existingUserResult.rows.length > 0) {
-            throw new Error("User with this username or email already exists");
+        const query = `
+            SELECT username, email
+            FROM users
+            WHERE username = $1 OR email = $2
+        `;
+        const values = [input.username, input.email];
+        const dbResult = await db.query(query, values);
+
+        for (const row of dbResult.rows) {
+            if (row.username === input.username) {
+                result.usernameExists = true;
+            }
+            if (row.email === input.email) {
+                result.emailExists = true;
+            }
         }
+        return result;
     } catch (error: any) {
         console.error("Database validation error:", error);
-        errors.username = "Existing user validation failed.";
+        return result;
     } finally {
         if (db) {
             await database.releaseConnection(db);
-            console.log("Database connection released.");
         }
     }
-    return {
-        valid: Object.keys(errors).length === 0,
-        errors,
-    };
 }
 
 async function signup(registrationData: types.UserRegistration): Promise<void> {
@@ -68,12 +81,14 @@ async function signup(registrationData: types.UserRegistration): Promise<void> {
 // #### CONTROLLER FUNCTIONS ####
 
 async function login(req: express.Request, res: express.Response) {
+    console.log("Login request received:", req.body);
     const parsedBody = types.autheFormSchemas.userCredentials.safeParse(req.body);
     if (!parsedBody.success) {
-        return res.status(400).json({
-            error: "Invalid input",
-            errors: parsedBody.error.format()
-        });
+        return res.status(200).json({
+            message: "error",
+            error: true,
+            data: [parsedBody.error.format()]
+        });       
     }
     const credential: types.UserCredentials = parsedBody.data;
 
@@ -120,19 +135,33 @@ async function login(req: express.Request, res: express.Response) {
 async function registerUser(req: express.Request, res: express.Response) {
     const parsedBody = types.autheFormSchemas.userRegistration.safeParse(req.body);
     if (!parsedBody.success) {
-        return res.status(400).json({
-            error: "Invalid input",
-            errors: parsedBody.error.format()
-        });
+        return res.status(200).json({
+            message: "error",
+            error: true,
+            data: [parsedBody.error.format()]
+        })
     }
     const registrationData: types.UserRegistration = parsedBody.data;
 
     // find data and check conditions for existing user
-    const userExistsResult = await checkUserExists(registrationData);
-    if (!userExistsResult.valid) {
-        return res.status(400).json({
-            message: "User already exists",
-            errors: userExistsResult.errors
+    try {
+        const { usernameExists, emailExists } = await checkUserExists(registrationData);
+        if (usernameExists || emailExists) {
+            return res.status(200).json({
+                message: "error",
+                error: true,
+                data: [{
+                    username: usernameExists ? "User with this username already exists" : undefined,
+                    email: emailExists ? "User with this email already exists" : undefined
+                }]
+            });
+        }
+    } catch (error: any) {
+        console.error("Error checking user existence:", error);
+        return res.status(200).json({
+            message: "error",
+            errors: true,
+            data: [error.message]
         });
     }
 
