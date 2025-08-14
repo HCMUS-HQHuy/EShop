@@ -3,7 +3,6 @@ import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Header from "components/Header";
 import apiClient from "utils/axios";
-import axios from "axios";
 
 const Login = () => {
   const history = useHistory();
@@ -28,7 +27,7 @@ const Login = () => {
         password: password 
       });
       const dataResponse = response.data;
-      if (dataResponse.error == true) {
+      if (dataResponse.error === true) {
         setError('Login failed');
         return;
       }
