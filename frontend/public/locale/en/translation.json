@@ -411,7 +411,9 @@
     "newPass": "New password",
     "couponExample": "Example SAVE20",
     "fullName": "Full Name",
+    "username": "Username",
     "emailOrPhone": "Email or Phone Number",
+    "email": "Email",
     "password": "Password"
   },
   "inputsLabels": {
