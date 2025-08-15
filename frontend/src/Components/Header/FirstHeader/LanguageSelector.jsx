@@ -63,7 +63,7 @@ const LanguageSelector = () => {
   return (
     <div
       className={s.languageSelector}
-      onClick={toggleLanguageMenu}
+      // onClick={toggleLanguageMenu}
       onFocus={displayLanguageMenu}
       onBlur={() => displayLanguageMenu(false)}
       aria-haspopup="true"
