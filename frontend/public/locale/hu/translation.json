@@ -284,8 +284,8 @@
   "aboutPage": {
     "heroSection": {
       "heading": "Mi történetünk",
-      "paragraphOne": "2024-ben indították el, az E-commercew Irak vezető online vásárlási piactere, amely országosan szolgálja ki az ügyfeleket. Az egyénre szabott marketingre, a fejlett adat-elemzésekre és az átfogó szolgáltatási megoldásokra összpontosítva az E-commercew több mint 10 500 eladót és 300 márkát támogat, és 3 millió ügyfelet ér el az egész országban.",
-      "paragraphTwo": "Az E-commercew több mint 1 millió termékből álló széles választékot kínál, amely folyamatosan bővül, hogy megfeleljen az ügyfelek sokféle igényének. Az elektronikától a divatig, a háztartási cikkektől a szépségápolási termékekig az E-commercew számos kategóriát kínál, amelyek közül választhat.",
+      "paragraphOne": "2024-ben indították el, az EShop Irak vezető online vásárlási piactere, amely országosan szolgálja ki az ügyfeleket. Az egyénre szabott marketingre, a fejlett adat-elemzésekre és az átfogó szolgáltatási megoldásokra összpontosítva az EShop több mint 10 500 eladót és 300 márkát támogat, és 3 millió ügyfelet ér el az egész országban.",
+      "paragraphTwo": "Az EShop több mint 1 millió termékből álló széles választékot kínál, amely folyamatosan bővül, hogy megfeleljen az ügyfelek sokféle igényének. Az elektronikától a divatig, a háztartási cikkektől a szépségápolási termékekig az EShop számos kategóriát kínál, amelyek közül választhat.",
       "imageAlt": "két boldog fiatal nő vásárol"
     },
     "cardInfo": {
@@ -430,7 +430,7 @@
   "loginSignUpPage": {
     "createAccount": "Fiók létrehozása",
     "enterDetails": "Írd be az adataidat lentebb",
-    "login": "Bejelentkezés az E-commercew webhelyre",
+    "login": "Bejelentkezés az EShop webhelyre",
     "forgotPassword": "Elfelejtett jelszó?",
     "alreadyHaveAcc": "Már van fiókod?",
     "dontHaveAcc": "Nincs fiókja?"

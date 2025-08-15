@@ -284,8 +284,8 @@
   "aboutPage": {
     "heroSection": {
       "heading": "Notre histoire",
-      "paragraphOne": "Lancé en 2024, E-commercew est la principale place de marché en ligne d'Irak, servant des clients à l'échelle nationale. Avec un fort accent sur le marketing personnalisé, l'analyse de données avancée et des solutions de service complètes, E-commercew soutient plus de 10 500 vendeurs et 300 marques, atteignant 3 millions de clients à travers le pays.",
-      "paragraphTwo": "E-commercew offre une vaste sélection de plus d'un million de produits, en expansion constante pour répondre aux besoins diversifiés de ses clients. Des électroniques à la mode, et des articles pour la maison aux produits de beauté, E-commercew propose un large éventail de catégories à choisir.",
+      "paragraphOne": "Lancé en 2024, EShop est la principale place de marché en ligne d'Irak, servant des clients à l'échelle nationale. Avec un fort accent sur le marketing personnalisé, l'analyse de données avancée et des solutions de service complètes, EShop soutient plus de 10 500 vendeurs et 300 marques, atteignant 3 millions de clients à travers le pays.",
+      "paragraphTwo": "EShop offre une vaste sélection de plus d'un million de produits, en expansion constante pour répondre aux besoins diversifiés de ses clients. Des électroniques à la mode, et des articles pour la maison aux produits de beauté, EShop propose un large éventail de catégories à choisir.",
       "imageAlt": "deux jeunes femmes heureuses de faire du shopping"
     },
     "cardInfo": {
@@ -430,7 +430,7 @@
   "loginSignUpPage": {
     "createAccount": "Créer un compte",
     "enterDetails": "Entrez vos détails ci-dessous",
-    "login": "Se connecter à E-commercew",
+    "login": "Se connecter à EShop",
     "forgotPassword": "Mot de passe oublié ?",
     "alreadyHaveAcc": "Vous avez déjà un compte ?",
     "dontHaveAcc": "Vous n'avez pas de compte ?"
@@ -499,7 +499,7 @@
   "toastAlert": {
     "accountInfoUpdated": "Les informations du compte ont été mises à jour.",
     "messageSent": "Merci pour votre message ! Nous vous répondrons sous peu",
-    "subscriptionSuccess": "Vous vous êtes abonné aux offres E-commercews!",
+    "subscriptionSuccess": "Vous vous êtes abonné aux offres EShops!",
     "subscriptionFailed": "Échec de l'abonnement. Veuillez vérifier votre connexion Internet.",
     "loginSuccess": "Vous êtes connecté avec succès. Bienvenue!",
     "loginFailed": "Échec de la connexion. Veuillez vérifier votre connexion Internet.",
