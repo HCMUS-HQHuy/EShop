@@ -28,7 +28,8 @@ CREATE TABLE shops (
 
 CREATE TABLE categories (
     category_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
+    iconName VARCHAR(100),
+    title VARCHAR(100) NOT NULL UNIQUE,
     description TEXT,
     parent_id INT REFERENCES categories(category_id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
