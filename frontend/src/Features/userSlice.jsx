@@ -1,40 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "./../Api/index.api";
 
-// const initialStateLocal = localStorage.getItem("userSliceData");
-
-// const initialState = initialStateLocal
-//   ? JSON.parse(initialStateLocal)
-//   : {
-//       loginInfo: {
-//         username: "Lily Watson",
-//         emailOrPhone: "lily.wastons@gmail.com",
-//         password: "random-password1234",
-//         address: "United State, California",
-//         isSignIn: true,
-//       },
-//       signedUpUsers: [
-//         {
-//           username: "Lily Watson",
-//           emailOrPhone: "lily.wastons@gmail.com",
-//           password: "random-password1234",
-//         },
-//       ],
-//     };
-
 const initialState = {
-  userInfor: {
-    username: "",
-    email: "",
-    password: "",
-    address: "",
-    isSignIn: false,
-  },
   loginInfo: {
     username: "",
     email: "",
     password: "",
     address: "",
+    phoneNumber: "",
     isSignIn: false,
   },
   status: 'idle'

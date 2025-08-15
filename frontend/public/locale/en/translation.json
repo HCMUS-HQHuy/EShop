@@ -420,6 +420,7 @@
     "firstName": "First Name",
     "lastName": "Last Name",
     "email": "Email",
+    "username": "Username",
     "companyName": "Company Name",
     "streetAddress": "Street Address",
     "apartment": "Apartment, floor, etc. (optional)",

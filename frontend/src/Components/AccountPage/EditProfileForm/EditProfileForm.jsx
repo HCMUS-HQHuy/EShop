@@ -59,8 +59,9 @@ function updateUserInfo(formRef, dispatch, t) {
 
   const updatedUserData = {
     username: `${inputs[0].value} ${inputs[1].value}`,
-    emailOrPhone: inputs[2].value,
-    address: inputs[3].value,
+    email: inputs[2].value,
+    phoneNumber: inputs[3].value,
+    address: inputs[4].value,
     password: inputs[5].value,
   };
 

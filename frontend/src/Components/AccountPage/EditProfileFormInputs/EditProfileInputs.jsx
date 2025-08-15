@@ -6,11 +6,10 @@ import s from "./EditProfileInputs.module.scss";
 
 const EditProfileInputs = () => {
   const { loginInfo } = useSelector((state) => state.user);
-  const { username, emailOrPhone, address } = loginInfo;
-  const firstLastUserName = username.split(" ");
-  const [firstName, setFirstName] = useState(firstLastUserName[0]);
-  const [lastName, setLastName] = useState(firstLastUserName[1]);
-  const [emailOrPhoneState, setEmailOrPhoneState] = useState(emailOrPhone);
+  const { username, email, phoneNumber, address } = loginInfo;
+  const [usernameState, setUsername] = useState(username);
+  const [emailState, setEmail] = useState(email);
+  const [phoneState, setPhone] = useState(phoneNumber);
   const [newPassword, setNewPassword] = useState("");
   const [addressState, setAddress] = useState(address);
   const { t } = useTranslation();
@@ -20,19 +19,10 @@ const EditProfileInputs = () => {
       <section className={s.wrapper}>
         <EditProfileInput
           inputData={{
-            label: t("inputsLabels.firstName"),
-            name: "firstName",
-            value: firstName,
-            setValue: setFirstName,
-          }}
-        />
-
-        <EditProfileInput
-          inputData={{
-            label: t("inputsLabels.lastName"),
-            name: "lastName",
-            value: lastName,
-            setValue: setLastName,
+            label: t("inputsLabels.username"),
+            name: "username",
+            value: usernameState,
+            setValue: setUsername,
           }}
         />
 
@@ -40,9 +30,19 @@ const EditProfileInputs = () => {
           inputData={{
             label: t("inputsLabels.email"),
             name: "changeEmail",
-            value: emailOrPhoneState,
-            setValue: setEmailOrPhoneState,
+            value: emailState,
+            setValue: setEmail,
             placeholder: "example@gmail.com",
+          }}
+        />
+
+        <EditProfileInput
+          inputData={{
+            label: t("inputsLabels.phoneNumber"),
+            name: "phoneNumber",
+            value: phoneState,
+            setValue: setPhone,
+            placeholder: t("inputsPlaceholders.yourPhone"),
           }}
         />
 
