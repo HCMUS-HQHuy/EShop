@@ -29,7 +29,7 @@ router.get("/products/:id/related", controller.user.product.getRelatedProducts);
 router.post("/orders/create", mid.auth, controller.user.order.create);
 
 // #### CATEGORY ROUTES ####
-router.get("/categories/get", controller.user.category.get);
+router.get("/categories/list", controller.user.category.get);
 
 // #### PAYMENT TEST ####
 router.post("/payment/test", (req: any, res: any) => {
