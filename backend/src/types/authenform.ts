@@ -20,6 +20,13 @@ const passwordSchema = z
 
 // Credentials schema
 export const UserCredentialsSchema = z.object({
+  email: z.string().email("Invalid email address."),
+  password: passwordSchema,
+});
+
+// Registration schema
+export const UserRegistrationSchema = UserCredentialsSchema.extend({
+  confirmPassword: z.string(),  
   username: z
     .string()
     .min(3, "Username must be at least 3 characters.")
@@ -28,13 +35,6 @@ export const UserCredentialsSchema = z.object({
       message:
         "Username can only contain letters, numbers, and underscores.",
     }),
-  password: passwordSchema,
-});
-
-// Registration schema
-export const UserRegistrationSchema = UserCredentialsSchema.extend({
-  confirmPassword: z.string(),
-  email: z.string().email("Invalid email address."),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match.",
   path: ["confirmPassword"],

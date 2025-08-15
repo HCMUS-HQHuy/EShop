@@ -96,9 +96,9 @@ async function login(req: express.Request, res: express.Response) {
         db = await database.getConnection();
         const query =  `
             SELECT user_id, username, password, role
-            FROM users WHERE username = $1
+            FROM users WHERE email = $1
         `;
-        const result = await db.query(query, [credential.username]);
+        const result = await db.query(query, [credential.email]);
 
         if (result.rows.length === 0)
             return res.status(401).json({
