@@ -8,7 +8,8 @@ import * as utils from "utils/index.utils";
 
 async function auth(req: types.RequestCustom, res: express.Response, next: express.NextFunction) {
     const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
+    let token = authHeader && authHeader.split(" ")[1];
+    if (token == null) token = req.cookies.auth_jwt; // Check cookies for token
     if (token == null) return res.sendStatus(401);
     try {
         const { user_id, role } = jwt.verify(token, process.env.JWT_SECRET as string) as types.UserInfor;
