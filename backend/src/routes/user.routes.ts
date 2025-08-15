@@ -9,6 +9,9 @@ router.get("/", (req, res) => {
     res.status(200).json({ message: "This route is accessible only by the user" });
 });
 
+// #### USER ROUTES ####
+router.get("/users/getinfor", mid.auth, controller.user.infor.get);
+
 // #### PRODUCT ROUTES ####
 router.get("/products/list",        controller.user.product.list);
 router.get("/products/:id",         controller.user.product.getDetailById);
