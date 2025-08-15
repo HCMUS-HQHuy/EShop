@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
 });
 
 // #### USER ROUTES ####
-router.get("/users/getinfor", mid.auth, controller.user.infor.get);
+router.get("/getinfor", mid.auth, controller.user.infor.get);
 
 // #### PRODUCT ROUTES ####
 router.get("/products/list",        controller.user.product.list);
