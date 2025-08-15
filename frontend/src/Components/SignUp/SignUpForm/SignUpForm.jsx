@@ -9,14 +9,15 @@ import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus";
 import SignUpButtons from "./SignUpButtons/SignUpButtons";
 import s from "./SignUpForm.module.scss";
 import SignUpFormInputs from "./SignUpFormInputs/SignUpFormInputs";
+import React from "react";
 
 const SignUpForm = () => {
-  const { signedUpUsers } = useSelector((state) => state.user);
+  const { signedUpUsers, status } = useSelector((state) => state.user);
   const isWebsiteOnline = useOnlineStatus();
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
-  function signUp(e) {
+  async function signUp(e) {
     e.preventDefault();
 
     const inputs = e.target.querySelectorAll("input");
@@ -29,12 +30,12 @@ const SignUpForm = () => {
     const isFormValid = registerValidationCheck(inputs);
 
     if (isFormValid) {
-      const isUserAlreadySignedUp = compareDataByObjValue(
-        signedUpUsers,
-        formData,
-        "emailOrPhone"
-      );
-      if (isUserAlreadySignedUp) return;
+      // const isUserAlreadySignedUp = compareDataByObjValue(
+      //   signedUpUsers,
+      //   formData,
+      //   "emailOrPhone"
+      // );
+      // if (isUserAlreadySignedUp) return;
 
       const uniqueSignedUpUsers = getUniqueArrayByObjectKey({
         arr: signedUpUsers,
@@ -46,10 +47,10 @@ const SignUpForm = () => {
         internetConnectionAlert();
         return;
       }
-
-      dispatch(newSignUp(uniqueSignedUpUsers));
-      dispatch(setLoginData(formData));
-      signInAlert(t, dispatch);
+        // dispatch(setLoginData(formData));
+        // signInAlert(t, dispatch);
+      const promise = await dispatch(newSignUp(uniqueSignedUpUsers));
+      console.log("promise", promise);
     }
   }
 
@@ -63,6 +64,7 @@ const SignUpForm = () => {
   return (
     <form action="POST" className={s.form} onSubmit={signUp}>
       <h2>{t("loginSignUpPage.createAccount")}</h2>
+      <h1>{status}</h1>
       <p>{t("loginSignUpPage.enterDetails")}</p>
 
       <SignUpFormInputs />

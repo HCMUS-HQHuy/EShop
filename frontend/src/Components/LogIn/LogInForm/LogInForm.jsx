@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { showAlert } from "src/Features/alertsSlice";
-import { newSignUp } from "src/Features/userSlice";
+import { loginUser, setLoginData } from "src/Features/userSlice";
 import { simpleValidationCheck } from "src/Functions/validation";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus";
 import s from "./LogInForm.module.scss";
@@ -15,7 +15,7 @@ const LogInForm = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  function login(e) {
+  async function login(e) {
     const inputs = e.target.querySelectorAll("input");
     e.preventDefault();
 
@@ -25,21 +25,19 @@ const LogInForm = () => {
     }
 
     const isFormValid = simpleValidationCheck(inputs);
-    if (!isFormValid) return;
-
-    const dataByEmail = filterLoginByEmailOrPhone(signedUpUsers, emailOrPhone);
-    const isCorrectLoginData = checkLoginPassword(dataByEmail, password);
-
-    const formDataObj = new FormData(e.target);
-    const formData = {};
-
-    // Set keys and values from formDataObj to formData
-    for (let pair of formDataObj.entries()) formData[pair[0]] = pair[1];
-
-    if (isCorrectLoginData) {
-      dispatch(newSignUp(signedUpUsers));
-      logInAlert(dispatch, t);
+    if (!isFormValid) {
+      console.log("Form validation failed");
+      return;
     }
+    const credentials = {
+      email: emailOrPhone,
+      password: password
+    };
+    await dispatch(loginUser(credentials));
+    // console.log("promise", promise);
+    const response = await dispatch(setLoginData());
+    console.log("Login data set:", response);
+    logInAlert(dispatch, t);
   }
 
   return (
