@@ -4,7 +4,7 @@ import { showAlert } from "src/Features/alertsSlice";
 import { newSignUp, setLoginData } from "src/Features/userSlice";
 import { compareDataByObjValue } from "src/Functions/conditions";
 import { getUniqueArrayByObjectKey } from "src/Functions/helper";
-import { simpleValidationCheck } from "src/Functions/validation";
+import { registerValidationCheck } from "src/Functions/validation";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus";
 import SignUpButtons from "./SignUpButtons/SignUpButtons";
 import s from "./SignUpForm.module.scss";
@@ -26,7 +26,7 @@ const SignUpForm = () => {
     // Set keys and values from formDataObj to formData
     for (let pair of formDataObj.entries()) formData[pair[0]] = pair[1];
 
-    const isFormValid = simpleValidationCheck(inputs);
+    const isFormValid = registerValidationCheck(inputs);
 
     if (isFormValid) {
       const isUserAlreadySignedUp = compareDataByObjValue(

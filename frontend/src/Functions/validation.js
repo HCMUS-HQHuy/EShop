@@ -78,6 +78,61 @@ export function simpleValidationCheck(inputs) {
   return isFormValid;
 }
 
+export function registerValidationCheck(inputs) {
+  let isFormValid = true;
+  const formData = {};
+
+  inputs.forEach((input) => {
+    input.classList.remove("invalid");
+    formData[input.name] = input.value.trim();
+  });
+
+  const markInvalid = (name) => {
+    const input = Array.from(inputs).find((i) => i.name === name);
+    if (input) {
+      input.classList.add("invalid");
+    }
+  };
+
+  const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+  if (!usernameRegex.test(formData.username)) {
+    markInvalid("username");
+    isFormValid = false;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(formData.emailOrPhone)) {
+    markInvalid("emailOrPhone");
+    isFormValid = false;
+  }
+
+  const password = formData.password || "";
+  const passwordChecks = {
+    length: password.length >= 8 && password.length <= 50,
+    // lowercase: /[a-z]/.test(password),
+    // uppercase: /[A-Z]/.test(password),
+    // number: /[0-9]/.test(password),
+    // special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  };
+
+  for (const check in passwordChecks) {
+    if (!passwordChecks[check]) {
+      markInvalid("password");
+      isFormValid = false;
+      break;
+    }
+  }
+
+  // Kiểm tra confirm password
+  if (formData.confirmPassword !== formData.password) {
+    markInvalid("confirmPassword");
+    isFormValid = false;
+  }
+
+  return isFormValid;
+}
+
+
 export function showInvalidInputAlert(event) {
   const form = new FormData(event.target);
   const inputs = event.target.querySelectorAll("input");

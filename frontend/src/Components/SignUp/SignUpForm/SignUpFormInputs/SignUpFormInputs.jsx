@@ -7,7 +7,7 @@ import s from "./SignUpFormInputs.module.scss";
 const SignUpFormInputs = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { username, emailOrPhone, password } = useSelector(
+  const { username, emailOrPhone, password, confirmPassword } = useSelector(
     (state) => state.forms.signUp
   );
 
@@ -27,7 +27,7 @@ const SignUpFormInputs = () => {
         type="text"
         name="username"
         value={username}
-        placeholder={t("inputsPlaceholders.fullName")}
+        placeholder={t("inputsPlaceholders.username")}
         onChange={updateInputOnChange}
         required
         aria-required="true"
@@ -36,7 +36,7 @@ const SignUpFormInputs = () => {
         type="text"
         name="emailOrPhone"
         value={emailOrPhone}
-        placeholder={t("inputsPlaceholders.emailOrPhone")}
+        placeholder={t("inputsPlaceholders.email")} // update to email or phone later
         onChange={updateInputOnChange}
         required
         aria-required="true"
@@ -53,6 +53,19 @@ const SignUpFormInputs = () => {
         />
         <ShowHidePassword />
       </div>
+      <div className={s.input}>
+        <input
+          type="password"
+          name="confirmPassword"
+          value={confirmPassword}
+          placeholder={t("inputsPlaceholders.confirmPass")}
+          onChange={updateInputOnChange}
+          required
+          aria-required="true"
+        />
+        <ShowHidePassword />
+      </div>
+      
     </div>
   );
 };
