@@ -15,7 +15,7 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   const isLoginOrSignUpPage = pathName === "/login" || pathName === "/signup";
 
   const isPageRequiringSignIn = (page: string) =>
-    pagesRequireSignIn.includes(page) && !isSignIn;
+    !isSignIn && pagesRequireSignIn.includes(page);
 
   if (isLoginOrSignUpPage && isSignIn) return <Navigate to="/" />;
   if (isPageRequiringSignIn(pathName)) {
