@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Api/index.api.js";
-import type { Credentials } from "Types/credentials.ts";
+import type { LoginFormValues } from "Types/credentials.ts";
 
 const initialState = {
   loginInfo: {
@@ -24,7 +24,7 @@ export const newSignUp = createAsyncThunk(
 
 export const loginUser = createAsyncThunk(
   "user/login",
-  async (credentials: Credentials) => {
+  async (credentials: LoginFormValues) => {
     const response = await api.user.login(credentials);
     return response.data;
   }

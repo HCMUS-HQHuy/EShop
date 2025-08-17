@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { showAlert } from "Features/alertsSlice.jsx";
 import { loginUser, setLoginData } from "Features/userSlice.tsx";
-import { simpleValidationCheck } from "Functions/validation.js";
 import useOnlineStatus from "Hooks/Helper/useOnlineStatus.jsx";
 
 import s from "./LogInForm.module.scss";
 import LogInFormInputs from "./LogInFormInputs/LogInFormInputs.tsx";
+import AuthSchemas from 'Types/credentials.ts';
 import type { RootState, AppDispatch } from "Types/store.ts";
-import type { Credentials } from "Types/credentials.ts";
+import type { LoginFormValues } from "Types/credentials.ts";
 import type { TFunction } from "i18next";
 
 const LogInForm = () => {
@@ -19,7 +19,6 @@ const LogInForm = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   async function login(e: React.FormEvent<HTMLFormElement>) {
-    const inputs = e.currentTarget.querySelectorAll("input");
     e.preventDefault();
 
     if (!isWebsiteOnline) {
@@ -27,17 +26,16 @@ const LogInForm = () => {
       return;
     }
 
-    const isFormValid = simpleValidationCheck(inputs);
-    if (!isFormValid) {
-      console.log("Form validation failed");
-      return;
-    }
-    const credentials: Credentials = {
+    const result = AuthSchemas.login.safeParse({
       email: emailOrPhone,
       password: password
-    };
+    });
+    if (!result.success) {
+      console.log("Invalid login credentials");
+      return;
+    }
+    const credentials: LoginFormValues = result.data;
     await dispatch(loginUser(credentials));
-    // console.log("promise", promise);
     const response = await dispatch(setLoginData());
     console.log("Login data set:", response);
     logInAlert(dispatch, t);
