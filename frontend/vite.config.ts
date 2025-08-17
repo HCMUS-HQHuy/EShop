@@ -6,10 +6,11 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [
     react(),
-    postcss({
-      plugins: [autoprefixer],
-      config: "./postcss.config.cjs",
-    }),
+    // I don't know why???
+    // postcss({
+    //   plugins: [autoprefixer],
+    //   config: "./postcss.config.cjs",
+    // }),
   ],
   build: {
     sourcemap: true,

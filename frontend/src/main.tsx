@@ -7,7 +7,7 @@ import { store } from "./App/store.jsx";
 import "./Styles/main.scss";
 import "./i18n.js";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <Provider store={store}>
       <HelmetProvider>

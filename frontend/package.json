@@ -30,7 +30,7 @@
     "web-vitals": "^5.0.3"
   },
   "devDependencies": {
-    "@types/react": "^19.1.9",
+    "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react-swc": "^3.11.0",
     "eslint": "^9.32.0",
@@ -38,6 +38,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "npm-check-updates": "^18.0.2",
+    "typescript": "^5.9.2",
     "vite": "^7.0.6"
   }
 }
