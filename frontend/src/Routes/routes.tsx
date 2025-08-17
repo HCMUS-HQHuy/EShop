@@ -1,19 +1,19 @@
-import About from "../Components/About/About.jsx";
-import AccountPage from "../Components/AccountPage/AccountPage.jsx";
-import Cart from "../Components/Cart/Cart.jsx";
-import CheckoutPage from "../Components/CheckoutPage/CheckoutPage.jsx";
-import Contact from "../Components/Contact/Contact.jsx";
-import FavoritePage from "../Components/FavoritePage/FavoritePage.jsx";
-import Home from "../Components/Home/Home.jsx";
-import LogIn from "../Components/LogIn/LogIn.jsx";
-import NotFoundPage from "../Components/NotFoundPage/NotFoundPage.jsx";
-import OrderPage from "../Components/OrderPage/OrderPage.jsx";
-import ProductDetailsPage from "../Components/ProductDetailsPage/ProductDetailsPage.jsx";
-import ProductsCategoryPage from "../Components/ProductsCategory/ProductsCategoryPage.jsx";
-import ProductsPage from "../Components/ProductsPage/ProductsPage.jsx";
-import SearchPage from "../Components/Search/SearchPage.jsx";
-import SignUp from "../Components/SignUp/SignUp.jsx";
-import WishList from "../Components/WishList/WishList.jsx";
+import About from "Components/About/About.jsx";
+import AccountPage from "Components/AccountPage/AccountPage.jsx";
+import Cart from "Components/Cart/Cart.jsx";
+import CheckoutPage from "Components/CheckoutPage/CheckoutPage.jsx";
+import Contact from "Components/Contact/Contact.jsx";
+import FavoritePage from "Components/FavoritePage/FavoritePage.jsx";
+import Home from "Components/Home/Home.jsx";
+import LogIn from "Components/LogIn/LogIn.tsx";
+import NotFoundPage from "Components/NotFoundPage/NotFoundPage.jsx";
+import OrderPage from "Components/OrderPage/OrderPage.jsx";
+import ProductDetailsPage from "Components/ProductDetailsPage/ProductDetailsPage.jsx";
+import ProductsCategoryPage from "Components/ProductsCategory/ProductsCategoryPage.jsx";
+import ProductsPage from "Components/ProductsPage/ProductsPage.jsx";
+import SearchPage from "Components/Search/SearchPage.jsx";
+import SignUp from "Components/SignUp/SignUp.jsx";
+import WishList from "Components/WishList/WishList.jsx";
 
 export const ROUTES_CONFIG = [
   { path: "/", element: <Home /> },
