@@ -30,7 +30,8 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

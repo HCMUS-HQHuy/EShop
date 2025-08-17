@@ -1,15 +1,17 @@
-import useStoreWebsiteDataToLocalStorage from "./Hooks/App/useStoreWebsiteDataToLocalStorage";
-import AppRoutes from "./Routes/AppRoutes";
+import useStoreWebsiteDataToLocalStorage from "./Hooks/App/useStoreWebsiteDataToLocalStorage.jsx";
+import AppRoutes from "./Routes/AppRoutes.jsx";
 import { useDispatch } from "react-redux";
+
 import { useEffect, useRef, useState } from "react";
-import { setLoginData } from "./Features/userSlice";
-import { getCategories } from "./Features/categoriesSlice";
+import { setLoginData } from "./Features/userSlice.jsx";
+import { getCategories } from "./Features/categoriesSlice.jsx";
+import type { AppDispatch } from "./Types/store.ts";
 
 function App() {
   useStoreWebsiteDataToLocalStorage();
   const [isReady, setIsReady] = useState(false);
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const hasFetchedUserData = useRef(false);
   
   useEffect(() => {
