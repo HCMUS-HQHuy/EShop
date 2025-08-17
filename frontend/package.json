@@ -27,7 +27,8 @@
     "router-dom": "^3.0.3",
     "sass": "^1.89.2",
     "swiper": "^11.2.10",
-    "web-vitals": "^5.0.3"
+    "web-vitals": "^5.0.3",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
