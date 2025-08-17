@@ -1,5 +1,5 @@
 import useStoreWebsiteDataToLocalStorage from "./Hooks/App/useStoreWebsiteDataToLocalStorage.jsx";
-import AppRoutes from "./Routes/AppRoutes.tsx";
+import AppRoutes from "./Routes/IndexRoutes.tsx";
 import { useDispatch } from "react-redux";
 
 import { useEffect, useRef, useState } from "react";
