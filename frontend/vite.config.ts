@@ -1,16 +1,10 @@
 import react from "@vitejs/plugin-react-swc";
-import autoprefixer from "autoprefixer";
-import postcss from "postcss/lib/postcss";
 import { defineConfig } from "vite";
+import path from 'path';
 
 export default defineConfig({
   plugins: [
-    react(),
-    // I don't know why???
-    // postcss({
-    //   plugins: [autoprefixer],
-    //   config: "./postcss.config.cjs",
-    // }),
+    react()
   ],
   build: {
     sourcemap: true,
@@ -21,6 +15,19 @@ export default defineConfig({
   resolve: {
     alias: {
       src: "/src",
+      Api: path.resolve(__dirname, 'src/Api'),
+      App: path.resolve(__dirname, 'src/App'),
+      Assets: path.resolve(__dirname, 'src/Assets'),
+      Components: path.resolve(__dirname, 'src/Components'),
+      Data: path.resolve(__dirname, 'src/Data'),
+      Features: path.resolve(__dirname, 'src/Features'),
+      Fonts: path.resolve(__dirname, 'src/Fonts'),
+      Functions: path.resolve(__dirname, 'src/Functions'),
+      Hooks: path.resolve(__dirname, 'src/Hooks'),
+      Routes: path.resolve(__dirname, 'src/Routes'),
+      Styles: path.resolve(__dirname, 'src/Styles'),
+      Types: path.resolve(__dirname, 'src/Types'),
+      Utils: path.resolve(__dirname, 'src/Utils'),
     },
   },
 });

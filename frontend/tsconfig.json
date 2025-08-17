@@ -9,8 +9,8 @@
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
     "target": "esnext",
-    "types": [],
-
+    "types": ["node"],
+    "baseUrl": "src",
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
