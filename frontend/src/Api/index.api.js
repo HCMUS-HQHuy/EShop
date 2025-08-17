@@ -1,7 +1,9 @@
 import user from './user.api';
+import categories from './categories.api';
 
 const api = {
-  user
+  user,
+  categories
 };
 
 export default api;
