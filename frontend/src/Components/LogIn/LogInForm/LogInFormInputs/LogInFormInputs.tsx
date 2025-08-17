@@ -1,15 +1,17 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { updateInput } from "src/Features/formsSlice";
-import ShowHidePassword from "../../../Shared/MiniComponents/ShowHidePassword/ShowHidePassword";
+import { updateInput } from "Features/formsSlice.jsx";
+import ShowHidePassword from "../../../Shared/MiniComponents/ShowHidePassword/ShowHidePassword.jsx";
 import s from "./LogInFormInputs.module.scss";
+import type { RootState } from "Types/store.ts";
+
 
 const LogInFormInputs = () => {
-  const { emailOrPhone, password } = useSelector((state) => state.forms.login);
+  const { emailOrPhone, password } = useSelector((state: RootState) => state.forms.login);
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  function updateInputOnChange(e) {
+  function updateInputOnChange(e: React.ChangeEvent<HTMLInputElement>) {
     dispatch(
       updateInput({
         formName: "login",

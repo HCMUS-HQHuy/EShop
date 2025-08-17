@@ -1,22 +1,25 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { showAlert } from "src/Features/alertsSlice";
-import { loginUser, setLoginData } from "src/Features/userSlice";
-import { simpleValidationCheck } from "src/Functions/validation";
-import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus";
+import { showAlert } from "Features/alertsSlice.jsx";
+import { loginUser, setLoginData } from "Features/userSlice.tsx";
+import { simpleValidationCheck } from "Functions/validation.js";
+import useOnlineStatus from "Hooks/Helper/useOnlineStatus.jsx";
+
 import s from "./LogInForm.module.scss";
-import LogInFormInputs from "./LogInFormInputs/LogInFormInputs";
+import LogInFormInputs from "./LogInFormInputs/LogInFormInputs.tsx";
+import type { RootState, AppDispatch } from "Types/store.ts";
+import type { Credentials } from "Types/credentials.ts";
+import type { TFunction } from "i18next";
 
 const LogInForm = () => {
-  const { emailOrPhone, password } = useSelector((state) => state.forms.login);
-  const { signedUpUsers } = useSelector((state) => state.user);
+  const { emailOrPhone, password } = useSelector((state: RootState) => state.forms.login);
   const isWebsiteOnline = useOnlineStatus();
   const { t } = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-  async function login(e) {
-    const inputs = e.target.querySelectorAll("input");
+  async function login(e: React.FormEvent<HTMLFormElement>) {
+    const inputs = e.currentTarget.querySelectorAll("input");
     e.preventDefault();
 
     if (!isWebsiteOnline) {
@@ -29,7 +32,7 @@ const LogInForm = () => {
       console.log("Form validation failed");
       return;
     }
-    const credentials = {
+    const credentials: Credentials = {
       email: emailOrPhone,
       password: password
     };
@@ -63,16 +66,7 @@ const LogInForm = () => {
 };
 export default LogInForm;
 
-function checkLoginPassword(filteredUsersData, password) {
-  const isPasswordValid = filteredUsersData[0]?.password === password;
-  return isPasswordValid;
-}
-
-function filterLoginByEmailOrPhone(signedUpUsers, emailOrPhone) {
-  return signedUpUsers?.filter((user) => user.emailOrPhone === emailOrPhone);
-}
-
-function logInAlert(dispatch, t) {
+function logInAlert(dispatch: AppDispatch, t: TFunction) {
   const alertText = t("toastAlert.loginSuccess");
   const alertState = "success";
 
@@ -82,7 +76,7 @@ function logInAlert(dispatch, t) {
   );
 }
 
-function internetConnectionAlert(dispatch, t) {
+function internetConnectionAlert(dispatch: AppDispatch, t: TFunction) {
   const alertText = t("toastAlert.loginFailed");
   const alertState = "error";
 
