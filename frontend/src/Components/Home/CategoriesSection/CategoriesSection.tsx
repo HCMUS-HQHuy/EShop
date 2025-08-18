@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import SectionTitle from "../../Shared/MiniComponents/SectionTitle/SectionTitle";
+import SectionTitle from "../../Shared/MiniComponents/SectionTitle/SectionTitle.jsx";
 import s from "./CategoriesSection.module.scss";
-import CategoriesSlider from "./CategoriesSlider";
+import CategoriesSlider from "./CategoriesSlider.tsx";
 
 const CategoriesSection = () => {
   const { t } = useTranslation();

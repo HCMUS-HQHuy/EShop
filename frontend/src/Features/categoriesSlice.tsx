@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "Api/index.api.ts";
+import type { CategoryInfor } from "Types/category.ts";
 
 const initialState = {
-  categoryList: [],
+  categoryList: Array<CategoryInfor>(),
   status: 'idle'
 }
 

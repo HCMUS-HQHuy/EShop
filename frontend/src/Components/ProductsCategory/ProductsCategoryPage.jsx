@@ -9,7 +9,7 @@ import useScrollOnMount from "src/Hooks/App/useScrollOnMount";
 import useUpdateLoadingOnSamePage from "src/Hooks/App/useUpdateLoadingOnSamePage";
 import useGetSearchParam from "src/Hooks/Helper/useGetSearchParam";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus";
-import CategoriesSection from "../Home/CategoriesSection/CategoriesSection";
+import CategoriesSection from "../Home/CategoriesSection/CategoriesSection.tsx";
 import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory";
 import SkeletonCards from "../Shared/SkeletonLoaders/ProductCard/SkeletonCards";
 import ProductsCategory from "./ProductsCategory";
