@@ -1,14 +1,21 @@
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { TIME_UNITS } from "src/Data/globalVariables";
-import useTimerDown from "src/Hooks/App/useTimerDown";
+import { TIME_UNITS } from "Data/globalVariables.jsx";
+import useTimerDown from "Hooks/App/useTimerDown.jsx";
 import s from "./EventCounter.module.scss";
 
-const EventCounter = ({ timeEvent, eventName }) => {
+interface EventCounterProps {
+  timeEvent: Date | string | number;
+  eventName: string;
+}
+
+const EventCounter = ({ timeEvent, eventName }: EventCounterProps) => {
   const { t } = useTranslation();
   const { timeData } = useTimerDown(timeEvent, {
     timerName: eventName,
     formattedTime: true,
+    timeResetRequired: false,
+    stopTimer: false,
   });
 
   return (
