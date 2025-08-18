@@ -7,7 +7,7 @@ import * as types from "types/index.types";
 
 // #### DATABASE FUNCTIONS ####
 
-async function getCategories(params: types.CategoryParamsRequest): Promise<types.CategoryInformation[]> {
+async function getCategories(isTopLevel: boolean): Promise<types.CategoryInformation[]> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -19,16 +19,11 @@ async function getCategories(params: types.CategoryParamsRequest): Promise<types
                     description AS "description",
                     parent_id AS "parentId"
                 FROM categories
-                WHERE title ILIKE $1
-                    AND is_deleted = FALSE
-                ORDER BY ${params.sortAttribute} ${params.sortOrder}
-                LIMIT $2 OFFSET $3
+                WHERE is_deleted = FALSE
+                    ${isTopLevel ? "AND parent_id IS NULL" : ""}
+                ORDER BY title
             `;
-        const limit         = Number(process.env.PAGINATION_LIMIT);
-        const offset        = (params.page - 1) * limit;
-
-        const queryParams = [`%${params.keywords}%`, limit, offset];
-        const result = await db.query(sql, queryParams);
+        const result = await db.query(sql);
         return result.rows as types.CategoryInformation[];
     } catch (error: any) {
         console.error("Error fetching categories:", error);
@@ -43,15 +38,20 @@ async function getCategories(params: types.CategoryParamsRequest): Promise<types
 // #### CONTROLLER FUNCTIONS ####
 
 async function get(req: express.Request, res: express.Response) {
-    console.log("Fetching categories with query parameters:", req.query);
-    const parsedBody = types.categorySchemas.paramsRequest.safeParse(req.query);
-    if (!parsedBody.success) {
-        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
-    }
-    const params: types.CategoryParamsRequest = parsedBody.data;
-    console.log("Listing categories with params:", params);
     try {
-        const categories = await getCategories(params);
+        const categories = await getCategories(false);
+        res.status(200).json(categories);
+    } catch (error: any) {
+        res.status(500).json({
+            message: "Error fetching categories",
+            errors: error.message
+        });
+    }
+}
+
+async function getTopLevel(req: express.Request, res: express.Response) {
+    try {
+        const categories = await getCategories(true);
         res.status(200).json(categories);
     } catch (error: any) {
         res.status(500).json({
@@ -62,7 +62,8 @@ async function get(req: express.Request, res: express.Response) {
 }
 
 const category = {
-    get
+    get,
+    getTopLevel
 };
 
 export default category;
