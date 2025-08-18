@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { Client } from "pg";
 import database from "database/index.database";
 import * as types from "types/index.types";
-import * as util from "utils/index.utils";
+import util from "utils/index.utils";
 
 // #### VALIDATION FUNCTIONS ####
 
@@ -52,9 +52,9 @@ async function signup(registrationData: types.UserRegistration): Promise<void> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
-        registrationData.password = util.hashPassword(registrationData.password);
-        
-        const query =  `
+        registrationData.password = util.password.hash(registrationData.password);
+
+        const query = `
             INSERT INTO users (username, password, email, role) 
             VALUES ($1, $2, $3, $4)
         `;
@@ -87,14 +87,14 @@ async function login(req: express.Request, res: express.Response) {
             message: "error",
             error: true,
             data: [parsedBody.error.format()]
-        });       
+        });
     }
     const credential: types.UserCredentials = parsedBody.data;
 
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
-        const query =  `
+        const query = `
             SELECT user_id, username, password, role
             FROM users WHERE email = $1
         `;
@@ -107,9 +107,9 @@ async function login(req: express.Request, res: express.Response) {
         const parsedUser = types.userSchemas.infor.safeParse(result.rows[0]);
         if (parsedUser.success === false)
             throw Error("Invalid user data");
-        
+
         const password: string = result.rows[0].password;
-        if (!util.comparePasswords(credential.password, password)) {
+        if (!util.password.compare(credential.password, password)) {
             return res.status(401).json({
                 message: "Invalid credentials"
             });
@@ -139,28 +139,36 @@ async function login(req: express.Request, res: express.Response) {
 }
 
 async function registerUser(req: express.Request, res: express.Response) {
-    console.log("Register request received:", req.body);
+
     const parsedBody = types.autheFormSchemas.userRegistration.safeParse(req.body);
     if (!parsedBody.success) {
+        console.error("Validation error:", req.body, parsedBody.error);
         return res.status(400).json({
-            message: "error",
+            message: "Invalid input",
             error: true,
-            data: [parsedBody.error.format()]
+            data: util.formatError(parsedBody.error)
         });
     }
-    const registrationData: types.UserRegistration = parsedBody.data;
 
+    const registrationData: types.UserRegistration = parsedBody.data;
+    console.log("Register request received:", registrationData);
     // find data and check conditions for existing user
     try {
         const { usernameExists, emailExists } = await checkUserExists(registrationData);
+
         if (usernameExists || emailExists) {
-            return res.status(400).json({
-                message: "error",
+            const conflictErrors: Record<string, string> = {};
+            if (usernameExists) {
+                conflictErrors.username = "Username already exists";
+            }
+            if (emailExists) {
+                conflictErrors.email = "Email already exists";
+            }
+
+            return res.status(409).json({
+                message: "User already exists",
                 error: true,
-                data: [{
-                    username: usernameExists ? "User with this username already exists" : undefined,
-                    email: emailExists ? "User with this email already exists" : undefined
-                }]
+                errors: conflictErrors
             });
         }
     } catch (error: any) {
