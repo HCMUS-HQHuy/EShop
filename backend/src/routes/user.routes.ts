@@ -30,7 +30,7 @@ router.post("/orders/create", mid.auth, controller.user.order.create);
 
 // #### CATEGORY ROUTES ####
 router.get("/categories/list", controller.user.category.get);
-router.get("/categories/toplevel", controller.user.category.getTopLevel);
+// router.get("/categories/toplevel", controller.user.category.getTopLevel);
 
 // #### PAYMENT TEST ####
 router.post("/payment/test", (req: any, res: any) => {
