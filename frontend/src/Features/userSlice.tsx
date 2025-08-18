@@ -15,9 +15,16 @@ const initialState = {
 
 export const newSignUp = createAsyncThunk(
   "user/newSignUp",
-  async (userInfor: RegisterFormValues) => {
-    const response = await api.user.signUp(userInfor);
-    return response.data;
+  async (userInfor: RegisterFormValues, { rejectWithValue }) => {
+    try {
+      const response = await api.user.signUp(userInfor);
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.data) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue({ message: "Undefined Error" });
+    }
   }
 );
 
@@ -77,7 +84,7 @@ const userSlice = createSlice({
     });
     builder.addCase(newSignUp.rejected, (state, action) => {
       state.status = 'idle';
-      console.error("User sign up failed:", action.error);
+      console.error("User sign up failed:", action.payload);
     });
 
     builder.addCase(setLoginData.fulfilled, (state, action) => {

@@ -36,12 +36,17 @@ const SignUpForm = () => {
       return;
     }
     const formData: RegisterFormValues = result.data;
-    const { meta } = await dispatch(newSignUp(formData));
-    const requestStatus = meta.requestStatus;
-    if (requestStatus === "fulfilled") {
+    try {
+      await dispatch(newSignUp(formData)).unwrap();
       signInAlert(t, dispatch);
-    } else {
-      internetConnectionAlert(dispatch, t);
+    } catch (error) {
+      const errorResponse = (error as any)?.data;
+      if (errorResponse?.username) {
+        errorAlert(dispatch, errorResponse.username);
+      }
+      if (errorResponse?.email) {
+        errorAlert(dispatch, errorResponse.email);
+      }
     }
   }
 
@@ -70,5 +75,10 @@ function internetConnectionAlert(dispatch: AppDispatch, t: TFunction) {
   const alertText = t("toastAlert.signInFailed");
   const alertState = "error";
 
+  dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
+}
+
+function errorAlert(dispatch: AppDispatch, alertText: string) {
+  const alertState = "error";
   dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
 }
