@@ -12,7 +12,7 @@ import ProductDetailsPage from "Components/ProductDetailsPage/ProductDetailsPage
 import ProductsCategoryPage from "Components/ProductsCategory/ProductsCategoryPage.jsx";
 import ProductsPage from "Components/ProductsPage/ProductsPage.jsx";
 import SearchPage from "Components/Search/SearchPage.jsx";
-import SignUp from "Components/SignUp/SignUp.jsx";
+import SignUp from "Components/SignUp/SignUp.tsx";
 import WishList from "Components/WishList/WishList.jsx";
 
 export const ROUTES_CONFIG = [

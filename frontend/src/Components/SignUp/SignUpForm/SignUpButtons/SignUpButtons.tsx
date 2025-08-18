@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { googleIcon } from "src/Assets/Images/Images";
-import { DEFAULT_LOGIN_DATA } from "src/Data/globalVariables";
-import { setLoginData } from "src/Features/userSlice";
-import { openSignWithGooglePopUp } from "../../SignUpWithGoogle/SignUpWithGooglePopup";
-import { signInAlert } from "../SignUpForm";
+import { googleIcon } from "Assets/Images/Images.js";
+import { DEFAULT_LOGIN_DATA } from "Data/globalVariables.jsx";
+import { setLoginData } from "Features/userSlice.tsx";
+import { openSignWithGooglePopUp } from "../../SignUpWithGoogle/SignUpWithGooglePopup.jsx";
+import { signInAlert } from "../SignUpForm.tsx";
 import s from "./SignUpButtons.module.scss";
 
 const SignUpButtons = () => {
@@ -19,18 +19,18 @@ const SignUpButtons = () => {
     isSignUpWithGooglePressed = true;
 
     openSignWithGooglePopUp();
-    setDefaultSignUpData();
+    // setDefaultSignUpData();
     signInAlert(t, dispatch);
   }
 
-  function setDefaultSignUpData() {
-    setTimeout(() => {
-      navigateTo("/");
-      isSignUpWithGooglePressed = false;
+  // function setDefaultSignUpData() {
+  //   setTimeout(() => {
+  //     navigateTo("/");
+  //     isSignUpWithGooglePressed = false;
 
-      setTimeout(() => dispatch(setLoginData(DEFAULT_LOGIN_DATA)), 500);
-    }, 2500);
-  }
+  //     setTimeout(() => dispatch(setLoginData(DEFAULT_LOGIN_DATA)), 500);
+  //   }, 2500);
+  // }
 
   return (
     <div className={s.buttons}>

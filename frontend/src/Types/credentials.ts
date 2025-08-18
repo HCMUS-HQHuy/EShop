@@ -28,14 +28,24 @@ export const RegisterSchema = LoginSchema.extend({
   path: ["confirmPassword"],
 });
 
+export const LoginInforSchema = z.object({
+  username: z.string().min(3).max(20),
+  email: z.string().email("Invalid email address."),
+  address: z.string().min(10).max(100),
+  phoneNumber: z.string().min(10).max(15),
+  isSignIn: z.boolean(),
+});
+
 // Types
 export type LoginFormValues = z.infer<typeof LoginSchema>;
 export type RegisterFormValues = z.infer<typeof RegisterSchema>;
+export type LoginInforValues = z.infer<typeof LoginInforSchema>;
 
 // Export schemas
 export const authSchemas = {
   login: LoginSchema,
   register: RegisterSchema,
+  loginInfo: LoginInforSchema,
 };
 
 export default authSchemas;
