@@ -38,7 +38,7 @@ const Home = () => {
 
           {/* <TodaySection /> */}
           <CategoriesSection />
-          <ThisMonthSection />
+          {/* <ThisMonthSection /> */}
           {/* <ProductPoster /> */}
           <OurProductsSection />
           {/* <FeaturedSection /> */}
