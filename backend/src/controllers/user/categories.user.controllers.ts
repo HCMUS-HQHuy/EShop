@@ -7,31 +7,17 @@ import * as types from "types/index.types";
 
 // #### DATABASE FUNCTIONS ####
 
-async function countRecordHavingName(name: string) {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const query = `
-            SELECT * FROM categories 
-            WHERE name = $1 AND is_deleted = false
-        `;
-        const result = await db.query(query, [name]);
-        return result.rows.length;
-    } catch (error: any) {
-        throw error;
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
-    }
-}
-
 async function getCategories(params: types.CategoryParamsRequest): Promise<types.CategoryInformation[]> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
         const sql = `
-                SELECT category_id, iconName, title, description, parent_id
+                SELECT 
+                    category_id AS "categoryId",
+                    iconName AS "iconName",
+                    title AS "title",
+                    description AS "description",
+                    parent_id AS "parentId"
                 FROM categories
                 WHERE title ILIKE $1
                     AND is_deleted = FALSE
@@ -42,7 +28,6 @@ async function getCategories(params: types.CategoryParamsRequest): Promise<types
         const offset        = (params.page - 1) * limit;
 
         const queryParams = [`%${params.keywords}%`, limit, offset];
-        console.log("Executing SQL:", sql, "with params:", queryParams);
         const result = await db.query(sql, queryParams);
         return result.rows as types.CategoryInformation[];
     } catch (error: any) {
