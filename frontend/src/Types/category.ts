@@ -3,5 +3,5 @@ export type CategoryInfor = {
   iconName: string;
   title: string;
   description: null | string;
-  parentId: null | number;
+  subCategories: CategoryInfor[];
 };
