@@ -168,7 +168,7 @@ async function registerUser(req: express.Request, res: express.Response) {
             return res.status(409).json({
                 message: "User already exists",
                 error: true,
-                errors: conflictErrors
+                data: conflictErrors
             });
         }
     } catch (error: any) {
