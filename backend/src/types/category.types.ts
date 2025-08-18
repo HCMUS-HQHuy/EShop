@@ -1,6 +1,15 @@
 ﻿import { z } from 'zod';
 import * as types from 'types/common';
 
+export type CategoryInfor = {
+    categoryId: number;
+    iconName: string;
+    title: string;
+    description: null | string;
+    subCategories: CategoryInfor[];
+};
+
+
 const CategorySchema = z.object({
     name: z.string().min(3, 'Name is required'),
     description: z.string().max(500, 'Description must not exceed 500 characters').optional(),
