@@ -5,7 +5,7 @@ import globalSlice from "../Features/globalSlice.jsx";
 import loadingSlice from "../Features/loadingSlice.jsx";
 import productsSlice from "../Features/productsSlice.jsx";
 import userSlice from "../Features/userSlice.jsx";
-import categoriesSlice from "../Api/categories.api.js";
+import categoriesSlice from "../Features/categoriesSlice.tsx";
 
 export const store = configureStore({
   reducer: {
@@ -15,7 +15,7 @@ export const store = configureStore({
     forms: formsSlice,
     alerts: alertsSlice,
     loading: loadingSlice,
-    // categories: categoriesSlice,
+    categories: categoriesSlice,
   },
 });
 

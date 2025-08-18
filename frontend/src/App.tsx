@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 
 import { useEffect, useRef, useState } from "react";
 import { setLoginData } from "./Features/userSlice.jsx";
-import { getCategories } from "./Features/categoriesSlice.jsx";
+import { getCategories } from "./Features/categoriesSlice.tsx";
 import type { AppDispatch } from "./Types/store.ts";
 
 function App() {

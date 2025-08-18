@@ -9,9 +9,7 @@ const initialState = {
 export const getCategories = createAsyncThunk(
   "categories/getCategories",
   async () => {
-    console.log("Fetching categories...");
     const response = await api.categories.getAll();
-    console.log("Fetched categories:", response.data);
     return response.data;
   }
 );
@@ -24,7 +22,7 @@ const categoriesSlice = createSlice({
     builder.addCase(getCategories.fulfilled, (state, action) => {
       state.categoryList = action.payload;
       state.status = 'idle';
-      console.log("Categories fetched:", action.payload);
+      console.log("Categories fetched:", action);
     })
     builder.addCase(getCategories.pending, (state) => {
       state.status = 'pending';
