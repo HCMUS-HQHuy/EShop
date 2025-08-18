@@ -4,7 +4,7 @@ import Cart from "Components/Cart/Cart.jsx";
 import CheckoutPage from "Components/CheckoutPage/CheckoutPage.jsx";
 import Contact from "Components/Contact/Contact.jsx";
 import FavoritePage from "Components/FavoritePage/FavoritePage.jsx";
-import Home from "Components/Home/Home.jsx";
+import Home from "Components/Home/Home.tsx";
 import LogIn from "Components/LogIn/LogIn.tsx";
 import NotFoundPage from "Components/NotFoundPage/NotFoundPage.jsx";
 import OrderPage from "Components/OrderPage/OrderPage.jsx";
