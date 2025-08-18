@@ -9,7 +9,8 @@ const api = axios.create({
 });
 
 const categories = {
-  getAll: () => api.get("user/categories/list")
+  getAll: () => api.get("user/categories/list"),
+  fetchTopLevel: () => api.get("user/categories/toplevel"),
 };
 
 export default categories;
