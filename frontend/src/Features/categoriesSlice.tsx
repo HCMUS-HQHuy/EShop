@@ -10,7 +10,7 @@ const initialState = {
 export const getCategories = createAsyncThunk(
   "categories/getCategories",
   async () => {
-    const response = await api.categories.fetchTopLevel();
+    const response = await api.categories.getAll();
     return response.data;
   }
 );
