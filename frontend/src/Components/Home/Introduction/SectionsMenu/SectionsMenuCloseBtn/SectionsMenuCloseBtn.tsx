@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
-import { updateGlobalState } from "src/Features/globalSlice";
-import SvgIcon from "../../../../Shared/MiniComponents/SvgIcon";
+import { updateGlobalState } from "Features/globalSlice.jsx";
+import SvgIcon from "Components/Shared/MiniComponents/SvgIcon.jsx";
 import s from "./SectionsMenuCloseBtn.module.scss";
 
 const SectionsMenuCloseBtn = () => {

@@ -1,10 +1,11 @@
 import { useDispatch } from "react-redux";
-import { multiUpdateGlobalState } from "src/Features/globalSlice";
-import SvgIcon from "../../../Shared/MiniComponents/SvgIcon";
+import { multiUpdateGlobalState } from "Features/globalSlice.jsx";
+import SvgIcon from "Components/Shared/MiniComponents/SvgIcon.jsx";
 import s from "./SectionsMenuButton.module.scss";
+import type { AppDispatch } from "Types/store.ts";
 
 const SectionsMenuButton = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   return (
     <button
@@ -19,7 +20,7 @@ const SectionsMenuButton = () => {
 };
 export default SectionsMenuButton;
 
-function openSectionMenu(dispatch) {
+function openSectionMenu(dispatch: AppDispatch) {
   const payload = {
     isSectionsMenuActive: true,
     isOverlayActive: true,

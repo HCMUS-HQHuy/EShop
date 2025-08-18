@@ -6,7 +6,7 @@ import FeaturedSection from "./FeaturedSection/FeaturedSection.jsx";
 import FeaturedSectionFeatures from "./FeaturedSection/FeaturedSectionFeatures.jsx";
 import s from "./Home.module.scss";
 import MainSlider from "./Introduction/MainSlider/MainSlider.tsx";
-import SectionsMenu from "./Introduction/SectionsMenu/SectionsMenu.jsx";
+import SectionsMenu from "./Introduction/SectionsMenu/SectionsMenu.tsx";
 import OurProductsSection from "./OurProductsSection/OurProductsSection.jsx";
 import ProductPoster from "./ProductPoster/ProductPoster.jsx";
 import ThisMonthSection from "./ThisMonthSection/ThisMonthSection.jsx";
