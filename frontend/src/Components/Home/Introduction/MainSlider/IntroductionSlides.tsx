@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { introductionSliderData } from "src/Data/staticData";
+import { introductionSliderData } from "Data/staticData.jsx";
 import { SwiperSlide } from "swiper/react";
-import SvgIcon from "../../../Shared/MiniComponents/SvgIcon";
+import SvgIcon from "../../../Shared/MiniComponents/SvgIcon.jsx";
 import s from "./IntroductionSlides.module.scss";
 
 const IntroductionSlides = () => {
@@ -21,7 +21,7 @@ const IntroductionSlides = () => {
 
             <h2 className={s.discount}>{t("homeSlider.title")}</h2>
 
-            <Link to="/products" className={s.shopNow} tabIndex="-1">
+            <Link to="/products" className={s.shopNow} tabIndex={-1}>
               <span>{t("buttons.buyNow")}</span>
 
               <div className={s.arrow}>

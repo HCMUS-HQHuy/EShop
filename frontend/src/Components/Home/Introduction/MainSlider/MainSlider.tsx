@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { DEFAULT_SWIPER_SPEED } from "src/Data/globalVariables";
-import { isMobileScreenWidth } from "src/Functions/conditions";
+import { DEFAULT_SWIPER_SPEED } from "Data/globalVariables.jsx";
+import { isMobileScreenWidth } from "Functions/conditions.js";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -13,7 +13,7 @@ import {
   Scrollbar,
 } from "swiper/modules";
 import { Swiper } from "swiper/react";
-import IntroductionSlides from "./IntroductionSlides";
+import IntroductionSlides from "./IntroductionSlides.tsx";
 import s from "./MainSlider.module.scss";
 
 function MainSlider() {
