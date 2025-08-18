@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { productImg1 } from "Assets/Images/Images.js";
 import useScrollOnMount from "Hooks/App/useScrollOnMount.jsx";
 import CategoriesSection from "./CategoriesSection/CategoriesSection.tsx";
-import FeaturedSection from "./FeaturedSection/FeaturedSection.jsx";
+import FeaturedSection from "./FeaturedSection/FeaturedSection.tsx";
 import FeaturedSectionFeatures from "./FeaturedSection/FeaturedSectionFeatures.jsx";
 import s from "./Home.module.scss";
 import MainSlider from "./Introduction/MainSlider/MainSlider.tsx";

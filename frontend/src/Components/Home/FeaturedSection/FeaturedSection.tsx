@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import SectionTitle from "../../Shared/MiniComponents/SectionTitle/SectionTitle";
+import SectionTitle from "Components/Shared/MiniComponents/SectionTitle/SectionTitle.jsx";
 import s from "./FeaturedSection.module.scss";
-import FeaturedSectionPosters from "./FeaturedSectionPosters";
+import FeaturedSectionPosters from "./FeaturedSectionPosters.tsx";
 
 const FeaturedSection = () => {
   const { t } = useTranslation();

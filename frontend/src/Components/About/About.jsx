@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { womenShopping } from "src/Assets/Images/Images";
 import { WEBSITE_NAME } from "src/Data/constants";
 import useScrollOnMount from "src/Hooks/App/useScrollOnMount";
-import FeaturedSectionFeatures from "../Home/FeaturedSection/FeaturedSectionFeatures";
+import FeaturedSectionFeatures from "../Home/FeaturedSection/FeaturedSectionFeatures.tsx";
 import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory";
 import s from "./About.module.scss";
 import AboutHeroSection from "./HeroSection/AboutHeroSection";
