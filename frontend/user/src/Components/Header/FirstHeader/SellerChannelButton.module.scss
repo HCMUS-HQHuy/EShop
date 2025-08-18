@@ -1,0 +1,36 @@
+/* file: SellerChannelButton.module.scss */
+
+.sellerButtonContainer {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem; /* Giữ lại để tạo khoảng cách với các item khác */
+}
+
+/* 
+  Định nghĩa lại style cho nút để nó trông giống như một liên kết văn bản.
+*/
+.sellerButton {
+  /* 1. Loại bỏ style mặc định của nút */
+  background-color: transparent; // Nền trong suốt
+  border: none;                  // Không có viền
+  padding: 0;                    // Không cần padding vì nó chỉ là text
+  outline: none;                 // Bỏ viền xanh khi focus (tùy chọn)
+
+  /* 2. Định dạng cho văn bản */
+  color: white;                  // Màu chữ trắng để nổi bật trên nền đen
+  font-family: inherit;          // Dùng font chữ của trang
+  font-size: 14px;               // Kích thước chữ, bạn có thể điều chỉnh
+  font-weight: 500;              // Độ đậm vừa phải
+  cursor: pointer;               // Biến con trỏ thành hình bàn tay
+  white-space: nowrap;           // Ngăn không cho chữ xuống dòng
+
+  /* 3. Thêm hiệu ứng chuyển động */
+  transition: color 0.2s ease-in-out;
+
+  /* 4. Hiệu ứng khi di chuột qua (hover) */
+  &:hover {
+    // Thay vì đổi màu nền, chúng ta sẽ đổi màu chữ hoặc thêm gạch chân
+    color: #cccccc; // Chuyển sang màu xám nhạt
+    // text-decoration: underline; // (Tùy chọn) Thêm gạch chân khi hover
+  }
+}
