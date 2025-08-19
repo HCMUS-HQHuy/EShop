@@ -36,16 +36,27 @@ export const LoginInforSchema = z.object({
   isSignIn: z.boolean(),
 });
 
+export const SellerRegistrationFormSchema = z.object({
+  shopName: z.string().min(2).max(100),
+  businessEmail: z.string().email("Invalid email address."),
+  phoneNumber: z.string().min(10).max(15),
+  shopDescription: z.string().min(10).max(500),
+});
+
 // Types
 export type LoginFormValues = z.infer<typeof LoginSchema>;
 export type RegisterFormValues = z.infer<typeof RegisterSchema>;
+export type SellerRegistrationFormValues = z.infer<typeof SellerRegistrationFormSchema>;
 export type LoginInforValues = z.infer<typeof LoginInforSchema>;
+export type FormState = { signUp: RegisterFormValues; login: LoginFormValues; sellerRegistrationForm: SellerRegistrationFormValues };
+export type FormKeys = keyof FormState;
 
 // Export schemas
-export const authSchemas = {
+export const formSchemas = {
   login: LoginSchema,
   register: RegisterSchema,
   loginInfo: LoginInforSchema,
+  sellerRegistration: SellerRegistrationFormSchema,
 };
 
-export default authSchemas;
+export default formSchemas;

@@ -7,13 +7,13 @@ import useOnlineStatus from "Hooks/Helper/useOnlineStatus.jsx";
 
 import s from "./LogInForm.module.scss";
 import LogInFormInputs from "./LogInFormInputs/LogInFormInputs.tsx";
-import AuthSchemas from 'Types/credentials.ts';
+import AuthSchemas from 'Types/forms.ts';
 import type { RootState, AppDispatch } from "Types/store.ts";
-import type { LoginFormValues } from "Types/credentials.ts";
+import type { LoginFormValues } from "Types/forms.ts";
 import type { TFunction } from "i18next";
 
 const LogInForm = () => {
-  const { emailOrPhone, password } = useSelector((state: RootState) => state.forms.login);
+  const { email, password } = useSelector((state: RootState) => state.forms.login);
   const isWebsiteOnline = useOnlineStatus();
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
@@ -27,7 +27,7 @@ const LogInForm = () => {
     }
 
     const result = AuthSchemas.login.safeParse({
-      email: emailOrPhone,
+      email: email,
       password: password
     });
     if (!result.success) {

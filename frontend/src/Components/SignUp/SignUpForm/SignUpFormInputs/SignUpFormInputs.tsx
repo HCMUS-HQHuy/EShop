@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { updateInput } from "Features/formsSlice.jsx";
+import { updateInput } from "Features/formsSlice.tsx";
 import ShowHidePassword from "Components/Shared/MiniComponents/ShowHidePassword/ShowHidePassword.jsx";
 import s from "./SignUpFormInputs.module.scss";
 import type { RootState } from "Types/store.ts";

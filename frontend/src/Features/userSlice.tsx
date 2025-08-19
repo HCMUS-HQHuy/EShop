@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Api/index.api.ts";
-import type { LoginFormValues, RegisterFormValues, LoginInforValues } from "Types/credentials.ts";
+import type { LoginFormValues, RegisterFormValues, LoginInforValues } from "Types/forms.ts";
 
 const initialState = {
   loginInfo: {

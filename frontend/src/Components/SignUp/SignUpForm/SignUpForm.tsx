@@ -9,7 +9,7 @@ import SignUpButtons from "./SignUpButtons/SignUpButtons.tsx";
 import s from "./SignUpForm.module.scss";
 import SignUpFormInputs from "./SignUpFormInputs/SignUpFormInputs.tsx";
 import type { TFunction } from "i18next";
-import AuthSchemas, { type RegisterFormValues } from 'Types/credentials.ts';
+import AuthSchemas, { type RegisterFormValues } from 'Types/forms.ts';
 import type { AppDispatch, RootState } from 'Types/store.ts'
 
 const SignUpForm = () => {
