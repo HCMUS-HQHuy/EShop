@@ -18,6 +18,8 @@ CREATE TABLE shops (
     shop_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL UNIQUE,
     shop_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone_number VARCHAR(15) NOT NULL,
     shop_description TEXT,
     address VARCHAR(255) NOT NULL,
     status VARCHAR(20) NOT NULL CHECK (status IN ('PendingVerification', 'Active', 'Rejected', 'Closed', 'Banned')) DEFAULT 'PendingVerification',
