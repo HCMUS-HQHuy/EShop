@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import s from "./FirstHeader.module.scss";
-import LanguageSelector from "./LanguageSelector";
+import LanguageSelector from "./LanguageSelector.jsx";
 
 const FirstHeader = () => {
   const { t } = useTranslation();

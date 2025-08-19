@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Footer from "../Components/Footer/Footer.jsx";
-import FirstHeader from "../Components/Header/FirstHeader/FirstHeader.jsx";
+import FirstHeader from "../Components/Header/FirstHeader/FirstHeader.tsx";
 import Header from "../Components/Header/Header/Header.tsx";
 import UpdateNotification from "../Components/PWA/UpdateNotification/UpdateNotification.jsx";
 import ConnectionLabelAlert from "../Components/Shared/MiniComponents/ConnectionLabelAlert/ConnectionLabelAlert.jsx";

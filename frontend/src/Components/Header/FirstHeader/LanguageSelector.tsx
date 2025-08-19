@@ -1,35 +1,37 @@
 import { default as i18n, default as i18next } from "i18next";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LANGUAGES } from "src/Data/staticData";
-import useEventListener from "src/Hooks/Helper/useEventListener";
+import { LANGUAGES } from "Data/staticData.jsx";
+import useEventListener from "Hooks/Helper/useEventListener.jsx";
 import s from "./LanguageSelector.module.scss";
 
 const LanguageSelector = () => {
   const [isLangMenuActive, setIsLangMenuActive] = useState(false);
-  const currentLangRef = useRef();
-  const langSelectorRef = useRef();
+  const currentLangRef = useRef<HTMLDivElement | null>(null);
+  const langSelectorRef = useRef<HTMLDivElement | null>(null);
   const { t } = useTranslation();
   const currLang = i18next.language || "en";
 
-  useEventListener(document, "click", (event) => {
-    const isLangMenuClicked = langSelectorRef?.current.contains(event.target);
+  useEventListener(document, "click", (event: MouseEvent) => {
+    const isLangMenuClicked = langSelectorRef?.current?.contains(event.target as Node);
     if (isLangMenuClicked) return;
 
     setIsLangMenuActive(false);
   });
 
-  function selectLanguage(index, langCode) {
-    const currentFlagEle = currentLangRef.current.querySelector("img");
+  function selectLanguage(index: number, langCode: string) {
+    const currentFlagEle = currentLangRef.current?.querySelector("img");
     const selectedLangData = LANGUAGES[index];
 
-    currentFlagEle.src = selectedLangData?.flag;
+    if (currentFlagEle && selectedLangData?.flag) {
+      currentFlagEle.src = selectedLangData.flag;
+    }
     i18n.changeLanguage(langCode);
   }
 
   function updateWebsiteLang() {
     const currentLang = LANGUAGES.find((lang) => lang.code === currLang);
-    const currentLangIndex = LANGUAGES.indexOf(currentLang);
+    const currentLangIndex = currentLang ? LANGUAGES.indexOf(currentLang) : 0;
 
     document.documentElement.dir = i18n.dir(currLang);
     document.documentElement.lang = currLang;
@@ -37,11 +39,13 @@ const LanguageSelector = () => {
   }
 
   function updateSelectedLanguage() {
-    const currentLangEle = currentLangRef.current.querySelector("span");
+    const currentLangEle = currentLangRef?.current?.querySelector("span");
     const currentLangData = LANGUAGES?.find((lang) => lang?.code === currLang);
     const selectedLangLowerCase = currentLangData?.lang?.toLowerCase();
 
-    currentLangEle.textContent = t(`languageSelector.${selectedLangLowerCase}`);
+    if (currentLangEle) {
+      currentLangEle.textContent = t(`languageSelector.${selectedLangLowerCase}`);
+    }
   }
 
   function toggleLanguageMenu() {
@@ -64,7 +68,7 @@ const LanguageSelector = () => {
     <div
       className={s.languageSelector}
       // onClick={toggleLanguageMenu}
-      onFocus={displayLanguageMenu}
+      onFocus={() => displayLanguageMenu(true)}
       onBlur={() => displayLanguageMenu(false)}
       aria-haspopup="true"
       ref={langSelectorRef}
@@ -81,7 +85,7 @@ const LanguageSelector = () => {
           return (
             <button
               key={id}
-              tabIndex="0"
+              tabIndex={0}
               type="button"
               className={s.option}
               onClick={() => selectLanguage(index, code)}
