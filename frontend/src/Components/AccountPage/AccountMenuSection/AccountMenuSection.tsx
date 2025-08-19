@@ -57,6 +57,19 @@ const AccountMenuSection = () => {
             </li>
           </ul>
         </section>
+
+        <section className={s.section}>
+          <h2>{t(`${accountMenu}.sellerCenter`)}</h2>
+
+          <ul>
+            <li>
+              <a href="#">{t(`${accountMenu}.openYourShop`)}</a>
+            </li>
+            <li>
+              <a href="#">{t(`${accountMenu}.myShopArea`)}</a>
+            </li>
+          </ul>
+        </section>
       </nav>
     </>
   );

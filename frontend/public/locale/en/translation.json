@@ -470,7 +470,10 @@
       "addressBook": "Address Book",
       "paymentOptions": "My Payment Options",
       "returns": "My Returns",
-      "cancellations": "My Cancellations"
+      "cancellations": "My Cancellations",
+      "sellerCenter": "Seller Center",
+      "openYourShop": "Open Your Shop",
+      "myShopArea": "My Shop Area"
     }
   },
   "cartPage": {

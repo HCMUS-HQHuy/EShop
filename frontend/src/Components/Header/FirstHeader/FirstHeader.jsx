@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import s from "./FirstHeader.module.scss";
 import LanguageSelector from "./LanguageSelector";
-import SellerChannelButton from "./SellerChanelButton.tsx";
 
 const FirstHeader = () => {
   const { t } = useTranslation();
@@ -18,9 +17,7 @@ const FirstHeader = () => {
             <Link to="/products">{t("firstHeader.shopNow")}</Link>
           </p>
 
-          <LanguageSelector />
-          <SellerChannelButton />
-          
+          <LanguageSelector />          
         </div>
       </div>
     </div>
