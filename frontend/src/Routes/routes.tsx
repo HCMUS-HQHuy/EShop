@@ -16,6 +16,7 @@ import SignUp from "Components/SignUp/SignUp.tsx";
 import WishList from "Components/WishList/WishList.jsx";
 
 import StartSellingPage from "Components/StartSellingPage/StartSellingPage.tsx"
+import SellerDashboardPage from "Components/SellerDashboard/SellerDashboardPage.tsx";
 
 export const ROUTES_CONFIG = [
   { path: "/", element: <Home /> },
@@ -34,5 +35,6 @@ export const ROUTES_CONFIG = [
   { path: "/profile/*", element: <AccountPage /> },
   { path: "/search", element: <SearchPage /> },
   { path: "/become-seller", element: <StartSellingPage /> },
+  { path: "/seller/*", element: <SellerDashboardPage /> },
   { path: "*", element: <NotFoundPage /> },
 ];

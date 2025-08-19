@@ -1,0 +1,49 @@
+.sidebar {
+  width: 260px;
+  background-color: var(--white);
+  border-right: 1px solid var(--very-light-gray);
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.shopInfo {
+  padding: 0 20px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--very-light-gray);
+  padding-bottom: 20px;
+
+  h3 {
+    font-size: 1.2rem;
+    color: var(--primary);
+  }
+  p {
+    font-size: 0.9rem;
+    color: var(--light-gray);
+  }
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  
+  a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 20px;
+    color: var(--dark-gray);
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background-color: var(--skeleton-color2);
+    }
+
+    &.active {
+      background-color: var(--tomato);
+      color: var(--white);
+    }
+  }
+}
