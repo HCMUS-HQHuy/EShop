@@ -17,6 +17,7 @@ const initialState: FormState= {
     businessEmail: "",
     phoneNumber: "",
     shopDescription: "",
+    address: "",
     agreeTerms: false,
   }
 };

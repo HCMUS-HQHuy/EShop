@@ -41,6 +41,7 @@ export const SellerRegistrationFormSchema = z.object({
   businessEmail: z.string().email("Invalid email address."),
   phoneNumber: z.string().min(10).max(15),
   shopDescription: z.string().min(10).max(500),
+  address: z.string().min(10).max(100),
   agreeTerms: z.boolean().refine((val) => val, {
     message: "You must agree to the terms and conditions.",
   }),

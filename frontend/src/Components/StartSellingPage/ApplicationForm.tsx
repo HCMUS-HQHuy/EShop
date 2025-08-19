@@ -10,10 +10,11 @@ import type { SellerRegistrationFormValues } from 'Types/forms.ts';
 import type { AppDispatch, RootState } from 'Types/store.ts';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { newShop } from 'Features/sellerSlice.tsx';
 
 const StartSellingPage = () => {
     const { sellerRegistrationForm } = useSelector((state: RootState) => state.forms);
-    const { shopName, agreeTerms, businessEmail, phoneNumber, shopDescription } = sellerRegistrationForm;
+    const { shopName, agreeTerms, businessEmail, address, phoneNumber, shopDescription } = sellerRegistrationForm;
     const dispatch = useDispatch<AppDispatch>();
     const isWebsiteOnline = useOnlineStatus();
     const { t } = useTranslation();
@@ -32,7 +33,7 @@ const StartSellingPage = () => {
     };
 
     // Handler for form submission
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!isWebsiteOnline) {
           internetConnectionAlert(dispatch, t);
@@ -45,7 +46,7 @@ const StartSellingPage = () => {
         }
         const formData: SellerRegistrationFormValues = result.data;
         try {
-        //   await dispatch(newSignUp(formData)).unwrap();
+            await dispatch(newShop(formData)).unwrap();
             sentFormAlert(t, dispatch);
         } catch (error) {
             errorAlert(dispatch, 'Submit failed');
@@ -86,7 +87,7 @@ const StartSellingPage = () => {
                         required
                     />
                 </div>
-
+                      
                 <div className={styles.formGroup}>
                     <label htmlFor="phoneNumber">Phone Number</label>
                     <input
@@ -96,6 +97,19 @@ const StartSellingPage = () => {
                         value={phoneNumber}
                         onChange={handleChange}
                         placeholder="Contact phone number"
+                        required
+                    />
+                </div>
+
+                <div className={styles.formGroup}>
+                    <label htmlFor="address">Address</label>
+                    <input
+                        type="text"
+                        id="address"
+                        name="address"
+                        value={address}
+                        onChange={handleChange}
+                        placeholder="Contact address"
                         required
                     />
                 </div>
