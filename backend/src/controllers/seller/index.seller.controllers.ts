@@ -1,9 +1,9 @@
 import product from "controllers/seller/products.seller.controllers";
-import account from "controllers/seller/account.seller.controllers";
+import shop from "controllers/seller/account.seller.controllers";
 
 const sellerController = {
     product,
-    account
+    shop
 };
 
 export default sellerController;

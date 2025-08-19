@@ -23,6 +23,9 @@ const ShopInformationSchema = z.object({
 
 const CreationRequestSchema = z.object({
     shop_name: z.string().min(1, 'Shop name is required'),
+    email: z.string().email('Invalid email address').max(100, 'Email must not exceed 100 characters'),
+    phone_number: z.string().min(10, 'Phone number must be at least 10 characters').max(15, 'Phone number must not exceed 15 characters'),
+    address: z.string().max(255, 'Address must not exceed 255 characters'),
     shop_description: z.string().max(500, 'Shop description must not exceed 500 characters').optional(),
 });
 

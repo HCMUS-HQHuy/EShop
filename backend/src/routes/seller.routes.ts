@@ -11,8 +11,8 @@ router.get("/", (req, res) => {
 
 router.use(mid.auth);
 
-// #### ACCOUNT ROUTES ####
-router.post('/account/create', controller.seller.account.create);
+// #### SHOP ROUTES ####
+router.post('/shop/create', controller.seller.shop.create);
 
 // #### PRODUCT ROUTES ####
 router.get('/products/list',            mid.switchRole, controller.seller.product.list);

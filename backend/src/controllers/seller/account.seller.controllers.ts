@@ -13,10 +13,10 @@ async function createSellerAccount(user_id: number, data: types.ShopCreationRequ
     try {
         db = await database.getConnection();
         const sql = `
-            INSERT INTO shops (user_id, shop_name, shop_description) 
-            VALUES ($1, $2, $3)
+            INSERT INTO shops (user_id, shop_name, shop_description, address, email, phone_number) 
+            VALUES ($1, $2, $3, $4, $5, $6)
         `;
-        const values = [user_id, data.shop_name, data.shop_description || null];
+        const values = [user_id, data.shop_name, data.shop_description, data.address, data.email, data.phone_number];
         await db.query(sql, values);
 
     } catch (error) {
@@ -40,16 +40,28 @@ async function create(req: types.RequestCustom, res: express.Response) {
         return res.status(403).json({ message: "Forbidden: Only users have permission to create a seller account." });
     }
 
-    const parsedBody = types.shopSchemas.CreationRequest.safeParse(req.body);
+    const parsedBody = types.shopSchemas.CreationRequest.safeParse({
+        shop_name: req.body.shopName,
+        shop_description: req.body.shopDescription,
+        address: req.body.address,
+        email: req.body.email,
+        phone_number: req.body.phoneNumber
+    });
+
     if (!parsedBody.success) {
-        return res.status(400).send({ 
-            error: 'Invalid request data', 
-            details: parsedBody.error.format() 
+        console.error("Invalid request data:", utils.formatError(parsedBody.error));
+        return res.status(400).send({
+            message: "Invalid request data",
+            error: true,
+            data: utils.formatError(parsedBody.error)
         });
     }
     const requestData: types.ShopCreationRequest = {
         shop_name: parsedBody.data.shop_name,
-        shop_description: parsedBody.data.shop_description
+        shop_description: parsedBody.data.shop_description,
+        address: parsedBody.data.address,
+        email: parsedBody.data.email,
+        phone_number: parsedBody.data.phone_number
     };
 
     try {
