@@ -44,7 +44,7 @@ async function create(req: types.RequestCustom, res: express.Response) {
         shop_name: req.body.shopName,
         shop_description: req.body.shopDescription,
         address: req.body.address,
-        email: req.body.email,
+        email: req.body.businessEmail,
         phone_number: req.body.phoneNumber
     });
 
