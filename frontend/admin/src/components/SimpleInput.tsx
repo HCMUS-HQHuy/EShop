@@ -9,6 +9,7 @@
 // *********************
 
 interface SimpleInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  name?: string;
   placeholder?: string;
   type?: string;
   value?: string | number;
