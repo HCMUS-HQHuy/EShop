@@ -7,6 +7,7 @@ import type { RootState } from "Types/store.ts";
 const Nav = () => {
   const { t, i18n } = useTranslation();
   const { loginInfo } = useSelector((state: RootState) => state.user);
+  const { shopInfo } = useSelector((state: RootState) => state.user);
   const navDirection = i18n.dir() === "ltr" ? "ltr" : "rtl";
 
   return (
@@ -32,7 +33,11 @@ const Nav = () => {
           )}
         </li>
         <li>
-          <NavLink to="/seller">{t("nav.sellerCenter")}</NavLink>
+          {loginInfo.isSignIn && shopInfo.isSeller ? (
+            <NavLink to="/seller">{t("nav.sellerCenter")}</NavLink>
+          ): (
+            <NavLink to="/become-seller">{t("nav.becomeSeller")}</NavLink>
+          )}
         </li>
       </ul>
     </nav>

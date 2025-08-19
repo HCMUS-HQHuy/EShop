@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './StartSellingPage.module.scss';
+import useScrollOnMount from 'Hooks/App/useScrollOnMount.jsx';
 
 const StartSellingPage = () => {
     // State to store form data
@@ -10,6 +11,9 @@ const StartSellingPage = () => {
         shopDescription: '',
         agreeTerms: false,
     });
+
+    useScrollOnMount(100);
+    
 
     // Handler for input changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

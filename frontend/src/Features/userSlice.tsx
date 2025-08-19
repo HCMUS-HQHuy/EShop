@@ -10,6 +10,13 @@ const initialState = {
     phoneNumber: "",
     isSignIn: false,
   },
+  shopInfo: {
+    shopId: "",
+    address: "",
+    phoneNumber: "",
+    email: "",
+    isSeller: false,
+  },
   status: 'idle'
 }
 
