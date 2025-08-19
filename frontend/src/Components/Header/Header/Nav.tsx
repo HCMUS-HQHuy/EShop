@@ -7,7 +7,7 @@ import type { RootState } from "Types/store.ts";
 const Nav = () => {
   const { t, i18n } = useTranslation();
   const { loginInfo } = useSelector((state: RootState) => state.user);
-  const { shopInfo } = useSelector((state: RootState) => state.user);
+  const { shopInfo } = useSelector((state: RootState) => state.seller);
   const navDirection = i18n.dir() === "ltr" ? "ltr" : "rtl";
 
   return (

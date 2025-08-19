@@ -10,7 +10,7 @@ import type { RootState } from 'Types/store.ts';
 
 const StartSellingPage = () => {
     const navigate = useNavigate();
-    const { sellerStatus } = useSelector((state: RootState) => state.user.shopInfo);
+    const { sellerStatus } = useSelector((state: RootState) => state.seller.shopInfo);
     useEffect(() => {
         if (sellerStatus === 'approved') {
             navigate('/seller');
