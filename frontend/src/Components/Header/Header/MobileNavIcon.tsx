@@ -1,7 +1,8 @@
 import { useDispatch } from "react-redux";
-import { multiUpdateGlobalState } from "src/Features/globalSlice";
-import SvgIcon from "../../Shared/MiniComponents/SvgIcon";
+import { multiUpdateGlobalState } from "Features/globalSlice.jsx";
+import SvgIcon from "../../Shared/MiniComponents/SvgIcon.jsx";
 import s from "./MobileNavIcon.module.scss";
+import type { AppDispatch } from "Types/store.ts";
 
 const MobileNavIcon = () => {
   const dispatch = useDispatch();
@@ -19,7 +20,7 @@ const MobileNavIcon = () => {
 };
 export default MobileNavIcon;
 
-function openMobileNav(dispatch) {
+function openMobileNav(dispatch: AppDispatch) {
   const payload = {
     isMobileMenuActive: true,
     isOverlayActive: true,

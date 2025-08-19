@@ -2,10 +2,11 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import s from "./Nav.module.scss";
+import type { RootState } from "Types/store.ts";
 
 const Nav = () => {
   const { t, i18n } = useTranslation();
-  const { loginInfo } = useSelector((state) => state.user);
+  const { loginInfo } = useSelector((state: RootState) => state.user);
   const navDirection = i18n.dir() === "ltr" ? "ltr" : "rtl";
 
   return (
