@@ -36,6 +36,6 @@ router.get("/categories/list", controller.user.category.get);
 router.post("/payment/test", (req: any, res: any) => {
     console.log('Payment test:', req.body);
     res.send();
-})
+});
 
 export default router;
