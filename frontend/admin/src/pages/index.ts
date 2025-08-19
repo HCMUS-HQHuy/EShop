@@ -1,4 +1,4 @@
-export { default as HomeLayout } from "./HomeLayout";
+export { default as HomeLayout } from "../routes/RoutesLayout";
 export { default as Landing } from "./Landing";
 export { default as Products } from "./Products";
 export { default as Categories } from "./Categories";
