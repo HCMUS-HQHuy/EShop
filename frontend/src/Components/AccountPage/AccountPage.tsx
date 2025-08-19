@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { WEBSITE_NAME } from "Data/constants.jsx";
 import useScrollOnMount from "Hooks/App/useScrollOnMount.jsx";
 import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory.jsx";
-import AccountMenuSection from "./AccountMenuSection/AccountMenuSection.jsx";
+import AccountMenuSection from "./AccountMenuSection/AccountMenuSection.tsx";
 import s from "./AccountPage.module.scss";
 import EditProfileForm from "./EditProfileForm/EditProfileForm.tsx";
 

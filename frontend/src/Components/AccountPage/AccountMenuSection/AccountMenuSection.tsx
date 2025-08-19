@@ -1,14 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { SCREEN_SIZES } from "src/Data/globalVariables";
-import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow";
-import AccountMenuCloseBtn from "./AccountMenuCloseBtn/AccountMenuCloseBtn";
-import AccountMenuIcon from "./AccountMenuIcon";
+import { SCREEN_SIZES } from "Data/globalVariables.jsx";
+import useGetResizeWindow from "Hooks/Helper/useGetResizeWindow.jsx";
+import AccountMenuCloseBtn from "./AccountMenuCloseBtn/AccountMenuCloseBtn.jsx";
+import AccountMenuIcon from "./AccountMenuIcon.jsx";
 import s from "./AccountMenuSection.module.scss";
+import type { RootState } from "Types/store.ts";
 
 const AccountMenuSection = () => {
-  const { isProfileMenuActive } = useSelector((state) => state.global);
+  const { isProfileMenuActive } = useSelector((state: RootState) => state.global);
   const { windowWidth } = useGetResizeWindow();
   const { t } = useTranslation();
   const isMobileDevice = windowWidth < SCREEN_SIZES.tablet;

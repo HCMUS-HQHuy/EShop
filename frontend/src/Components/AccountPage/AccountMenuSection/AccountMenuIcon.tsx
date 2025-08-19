@@ -1,7 +1,8 @@
 import { useDispatch } from "react-redux";
-import { multiUpdateGlobalState } from "src/Features/globalSlice";
-import SvgIcon from "../../Shared/MiniComponents/SvgIcon";
+import { multiUpdateGlobalState } from "Features/globalSlice.jsx";
+import SvgIcon from "../../Shared/MiniComponents/SvgIcon.jsx";
 import s from "./AccountMenuIcon.module.scss";
+import type { AppDispatch } from "Types/store.ts";
 
 const AccountMenuIcon = () => {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const AccountMenuIcon = () => {
 };
 export default AccountMenuIcon;
 
-function openProfileMenu(dispatch) {
+function openProfileMenu(dispatch: AppDispatch) {
   const payload = {
     isProfileMenuActive: true,
     isOverlayActive: true,
