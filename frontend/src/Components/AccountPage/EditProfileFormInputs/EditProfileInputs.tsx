@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import EditProfileInput from "./EditProfileInput";
+import EditProfileInput from "./EditProfileInput.jsx";
 import s from "./EditProfileInputs.module.scss";
+import type { RootState } from "Types/store.ts";
 
 const EditProfileInputs = () => {
-  const { loginInfo } = useSelector((state) => state.user);
+  const { loginInfo } = useSelector((state: RootState) => state.user);
   const { username, email, phoneNumber, address } = loginInfo;
   const [usernameState, setUsername] = useState(username);
   const [emailState, setEmail] = useState(email);
@@ -63,6 +64,8 @@ const EditProfileInputs = () => {
             type: "password",
             label: t("inputsLabels.passwordChanges"),
             name: "currentPass",
+            value: "",
+            setValue: () => {},
             placeholder: t("inputsPlaceholders.currentPass"),
           }}
         />
@@ -70,6 +73,8 @@ const EditProfileInputs = () => {
         <EditProfileInput
           inputData={{
             type: "password",
+            label: "New Password",
+            name: "newPassword",
             placeholder: t("inputsPlaceholders.newPass"),
             value: newPassword,
             setValue: setNewPassword,
@@ -78,8 +83,12 @@ const EditProfileInputs = () => {
 
         <EditProfileInput
           inputData={{
+            label: "New Password",
+            name: "ConfirmPassword",
             type: "password",
             placeholder: t("inputsPlaceholders.confirmPass"),
+            value: newPassword,
+            setValue: setNewPassword,
           }}
         />
       </section>

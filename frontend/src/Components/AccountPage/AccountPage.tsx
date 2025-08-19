@@ -2,15 +2,17 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { WEBSITE_NAME } from "src/Data/constants";
-import useScrollOnMount from "src/Hooks/App/useScrollOnMount";
-import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory";
-import AccountMenuSection from "./AccountMenuSection/AccountMenuSection";
+import { WEBSITE_NAME } from "Data/constants.jsx";
+import useScrollOnMount from "Hooks/App/useScrollOnMount.jsx";
+import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory.jsx";
+import AccountMenuSection from "./AccountMenuSection/AccountMenuSection.jsx";
 import s from "./AccountPage.module.scss";
-import EditProfileForm from "./EditProfileForm/EditProfileForm";
+import EditProfileForm from "./EditProfileForm/EditProfileForm.tsx";
+
+import type { RootState } from "Types/store.ts";
 
 const AccountPage = () => {
-  const { loginInfo } = useSelector((state) => state.user);
+  const { loginInfo } = useSelector((state: RootState) => state.user);
   const { t } = useTranslation();
 
   useScrollOnMount();
@@ -28,7 +30,7 @@ const AccountPage = () => {
       <div className="container">
         <main className={s.accountPage} id="account-page">
           <div className={s.wrapper}>
-            <PagesHistory history={["/", t("nav.profile")]} />
+            <PagesHistory history={["/", t("nav.profile")]} historyPaths={undefined} />
 
             <p className={s.welcomeMessage}>
               {t("common.welcome")}

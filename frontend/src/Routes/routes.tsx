@@ -1,5 +1,5 @@
 import About from "Components/About/About.jsx";
-import AccountPage from "Components/AccountPage/AccountPage.jsx";
+import AccountPage from "Components/AccountPage/AccountPage.tsx";
 import Cart from "Components/Cart/Cart.jsx";
 import CheckoutPage from "Components/CheckoutPage/CheckoutPage.jsx";
 import Contact from "Components/Contact/Contact.jsx";
