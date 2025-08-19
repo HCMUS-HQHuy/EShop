@@ -1,44 +1,57 @@
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import styles from './StartSellingPage.module.scss';
 import useScrollOnMount from 'Hooks/App/useScrollOnMount.jsx';
+import { updateInput } from 'Features/formsSlice.tsx'
+import { useSelector, useDispatch } from 'react-redux';
+import { showAlert } from 'Features/alertsSlice.jsx';
+import useOnlineStatus from 'Hooks/Helper/useOnlineStatus.jsx';
+import formSchemas from 'Types/forms.ts';
+import type { SellerRegistrationFormValues } from 'Types/forms.ts';
+import type { AppDispatch, RootState } from 'Types/store.ts';
+import type { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 const StartSellingPage = () => {
-    // State to store form data
-    const [formData, setFormData] = useState({
-        shopName: '',
-        businessEmail: '',
-        phoneNumber: '',
-        shopDescription: '',
-        agreeTerms: false,
-    });
+    const { sellerRegistrationForm } = useSelector((state: RootState) => state.forms);
+    const { shopName, agreeTerms, businessEmail, phoneNumber, shopDescription } = sellerRegistrationForm;
+    const dispatch = useDispatch<AppDispatch>();
+    const isWebsiteOnline = useOnlineStatus();
+    const { t } = useTranslation();
 
     useScrollOnMount(100);
     
-
-    // Handler for input changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target;
-        
-        // Check if the input is a checkbox
-        const isCheckbox = type === 'checkbox';
-        const inputValue = isCheckbox ? (e.target as HTMLInputElement).checked : value;
-
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: inputValue,
+        dispatch(updateInput({
+            formName: 'sellerRegistrationForm',
+            key: e.target.name as keyof typeof sellerRegistrationForm,
+            value:
+                e.target instanceof HTMLInputElement && e.target.type === 'checkbox'
+                    ? e.target.checked
+                    : e.target.value
         }));
     };
 
     // Handler for form submission
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // TODO: Add logic to send form data to the backend
-        // For example: dispatch a Redux action or call an API
-        console.log('Form data submitted:', formData);
-
-        // Display a success message (example)
-        alert('Your request to open a shop has been submitted!');
-    };
+        if (!isWebsiteOnline) {
+          internetConnectionAlert(dispatch, t);
+          return;
+        }
+        const result = formSchemas.sellerRegistration.safeParse(sellerRegistrationForm);
+        if (!result.success) {
+          console.log("Invalid registration credentials");
+          return;
+        }
+        const formData: SellerRegistrationFormValues = result.data;
+        try {
+        //   await dispatch(newSignUp(formData)).unwrap();
+            sentFormAlert(t, dispatch);
+        } catch (error) {
+            errorAlert(dispatch, 'Submit failed');
+        }
+        console.log('Form data submitted:', sellerRegistrationForm);
+    };   
 
     return (
         <div className={styles.startSellingContainer}>
@@ -54,7 +67,7 @@ const StartSellingPage = () => {
                         type="text"
                         id="shopName"
                         name="shopName"
-                        value={formData.shopName}
+                        value={shopName}
                         onChange={handleChange}
                         placeholder="e.g., ABC Fashion Store"
                         required
@@ -67,7 +80,7 @@ const StartSellingPage = () => {
                         type="email"
                         id="businessEmail"
                         name="businessEmail"
-                        value={formData.businessEmail}
+                        value={businessEmail}
                         onChange={handleChange}
                         placeholder="email@example.com"
                         required
@@ -80,7 +93,7 @@ const StartSellingPage = () => {
                         type="tel"
                         id="phoneNumber"
                         name="phoneNumber"
-                        value={formData.phoneNumber}
+                        value={phoneNumber}
                         onChange={handleChange}
                         placeholder="Contact phone number"
                         required
@@ -92,7 +105,7 @@ const StartSellingPage = () => {
                     <textarea
                         id="shopDescription"
                         name="shopDescription"
-                        value={formData.shopDescription}
+                        value={shopDescription}
                         onChange={handleChange}
                         rows={5}
                         placeholder="A brief introduction to your shop and products..."
@@ -104,7 +117,7 @@ const StartSellingPage = () => {
                         type="checkbox"
                         id="agreeTerms"
                         name="agreeTerms"
-                        checked={formData.agreeTerms}
+                        checked={agreeTerms}
                         onChange={handleChange}
                         required
                     />
@@ -113,7 +126,7 @@ const StartSellingPage = () => {
                     </label>
                 </div>
 
-                <button type="submit" className={styles.submitButton} disabled={!formData.agreeTerms}>
+                <button type="submit" className={styles.submitButton} disabled={!agreeTerms}>
                     Submit Application
                 </button>
             </form>
@@ -122,3 +135,22 @@ const StartSellingPage = () => {
 };
 
 export default StartSellingPage;
+
+function internetConnectionAlert(dispatch: AppDispatch, t: TFunction) {
+  const alertText = t("toastAlert.signInFailed");
+  const alertState = "error";
+  dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
+}
+
+function sentFormAlert(t: TFunction, dispatch: AppDispatch) {
+  const alertText = t("toastAlert.formSubmitted");
+  const alertState = "success";
+  setTimeout(() => {
+    dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
+  }, 1500);
+}
+
+function errorAlert(dispatch: AppDispatch, alertText: string) {
+  const alertState = "error";
+  dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
+}

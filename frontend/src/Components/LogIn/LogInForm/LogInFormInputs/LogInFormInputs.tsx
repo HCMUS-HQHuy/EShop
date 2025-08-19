@@ -4,10 +4,11 @@ import { updateInput } from "Features/formsSlice.tsx";
 import ShowHidePassword from "../../../Shared/MiniComponents/ShowHidePassword/ShowHidePassword.jsx";
 import s from "./LogInFormInputs.module.scss";
 import type { RootState } from "Types/store.ts";
+import type { FormState } from "Types/forms.ts";
 
 
 const LogInFormInputs = () => {
-  const { emailOrPhone, password } = useSelector((state: RootState) => state.forms.login);
+  const { email, password } = useSelector((state: RootState) => state.forms.login);
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
@@ -15,7 +16,7 @@ const LogInFormInputs = () => {
     dispatch(
       updateInput({
         formName: "login",
-        key: e.target.name,
+        key: e.target.name as keyof FormState["login"],
         value: e.target.value,
       })
     );
@@ -25,9 +26,9 @@ const LogInFormInputs = () => {
     <div className={s.inputs}>
       <input
         type="text"
-        name="emailOrPhone"
-        value={emailOrPhone}
-        placeholder={t("inputsPlaceholders.emailOrPhone")}
+        name="email"
+        value={email}
+        placeholder={t("inputsPlaceholders.email")}
         onChange={updateInputOnChange}
         aria-required="false"
       />

@@ -8,7 +8,7 @@ import type { RootState } from "Types/store.ts";
 const SignUpFormInputs = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { username, emailOrPhone, password, confirmPassword } = useSelector(
+  const { username, email, password, confirmPassword } = useSelector(
     (state: RootState) => state.forms.signUp
   );
 
@@ -35,8 +35,8 @@ const SignUpFormInputs = () => {
       />
       <input
         type="text"
-        name="emailOrPhone"
-        value={emailOrPhone}
+        name="email"
+        value={email}
         placeholder={t("inputsPlaceholders.email")} // update to email or phone later
         onChange={updateInputOnChange}
         required

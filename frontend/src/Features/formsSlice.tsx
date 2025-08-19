@@ -17,22 +17,23 @@ const initialState: FormState= {
     businessEmail: "",
     phoneNumber: "",
     shopDescription: "",
+    agreeTerms: false,
   }
 };
 
-type UpdateInputPayload<K extends FormKeys = FormKeys> = {
-  formName: K;
-  key: keyof FormState[K];
-  value: FormState[K][keyof FormState[K]];
+type actionPayLoad = {
+  formName: keyof FormState;
+  key: string;
+  value: any;
 };
 
 const formSlice = createSlice({
   initialState,
   name: "formSlice",
   reducers: {
-    updateInput: <K extends FormKeys>(state: FormState, action: { payload: UpdateInputPayload<K> }) => {
+    updateInput: ( state: FormState, action: { payload: actionPayLoad } ) => {
       const { formName, key, value } = action.payload;
-      state[formName][key] = value;
+      (state[formName] as Record<string, any>)[key] = value;
     },
   },
 });

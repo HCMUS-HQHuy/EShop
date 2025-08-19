@@ -13,7 +13,7 @@ import AuthSchemas, { type RegisterFormValues } from 'Types/forms.ts';
 import type { AppDispatch, RootState } from 'Types/store.ts'
 
 const SignUpForm = () => {
-  const { username, emailOrPhone, password, confirmPassword } 
+  const { username, email, password, confirmPassword } 
       = useSelector((state: RootState) => state.forms.signUp);
   const isWebsiteOnline = useOnlineStatus();
   const dispatch = useDispatch<AppDispatch>();
@@ -27,7 +27,7 @@ const SignUpForm = () => {
     }
     const result = AuthSchemas.register.safeParse({
       username: username,
-      email: emailOrPhone,
+      email: email,
       password: password,
       confirmPassword: confirmPassword
     });

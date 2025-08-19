@@ -527,7 +527,8 @@
     "confirmOrderProduct": "Did you receive {{translatedProduct}}?",
     "receivedAllOrder": "Have you received all the products?",
     "cancelAllOrder": "Are you sure you want to cancel all orders?",
-    "checkoutSuccess": "Thank you for your order! We'll start processing it right away."
+    "checkoutSuccess": "Thank you for your order! We'll start processing it right away.",
+    "formSubmitted": "Your application has been submitted successfully."
   },
   "wishlist": "Wishlist ({{numberOfWishlist}})",
   "cashOnDelivery": "Cash on Delivery",
