@@ -30,6 +30,9 @@ const Nav = () => {
             <NavLink to="/signup">{t("nav.signUp")}</NavLink>
           )}
         </li>
+        <li>
+          <NavLink to="/seller">{t("nav.sellerCenter")}</NavLink>
+        </li>
       </ul>
     </nav>
   );
