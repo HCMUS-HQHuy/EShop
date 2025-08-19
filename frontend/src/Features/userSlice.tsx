@@ -16,6 +16,7 @@ const initialState = {
     phoneNumber: "",
     email: "",
     isSeller: false,
+    sellerStatus: "",
   },
   status: 'idle'
 }
