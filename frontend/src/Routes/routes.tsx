@@ -31,7 +31,7 @@ export const ROUTES_CONFIG = [
   { path: "/order", element: <OrderPage /> },
   { path: "/signup", element: <SignUp /> },
   { path: "/login", element: <LogIn /> },
-  { path: "/profile", element: <AccountPage /> },
+  { path: "/profile/*", element: <AccountPage /> },
   { path: "/search", element: <SearchPage /> },
   { path: "/become-seller", element: <StartSellingPage /> },
   { path: "*", element: <NotFoundPage /> },

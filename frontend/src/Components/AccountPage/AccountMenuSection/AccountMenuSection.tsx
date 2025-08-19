@@ -63,7 +63,7 @@ const AccountMenuSection = () => {
 
           <ul>
             <li>
-              <a href="#">{t(`${accountMenu}.openYourShop`)}</a>
+              <NavLink to="open-shop">{t(`${accountMenu}.openYourShop`)}</NavLink>
             </li>
             <li>
               <a href="#">{t(`${accountMenu}.myShopArea`)}</a>

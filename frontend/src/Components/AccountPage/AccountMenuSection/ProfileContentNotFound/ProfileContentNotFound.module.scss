@@ -1,0 +1,35 @@
+.notFoundContainer {
+  width: 100%;
+  min-height: 400px; /* Đặt chiều cao tối thiểu để có không gian cho việc căn giữa theo chiều dọc */
+  
+  /* Căn giữa bằng Flexbox */
+  display: flex;
+  flex-direction: column; /* Xếp các item theo chiều dọc */
+  justify-content: center; /* Căn giữa theo chiều dọc */
+  align-items: center; /* Căn giữa theo chiều ngang */
+  
+  text-align: center; /* Đảm bảo text được căn giữa nếu nó bị xuống dòng */
+  gap: 15px; /* Khoảng cách giữa các dòng chữ */
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--primary);
+  }
+
+  p {
+    color: var(--light-gray);
+    max-width: 400px; /* Tránh cho dòng chữ quá dài trên màn hình lớn */
+  }
+
+  a {
+    color: var(--tomato);
+    font-weight: 500;
+    text-decoration: none;
+    transition: text-decoration 0.2s ease;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
