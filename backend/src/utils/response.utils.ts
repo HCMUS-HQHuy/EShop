@@ -15,8 +15,17 @@ function errorResponse(message: string, data: any[]) {
   };
 }
 
+function authorErrorResponse(role: string) {
+  return {
+    message: 'Invalid Request',
+    error: true,
+    data: [`Only ${role} can review seller accounts.`]
+  };
+}
+
 const response = {
   success: successResponse,
-  error: errorResponse
+  error: errorResponse,
+  authorError: authorErrorResponse
 };
 export default response;
