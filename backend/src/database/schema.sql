@@ -22,7 +22,7 @@ CREATE TABLE shops (
     phone_number VARCHAR(15) NOT NULL,
     shop_description TEXT,
     address VARCHAR(255) NOT NULL,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('PendingVerification', 'Active', 'Rejected', 'Closed', 'Banned')) DEFAULT 'PendingVerification',
+    status VARCHAR(20) NOT NULL CHECK (status IN ('Pending Verification', 'Active', 'Rejected', 'Closed', 'Banned')) DEFAULT 'Pending Verification',
     admin_note TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_shop_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
