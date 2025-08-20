@@ -27,7 +27,7 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT u.user_id, u.role, s.shop_id, s.status
+            SELECT u.user_id, u.role, s.shop_id, s.status as shop_status
             FROM users as u
                 LEFT JOIN shops as s
                 ON u.user_id = s.user_id
@@ -38,11 +38,12 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
         if (result.rows.length === 0) {
             return res.status(403).json({ errors: 'Forbidden: User not found or inactive.' });
         }
-        const user = result.rows[0];
+        const infor: types.UserInfor = result.rows[0];
         req.user = {
-            user_id: user.user_id,
-            role: types.USER_ROLE.USER,
-            shop_id: user.status === types.SHOP_STATUS.ACTIVE ? user.shop_id : null
+            user_id: infor.user_id,
+            role: infor.role,
+            shop_id: infor.shop_id,
+            shop_status: infor.shop_status
         } as types.UserInfor;
         console.log('request.user in seller account:', req.user);
         next();

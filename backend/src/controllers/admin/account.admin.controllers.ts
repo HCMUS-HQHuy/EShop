@@ -81,7 +81,7 @@ async function checkUserCondition(data: types.BlockUnblockUserRequest): Promise<
     };
 }
 
-async function updateShopStatus(shop_id: number, status: types.SellerStatus, rejectionReason?: string) {
+async function updateShopStatus(shop_id: number, status: types.ShopStatus, rejectionReason?: string) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();

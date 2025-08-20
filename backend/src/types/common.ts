@@ -29,7 +29,7 @@ export const USER_STATUS = {
     BANNED: 'Banned',
 } as const;
 
-export type SellerStatus = typeof SHOP_STATUS[keyof typeof SHOP_STATUS];
+export type ShopStatus = typeof SHOP_STATUS[keyof typeof SHOP_STATUS];
 export type UserStatus = typeof USER_STATUS[keyof typeof USER_STATUS];
 export type SortAttribute = typeof SORT_ATTRIBUTES[number];
 export type SortOrder = typeof SORT_ORDERS[number];
@@ -39,4 +39,8 @@ export type UserRole = typeof USER_ROLE[keyof typeof USER_ROLE];
 export interface ValidationResult {
     valid: boolean;
     errors: Partial<Record<string, string>>;
+}
+
+export const regex = {
+    phone: /^\+?[0-9]{10,15}$/
 }

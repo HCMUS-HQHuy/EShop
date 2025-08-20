@@ -5,6 +5,7 @@ import database from "database/index.database";
 
 import * as types from "types/index.types";
 import * as utils from "utils/index.utils";
+import util from "utils/index.utils";
 
 // #### DATABASE FUNCTIONS ####
 
@@ -31,13 +32,12 @@ async function createSellerAccount(user_id: number, data: types.ShopCreationRequ
 
 
 // #### CONTROLLER FUNCTIONS ####
-
-// This function handles the creation of a seller account
-// It validates the request data and creates a new seller account in the database
-// It requires the user to be logged in and have a valid user ID
 async function create(req: types.RequestCustom, res: express.Response) {
     if (utils.isUser(req) === false) {
-        return res.status(403).json({ message: "Forbidden: Only users have permission to create a seller account." });
+        return res.status(403).json(util.response.error("Authorization Error", ['Only users have permission to create a seller account.']));
+    }
+    if (utils.isSeller(req)) {
+        return res.status(403).json(util.response.error("Invalid Request", ['Sellers cannot create twice seller account.']));
     }
 
     const parsedBody = types.shopSchemas.CreationRequest.safeParse({
@@ -50,11 +50,7 @@ async function create(req: types.RequestCustom, res: express.Response) {
 
     if (!parsedBody.success) {
         console.error("Invalid request data:", utils.formatError(parsedBody.error));
-        return res.status(400).send({
-            message: "Invalid request data",
-            error: true,
-            data: utils.formatError(parsedBody.error)
-        });
+        return res.status(400).send(util.response.error("Invalid request data", [utils.formatError(parsedBody.error)]));
     }
     const requestData: types.ShopCreationRequest = {
         shop_name: parsedBody.data.shop_name,
@@ -66,14 +62,10 @@ async function create(req: types.RequestCustom, res: express.Response) {
 
     try {
         await createSellerAccount(req.user?.user_id as number, requestData);
-        return res.status(201).json({
-            message: "Seller account created successfully"
-        });
+        return res.status(201).json(util.response.success("Seller account created successfully", []));
     } catch (error) {
         console.error("Error creating seller account:", error);
-        return res.status(500).json({
-            message: "Internal server error"
-        });
+        return res.status(500).json(util.response.error("Internal server error", []));
     }
 }
 

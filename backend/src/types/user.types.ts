@@ -23,6 +23,7 @@ const UserInforSchema = z.object({
   username: z.string().min(1, "Username must not be empty"),
   role: z.enum(types.USER_ROLE, {error: "Invalid role: must be a valid UserRole",}),
   shop_id: z.coerce.number().int("Shop ID must be an integer").positive("Shop ID must be greater than 0").optional(),
+  shop_status: z.enum(types.SHOP_STATUS, {error: "Invalid status: must be a valid ShopStatus",}).optional(),
 });
 
 export type UserInfor = z.infer<typeof UserInforSchema>;
