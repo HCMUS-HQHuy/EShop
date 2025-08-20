@@ -31,3 +31,12 @@ export function isUser(req: types.RequestCustom): boolean {
 export function isGuest(req: types.RequestCustom): boolean {
     return !req.user || !req.user.role;
 }
+
+const role = {
+    isSeller,
+    isAcceptedSeller,
+    isAdmin,
+    isUser,
+    isGuest
+}
+export default role;
