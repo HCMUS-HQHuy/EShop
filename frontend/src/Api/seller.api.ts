@@ -12,7 +12,7 @@ const api = axios.create({
 
 const seller = {
   createShop: (shopData: SellerRegistrationFormValues) => api.post(`/seller/shop/create`, shopData),
-  getShopInfo: () => api.get(`/seller/getShopInfo`)
+  getShopInfo: () => api.get(`/seller/shop/getinformation`)
 };
 
 export default seller;

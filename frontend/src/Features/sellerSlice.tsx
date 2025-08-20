@@ -1,16 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Api/index.api.ts";
 import type { SellerRegistrationFormValues } from "src/Types/forms.ts";
-import { setLoginData } from "./userSlice.tsx";
 
 const initialState = {
   shopInfo: {
-    shopId: "",
-    address: "",
-    phoneNumber: "",
+    name: "",
     email: "",
-    isSeller: false,
-    sellerStatus: "",
+    phoneNumber: "",
+    description: "",
+    address: "",
+    status: null,
   },
   status: 'idle'
 }
@@ -22,19 +21,20 @@ export const newShop = createAsyncThunk(
       const response = await api.seller.createShop(shopInfo);
       return response.data;
     } catch (error: any) {
-      if (error.response?.data) {
-        return rejectWithValue(error.response.data);
-      }
-      return rejectWithValue({ message: "Undefined Error" });
+      return rejectWithValue(error.response.data);
     }
   }
 );
 
 export const setShopData = createAsyncThunk(
   "seller/getShopData",
-  async () => {
-    const response = await api.seller.getShopInfo();
-    return response.data;
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.seller.getShopInfo();
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
   }
 );
 
@@ -57,15 +57,15 @@ const sellerSlice = createSlice({
     })
 
     builder.addCase(setShopData.fulfilled, (state, action) => {
-      state.shopInfo = { ...action.payload };
+      state.shopInfo = { ...action.payload.data[0] };
       console.log("Shop info updated:", state.shopInfo);
     });
     builder.addCase(setShopData.pending, (state) => {
       state.status = 'pending';
     });
-    builder.addCase(setLoginData.rejected, (state, action) => {
+    builder.addCase(setShopData.rejected, (state, action) => {
       state.status = 'idle';
-      console.error("Fetching shop data failed:", action.error);
+      console.log("Fetching shop data failed:", action.payload);
     });
   }
 });

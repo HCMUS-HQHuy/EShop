@@ -10,7 +10,8 @@ import type { AppDispatch, RootState } from 'src/Types/store.ts';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { updateInput } from 'src/Features/formsSlice.tsx'
-import { newShop } from 'src/Features/sellerSlice.tsx';
+import { newShop, setShopData } from 'src/Features/sellerSlice.tsx';
+import parseZodError from 'src/utils/parseZodError.ts';
 
 const StartSellingPage = () => {
     const { sellerRegistrationForm } = useSelector((state: RootState) => state.forms);
@@ -41,17 +42,19 @@ const StartSellingPage = () => {
         }
         const result = formSchemas.sellerRegistration.safeParse(sellerRegistrationForm);
         if (!result.success) {
-          console.log("Invalid registration credentials");
-          return;
+            console.log("Invalid registration credentials", result.error);
+            const parsedMessages = parseZodError(result.error);
+            errorAlert(dispatch, parsedMessages[0] ?? 'Unknown error');
+            return;
         }
         const formData: SellerRegistrationFormValues = result.data;
         try {
             await dispatch(newShop(formData)).unwrap();
+            await dispatch(setShopData()).unwrap();
             sentFormAlert(t, dispatch);
-        } catch (error) {
-            errorAlert(dispatch, 'Submit failed');
+        } catch (error: any) {
+            errorAlert(dispatch, error.data[0]);
         }
-        console.log('Form data submitted:', sellerRegistrationForm);
     };   
 
     return (

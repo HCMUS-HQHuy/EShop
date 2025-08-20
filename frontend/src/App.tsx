@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { setLoginData } from "./Features/userSlice.jsx";
 import { getCategories } from "./Features/categoriesSlice.tsx";
+import { setShopData } from "./Features/sellerSlice.tsx"
 import type { AppDispatch } from "./Types/store.ts";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
       await Promise.all([
           dispatch(setLoginData()),
           dispatch(getCategories()),
+          dispatch(setShopData())
       ]);
       setIsReady(true);
       };
