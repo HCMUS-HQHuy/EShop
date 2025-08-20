@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import useScrollOnMount from "src/Hooks/App/useScrollOnMount";
-import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory";
-import ForYouSection from "../Shared/Sections/ForYouSection/ForYouSection";
-import OrderProducts from "./CartProducts/OrderProducts";
+import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
+import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory.tsx";
+import ForYouSection from "../Shared/Sections/ForYouSection/ForYouSection.tsx";
+import OrderProducts from "./CartProducts/OrderProducts.tsx";
 import s from "./OrderPage.module.scss";
-import OrderPageButtons from "./OrderPageButtons/OrderPageButtons";
+import OrderPageButtons from "./OrderPageButtons/OrderPageButtons.tsx";
 
 const OrderPage = () => {
   const { t } = useTranslation();
@@ -14,7 +14,7 @@ const OrderPage = () => {
   return (
     <div className="container">
       <main className={s.orderPage}>
-        <PagesHistory history={["/", t("history.orders")]} />
+        <PagesHistory history={["/", t("history.orders")]} historyPaths={undefined} />
 
         <div className={s.pageComponents} id="order-page">
           <OrderProducts />

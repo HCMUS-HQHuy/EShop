@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
-import { pagesRequireSignIn } from "Data/globalVariables.jsx";
-import { showAlert } from "Features/alertsSlice.jsx";
-import type { RootState } from "Types/store.ts";
+import { pagesRequireSignIn } from "src/Data/globalVariables.tsx";
+import { showAlert } from "src/Features/alertsSlice.tsx";
+import type { RootState } from "src/Types/store.ts";
 
 const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   const { loginInfo } = useSelector((state: RootState) => state.user);

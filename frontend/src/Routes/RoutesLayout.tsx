@@ -1,17 +1,17 @@
 import { Outlet } from "react-router-dom";
-import Footer from "../Components/Footer/Footer.jsx";
-import FirstHeader from "../Components/Header/FirstHeader/FirstHeader.tsx";
-import Header from "../Components/Header/Header/Header.tsx";
-import UpdateNotification from "../Components/PWA/UpdateNotification/UpdateNotification.jsx";
-import ConnectionLabelAlert from "../Components/Shared/MiniComponents/ConnectionLabelAlert/ConnectionLabelAlert.jsx";
-import GlobalOverlay from "../Components/Shared/MiniComponents/GlobalOverlay/GlobalOverlay.jsx";
-import ScrollToTop from "../Components/Shared/MiniComponents/ScrollToTop/ScrollToTop.jsx";
-import SkipContentLink from "../Components/Shared/MiniComponents/SkipContentLink.jsx";
-import MobileNav from "../Components/Shared/MobileNav/MobileNav.jsx";
-import ToastAlert from "../Components/Shared/PopUps/ToastAlert/ToastAlert.jsx";
-import ToastConfirm from "../Components/Shared/PopUps/ToastConfirm/ToastConfirm.jsx";
-import useCurrentSkipLinkId from "../Hooks/App/useCurrentSkipLinkId.jsx";
-import useOnlineStatus from "../Hooks/Helper/useOnlineStatus.jsx";
+import Footer from "src/Components/Footer/Footer.tsx";
+import FirstHeader from "src/Components/Header/FirstHeader/FirstHeader.tsx";
+import Header from "src/Components/Header/Header/Header.tsx";
+import UpdateNotification from "src/Components/PWA/UpdateNotification/UpdateNotification.tsx";
+import ConnectionLabelAlert from "src/Components/Shared/MiniComponents/ConnectionLabelAlert/ConnectionLabelAlert.tsx";
+import GlobalOverlay from "src/Components/Shared/MiniComponents/GlobalOverlay/GlobalOverlay.tsx";
+import ScrollToTop from "src/Components/Shared/MiniComponents/ScrollToTop/ScrollToTop.tsx";
+import SkipContentLink from "src/Components/Shared/MiniComponents/SkipContentLink.tsx";
+import MobileNav from "src/Components/Shared/MobileNav/MobileNav.tsx";
+import ToastAlert from "src/Components/Shared/PopUps/ToastAlert/ToastAlert.tsx";
+import ToastConfirm from "src/Components/Shared/PopUps/ToastConfirm/ToastConfirm.tsx";
+import useCurrentSkipLinkId from "src/Hooks/App/useCurrentSkipLinkId.tsx";
+import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 
 const RoutesLayout = () => {
   const skipLinkSectionId = useCurrentSkipLinkId();

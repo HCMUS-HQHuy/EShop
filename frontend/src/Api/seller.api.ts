@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { SellerRegistrationFormValues } from "Types/forms.ts";
+import type { SellerRegistrationFormValues } from "src/Types/forms.ts";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACK_END_URL,

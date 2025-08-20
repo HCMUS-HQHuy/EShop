@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { TIME_UNITS } from "Data/globalVariables.jsx";
+import { TIME_UNITS } from "src/Data/globalVariables.tsx";
 import useTimerDown from "Hooks/App/useTimerDown.jsx";
 import s from "./EventCounter.module.scss";
 

@@ -1,7 +1,8 @@
-import { IS_PRODUCTION } from "../src/Data/constants";
-import { handleUpdateFound } from "../src/Functions/pwa";
+import { IS_PRODUCTION } from "src/Data/constants.tsx";
+import { handleUpdateFound } from "src/Functions/pwa.ts";
+import type { SetStateAction, Dispatch } from "react";
 
-export async function registerSWWithUpdate(setShowNotification) {
+export async function registerSWWithUpdate(setShowNotification: Dispatch<SetStateAction<boolean>>) {
   const isReadToRegister = navigator?.serviceWorker && IS_PRODUCTION;
   if (!isReadToRegister) return;
 

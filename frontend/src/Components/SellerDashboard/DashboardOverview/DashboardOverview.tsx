@@ -1,4 +1,4 @@
-import useScrollOnMount from 'Hooks/App/useScrollOnMount.jsx';
+import useScrollOnMount from 'src/Hooks/App/useScrollOnMount.tsx';
 import s from './DashboardOverview.module.scss';
 
 const StatCard = ({ title, value, icon }: { title: string, value: string, icon: string }) => (

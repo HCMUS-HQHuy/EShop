@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 // import { resetApplicationStatus } from 'path/to/your/userSlice';
 import styles from './StartSellingPage.module.scss';
-import type { RootState } from 'Types/store.ts';
+import type { RootState } from 'src/Types/store.ts';
 
 const RejectedPage = () => {
   const dispatch = useDispatch();

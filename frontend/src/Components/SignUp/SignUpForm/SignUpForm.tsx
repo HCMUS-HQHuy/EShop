@@ -1,16 +1,16 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { showAlert } from "Features/alertsSlice.jsx";
-import { newSignUp, setLoginData } from "Features/userSlice.tsx";
-import { registerValidationCheck } from "Functions/validation.js";
-import useOnlineStatus from "Hooks/Helper/useOnlineStatus.jsx";
+import { showAlert } from "src/Features/alertsSlice.tsx";
+import { newSignUp, setLoginData } from "src/Features/userSlice.tsx";
+import { registerValidationCheck } from "src/Functions/validation.ts";
+import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 import SignUpButtons from "./SignUpButtons/SignUpButtons.tsx";
 import s from "./SignUpForm.module.scss";
 import SignUpFormInputs from "./SignUpFormInputs/SignUpFormInputs.tsx";
 import type { TFunction } from "i18next";
-import AuthSchemas, { type RegisterFormValues } from 'Types/forms.ts';
-import type { AppDispatch, RootState } from 'Types/store.ts'
+import AuthSchemas, { type RegisterFormValues } from 'src/Types/forms.ts';
+import type { AppDispatch, RootState } from 'src/Types/store.ts'
 
 const SignUpForm = () => {
   const { username, email, password, confirmPassword } 

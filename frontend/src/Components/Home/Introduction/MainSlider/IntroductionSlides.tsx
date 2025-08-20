@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { introductionSliderData } from "Data/staticData.jsx";
+import { introductionSliderData } from "src/Data/staticData.tsx";
 import { SwiperSlide } from "swiper/react";
 import SvgIcon from "../../../Shared/MiniComponents/SvgIcon.jsx";
 import s from "./IntroductionSlides.module.scss";

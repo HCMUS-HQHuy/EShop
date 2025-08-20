@@ -1,6 +1,6 @@
 import axios from "axios";
-import type { LoginFormValues } from "Types/forms.ts";
-import type { RegisterFormValues } from "Types/forms.ts";
+import type { LoginFormValues } from "src/Types/forms.ts";
+import type { RegisterFormValues } from "src/Types/forms.ts";
 console.log("API initialized with base URL:", import.meta.env.VITE_BACK_END_URL);
 const api = axios.create({
   baseURL: import.meta.env.VITE_BACK_END_URL,

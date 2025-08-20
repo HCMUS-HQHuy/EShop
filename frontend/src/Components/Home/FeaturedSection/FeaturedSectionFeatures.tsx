@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { featuresSectionData } from "Data/staticData.jsx";
-import { camelCase } from "Functions/formatting.js";
-import Feature from "Components/Shared/MiniComponents/Feature/Feature.jsx";
+import { featuresSectionData } from "src/Data/staticData.tsx";
+import { camelCase } from "src/Functions/formatting.ts";
+import Feature from "src/Components/Shared/MiniComponents/Feature/Feature.tsx";
 import s from "./FeaturedSectionFeatures.module.scss";
 
 const FeaturedSectionFeatures = () => {

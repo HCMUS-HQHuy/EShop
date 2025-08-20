@@ -1,15 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { showAlert } from "Features/alertsSlice.jsx";
-import { loginUser, setLoginData } from "Features/userSlice.tsx";
-import useOnlineStatus from "Hooks/Helper/useOnlineStatus.jsx";
+import { showAlert } from "src/Features/alertsSlice.tsx";
+import { loginUser, setLoginData } from "src/Features/userSlice.tsx";
+import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 
 import s from "./LogInForm.module.scss";
 import LogInFormInputs from "./LogInFormInputs/LogInFormInputs.tsx";
-import AuthSchemas from 'Types/forms.ts';
-import type { RootState, AppDispatch } from "Types/store.ts";
-import type { LoginFormValues } from "Types/forms.ts";
+import AuthSchemas from 'src/Types/forms.ts';
+import type { RootState, AppDispatch } from "src/Types/store.ts";
+import type { LoginFormValues } from "src/Types/forms.ts";
 import type { TFunction } from "i18next";
 
 const LogInForm = () => {

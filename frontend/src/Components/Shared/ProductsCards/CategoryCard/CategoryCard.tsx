@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
-import { camelCase } from "Functions/formatting.js";
+import { camelCase } from "src/Functions/formatting.ts";
 import SvgIcon from "../../MiniComponents/SvgIcon.jsx";
 import s from "./CategoryCard.module.scss";
 
-import type { CategoryInfor } from "Types/category.ts";
+import type { CategoryInfor } from "src/Types/category.ts";
 
 const CategoryCard = ({ categoryData }: { categoryData: CategoryInfor }) => {
   const { iconName, title } = categoryData;

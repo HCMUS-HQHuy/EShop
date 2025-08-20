@@ -2,7 +2,7 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
 
     // Environment Settings
@@ -10,7 +10,7 @@
     "module": "nodenext",
     "target": "esnext",
     "types": ["node"],
-    "baseUrl": "src",
+    "baseUrl": ".",
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
@@ -19,8 +19,6 @@
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-    "allowJs": true,
-    "checkJs": false,
     
     // Recommended Options
     "strict": true,

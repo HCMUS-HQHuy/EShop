@@ -1,16 +1,16 @@
 import React, { use, useState } from 'react';
 import styles from './StartSellingPage.module.scss';
-import useScrollOnMount from 'Hooks/App/useScrollOnMount.jsx';
-import { updateInput } from 'Features/formsSlice.tsx'
+import useScrollOnMount from 'src/Hooks/App/useScrollOnMount.tsx';
 import { useSelector, useDispatch } from 'react-redux';
-import { showAlert } from 'Features/alertsSlice.jsx';
-import useOnlineStatus from 'Hooks/Helper/useOnlineStatus.jsx';
-import formSchemas from 'Types/forms.ts';
-import type { SellerRegistrationFormValues } from 'Types/forms.ts';
-import type { AppDispatch, RootState } from 'Types/store.ts';
+import { showAlert } from 'src/Features/alertsSlice.tsx';
+import useOnlineStatus from 'src/Hooks/Helper/useOnlineStatus.tsx';
+import formSchemas from 'src/Types/forms.ts';
+import type { SellerRegistrationFormValues } from 'src/Types/forms.ts';
+import type { AppDispatch, RootState } from 'src/Types/store.ts';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { newShop } from 'Features/sellerSlice.tsx';
+import { updateInput } from 'src/Features/formsSlice.tsx'
+import { newShop } from 'src/Features/sellerSlice.tsx';
 
 const StartSellingPage = () => {
     const { sellerRegistrationForm } = useSelector((state: RootState) => state.forms);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { registerSWWithUpdate } from "src/../public/register-pwa";
-import { refreshWithNewVersion } from "src/Functions/pwa";
+import { registerSWWithUpdate } from "public/register-pwa.ts";
+import { refreshWithNewVersion } from "src/Functions/pwa.ts";
 import s from "./UpdateNotification.module.scss";
 
 const UpdateNotification = () => {

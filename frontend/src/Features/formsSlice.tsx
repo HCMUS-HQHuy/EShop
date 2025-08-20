@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { FormKeys, FormState } from "Types/forms.ts";
+import type { FormKeys, FormState } from "src/Types/forms.ts";
 
 const initialState: FormState= {
   signUp: {

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import EditProfileInput from "./EditProfileInput.jsx";
 import s from "./EditProfileInputs.module.scss";
-import type { RootState } from "Types/store.ts";
+import type { RootState } from "src/Types/store.ts";
 
 const EditProfileInputs = () => {
   const { loginInfo } = useSelector((state: RootState) => state.user);

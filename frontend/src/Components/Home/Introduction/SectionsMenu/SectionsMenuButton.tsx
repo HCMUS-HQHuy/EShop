@@ -1,8 +1,8 @@
 import { useDispatch } from "react-redux";
-import { multiUpdateGlobalState } from "Features/globalSlice.jsx";
-import SvgIcon from "Components/Shared/MiniComponents/SvgIcon.jsx";
+import { multiUpdateGlobalState } from "src/Features/globalSlice.tsx";
+import SvgIcon from "src/Components/Shared/MiniComponents/SvgIcon.tsx";
 import s from "./SectionsMenuButton.module.scss";
-import type { AppDispatch } from "Types/store.ts";
+import type { AppDispatch } from "src/Types/store.ts";
 
 const SectionsMenuButton = () => {
   const dispatch = useDispatch<AppDispatch>();

@@ -1,8 +1,8 @@
 import { default as i18n, default as i18next } from "i18next";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LANGUAGES } from "Data/staticData.jsx";
-import useEventListener from "Hooks/Helper/useEventListener.jsx";
+import { LANGUAGES } from "src/Data/staticData.tsx";
+import useEventListener from "src/Hooks/Helper/useEventListener.tsx";
 import s from "./LanguageSelector.module.scss";
 
 const LanguageSelector = () => {

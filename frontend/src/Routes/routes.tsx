@@ -1,22 +1,22 @@
-import About from "Components/About/About.jsx";
-import AccountPage from "Components/AccountPage/AccountPage.tsx";
-import Cart from "Components/Cart/Cart.jsx";
-import CheckoutPage from "Components/CheckoutPage/CheckoutPage.jsx";
-import Contact from "Components/Contact/Contact.jsx";
-import FavoritePage from "Components/FavoritePage/FavoritePage.jsx";
-import Home from "Components/Home/Home.tsx";
-import LogIn from "Components/LogIn/LogIn.tsx";
-import NotFoundPage from "Components/NotFoundPage/NotFoundPage.jsx";
-import OrderPage from "Components/OrderPage/OrderPage.jsx";
-import ProductDetailsPage from "Components/ProductDetailsPage/ProductDetailsPage.jsx";
-import ProductsCategoryPage from "Components/ProductsCategory/ProductsCategoryPage.jsx";
-import ProductsPage from "Components/ProductsPage/ProductsPage.jsx";
-import SearchPage from "Components/Search/SearchPage.jsx";
-import SignUp from "Components/SignUp/SignUp.tsx";
-import WishList from "Components/WishList/WishList.jsx";
+import About from "src/Components/About/About.tsx";
+import AccountPage from "src/Components/AccountPage/AccountPage.tsx";
+import Cart from "src/Components/Cart/Cart.tsx";
+import CheckoutPage from "src/Components/CheckoutPage/CheckoutPage.tsx";
+import Contact from "src/Components/Contact/Contact.tsx";
+import FavoritePage from "src/Components/FavoritePage/FavoritePage.tsx";
+import Home from "src/Components/Home/Home.tsx";
+import LogIn from "src/Components/LogIn/LogIn.tsx";
+import NotFoundPage from "src/Components/NotFoundPage/NotFoundPage.tsx";
+import OrderPage from "src/Components/OrderPage/OrderPage.tsx";
+import ProductDetailsPage from "src/Components/ProductDetailsPage/ProductDetailsPage.tsx";
+import ProductsCategoryPage from "src/Components/ProductsCategory/ProductsCategoryPage.tsx";
+import ProductsPage from "src/Components/ProductsPage/ProductsPage.tsx";
+import SearchPage from "src/Components/Search/SearchPage.tsx";
+import SignUp from "src/Components/SignUp/SignUp.tsx";
+import WishList from "src/Components/WishList/WishList.tsx";
 
-import StartSellingPage from "Components/StartSellingPage/StartSellingPage.tsx"
-import SellerDashboardPage from "Components/SellerDashboard/SellerDashboardPage.tsx";
+import StartSellingPage from "src/Components/StartSellingPage/StartSellingPage.tsx"
+import SellerDashboardPage from "src/Components/SellerDashboard/SellerDashboardPage.tsx";
 
 export const ROUTES_CONFIG = [
   { path: "/", element: <Home /> },

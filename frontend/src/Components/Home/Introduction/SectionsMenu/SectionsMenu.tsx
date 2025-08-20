@@ -1,20 +1,20 @@
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { SCREEN_SIZES } from "Data/globalVariables.jsx";
+import { SCREEN_SIZES } from "src/Data/globalVariables.tsx";
 import {
   menFashionMenuItems,
   otherSectionsMenuItems,
   womenFashionMenuItems,
-} from "Data/staticData.jsx";
-import { camelCase } from "Functions/formatting.js";
-import useGetResizeWindow from "Hooks/Helper/useGetResizeWindow.jsx";
+} from "src/Data/staticData.tsx";
+import { camelCase } from "src/Functions/formatting.ts";
+import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow.tsx";
 import DropDownMenu from "./DropDownMenu.tsx";
 // import OtherSections from "./OtherSections.tsx";
 import s from "./SectionsMenu.module.scss";
 import SectionsMenuButton from "./SectionsMenuButton.tsx";
 import SectionsMenuCloseBtn from "./SectionsMenuCloseBtn/SectionsMenuCloseBtn.tsx";
-import type { RootState } from "Types/store.ts";
-import type { CategoryInfor } from "Types/category.ts"
+import type { RootState } from "src/Types/store.ts";
+import type { CategoryInfor } from "src/Types/category.ts"
 
 const OtherSectionsLi = ({ item }: {item: CategoryInfor}) => {
   const itemName = camelCase(item.title);

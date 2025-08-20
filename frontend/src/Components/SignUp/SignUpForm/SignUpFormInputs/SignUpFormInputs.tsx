@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { updateInput } from "Features/formsSlice.tsx";
-import ShowHidePassword from "Components/Shared/MiniComponents/ShowHidePassword/ShowHidePassword.jsx";
+import { updateInput } from "src/Features/formsSlice.tsx";
+import ShowHidePassword from "src/Components/Shared/MiniComponents/ShowHidePassword/ShowHidePassword.tsx";
 import s from "./SignUpFormInputs.module.scss";
-import type { RootState } from "Types/store.ts";
+import type { RootState } from "src/Types/store.ts";
 
 const SignUpFormInputs = () => {
   const { t } = useTranslation();

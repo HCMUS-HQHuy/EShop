@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { WEBSITE_NAME } from "Data/constants.jsx";
-import useNavToolsProps from "Hooks/App/useNavToolsProps.jsx";
+import { WEBSITE_NAME } from "src/Data/constants.tsx";
+import useNavToolsProps from "src/Hooks/App/useNavToolsProps.tsx";
 import NavTools from "../../Shared/MidComponents/NavTools/NavTools.jsx";
 import s from "./Header.module.scss";
 import MobileNavIcon from "./MobileNavIcon.jsx";

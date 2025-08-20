@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { googleIcon } from "Assets/Images/Images.js";
-import { DEFAULT_LOGIN_DATA } from "Data/globalVariables.jsx";
-import { setLoginData } from "Features/userSlice.tsx";
+import { googleIcon } from "src/Assets/Images/Images.ts";
+import { DEFAULT_LOGIN_DATA } from "src/Data/globalVariables.tsx";
+import { setLoginData } from "src/Features/userSlice.tsx";
 import { openSignWithGooglePopUp } from "../../SignUpWithGoogle/SignUpWithGooglePopup.jsx";
 import { signInAlert } from "../SignUpForm.tsx";
 import s from "./SignUpButtons.module.scss";

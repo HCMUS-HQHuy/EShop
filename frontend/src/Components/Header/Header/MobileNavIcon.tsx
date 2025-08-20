@@ -1,8 +1,8 @@
 import { useDispatch } from "react-redux";
-import { multiUpdateGlobalState } from "Features/globalSlice.jsx";
+import { multiUpdateGlobalState } from "src/Features/globalSlice.tsx";
 import SvgIcon from "../../Shared/MiniComponents/SvgIcon.jsx";
 import s from "./MobileNavIcon.module.scss";
-import type { AppDispatch } from "Types/store.ts";
+import type { AppDispatch } from "src/Types/store.ts";
 
 const MobileNavIcon = () => {
   const dispatch = useDispatch();

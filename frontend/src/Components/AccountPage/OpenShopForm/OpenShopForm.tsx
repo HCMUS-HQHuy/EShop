@@ -1,19 +1,19 @@
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { showAlert } from "Features/alertsSlice.jsx";
-import { updateUserData } from "Features/userSlice.tsx";
+import { showAlert } from "src/Features/alertsSlice.tsx";
+import { updateUserData } from "src/Features/userSlice.tsx";
 import {
   checkAreInputsValid,
   checkEmailValidation,
   checkEmptyInputs,
   checkPasswordInputs,
-} from "Functions/validation.js";
+} from "src/Functions/validation.ts";
 import OpenShopInputs from "./OpenShopInputs.tsx";
 import ProfileFormButtons from "../ProfileFormButtons/ProfileFormButtons.jsx";
 import s from "./OpenShopForm.module.scss";
 
-import type { RootState } from "Types/store.ts";
+import type { RootState } from "src/Types/store.ts";
 
 const OpenShopForm = () => {
   const { loginInfo } = useSelector((state: RootState) => state.user);
