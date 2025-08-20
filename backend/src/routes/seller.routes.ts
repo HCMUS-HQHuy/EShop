@@ -13,7 +13,7 @@ router.use(mid.auth);
 
 // #### SHOP ROUTES ####
 router.post('/shop/create', controller.seller.shop.create);
-router.post('/shop/getinformation', controller.seller.shop.getInformation);
+router.get('/shop/getinformation', controller.seller.shop.getInformation);
 
 
 // #### PRODUCT ROUTES ####
