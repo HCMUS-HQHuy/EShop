@@ -11,7 +11,7 @@ const SellerDashboardPageLayout = () => {
     <div className={s.dashboardLayout}>
       <SellerSidebar />
       <main className={s.mainContent}>
-        <Outlet /> {/* Các trang con sẽ được render ở đây */}
+        <Outlet />
       </main>
     </div>
   );
@@ -23,12 +23,6 @@ const SellerDashboardPage = () => {
       <Helmet>
         <title>Seller Dashboard</title>
       </Helmet>
-      {/* <div className={s.dashboardLayout}> */}
-        {/* <SellerSidebar /> */}
-        {/* <main className={s.mainContent}> */}
-          {/* <Outlet /> */}
-        {/* </main> */}
-      {/* </div> */}
       <Routes>
         <Route path="/" element={<SellerDashboardPageLayout />}>
             <Route index element={<DashboardOverview />} />
