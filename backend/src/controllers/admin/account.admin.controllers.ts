@@ -3,40 +3,22 @@ import { Client } from "pg";
 import database from "database/index.database";
 
 import * as types from "types/index.types";
-import * as util from "utils/index.utils";
-
+// import * as util from "utils/index.utils";
+import util from "utils/index.utils";
 // #### VALIDATION FUNCTIONS ####
 
 // #### DATABASE FUNCTIONS ####
 
-async function checkShopStatus(data: types.AdminVerifySellerRequest): Promise<types.ValidationResult> {
-    const errors: Partial<Record<string, string>> = {};
+async function checkShopExist(data: types.AdminVerifySellerRequest): Promise<boolean> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
-        if (data.status === types.SHOP_STATUS.ACTIVE) {
-            const sql = `
-                SELECT COUNT(*) FROM shops
-                WHERE shop_id = $1 AND status = '${types.SHOP_STATUS.PENDING_VERIFICATION}'
-            `;
-            const result = await db.query(sql, [data.shop_id]);
-            if (parseInt(result.rows[0].count, 10) === 0) {
-                errors.shop_id = "Shop account not found or not pending verification or banned";
-            }
-        }
-        else if (data.status === types.SHOP_STATUS.REJECTED) {
-            const sql = `
-                SELECT COUNT(*) FROM shops
-                WHERE shop_id = $1 AND status = '${types.SHOP_STATUS.PENDING_VERIFICATION}'
-            `;
-            const result = await db.query(sql, [data.shop_id]);
-            if (parseInt(result.rows[0].count, 10) === 0) {
-                errors.shop_id = "Shop account not found or not pending verification";
-            }
-        }
-        else {
-            errors.status = "Invalid status for shop account review";
-        }
+        const sql = `
+            SELECT COUNT(*) FROM shops
+            WHERE shop_id = $1
+        `;
+        const result = await db.query(sql, [data.shop_id]);
+        return (parseInt(result.rows[0].count, 10) > 0);
     } catch (error) {
         console.error("Database error:", error);
         throw new Error("Database validation failed");
@@ -45,11 +27,6 @@ async function checkShopStatus(data: types.AdminVerifySellerRequest): Promise<ty
             await database.releaseConnection(db);
         }
     }
-
-    return {
-        valid: Object.keys(errors).length === 0,
-        errors
-    };
 }
 
 async function checkUserCondition(data: types.BlockUnblockUserRequest): Promise<types.ValidationResult> {
@@ -124,8 +101,8 @@ async function updateUserStatus(userId: number, status: types.UserStatus) {
 // #### CONTROLLER FUNCTIONS ####
 
 async function list(req: express.Request, res: express.Response) {
-    if (util.isAdmin(req) === false) {
-        return res.status(403).json({ message: "Forbidden: Only admins can access this resource." });
+    if (util.role.isAdmin(req) === false) {
+        return res.status(403).json(util.response.authorError('Admin'));
     }
     let db: Client | undefined = undefined;
     try {
@@ -152,43 +129,32 @@ async function list(req: express.Request, res: express.Response) {
 // It validates the request data and updates the shop account status in the database
 // It updates the shop account status and optionally the rejection reason
 async function reviewShop(req: express.Request, res: express.Response) {
-    if (util.isAdmin(req) === false) {
-        return res.status(403).json({ message: "Forbidden: Only admins can review seller accounts." });
+    if (util.role.isAdmin(req) === false) {
+        return res.status(403).json(util.response.authorError('Admin'));
     }
     // Validate the request body
     const parsedBody = types.shopSchemas.AdminVerify.safeParse(req.body);
     if (!parsedBody.success) {
-        return res.status(400).send({ 
-            error: 'Invalid request data', 
-            details: parsedBody.error.format() 
-        });
+        return res.status(400).send(util.response.error('Invalid request data', [util.formatError(parsedBody.error)]));
     }
     const data: types.AdminVerifySellerRequest = parsedBody.data;
     // Check the shop status in the database
     try {
-        const statusCheck = await checkShopStatus(data);
-        if (!statusCheck.valid) {
-            return res.status(400).json({
-                message: "Validation error",
-                errors: statusCheck.errors
-            });
+        if (await checkShopExist(data) === false) {
+            return res.status(400).json(util.response.error('Invalid request', ['Shop does not exist']));
         }
     } catch (error) {
         console.error("Error checking seller status:", error);
-        return res.status(500).json({
-            message: "Internal server error during status check"
-        });
+        return res.status(500).json(util.response.error('Internal server error', ['Error checking seller status']));
     }
 
     // update the shop account status in the database
     try {
         await updateShopStatus(data.shop_id, data.status, data.admin_note);
-        return res.status(200).json({ message: "Shop account updated", shop_id: data.shop_id });
+        return res.status(200).json(util.response.success("Shop account updated", [`shop :${data.shop_id}`]));
     } catch (error) {
         console.error("Error updating shop account:", error);
-        return res.status(500).json({
-            message: "Internal server error"
-        });
+        return res.status(500).json(util.response.error('Internal server error', ['Error updating shop account']));
     }
 }
 
@@ -196,16 +162,13 @@ async function reviewShop(req: express.Request, res: express.Response) {
 // It validates the request data and updates the user status in the database
 // It updates the user status to either 'Active' or 'Banned'
 async function reviewUser(req: express.Request, res: express.Response) {
-    if (util.isAdmin(req) === false) {
-        return res.status(403).json({ message: "Forbidden: Only admins can review user accounts." });
+    if (util.role.isAdmin(req) === false) {
+        return res.status(403).json(util.response.authorError('Admin'));
     }
     // Validate the request body
     const parsedBody = types.shopSchemas.BlockUnblock.safeParse(req.body);
     if (!parsedBody.success) {
-        return res.status(400).send({ 
-            error: 'Invalid request data', 
-            details: parsedBody.error.format() 
-        });
+        return res.status(400).send(util.response.error('Invalid request data', [util.formatError(parsedBody.error)]));
     }
     const data: types.BlockUnblockUserRequest = parsedBody.data;
 
@@ -213,26 +176,19 @@ async function reviewUser(req: express.Request, res: express.Response) {
     try {
         const conditionCheck = await checkUserCondition(data);
         if (!conditionCheck.valid) {
-            return res.status(400).json({
-                message: "Validation error",
-                errors: conditionCheck.errors
-            });
+            return res.status(400).json(util.response.error('Validation error', [conditionCheck.errors]));
         }
     } catch (error) {
         console.error("Error checking user condition:", error);
-        return res.status(500).json({
-            message: "Internal server error during condition check"
-        });
+        return res.status(500).json(util.response.error('Internal server error during condition check', ['Error checking user condition']));
     }
 
     try {
         await updateUserStatus(data.user_id, data.status);
-        return res.status(200).json({ message: "User account updated", userId: data.user_id });
+        return res.status(200).json(util.response.success("User account updated", [data.user_id]));
     } catch (error) {
         console.error("Error updating user account:", error);
-        return res.status(500).json({
-            message: "Internal server error"
-        });
+        return res.status(500).json(util.response.error('Internal server error', ['Error updating user account']));
     }
 }
 
