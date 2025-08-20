@@ -19,7 +19,7 @@ export const ORDER_STATUSES = {
 export const SHOP_STATUS = {
     ACTIVE: 'Active',
     REJECTED: 'Rejected',
-    PENDING_VERIFICATION: 'PendingVerification',
+    PENDING_VERIFICATION: 'Pending Verification',
     CLOSED: 'Closed',
     BANNED: 'Banned'
 } as const;

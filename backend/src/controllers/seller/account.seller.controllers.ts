@@ -69,8 +69,43 @@ async function create(req: types.RequestCustom, res: express.Response) {
     }
 }
 
+async function getInformation(req: types.RequestCustom, res: express.Response) {
+    if (utils.isSeller(req) === false) {
+        return res.status(403).json(util.response.error("Authorization Error", ['Only sellers have permission to access this route.']));
+    }
+
+    const shopId: number = req.user?.shop_id as number;
+    let db: Client | undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const sql = `
+            SELECT shop_name, email, phone_number, shop_description, address, status
+            FROM shops
+            WHERE shop_id = $1
+        `;
+        const result = await db.query(sql, [shopId]);
+        const shopInfor = {
+            shopName: result.rows[0].shop_name,
+            email: result.rows[0].email,
+            phoneNumber: result.rows[0].phone_number,
+            shopDescription: result.rows[0].shop_description,
+            address: result.rows[0].address,
+            status: result.rows[0].status
+        };
+        return res.status(200).json(util.response.success("Seller information retrieved successfully", [shopInfor]));
+    } catch (error) {
+        console.error("Error fetching seller information:", error);
+        return res.status(500).json(util.response.error("Internal server error", []));
+    } finally {
+        if (db) {
+            await database.releaseConnection(db);
+        }
+    }
+}
+
 const sellerAccountController = {
-    create
+    create,
+    getInformation
 };
 
 export default sellerAccountController;
