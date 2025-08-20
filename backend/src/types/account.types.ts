@@ -3,9 +3,15 @@ import * as types from 'types/index.types';
 
 const AdminVerifySellerRequestSchema = z.object({
 	shop_id: z.coerce.number().int().positive('Seller ID must be a positive integer'),
-	status: z.enum([types.SHOP_STATUS.REJECTED, types.SHOP_STATUS.ACTIVE], 'Invalid seller status'),
+	status: z.enum([types.SHOP_STATUS.REJECTED, types.SHOP_STATUS.ACTIVE, types.SHOP_STATUS.BANNED], 'Invalid seller status'),
 	admin_note: z.string().max(500, 'Rejection reason must not exceed 500 characters').optional(),
 });
+
+// const AdminBanSellerRequestSchema = z.object({
+// 	shop_id: z.coerce.number().int().positive('Seller ID must be a positive integer'),
+// 	status: z.enum([types.SHOP_STATUS.BANNED], 'Invalid seller status'),
+// 	admin_note: z.string().max(500, 'Rejection reason must not exceed 500 characters'),
+// });
 
 const BlockUnblockUserRequestSchema = z.object({
 	user_id: z.coerce.number().int().positive('User ID must be a positive integer'),
