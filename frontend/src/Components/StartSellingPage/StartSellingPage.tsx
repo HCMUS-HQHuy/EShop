@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ApplicationForm from './ApplicationForm.tsx';
 import PendingPage from './PendingPage.tsx';
 import RejectedPage from './RejectedPage.tsx';
+import BannedPage from './BannedPage.tsx';
 import styles from './StartSellingPage.module.scss';
 import type { RootState } from 'src/Types/store.ts';
 import { SHOP_STATUS } from 'src/Types/common.ts';
@@ -25,6 +26,8 @@ const StartSellingPage = () => {
                 return <PendingPage />;
             case SHOP_STATUS.REJECTED:
                 return <RejectedPage />;
+            case SHOP_STATUS.BANNED:
+                return <BannedPage />;
             default:
                 return <h1>waiting...</h1>;
         }

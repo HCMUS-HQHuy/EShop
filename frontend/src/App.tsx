@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { setLoginData } from "./Features/userSlice.jsx";
 import { getCategories } from "./Features/categoriesSlice.tsx";
 import { setShopData } from "./Features/sellerSlice.tsx"
+import socketListener from "./Socket/Socket.ts";
 import type { AppDispatch } from "./Types/store.ts";
 
 function App() {
@@ -34,6 +35,8 @@ function App() {
     return <div>Loading...</div>;
   }
 
+  socketListener();
+  
   return <AppRoutes />;
 }
 
