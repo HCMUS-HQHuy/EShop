@@ -100,8 +100,8 @@ async function updateUserStatus(userId: number, status: types.UserStatus) {
 
 // #### CONTROLLER FUNCTIONS ####
 
-async function list(req: express.Request, res: express.Response) {
-    if (util.role.isAdmin(req) === false) {
+async function list(req: types.RequestCustom, res: express.Response) {
+    if (util.role.isAdmin(req.user) === false) {
         return res.status(403).json(util.response.authorError('Admin'));
     }
     let db: Client | undefined = undefined;
@@ -128,8 +128,8 @@ async function list(req: express.Request, res: express.Response) {
 // This function handles the review of seller accounts by the admin
 // It validates the request data and updates the shop account status in the database
 // It updates the shop account status and optionally the rejection reason
-async function reviewShop(req: express.Request, res: express.Response) {
-    if (util.role.isAdmin(req) === false) {
+async function reviewShop(req: types.RequestCustom, res: express.Response) {
+    if (util.role.isAdmin(req.user) === false) {
         return res.status(403).json(util.response.authorError('Admin'));
     }
     // Validate the request body
@@ -161,8 +161,8 @@ async function reviewShop(req: express.Request, res: express.Response) {
 // This function handles the review of user accounts by the admin
 // It validates the request data and updates the user status in the database
 // It updates the user status to either 'Active' or 'Banned'
-async function reviewUser(req: express.Request, res: express.Response) {
-    if (util.role.isAdmin(req) === false) {
+async function reviewUser(req: types.RequestCustom, res: express.Response) {
+    if (util.role.isAdmin(req.user) === false) {
         return res.status(403).json(util.response.authorError('Admin'));
     }
     // Validate the request body

@@ -150,8 +150,8 @@ async function deleteCategory(name: string, userId: number): Promise<void> {
 
 // #### CONTROLLER FUNCTIONS ####
 
-async function add(req: express.Request, res: express.Response) {
-    if (util.isAdmin(req) === false) {
+async function add(req: types.RequestCustom, res: express.Response) {
+    if (util.isAdmin(req.user) === false) {
         return res.status(403).json({ message: "Forbidden: Only admins can add categories." });
     }
 
@@ -183,7 +183,7 @@ async function add(req: express.Request, res: express.Response) {
     console.log("Category added successfully");
 }
 
-async function get(req: express.Request, res: express.Response) {
+async function get(req: types.RequestCustom, res: express.Response) {
     console.log("Fetching categories with query parameters:", req.query);
     const parsedBody = types.categorySchemas.paramsRequest.safeParse(req.query);
     if (!parsedBody.success) {
@@ -202,8 +202,8 @@ async function get(req: express.Request, res: express.Response) {
     }
 }
 
-async function update(req: express.Request, res: express.Response) {
-    if (util.isAdmin(req) === false) {
+async function update(req: types.RequestCustom, res: express.Response) {
+    if (util.isAdmin(req.user) === false) {
         return res.status(403).json({ message: "Forbidden: Only admins can update categories." });
     }
     console.log("Updating category with params:", req.params, "and body:", req.body);
@@ -255,7 +255,7 @@ async function update(req: express.Request, res: express.Response) {
 }
 
 async function remove(req: types.RequestCustom, res: express.Response) {
-    if (util.isAdmin(req) === false) {
+    if (util.isAdmin(req.user) === false) {
         return res.status(403).json({ message: "Forbidden: Only admins can delete categories." });
     }
     const parsedParam = types.categorySchemas.updateRequest.safeParse(req.params);

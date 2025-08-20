@@ -124,7 +124,7 @@ async function listProducts(params: types.ProductParamsRequest) {
 // #### CONTROLLER FUNCTIONS ####
 
 async function list(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAdmin(req) === false) {
+    if (utils.isAdmin(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only admins can access this route' });
     }
     const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
@@ -144,22 +144,22 @@ async function list(req: types.RequestCustom, res: express.Response) {
     }
 }
 
-async function reject(req: express.Request, res: express.Response) {
-    if (utils.isAdmin(req) === false) {
+async function reject(req: types.RequestCustom, res: express.Response) {
+    if (utils.isAdmin(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only admins can reject products' });
     }
     return review(req, res, types.PRODUCT_STATUS.REJECTED);
 }
 
-async function approve(req: express.Request, res: express.Response) {
-    if (utils.isAdmin(req) === false) {
+async function approve(req: types.RequestCustom, res: express.Response) {
+    if (utils.isAdmin(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only admins can approve products' });
     }
     return review(req, res, types.PRODUCT_STATUS.ACTIVE);
 }
 
-async function ban(req: express.Request, res: express.Response) {
-    if (utils.isAdmin(req) === false) {
+async function ban(req: types.RequestCustom, res: express.Response) {
+    if (utils.isAdmin(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only admins can ban products' });
     }
     return review(req, res, types.PRODUCT_STATUS.BANNED);

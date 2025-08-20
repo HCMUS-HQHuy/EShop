@@ -6,7 +6,7 @@ import * as types from "../../types/index.types";
 // #### ORDER CONTROLLER ####
 
 async function create(req: types.RequestCustom, res: express.Response) {
-    if (!utils.isUser(req)) {
+    if (!utils.isUser(req.user)) {
         return res.status(403).json({ message: "Forbidden: User authentication required" });
     }
      if (req.body.user_id && req.body.user_id !== req.user?.user_id) {

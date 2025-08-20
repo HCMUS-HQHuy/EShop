@@ -33,10 +33,10 @@ async function createSellerAccount(user_id: number, data: types.ShopCreationRequ
 
 // #### CONTROLLER FUNCTIONS ####
 async function create(req: types.RequestCustom, res: express.Response) {
-    if (utils.isUser(req) === false) {
+    if (utils.isUser(req.user) === false) {
         return res.status(403).json(util.response.error("Authorization Error", ['Only users have permission to create a seller account.']));
     }
-    if (utils.isSeller(req)) {
+    if (utils.isSeller(req.user)) {
         return res.status(403).json(util.response.error("Invalid Request", ['Sellers cannot create twice seller account.']));
     }
 
@@ -70,7 +70,7 @@ async function create(req: types.RequestCustom, res: express.Response) {
 }
 
 async function getInformation(req: types.RequestCustom, res: express.Response) {
-    if (utils.isSeller(req) === false) {
+    if (utils.isSeller(req.user) === false) {
         return res.status(403).json(util.response.error("Authorization Error", ['Only sellers have permission to access this route.']));
     }
 

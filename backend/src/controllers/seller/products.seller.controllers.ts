@@ -181,7 +181,7 @@ async function displayProduct(productId: number): Promise<void> {
 
 // #### CONTROLLER FUNCTIONS ####
 async function list(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req) === false) {
+    if (utils.isAcceptedSeller(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can list products' });
     }
     const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
@@ -200,7 +200,7 @@ async function list(req: types.RequestCustom, res: express.Response) {
 }
 
 async function remove(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req) === false) {
+    if (utils.isAcceptedSeller(req.user) === false) {
         return res.status(403).json({ error: 'Forbidden: Only sellers can remove products' });
     }
     const productId = Number(req.params.id);
@@ -228,7 +228,7 @@ async function remove(req: types.RequestCustom, res: express.Response) {
 }
 
 async function update(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req) === false) {
+    if (utils.isAcceptedSeller(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can update products' });
     }
     const productId = Number(req.params.id);
@@ -261,7 +261,7 @@ async function update(req: types.RequestCustom, res: express.Response) {
 }
 
 async function add(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req) === false) {
+    if (utils.isAcceptedSeller(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can add products' });
     }
 
@@ -284,7 +284,7 @@ async function add(req: types.RequestCustom, res: express.Response) {
 };
 
 async function hide(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req) === false) {
+    if (utils.isAcceptedSeller(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can hide products' });
     }
     const productId = Number(req.params.id);
@@ -310,7 +310,7 @@ async function hide(req: types.RequestCustom, res: express.Response) {
 }
 
 async function display(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req) === false) {
+    if (utils.isAcceptedSeller(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can display products' });
     }
     const productId = Number(req.params.id);

@@ -15,7 +15,7 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
         const { user_id, role } = jwt.verify(token, process.env.JWT_SECRET as string) as types.UserInfor;
         req.user = { user_id, role } as types.UserInfor;
         console.log(`Authenticated user: ${req.user.user_id}, Role: ${req.user.role}`);
-        if (utils.isAdmin(req)) {
+        if (utils.isAdmin(req.user)) {
             return next();
         }
     } catch (error) {
