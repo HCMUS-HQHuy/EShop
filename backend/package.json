@@ -26,6 +26,7 @@
     "axios": "^1.11.0",
     "bcrypt-ts": "^7.1.0",
     "bullmq": "^5.56.9",
+    "cookie": "^1.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",

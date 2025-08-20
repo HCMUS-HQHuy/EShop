@@ -14,8 +14,10 @@ import mid from "middlewares/index.middlewares";
 const app: express.Application = express();
 const httpServer: http.Server = http.createServer(app);
 const io = new Server(httpServer, {
+    cookie: true,
     cors: {
-        origin: "*",
+        origin: process.env.FRONT_END_URL,
+        credentials: true,
         methods: ["GET", "POST"]
     }
 });
@@ -29,7 +31,7 @@ app.get('/', (res: any, req: any)=> {
 });
 
 app.use(cors({
-    origin: process.env.FRONT_END_URL, // Or specify your allowed origin(s)
+    origin: process.env.FRONT_END_URL,
     credentials: true, 
     methods: ['GET', 'POST'],
 }));
