@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Api/index.api.ts";
 import type { SellerRegistrationFormValues } from "src/Types/forms.ts";
+import { log } from "console";
 
 type ShopInfo = {
   name: string;
@@ -76,7 +77,15 @@ const sellerSlice = createSlice({
     })
 
     builder.addCase(setShopData.fulfilled, (state, action) => {
-      state.shopInfo = { ...action.payload.data[0] };
+      console.log("Shop data fetched successfully:", action.payload.data[0]);
+      state.shopInfo = { 
+        name: action.payload.data[0].shopName,
+        email: action.payload.data[0].email,
+        phoneNumber: action.payload.data[0].phoneNumber,
+        description: action.payload.data[0].shopDescription,
+        address: action.payload.data[0].address,
+        status: action.payload.data[0].status,
+      };
       console.log("Shop info updated:", state.shopInfo);
     });
     builder.addCase(setShopData.pending, (state) => {
