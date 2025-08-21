@@ -34,8 +34,6 @@ function App() {
   if (!isReady) {
     return <div>Loading...</div>;
   }
-
-  socketListener();
   
   return <AppRoutes />;
 }

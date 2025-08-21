@@ -33,10 +33,10 @@ const Nav = () => {
           )}
         </li>
         <li>
-          {loginInfo.isSignIn && shopInfo.isSeller ? (
+          {loginInfo.isSignIn && shopInfo.status ? (
             <NavLink to="/seller">{t("nav.sellerCenter")}</NavLink>
           ): (
-            <NavLink to="/become-seller">{t("nav.becomeSeller")}</NavLink>
+            <NavLink to="/seller">{t("nav.becomeSeller")}</NavLink>
           )}
         </li>
       </ul>

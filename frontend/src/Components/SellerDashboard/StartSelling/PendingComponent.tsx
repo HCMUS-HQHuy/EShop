@@ -1,6 +1,6 @@
 import styles from './StartSellingPage.module.scss';
 
-const PendingPage = () => (
+const PendingComponent = () => (
   <div className={styles.statusContainer}>
     <h2>Application Pending</h2>
     <p>Your request to become a seller has been submitted and is currently under review by our team.</p>
@@ -8,4 +8,4 @@ const PendingPage = () => (
   </div>
 );
 
-export default PendingPage;
+export default PendingComponent;

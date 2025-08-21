@@ -2,7 +2,21 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Api/index.api.ts";
 import type { SellerRegistrationFormValues } from "src/Types/forms.ts";
 
-const initialState = {
+type ShopInfo = {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  description: string;
+  address: string;
+  status: string | null;
+};
+
+type InitialState = {
+  shopInfo: ShopInfo;
+  status: 'idle' | 'pending';
+};
+
+const initialState: InitialState = {
   shopInfo: {
     name: "",
     email: "",
@@ -41,7 +55,12 @@ export const setShopData = createAsyncThunk(
 const sellerSlice = createSlice({
   name: "sellerSlice",
   initialState,
-  reducers: {},
+  reducers: {
+    setShopStatus: (state, action) => {
+      state.shopInfo.status = action.payload;
+      state.status = 'idle';
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(newShop.fulfilled, (state, action) => {
       state.status = 'idle';
@@ -70,4 +89,5 @@ const sellerSlice = createSlice({
   }
 });
 
+export const { setShopStatus } = sellerSlice.actions;
 export default sellerSlice.reducer;
