@@ -1,15 +1,29 @@
+import React, { use } from 'react';
+import { useSelector } from 'react-redux';
+
 import { NavLink } from 'react-router-dom';
 import s from './SellerSidebar.module.scss';
+import { FaTachometerAlt, FaBoxOpen, FaShoppingCart } from 'react-icons/fa';
+import type { RootState } from 'src/Types/store.ts';
 
-// Trong thực tế, bạn có thể dùng một thư viện icon như react-icons
-const Icon = ({ name }: { name: string }) => <span>{`[${name}]`}</span>;
+const iconMap: Record<string, React.ReactElement> = {
+  DB: <FaTachometerAlt />,
+  PR: <FaBoxOpen />,
+  OR: <FaShoppingCart />,
+};
+
+const Icon = ({ name }: { name: string }) => (
+  <span style={{ marginRight: '8px' }}>{iconMap[name] || null}</span>
+);
 
 const SellerSidebar = () => {
+  const { name, email } = useSelector((state: RootState) => state.seller.shopInfo);
+
   return (
     <aside className={s.sidebar}>
       <div className={s.shopInfo}>
-        <h3>My EShop Store</h3>
-        <p>seller@example.com</p>
+        <h3> { name } </h3>
+        <p> { email } </p>
       </div>
       <nav className={s.nav}>
         <NavLink to="dashboard" end>
