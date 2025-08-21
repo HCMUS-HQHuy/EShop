@@ -1,6 +1,6 @@
-import { formatTwoDigits } from "./formatting";
+import { formatTwoDigits } from "./formatting.ts";
 
-export function getTimeObj(milliseconds) {
+export function getTimeObj(milliseconds: number) {
   const totalSeconds = Math.floor(milliseconds / 1000);
   const totalMinutes = Math.floor(totalSeconds / 60);
   const totalHours = Math.floor(totalMinutes / 60);
@@ -19,7 +19,7 @@ export function getTimeObj(milliseconds) {
   };
 }
 
-export function getTimeInMilliseconds(days, hours, minutes, seconds) {
+export function getTimeInMilliseconds(days: number, hours: number, minutes: number, seconds: number) {
   const msPerSec = 1000;
   const msPerMin = msPerSec * 60;
   const msPerHour = msPerMin * 60;
@@ -33,7 +33,7 @@ export function getTimeInMilliseconds(days, hours, minutes, seconds) {
   );
 }
 
-export function getFormattedTime(time) {
+export function getFormattedTime(time: ReturnType<typeof getTimeObj>) {
   return {
     days: formatTwoDigits(time.days),
     hours: formatTwoDigits(time.hours),
@@ -42,7 +42,7 @@ export function getFormattedTime(time) {
   };
 }
 
-export function checkDateBeforeMonthToPresent(getDate) {
+export function checkDateBeforeMonthToPresent(getDate: Date) {
   const monthByMilliSeconds = 2_629_056_000;
   const currentDate = new Date().getTime();
   const requitedDate = new Date(getDate).getTime() + monthByMilliSeconds;

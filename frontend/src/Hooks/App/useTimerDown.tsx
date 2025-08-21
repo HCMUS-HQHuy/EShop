@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, createRef } from "react";
 import {
   getFormattedTime,
   getTimeInMilliseconds,
   getTimeObj,
 } from "src/Functions/time.ts";
 import useLocalStorage from "../Helper/useLocalStorage.tsx";
+
+type TimeData =
+  | { days: number; hours: number; minutes: number; seconds: number; milliseconds: number }
+  | { days: string; hours: string; minutes: string; seconds: string };
 
 /* Props Example
   timeEvent="3 24 60 60" Days-Hours-Minutes-Seconds
@@ -22,12 +26,13 @@ const useTimerDown = (
   const timeLocal = useLocalStorage(timerName);
   const timeOrTimeLocal = timeLocal
     ? timeLocal
-    : getTimeInMilliseconds(...times);
+    : getTimeInMilliseconds(...(times.map((time) => parseInt(time, 10)) as [number, number, number, number]));
   const [time, setTime] = useState(timeOrTimeLocal);
-  const [timeData, setTimeData] = useState(getTimeObj(timeOrTimeLocal));
+
+  const [timeData, setTimeData] = useState<TimeData>(getTimeObj(timeOrTimeLocal));
   const [isTimerDone, setIsTimerDone] = useState(false);
   const isMounted = useRef(false);
-  const debounceId = useRef();
+  const debounceId = useRef<NodeJS.Timeout | null>(null);
 
   function useEffectTimeUpdater() {
     if (time <= -1000) {
@@ -49,7 +54,9 @@ const useTimerDown = (
     }, 1000);
 
     return () => {
-      clearTimeout(debounceId.current);
+      if (debounceId.current !== null) {
+        clearTimeout(debounceId.current);
+      }
     };
   }
 

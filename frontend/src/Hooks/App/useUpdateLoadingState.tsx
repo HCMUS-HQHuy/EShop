@@ -2,6 +2,15 @@ import { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { getRandomItem } from "src/Functions/helper.ts";
 
+type UseUpdateLoadingProps = {
+  loadingState: any; // Replace 'any' with the actual type if known
+  loadingKey: string;
+  cleanFunction?: () => void;
+  delays: number[];
+  dependencies?: any[];
+  actionMethod: (payload: { key: string; value: boolean }) => any;
+};
+
 const useUpdateLoadingState = ({
   loadingState,
   loadingKey,
@@ -9,9 +18,9 @@ const useUpdateLoadingState = ({
   delays,
   dependencies = [],
   actionMethod,
-}) => {
+}: UseUpdateLoadingProps) => {
   const dispatch = useDispatch();
-  const debounceId = useRef();
+  const debounceId = useRef<NodeJS.Timeout | null>(null);
   let randomDelay = getRandomItem(delays);
 
   function updateLoadingState() {
@@ -28,7 +37,9 @@ const useUpdateLoadingState = ({
     updateLoadingState();
 
     return () => {
-      clearTimeout(debounceId.current);
+      if (debounceId.current !== null) {
+        clearTimeout(debounceId.current);
+      }
       if (cleanFunction) cleanFunction();
     };
   }
