@@ -97,6 +97,7 @@ function initializeSeller(io: Server<DefaultEventsMap, DefaultEventsMap, Default
     });
     sellerNamespace.on('connection', (socket: Socket) => {
         console.log(`🔌 Seller connected: ${socket.id} infor: `, socket.data.user);
+        socket.join(`shop_id_${socket.data.user.shop_id}`);
         socket.on('disconnect', () => {
             console.log(`✖️ Seller disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
         });
