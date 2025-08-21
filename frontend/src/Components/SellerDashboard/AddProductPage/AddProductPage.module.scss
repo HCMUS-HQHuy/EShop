@@ -1,0 +1,101 @@
+.addProductPage {
+  // Styles cho header
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+
+    h1 {
+      font-size: 1.8rem;
+      color: var(--primary);
+    }
+
+    .backLink {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+  }
+
+  // Styles cho form
+  .form {
+    background-color: var(--white);
+    padding: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--very-light-gray);
+  }
+
+  .formGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+
+    @media (max-width: 992px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    
+    label {
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    input, textarea, select {
+      padding: 10px 15px;
+      border: 1px solid var(--very-light-gray);
+      border-radius: 6px;
+      font-size: 1rem;
+      width: 100%;
+
+      &:focus {
+        outline: none;
+        border-color: var(--tomato);
+      }
+    }
+  }
+
+  .formRow {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .imagePreview {
+    margin-top: 15px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    border: 1px solid var(--very-light-gray);
+  }
+
+  .formActions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--very-light-gray);
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .saveButton {
+      background-color: var(--tomato);
+      color: var(--white);
+    }
+    .cancelButton {
+      background-color: var(--very-light-gray);
+    }
+  }
+}

@@ -13,6 +13,7 @@ import { SHOP_STATUS, type ShopStatus } from 'src/Types/common.ts';
 import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
 import { setShopStatus } from 'src/Features/sellerSlice.tsx';
 import type { RootState, AppDispatch } from 'src/Types/store.ts';
+import AddProductPage from './AddProductPage/AddProductPage.tsx';
 
 const SellerDashboardPageLayout = () => {
   return (
@@ -55,6 +56,7 @@ const SellerDashboardPage = () => {
         <Route path="/" element={<SellerDashboardPageLayout />}>
             <Route index element={<DashboardOverview />} />
             <Route path="dashboard" element={<DashboardOverview />} />
+            <Route path="products/new" element={<AddProductPage />} />
             <Route path="products" element={<ProductsPage />} />
             <Route path="orders" element={<ManageOrders />} />
         </Route>

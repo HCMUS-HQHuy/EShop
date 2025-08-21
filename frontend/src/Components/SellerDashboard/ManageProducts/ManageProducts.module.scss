@@ -1,0 +1,139 @@
+.manageProducts {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: var(--primary);
+}
+
+.addProductBtn {
+  padding: 12px 20px;
+  background-color: var(--tomato);
+  color: var(--white);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--dark-tomato);
+  }
+}
+
+.toolbar {
+  .searchInput {
+    padding: 10px 15px;
+    border: 1px solid var(--very-light-gray);
+    border-radius: 6px;
+    width: 100%;
+    max-width: 400px;
+    font-size: 1rem;
+
+    &:focus {
+      outline: none;
+      border-color: var(--tomato);
+    }
+  }
+}
+
+.tableContainer {
+  overflow-x: auto; // Cho phép cuộn ngang trên màn hình nhỏ
+  background-color: var(--white);
+  border: 1px solid var(--very-light-gray);
+  border-radius: 8px;
+}
+
+.productTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--very-light-gray);
+    vertical-align: middle;
+  }
+
+  th {
+    background-color: var(--skeleton-color1);
+    font-weight: 600;
+    color: var(--dark-gray);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.productImage {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.status {
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  
+  &.active { background-color: rgba(7, 134, 57, 0.1); color: var(--green); }
+  &.draft { background-color: rgba(125, 129, 132, 0.1); color: var(--light-gray); }
+  &.outofstock { background-color: rgba(219, 68, 68, 0.1); color: var(--tomato); }
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actionBtn {
+  padding: 6px 12px;
+  border: 1px solid var(--very-light-gray);
+  background-color: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &.editBtn:hover {
+    background-color: var(--blue);
+    color: var(--white);
+    border-color: var(--blue);
+  }
+  &.deleteBtn:hover {
+    background-color: var(--dark-red);
+    color: var(--white);
+    border-color: var(--dark-red);
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+
+  button {
+    padding: 8px 12px;
+    border: 1px solid var(--very-light-gray);
+    background-color: var(--white);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+}
