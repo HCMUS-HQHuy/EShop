@@ -5,7 +5,7 @@ import { RiseLoader } from "react-spinners";
 import { setLoginData } from "./Features/userSlice.tsx";
 import { getCategories } from "./Features/categoriesSlice.tsx";
 import { setShopData } from "./Features/sellerSlice.tsx"
-import type { AppDispatch, RootState } from "./Types/store.ts";
+import type { AppDispatch } from "./Types/store.ts";
 import useStoreWebsiteDataToLocalStorage from "./Hooks/App/useStoreWebsiteDataToLocalStorage.tsx";
 
 const AppLoader = ({ children }: { children: ReactNode }) => {
@@ -17,8 +17,8 @@ const AppLoader = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         if (hasFetchedUserData.current) return;
+        console.log("Fetching initial data...");
         hasFetchedUserData.current = true;
-
         const fetchAll = async () => {
             await Promise.all([
                 dispatch(setLoginData()),
@@ -28,7 +28,7 @@ const AppLoader = ({ children }: { children: ReactNode }) => {
             setIsReady(true);
         };
         fetchAll();
-    }, [dispatch]);
+    }, []);
 
     if (!isReady) {
         return (
