@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { NAV_PROPS } from "src/Data/globalVariables";
+import { NAV_PROPS } from "src/Data/globalVariables.tsx";
+import type { RootState } from "src/Types/store.ts";
 
 const useNavToolsProps = () => {
   const [navToolsProps, setNavToolsProps] = useState({});
   const {
     loginInfo: { isSignIn },
-  } = useSelector((state) => state.user);
+  } = useSelector((state: RootState) => state.user);
 
   const { pathname } = useLocation();
 

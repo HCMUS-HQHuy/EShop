@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { PAGE_SECTIONS_ID } from "src/Data/pagesData";
+import { PAGE_SECTIONS_ID } from "src/Data/pagesData.tsx";
 
 const useCurrentSkipLinkId = () => {
   const { pathname } = useLocation();
@@ -11,7 +11,7 @@ const useCurrentSkipLinkId = () => {
 };
 export default useCurrentSkipLinkId;
 
-export function findSectionLinkIdByPath(pathname) {
+export function findSectionLinkIdByPath(pathname: string) {
   const sectionData = PAGE_SECTIONS_ID.find(({ path }) => path === pathname);
   return sectionData?.id;
 }

@@ -3,8 +3,8 @@ import {
   getFormattedTime,
   getTimeInMilliseconds,
   getTimeObj,
-} from "src/Functions/time";
-import useLocalStorage from "../Helper/useLocalStorage";
+} from "src/Functions/time.ts";
+import useLocalStorage from "../Helper/useLocalStorage.tsx";
 
 /* Props Example
   timeEvent="3 24 60 60" Days-Hours-Minutes-Seconds
@@ -12,8 +12,8 @@ import useLocalStorage from "../Helper/useLocalStorage";
 */
 
 const useTimerDown = (
-  downTime,
-  { timeResetRequired, stopTimer, timerName, formattedTime }
+  downTime: string,
+  { timeResetRequired, stopTimer, timerName, formattedTime }: { timeResetRequired: boolean; stopTimer: boolean; timerName: string; formattedTime: boolean }
 ) => {
   if (!timerName) throw new Error("Timer name is invalid");
   if (timeResetRequired) localStorage.removeItem(timerName);

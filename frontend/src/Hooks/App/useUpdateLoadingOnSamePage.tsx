@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { getRandomItem } from "src/Functions/helper";
+import { getRandomItem } from "src/Functions/helper.ts";
 
 const useUpdateLoadingOnSamePage = ({
   loadingState,

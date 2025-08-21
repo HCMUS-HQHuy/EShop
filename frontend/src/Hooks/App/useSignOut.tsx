@@ -1,12 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { arraysToEmpty } from "src/Data/globalVariables";
-import { showAlert } from "src/Features/alertsSlice";
-import { setEmptyArrays } from "src/Features/productsSlice";
-import { signOut } from "src/Features/userSlice";
+import { arraysToEmpty } from "src/Data/globalVariables.tsx";
+import { showAlert } from "src/Features/alertsSlice.tsx";
+import { setEmptyArrays } from "src/Features/productsSlice.tsx";
+import { signOut } from "src/Features/userSlice.tsx";
+import type { AppDispatch } from "src/Types/store.ts";
+import type { TFunction } from "i18next";
 
 const useSignOut = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 
   const handleSignOut = () => {
@@ -22,7 +24,7 @@ const useSignOut = () => {
 
 export default useSignOut;
 
-export function showSignOutAlert(dispatch, t, delay = 500) {
+export function showSignOutAlert(dispatch: AppDispatch, t: TFunction, delay = 500) {
   setTimeout(() => {
     dispatch(
       showAlert({

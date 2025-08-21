@@ -1,11 +1,11 @@
 import { useRef } from "react";
-import { getScrollSliderValue } from "src/Functions/componentsFunctions";
-import { buttonEffect } from "src/Functions/effects";
+import { getScrollSliderValue } from "src/Functions/componentsFunctions.ts";
+import { buttonEffect } from "src/Functions/effects.ts";
 
-const useSlider = (sliderRef) => {
+const useSlider = (sliderRef: React.RefObject<HTMLDivElement>) => {
   const isSliderClicked = useRef(false);
 
-  function handlePrevBtn(e) {
+  function handlePrevBtn(e: React.MouseEvent<HTMLButtonElement>) {
     const isFirstSlide = sliderRef.current.scrollLeft <= 1;
 
     if (isFirstSlide) return;
@@ -19,7 +19,7 @@ const useSlider = (sliderRef) => {
     sliderRef.current.scrollLeft -= getScrollSliderValue(sliderRef.current);
   }
 
-  function handleNextBtn(e) {
+  function handleNextBtn(e: React.MouseEvent<HTMLButtonElement>) {
     if (isLastSlide(sliderRef)) return;
 
     buttonEffect(e);
@@ -35,7 +35,7 @@ const useSlider = (sliderRef) => {
 };
 export default useSlider;
 
-export function isLastSlide(sliderRef) {
+export function isLastSlide(sliderRef: React.RefObject<HTMLDivElement>) {
   const sliderEle = sliderRef.current;
   return (
     sliderEle.scrollWidth - sliderEle.clientWidth - sliderEle.scrollLeft < 2
