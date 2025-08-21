@@ -8,15 +8,23 @@ import BannedPage from './BannedPage.tsx';
 import styles from './StartSellingPage.module.scss';
 import type { RootState } from 'src/Types/store.ts';
 import { SHOP_STATUS } from 'src/Types/common.ts';
+import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
 
 const StartSellingPage = () => {
     const navigate = useNavigate();
+    const { isOpen, val } = useSocketIO('http://localhost:8220/seller');
     const { status } = useSelector((state: RootState) => state.seller.shopInfo);
     useEffect(() => {
         if (status === SHOP_STATUS.ACTIVE || status === SHOP_STATUS.CLOSED) {
-            navigate('/seller');
+            // navigate('/seller');
+            console.log("Navigating to seller dashboard");
         }
-    }, [status, navigate]);
+    }, [status]);
+
+    useEffect(() => {
+        console.log("Socket connection status:", isOpen);
+        console.log("Received value from socket:", val);       
+    }, [val, isOpen]);
 
     const renderContent = () => {
         if (status === null)
