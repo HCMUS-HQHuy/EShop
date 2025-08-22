@@ -23,9 +23,18 @@ function authorErrorResponse(role: string) {
   };
 }
 
+function validationErrorResponse(errors: any) {
+  return {
+    message: 'Validation Error',
+    error: true,
+    data: errors
+  };
+}
+
 const response = {
   success: successResponse,
   error: errorResponse,
-  authorError: authorErrorResponse
+  authorError: authorErrorResponse,
+  validationError: validationErrorResponse
 };
 export default response;
