@@ -43,9 +43,11 @@ CREATE TABLE categories (
 
 CREATE TABLE products (
     product_id SERIAL PRIMARY KEY,
+    shortName VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    description TEXT,
     price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
+    discount DECIMAL(5, 2) NOT NULL CHECK (discount >= 0 AND discount <= 100) DEFAULT 0,
+    description TEXT,
     stock_quantity INT NOT NULL CHECK (stock_quantity >= 0),
     image_url VARCHAR(255),
     shop_id INT NOT NULL,
