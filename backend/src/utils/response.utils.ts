@@ -1,3 +1,5 @@
+import { ZodError } from "zod";
+import formatError from "./formatError.utils";
 
 function successResponse(message: string, data: any[]) {
   return {
@@ -23,11 +25,11 @@ function authorErrorResponse(role: string) {
   };
 }
 
-function validationErrorResponse(errors: any) {
+function zodValidationErrorResponse(errors: ZodError) {
   return {
     message: 'Validation Error',
     error: true,
-    data: errors
+    data: [formatError(errors)],
   };
 }
 
@@ -35,6 +37,6 @@ const response = {
   success: successResponse,
   error: errorResponse,
   authorError: authorErrorResponse,
-  validationError: validationErrorResponse
+  zodValidationError: zodValidationErrorResponse
 };
 export default response;
