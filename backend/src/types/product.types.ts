@@ -64,7 +64,7 @@ const ProductParamsRequestSchema = z.object({
     page: z.coerce.number().int().min(1, "Page must be greater than 0").default(Number(process.env.PAGINATION_DEFAULT_PAGE)),
     sortAttribute: z.enum(types.SORT_ATTRIBUTES, {
         error: "Invalid sort attribute: must be 'name' or 'created_at'"
-    }).default(process.env.SORT_ATTRIBUTE as types.SortAttribute),
+    }).default('name'),
     sortOrder: z.enum(types.SORT_ORDERS, {
         error: "Invalid sort order: must be 'asc' or 'desc'"
     }).default(process.env.SORT_ORDER as types.SortOrder),
