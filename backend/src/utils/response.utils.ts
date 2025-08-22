@@ -25,6 +25,14 @@ function authorErrorResponse(role: string) {
   };
 }
 
+function internalServerErrorResponse() {
+  return {
+    message: 'Internal server error',
+    error: true,
+    data: []
+  };
+}
+
 function zodValidationErrorResponse(errors: ZodError) {
   return {
     message: 'Validation Error',
@@ -37,6 +45,7 @@ const response = {
   success: successResponse,
   error: errorResponse,
   authorError: authorErrorResponse,
-  zodValidationError: zodValidationErrorResponse
+  zodValidationError: zodValidationErrorResponse,
+  internalServerError: internalServerErrorResponse
 };
 export default response;
