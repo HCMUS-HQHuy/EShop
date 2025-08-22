@@ -3,7 +3,7 @@ import { Client } from "pg";
 import database from "database/index.database";
 
 import * as types from "types/index.types";
-// import * as util from "utils/index.utils";
+import { SOCKET_EVENTS } from "constants/socketEvents";
 import util from "utils/index.utils";
 // #### VALIDATION FUNCTIONS ####
 
@@ -197,7 +197,7 @@ async function reviewShop(req: types.RequestCustom, res: express.Response) {
             adminNote: dataConfig.admin_note,
         }
         console.log('responsedata: ', responseData);
-        io.of('/seller').to(`shop_id_${data.shop_id}`).emit("setstatus", responseData);
+        io.of('/seller').to(`shop_id_${data.shop_id}`).emit(SOCKET_EVENTS.SET_SHOP_STATUS, responseData);
         return res.status(200).json(util.response.success("Shop account updated", [`shop :${data.shop_id}`]));
     } catch (error) {
         console.error("Error updating shop account:", error);

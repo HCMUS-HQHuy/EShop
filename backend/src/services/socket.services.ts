@@ -1,8 +1,10 @@
 import { Server, Socket, DefaultEventsMap } from 'socket.io';
 import jwt from "jsonwebtoken";
+import { Client } from 'pg';
+
+import { SOCKET_EVENTS } from 'constants/socketEvents';
 import * as types from "types/index.types"
 import util from 'utils/index.utils';
-import { Client } from 'pg';
 import database from 'database/index.database';
 import * as cookie from 'cookie';
 
@@ -77,9 +79,9 @@ function initializeAdmin(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultE
         }
         next(new Error('Unauthorized'));
     });
-    adminNamespace.on('connection', (socket: Socket) => {
+    adminNamespace.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
         console.log(`🔌 Admin connected: ${socket.id} infor: `, socket.data.user);
-        socket.on('disconnect', () => {
+        socket.on(SOCKET_EVENTS.DISCONNECT, () => {
             console.log(`✖️ Admin disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
         });
     });
@@ -95,10 +97,10 @@ function initializeSeller(io: Server<DefaultEventsMap, DefaultEventsMap, Default
         }
         next(new Error('Unauthorized'));
     });
-    sellerNamespace.on('connection', (socket: Socket) => {
+    sellerNamespace.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
         console.log(`🔌 Seller connected: ${socket.id} infor: `, socket.data.user);
         socket.join(`shop_id_${socket.data.user.shop_id}`);
-        socket.on('disconnect', () => {
+        socket.on(SOCKET_EVENTS.DISCONNECT, () => {
             console.log(`✖️ Seller disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
         });
     });
@@ -108,10 +110,10 @@ function connect(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap
     ioInstance = io;
     console.log("Socket Server is running");
     io.use(auth);
-    io.on('connection', (socket: Socket) => {
+    io.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
         console.log(`🔌 New client connected: ${socket.id}`);
         console.log(`🔌 New client connected: ${socket.id} infor: `, socket.data.user);
-        socket.on('disconnect', () => {
+        socket.on(SOCKET_EVENTS.DISCONNECT, () => {
             console.log(`✖️ Client disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
         });
     });
