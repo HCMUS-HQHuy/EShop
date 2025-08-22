@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
+import { SOCKET_EVENTS } from "./socketEvents.ts";
 import type { Socket } from "socket.io-client";
 
 // step 1 -> initialsocket 
@@ -43,16 +44,16 @@ const useSocketIO = (url: string) => {
         }
 
         const socket: Socket = io(url, { withCredentials: true });
-        socket.on("connect", connectHandle);
-        socket.on("disconnect", disconnectHandle);
-        socket.on("setstatus", setStatusHandle);
-        socket.on("connect_error", errorHandle);
+        socket.on(SOCKET_EVENTS.CONNECTION, connectHandle);
+        socket.on(SOCKET_EVENTS.DISCONNECT, disconnectHandle);
+        socket.on(SOCKET_EVENTS.SET_SHOP_STATUS, setStatusHandle);
+        socket.on(SOCKET_EVENTS.CONNECT_ERROR, errorHandle);
         socketRef.current = socket;
         return () => {
-            socket.off("connect", connectHandle);
-            socket.off("disconnect", disconnectHandle);
-            socket.off("setstatus", setStatusHandle);
-            socket.off("connect_error", errorHandle);
+            socket.off(SOCKET_EVENTS.CONNECTION, connectHandle);
+            socket.off(SOCKET_EVENTS.DISCONNECT, disconnectHandle);
+            socket.off(SOCKET_EVENTS.SET_SHOP_STATUS, setStatusHandle);
+            socket.off(SOCKET_EVENTS.CONNECT_ERROR, errorHandle);
             socket.disconnect();
         };
     }, [url]);
