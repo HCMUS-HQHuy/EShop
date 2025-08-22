@@ -1,8 +1,21 @@
-import ProductCardDetailsIcon from "./ProductCardDetailsIcon";
-import ProductCardFavIcon from "./ProductCardFavIcon";
+import ProductCardDetailsIcon from "./ProductCardDetailsIcon.tsx";
+import ProductCardFavIcon from "./ProductCardFavIcon.tsx";
 import s from "./ProductCardIcons.module.scss";
-import ProductCardRemoveIcon from "./ProductCardRemoveIcon";
-import ProductCardWishListIcon from "./ProductCardWishListIcon";
+import ProductCardRemoveIcon from "./ProductCardRemoveIcon.tsx";
+import ProductCardWishListIcon from "./ProductCardWishListIcon.tsx";
+
+type prop = {
+  iconsData: {
+    showFavIcon: boolean;
+    showDetailsIcon: boolean;
+    showRemoveIcon: boolean;
+    showWishList: boolean;
+  },
+  productId: number,
+  navigateToProductDetails: () => void,
+  product: any,
+  removeFrom: string | undefined
+}
 
 const ProductCardIcons = ({
   iconsData: { showFavIcon, showDetailsIcon, showRemoveIcon, showWishList },
@@ -10,7 +23,7 @@ const ProductCardIcons = ({
   navigateToProductDetails,
   product,
   removeFrom,
-}) => {
+}: prop) => {
   return (
     <div className={s.icons} data-product-icons-hover>
       {showFavIcon && (

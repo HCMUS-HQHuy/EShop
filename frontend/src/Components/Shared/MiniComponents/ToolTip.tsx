@@ -1,4 +1,12 @@
-const ToolTip = ({ content, top, right, bottom, left }) => {
+type prop = {
+  content?: string,
+  top?: string,
+  right?: string,
+  bottom?: string,
+  left?: string
+};
+
+const ToolTip = ({ content, top, right, bottom, left }: prop) => {
   return (
     <span
       role="tooltip"

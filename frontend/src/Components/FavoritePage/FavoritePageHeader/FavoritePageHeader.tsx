@@ -1,12 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { updateProductsState } from "src/Features/productsSlice";
-import { getUniqueArrayByObjectKey } from "src/Functions/helper";
+import { updateProductsState } from "src/Features/productsSlice.tsx";
+import { getUniqueArrayByObjectKey } from "src/Functions/helper.ts";
 import s from "./FavoritePageHeader.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const FavoritePageHeader = () => {
   const { favoritesProducts, cartProducts } = useSelector(
-    (state) => state.products
+    (state: RootState) => state.products
   );
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -28,7 +29,7 @@ const FavoritePageHeader = () => {
 };
 export default FavoritePageHeader;
 
-function moveAllToCart(cartProducts, favoritesProducts, dispatch) {
+function moveAllToCart(cartProducts: any[], favoritesProducts: any[], dispatch: any) {
   const uniqueCartProducts = getUniqueArrayByObjectKey({
     arr: cartProducts,
     newArr: favoritesProducts,

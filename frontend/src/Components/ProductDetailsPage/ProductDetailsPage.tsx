@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { WEBSITE_NAME } from "src/Data/constants";
 import { SIMPLE_DELAYS } from "src/Data/globalVariables";
-import { productsData } from "src/Data/productsData";
+import { productsData } from "src/Data/productsData.tsx";
 import { updateLoadingState } from "src/Features/loadingSlice";
 import useScrollOnMount from "src/Hooks/App/useScrollOnMount";
 import useUpdateLoadingOnSamePage from "src/Hooks/App/useUpdateLoadingOnSamePage";

@@ -1,26 +1,21 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { checkDateBeforeMonthToPresent } from "src/Functions/time";
-import AddToCartButton from "./AddToCartButton/AddToCartButton";
+import { checkDateBeforeMonthToPresent } from "src/Functions/time.ts";
+import AddToCartButton from "./AddToCartButton/AddToCartButton.tsx";
 import s from "./ProductCard.module.scss";
-import ProductCardIcons from "./ProductCardIcons/ProductCardIcons";
-import ProductCardInfo from "./ProductCardInfo/ProductCardInfo";
+import ProductCardIcons from "./ProductCardIcons/ProductCardIcons.tsx";
+import ProductCardInfo from "./ProductCardInfo/ProductCardInfo.tsx";
+import { productCardCustomizations } from "src/Data/staticData.tsx";
+import type { RootState } from "src/Types/store.ts";
 
-const ProductCard = ({
-  product,
-  customization = {
-    stopHover: false,
-    showDiscount: true,
-    showFavIcon: true,
-    showDetailsIcon: true,
-    showRemoveIcon: false,
-    showNewText: false,
-    showWishList: true,
-    showColors: false,
-  },
-  removeFrom,
-  loading = "eager",
-}) => {
+type prop = {
+  product: any;
+  customization: typeof productCardCustomizations.ourProducts;
+  removeFrom: any;
+  loading?: "eager" | "lazy" | undefined;
+};
+
+const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: prop) => {
   const { name, discount, img, id, addedDate } = product;
   const {
     stopHover,
@@ -35,7 +30,7 @@ const ProductCard = ({
   const noHoverClass = stopHover ? s.noHover : "";
   const hideDiscountClass = discount <= 0 || !showDiscount ? s.hide : "";
   const hideNewClass = shouldHideNewWord();
-  const { loadingProductDetails } = useSelector((state) => state.loading);
+  const { loadingProductDetails } = useSelector((state: RootState) => state.loading);
   const navigateTo = useNavigate();
   const iconsData = {
     showFavIcon,
@@ -84,7 +79,7 @@ const ProductCard = ({
             product={product}
             removeFrom={removeFrom}
           />
-          <AddToCartButton hoverDataAttribute={true} product={product} />
+          <AddToCartButton product={product} />
         </div>
       </div>
 

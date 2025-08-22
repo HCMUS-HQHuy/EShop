@@ -1,12 +1,17 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { removeById } from "src/Features/productsSlice";
-import { trashcanIconToolTipLeftPos } from "src/Functions/tooltipPositions";
-import SvgIcon from "../../../MiniComponents/SvgIcon";
-import ToolTip from "../../../MiniComponents/ToolTip";
+import { removeById } from "src/Features/productsSlice.tsx";
+import { trashcanIconToolTipLeftPos } from "src/Functions/tooltipPositions.ts";
+import SvgIcon from "../../../MiniComponents/SvgIcon.tsx";
+import ToolTip from "../../../MiniComponents/ToolTip.tsx";
 import s from "./ProductCardRemoveIcon.module.scss";
 
-const ProductCardRemoveIcon = ({ removeFrom, productId }) => {
+type prop = {
+  removeFrom: string | undefined,
+  productId: number
+}
+
+const ProductCardRemoveIcon = ({ removeFrom, productId }: prop) => {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
   const trashcanIconLeftToolTipPos = trashcanIconToolTipLeftPos(i18n.language);

@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { REMOVE_ORDER_PRODUCT } from "src/Data/constants";
-import { SCREEN_SIZES } from "src/Data/globalVariables";
-import { showAlert, updateAlertState } from "src/Features/alertsSlice";
-import { updateProductsState } from "src/Features/productsSlice";
-import { orderProductToolTipPos } from "src/Functions/tooltipPositions";
-import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow";
-import SvgIcon from "../../Shared/MiniComponents/SvgIcon";
-import ToolTip from "../../Shared/MiniComponents/ToolTip";
+import { REMOVE_ORDER_PRODUCT } from "src/Data/constants.tsx";
+import { SCREEN_SIZES } from "src/Data/globalVariables.tsx";
+import { showAlert, updateAlertState } from "src/Features/alertsSlice.tsx";
+import { updateProductsState } from "src/Features/productsSlice.tsx";
+import { orderProductToolTipPos } from "src/Functions/tooltipPositions.ts";
+import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow.tsx";
+import SvgIcon from "../../Shared/MiniComponents/SvgIcon.tsx";
+import ToolTip from "../../Shared/MiniComponents/ToolTip.tsx";
 import s from "./ConfirmOrderProductBtn.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const ConfirmOrderProductBtn = ({ productName, translatedProduct }) => {
   const { isAlertActive, confirmPurpose } = useSelector(
-    (state) => state.alerts
+    (state: RootState) => state.alerts
   ).confirm;
   const { removeOrderProduct } = useSelector((state) => state.products);
   const dispatch = useDispatch();

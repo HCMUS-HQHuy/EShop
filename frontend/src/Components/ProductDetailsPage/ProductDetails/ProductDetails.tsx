@@ -1,23 +1,24 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { updateProductsState } from "src/Features/productsSlice";
-import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus";
-import SkeletonProductDetails from "../../Shared/SkeletonLoaders/DetailsPage/SkeletonProductDetails";
-import ProductPreview from "../ProductPreview/ProductPreview";
-import ProductColorsSection from "./ProductColorsSection/ProductColorsSection";
-import ProductDealingControls from "./ProductDealingControls/ProductDealingControls";
+import { updateProductsState } from "src/Features/productsSlice.tsx";
+import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
+import SkeletonProductDetails from "../../Shared/SkeletonLoaders/DetailsPage/SkeletonProductDetails.tsx";
+import ProductPreview from "../ProductPreview/ProductPreview.tsx";
+import ProductColorsSection from "./ProductColorsSection/ProductColorsSection.tsx";
+import ProductDealingControls from "./ProductDealingControls/ProductDealingControls.tsx";
 import s from "./ProductDetails.module.scss";
-import ProductFeatures from "./ProductFeatures/ProductFeatures";
-import ProductFirstInfos from "./ProductFirstInfos/ProductFirstInfos";
-import ProductSizes from "./ProductSizes/ProductSizes";
+import ProductFeatures from "./ProductFeatures/ProductFeatures.tsx";
+import ProductFirstInfos from "./ProductFirstInfos/ProductFirstInfos.tsx";
+import ProductSizes from "./ProductSizes/ProductSizes.tsx";
+import type { RootState } from "src/Types/store.ts";
 
 const ProductDetails = ({ productData }) => {
   if (!productData) return <Navigate to="product-not-found" />;
 
-  const { loadingProductDetails } = useSelector((state) => state.loading);
+  const { loadingProductDetails } = useSelector((state: RootState) => state.loading);
   const { previewImg, isZoomInPreviewActive } = useSelector(
-    (state) => state.global
+    (state: RootState) => state.global
   );
   const dispatch = useDispatch();
   const zoomInImgRef = useRef();

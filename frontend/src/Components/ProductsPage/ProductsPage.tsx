@@ -1,19 +1,20 @@
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { WEBSITE_NAME } from "src/Data/constants";
-import { SIMPLE_DELAYS } from "src/Data/globalVariables";
-import { productCardCustomizations } from "src/Data/staticData";
-import { updateLoadingState } from "src/Features/loadingSlice";
-import useScrollOnMount from "src/Hooks/App/useScrollOnMount";
-import useUpdateLoadingState from "src/Hooks/App/useUpdateLoadingState";
-import ExploreProducts from "../Home/ProductPoster/ExploreProducts";
-import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory";
-import SkeletonCards from "../Shared/SkeletonLoaders/ProductCard/SkeletonCards";
+import { WEBSITE_NAME } from "src/Data/constants.tsx";
+import { SIMPLE_DELAYS } from "src/Data/globalVariables.tsx";
+import { productCardCustomizations } from "src/Data/staticData.tsx";
+import { updateLoadingState } from "src/Features/loadingSlice.tsx";
+import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
+import useUpdateLoadingState from "src/Hooks/App/useUpdateLoadingState.tsx";
+import ExploreProducts from "../Home/ProductPoster/ExploreProducts.tsx";
+import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory.tsx";
+import SkeletonCards from "../Shared/SkeletonLoaders/ProductCard/SkeletonCards.tsx";
 import s from "./ProductsPage.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const ProductsPage = () => {
-  const { loadingProductsPage } = useSelector((state) => state.loading);
+  const { loadingProductsPage } = useSelector((state: RootState) => state.loading);
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -31,7 +32,7 @@ const ProductsPage = () => {
     <>
       <Helmet>
         <title>Products</title>
-        <link ref="preconnect" href="https://api.github.com/" />
+        <link rel="preconnect" href="https://api.github.com/" />
         <meta
           name="description"
           content={`Explore the entire collection of products available on ${WEBSITE_NAME}. From fashion to electronics, browse our comprehensive catalog to find the perfect items for your needs.`}
@@ -40,7 +41,7 @@ const ProductsPage = () => {
 
       <div className="container">
         <main className={s.productsPage}>
-          <PagesHistory history={["/", t("history.products")]} />
+          <PagesHistory history={["/", t("history.products")]} historyPaths={undefined} />
 
           <section className={s.products} id="products-section">
             {!loadingProductsPage && (

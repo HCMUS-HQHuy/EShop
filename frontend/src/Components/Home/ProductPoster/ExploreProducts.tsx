@@ -1,9 +1,15 @@
-import { productsData } from "src/Data/productsData";
-import ProductCard from "../../Shared/ProductsCards/ProductCard/ProductCard";
+import { productsData } from "src/Data/productsData.tsx";
+import ProductCard from "../../Shared/ProductsCards/ProductCard/ProductCard.tsx";
 import s from "./ExploreProducts.module.scss";
+import { productCardCustomizations } from "src/Data/staticData.tsx";
 
-const ExploreProducts = ({ numOfProducts = -1, customization }) => {
-  const filteredProducts = productsData.filter((_, i) => i > numOfProducts);
+type prop = {
+  numOfProducts?: number;
+  customization: typeof productCardCustomizations.ourProducts;
+};
+
+const ExploreProducts = ({ numOfProducts = -1, customization } : prop) => {
+  const filteredProducts = productsData.filter((_, i) => !(i < numOfProducts));
 
   return (
     <div className={s.products}>
@@ -12,6 +18,7 @@ const ExploreProducts = ({ numOfProducts = -1, customization }) => {
           product={product}
           key={product.id}
           customization={customization}
+          removeFrom={undefined}
         />
       ))}
     </div>

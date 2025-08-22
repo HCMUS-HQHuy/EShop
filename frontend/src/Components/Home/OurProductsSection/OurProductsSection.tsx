@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { productCardCustomizations } from "src/Data/staticData";
-import SectionTitle from "../../Shared/MiniComponents/SectionTitle/SectionTitle";
-import ExploreProducts from "../ProductPoster/ExploreProducts";
+import { productCardCustomizations } from "src/Data/staticData.tsx";
+import SectionTitle from "../../Shared/MiniComponents/SectionTitle/SectionTitle.tsx";
+import ExploreProducts from "../ProductPoster/ExploreProducts.tsx";
 import s from "./OurProductsSection.module.scss";
 
 const OurProductsSection = () => {
@@ -19,9 +19,8 @@ const OurProductsSection = () => {
       </div>
 
       <ExploreProducts
-        numOfProducts={7}
+        numOfProducts={8}
         customization={productCardCustomizations.ourProducts}
-        loading="lazy"
       />
 
       <Link to="/products" className={s.viewProductsBtn}>
