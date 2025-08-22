@@ -5,6 +5,7 @@ import { RiseLoader } from "react-spinners";
 import { setLoginData } from "./Features/userSlice.tsx";
 import { getCategories } from "./Features/categoriesSlice.tsx";
 import { setShopData } from "./Features/sellerSlice.tsx"
+import { fetchProducts } from "./Features/productsSlice.tsx";
 import type { AppDispatch } from "./Types/store.ts";
 import useStoreWebsiteDataToLocalStorage from "./Hooks/App/useStoreWebsiteDataToLocalStorage.tsx";
 
@@ -23,7 +24,8 @@ const AppLoader = ({ children }: { children: ReactNode }) => {
             await Promise.all([
                 dispatch(setLoginData()),
                 dispatch(getCategories()),
-                dispatch(setShopData())
+                dispatch(setShopData()),
+                dispatch(fetchProducts()),
             ]);
             setIsReady(true);
         };
