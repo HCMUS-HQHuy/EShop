@@ -1,20 +1,46 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "src/Api/index.api.ts";
+import type { Product } from "src/Types/product.ts";
+import { setAfterDiscountKey, setFormattedPrice } from "src/Functions/formatting.ts";
 
-const productsDataLocal = localStorage.getItem("productsSliceData");
+type ProductsState = {
+  saveBillingInfoToLocal: boolean;
+  productsList: Product[];
+  favoritesProducts: Product[];
+  searchProducts: Product[];
+  orderProducts: Product[];
+  cartProducts: Product[];
+  wishList: Product[];
+  productQuantity: number;
+  selectedProduct: Product | null;
+  removeOrderProduct: string;
+};
 
-const initialState = productsDataLocal
-  ? JSON.parse(productsDataLocal)
-  : {
-      saveBillingInfoToLocal: false,
-      favoritesProducts: [],
-      searchProducts: [],
-      orderProducts: [],
-      cartProducts: [],
-      wishList: [],
-      productQuantity: 1,
-      selectedProduct: null,
-      removeOrderProduct: "",
-    };
+const initialState: ProductsState = {
+  saveBillingInfoToLocal: false,
+  productsList: [],
+  favoritesProducts: [],
+  searchProducts: [],
+  orderProducts: [],
+  cartProducts: [],
+  wishList: [],
+  productQuantity: 1,
+  selectedProduct: null,
+  removeOrderProduct: "",
+};
+
+export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_, {rejectWithValue}) => {
+  try {
+    const response = await api.product.fetchAll();
+    response.data.forEach((product: any) => {
+      setAfterDiscountKey(product);
+      setFormattedPrice(product);
+    });
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response.data);
+  }
+});
 
 const productsSlice = createSlice({
   initialState,
@@ -27,12 +53,12 @@ const productsSlice = createSlice({
       state[key].push(value);
     },
     removeById: (state, { payload: { key, id } }) => {
-      const updatedState = state[key].filter((item) => item.id !== id);
+      const updatedState = state[key].filter((item: any) => item.id !== id);
       state[key] = updatedState;
     },
     removeByKeyName: (state, { payload: { dataKey, itemKey, keyValue } }) => {
       const updatedState = state[dataKey].filter(
-        (item) => item[itemKey] !== keyValue
+        (item: any) => item[itemKey] !== keyValue
       );
       state[dataKey] = updatedState;
     },
@@ -42,7 +68,20 @@ const productsSlice = createSlice({
     transferProducts: (state, { payload: { from, to } }) => {
       state[to] = state[to].concat(state[from]);
       state[from] = [];
-    },
+    }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProducts.pending, (state) => {
+        console.log("Fetching products...");
+      })
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.productsList = [...action.payload];
+        console.log("Products fetched successfully:", state.productsList);
+      })
+      .addCase(fetchProducts.rejected, (state, action) => {
+        console.error("Failed to fetch products:", action.payload);
+      });
   },
 });
 

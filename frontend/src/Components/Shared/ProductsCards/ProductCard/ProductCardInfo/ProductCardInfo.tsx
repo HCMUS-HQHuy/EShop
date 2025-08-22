@@ -1,31 +1,38 @@
 import { useTranslation } from "react-i18next";
-import { translateProduct } from "../../../../Cart/CartProducts/CartProduct";
-import RateStars from "../../../MidComponents/RateStars/RateStars";
-import ProductColors from "../../../MiniComponents/ProductColors/ProductColors";
+import { translateProduct } from "src/Components/Cart/CartProducts/CartProduct.tsx";
+import RateStars from "src/Components/Shared/MidComponents/RateStars/RateStars.tsx";
+import ProductColors from "src/Components/Shared/MiniComponents/ProductColors/ProductColors.tsx";
 import s from "./ProductCardInfo.module.scss";
+import type { Product } from "src/Types/product.ts";
 
-const ProductCardInfo = ({ product, showColors, navigateToProductDetails }) => {
+type Props = {
+  product: Product;
+  showColors: boolean;
+  navigateToProductDetails: () => void;
+}
+
+const ProductCardInfo = ({ product, showColors, navigateToProductDetails }: Props) => {
   const { shortName, price, discount, afterDiscount, rate, votes, colors } =
     product;
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
-  const translatedProductName = translateProduct({
-    productName: shortName,
-    translateMethod: t,
-    translateKey: "shortName",
-  });
+  // const translatedProductName = translateProduct({
+  //   productName: shortName,
+  //   translateMethod: t,
+  //   translateKey: "shortName",
+  // });
 
   return (
     <section className={s.productInfo}>
       <strong className={s.productName}>
         <a href="#" onClick={() => navigateToProductDetails()}>
-          {translatedProductName}
+          {shortName}
         </a>
       </strong>
 
       <div className={s.price}>
         {afterDiscount}
-        {discount > 0 && <del className={s.afterDiscount}>{price}</del>}
+        {Number(discount) > 0 && <del className={s.afterDiscount}>{price}</del>}
       </div>
 
       <div className={s.rateContainer}>

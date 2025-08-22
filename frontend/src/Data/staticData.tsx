@@ -14,7 +14,7 @@ import {
   saudiFlag,
   usaFlag,
   visaCard,
-} from "src/Assets/Images/Images";
+} from "src/Assets/Images/Images.ts";
 import {
   car,
   correctSign,
@@ -23,8 +23,8 @@ import {
   hungaryFlag,
   indiaFlag,
   japanFlag,
-} from "../Assets/Images/Images";
-import { regexPatterns } from "./globalVariables";
+} from "../Assets/Images/Images.ts";
+import { regexPatterns } from "./globalVariables.tsx";
 
 export const introductionSliderData = [
   {

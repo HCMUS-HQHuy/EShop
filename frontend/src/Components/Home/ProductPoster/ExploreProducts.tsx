@@ -1,7 +1,9 @@
-import { productsData } from "src/Data/productsData.tsx";
 import ProductCard from "../../Shared/ProductsCards/ProductCard/ProductCard.tsx";
 import s from "./ExploreProducts.module.scss";
 import { productCardCustomizations } from "src/Data/staticData.tsx";
+import { useSelector } from "react-redux";
+import type { Product } from "src/Types/product.ts";
+import type { RootState } from "src/Types/store.ts";
 
 type prop = {
   numOfProducts?: number;
@@ -9,7 +11,11 @@ type prop = {
 };
 
 const ExploreProducts = ({ numOfProducts = -1, customization } : prop) => {
-  const filteredProducts = productsData.filter((_, i) => !(i < numOfProducts));
+  // const filteredProducts = productsData.filter((_, i) => !(i < numOfProducts));
+  const filteredProducts: Product[] = useSelector((state: RootState) => state.products.productsList);
+
+  console.log("Filtered Products:", filteredProducts);
+  customization.showColors = false;
 
   return (
     <div className={s.products}>

@@ -68,6 +68,7 @@ import {
   setAfterDiscountKey,
   setFormattedPrice,
 } from "src/Functions/formatting.ts";
+import type { Product } from "src/Types/product.ts";
 
 export const productsData = [
   {
@@ -629,7 +630,7 @@ export const productsData = [
   },
 ];
 
-productsData.forEach((product) => {
+productsData.forEach((product: any) => {
   setAfterDiscountKey(product);
   setFormattedPrice(product);
 });
