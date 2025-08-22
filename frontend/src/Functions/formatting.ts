@@ -1,26 +1,32 @@
-import { regexPatterns } from "../Data/globalVariables";
+import type { Product } from "src/Types/product.ts";
+import { regexPatterns } from "../Data/globalVariables.tsx";
 
-export function getDiscountedPrice(originalPrice, discountPercentage) {
-  const discountAmount = (originalPrice * discountPercentage) / 100;
-  const discountedPrice = originalPrice - discountAmount;
+export function getDiscountedPrice(originalPrice: string, discountPercentage: string): string {
+  const discountAmount = (Number(originalPrice) * Number(discountPercentage) / 100);
+  const discountedPrice = Number(originalPrice) - discountAmount;
   return discountedPrice.toFixed(2);
 }
 
-export function formatePrice(price) {
+export function formatePrice(price: string): string {
+  console.log("Formatting price:", price);
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
-  }).format(price);
+  }).format(getNumericPrice(price));
 }
 
-export function getNumericPrice(num) {
-  return +num.replace(/,|\$/g, "");
+export function getNumericPrice(num: string | number): number {
+  if (num == null) {
+    return NaN;
+  }
+  const str = String(num).replace(/[^0-9.\-]/g, "");
+  return parseFloat(str);
 }
 
-export const formatTwoDigits = (num) => String(num).padStart(2, "0");
+export const formatTwoDigits = (num: number) => String(num).padStart(2, "0");
 
-export function capitalize(str) {
+export function capitalize(str: string) {
   str = String(str);
 
   const firstChar = str[0]?.toUpperCase();
@@ -29,7 +35,7 @@ export function capitalize(str) {
   return firstChar + rest;
 }
 
-export function camelCase(str) {
+export function camelCase(str: string) {
   const wordSeparatorRegex = regexPatterns.words;
   const words = String(str)
     .toLowerCase()
@@ -44,18 +50,18 @@ export function camelCase(str) {
   return camelCased.join("");
 }
 
-export function setAfterDiscountKey(product) {
+export function setAfterDiscountKey(product: Product) {
   const discountedPrice = getDiscountedPrice(product.price, product.discount);
   const formattedDiscountedPrice = formatePrice(discountedPrice);
   product.afterDiscount = formattedDiscountedPrice;
 }
 
-export function setFormattedPrice(product) {
+export function setFormattedPrice(product: Product) {
   const formattedPrice = formatePrice(product.price);
   product.price = formattedPrice;
 }
 
-export function getSubTotal(cartProducts, key = "quantity") {
+export function getSubTotal(cartProducts: Product[], key: keyof Product = "quantity") {
   const total = cartProducts?.reduce((acc, product) => {
     const priceAfterDiscount = getNumericPrice(product?.afterDiscount);
     const quantity = +product?.[key];
