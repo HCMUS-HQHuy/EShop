@@ -4,16 +4,17 @@ type Product = {
   shortName: string;
   name: string;
   category: string[];
-  price: number;
-  discount: number;
+  price: string;
+  discount: string;
+  afterDiscount: string;
 //   description: string;
-//   addedDate: string;
+  addedDate: string;
   img: string;
 //   otherImages: string[];
   colors: Color[];
   rate: number;
   votes: number;
-//   quantity: number;
+  quantity: number;
 //   sold: number;
 }
 
