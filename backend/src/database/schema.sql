@@ -43,6 +43,7 @@ CREATE TABLE categories (
 
 CREATE TABLE products (
     product_id SERIAL PRIMARY KEY,
+    sku VARCHAR(100) NOT NULL,
     short_name VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
@@ -56,6 +57,7 @@ CREATE TABLE products (
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     deleted_at TIMESTAMP WITH TIME ZONE,
     deleted_by INT,
+    CONSTRAINT uq_product_sku_shop UNIQUE (sku, shop_id),
     CONSTRAINT fk_product_shop FOREIGN KEY (shop_id) REFERENCES shops(shop_id),
     CONSTRAINT fk_product_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
