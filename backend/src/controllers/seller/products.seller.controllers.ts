@@ -1,7 +1,7 @@
 import express from 'express';
 import { Client } from 'pg';
 import database from 'database/index.database';
-import * as utils from 'utils/index.utils';
+import util, * as utils from 'utils/index.utils';
 import * as types from 'types/index.types';
 
 // #### DATABASE FUNCTIONS ####
@@ -264,6 +264,10 @@ async function update(req: types.RequestCustom, res: express.Response) {
 async function add(req: types.RequestCustom, res: express.Response) {
     if (utils.isAcceptedSeller(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can add products' });
+    }
+    console.log("Files received:", req.files);
+    if (!req.files || !('mainImage' in req.files)) {
+        return res.status(400).send(util.response.error( 'Main image (mainImage) is required', []));
     }
     console.log("Add product request body:", req.body);
     res.status(501).send({ error: 'Not implemented yet' });

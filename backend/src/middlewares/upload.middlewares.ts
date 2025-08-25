@@ -20,6 +20,14 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+const loader = multer({ storage: storage });
+
+const upload = {
+  single: (fieldName: string) => loader.single(fieldName),
+  array: (fieldName: string, maxCount?: number) => loader.array(fieldName, maxCount),
+  fields: (fields: { name: string; maxCount?: number }[]) => loader.fields(fields),
+  addProduct: loader.fields([{ name: 'mainImage', maxCount: 1 }, { name: 'additionalImages', maxCount: 5 }])
+}
+
 
 export default upload;
