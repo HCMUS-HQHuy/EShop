@@ -34,7 +34,7 @@ const SellerDashboardPage = () => {
 
   useEffect(() => {
     if (status === SHOP_STATUS.ACTIVE || status === SHOP_STATUS.CLOSED) {
-      navigate('/seller');
+      // navigate('/seller');
       console.log("Navigating to seller dashboard");
     } else navigate('/seller/form-progress');
   }, [status]);
