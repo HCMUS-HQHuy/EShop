@@ -12,12 +12,15 @@ export const PRODUCT_STATUS = {
 export type ProductStatus = typeof PRODUCT_STATUS[keyof typeof PRODUCT_STATUS];
 
 const ProductSchema = z.object({
-    name: z.string().min(1, 'Name is required'),
-    description: z.string().optional(),
-    price: z.number().nonnegative('Price must be >= 0'),
-    stock_quantity: z.number().nonnegative('Stock quantity must be >= 0'),
-    image_url: z.string().url('Image URL must be valid').optional(),
-    categories_id: z.array(z.coerce.number().positive('Category ID must be positive')).max(3, 'Max 3 categories'),
+    name: z.string().min(1, 'Name is required').max(100, 'Name must be <= 100 characters'),
+    shortName: z.string().min(1, 'Short name is required').max(50, 'Short name must be <= 50 characters'),
+    description: z.string().min(1, 'Description is required').max(1000, 'Description must be <= 1000 characters'),
+    price: z.coerce.number().nonnegative('Price must be >= 0'),
+    discount: z.coerce.number().min(0, 'Discount must be >= 0').max(100, 'Discount must be <= 100').optional(),
+    stock_quantity: z.coerce.number().nonnegative('Stock quantity must be >= 0'),
+    mainImage: z.string().url('Image URL must be valid').optional(),
+    status: z.enum([PRODUCT_STATUS.ACTIVE, PRODUCT_STATUS.INACTIVE]),
+    categories: z.array(z.coerce.number().positive('Category ID must be positive')).max(3, 'Max 3 categories'),
     shop_id: z.number().int().positive().optional(),
 });
 

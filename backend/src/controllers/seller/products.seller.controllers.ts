@@ -119,27 +119,6 @@ async function listProducts(shop_id: number, params: types.ProductParamsRequest)
     }
 }
 
-async function addProduct(product: types.ProductInformation) {
-    console.log("Product added:", product);
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            INSERT INTO products (name, price, stock_quantity, shop_id)
-            VALUES ($1, $2, $3, $4)
-        `;
-        const data = [product.name, product.price, product.stock_quantity, product.shop_id];
-        await db.query(sql, data);
-    } catch (error) {
-        console.error('Error adding product to database:', error);
-        throw error;
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
-    }
-}
-
 async function hideProduct(productId: number): Promise<void> {
     let db: Client | undefined = undefined;
     try {
@@ -263,30 +242,82 @@ async function update(req: types.RequestCustom, res: express.Response) {
 
 async function add(req: types.RequestCustom, res: express.Response) {
     if (utils.isAcceptedSeller(req.user) === false) {
-        return res.status(403).send({ error: 'Forbidden: Only sellers can add products' });
+        return res.status(403).send(util.response.authorError('sellers'));
     }
     console.log("Files received:", req.files);
     if (!req.files || !('mainImage' in req.files)) {
         return res.status(400).send(util.response.error( 'Main image (mainImage) is required', []));
     }
     console.log("Add product request body:", req.body);
-    res.status(501).send({ error: 'Not implemented yet' });
     const parsedBody = types.productSchemas.information.safeParse(req.body);
     if (!parsedBody.success) {
-        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
+        return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
     const product: types.ProductInformation = parsedBody.data;
-
+    console.log("Parsed product data:", product);
+    let db: Client | undefined = undefined;
     try {
-        // Ensure the shop_id is set from the authenticated user
         product.shop_id = req.user?.shop_id as number;
-        await addProduct(product);
+        product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].path;
+        console.log("Product added:", product);
+        db = await database.getConnection();
+        await db.query('BEGIN');
+        const sql = `
+            INSERT INTO products (name, short_name, price, discount, description, stock_quantity, image_url, shop_id, status)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            RETURNING product_id
+        `;
+        const data = [
+            product.name,
+            product.shortName,
+            product.price,
+            product.discount,
+            product.description,
+            product.stock_quantity,
+            product.mainImage,
+            product.shop_id,
+            product.status
+        ];
+        const result = await db.query(sql, data);
+        const productId = result.rows[0].product_id;
+
+        console.log("Inserted product ID:", productId);
+        const valuesSQL = product.categories
+            .map((_, index) => `($1, $${index + 2})`)
+            .join(', ');
+        if (valuesSQL) {
+            const sql2 = `
+                INSERT INTO product_categories (product_id, category_id)
+                VALUES ${valuesSQL}
+            `;
+            const params = [productId, ...product.categories];
+            await db.query(sql2, params);
+        }
+
+        const valuesImageSQL = (req.files['additionalImages'] as Express.Multer.File[] | undefined)?.map((_, index) => `($1, $${index + 2})`).join(', ');
+        if (valuesImageSQL) {
+            const sql3 = `
+                INSERT INTO product_images (product_id, image_url)
+                VALUES ${valuesImageSQL}
+            `;
+            const imageUrls = (req.files['additionalImages'] as Express.Multer.File[]).map(file => file.path);
+            const paramsImage = [productId, ...imageUrls];
+            await db.query(sql3, paramsImage);
+        }
+        await db.query('COMMIT');
     }
     catch (error) {
+        if (db) {
+            await db.query('ROLLBACK');
+        }
         console.error('Error adding product:', error);
-        return res.status(500).send({ error: 'Internal server error' });
+        return res.status(500).send(util.response.internalServerError());
+    } finally {
+        if (db) {
+            await database.releaseConnection(db);
+        }
     }
-    res.status(201).send({ message: 'Product added successfully' });
+    res.status(201).send(util.response.success('Product added successfully', []));
 };
 
 async function hide(req: types.RequestCustom, res: express.Response) {
