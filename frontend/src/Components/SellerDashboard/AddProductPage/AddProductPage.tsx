@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import ProductSchema from 'src/Types/product.ts';
 import CategoryInput from 'src/Components/Shared/CategoryInput/CategoryInput.tsx';
 import ToggleSwitch from 'src/Components/Shared/ToggleSwitch/ToggleSwitch.tsx';
@@ -11,6 +11,9 @@ const IconPlus = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="non
 
 const AddProductPage = () => {
   const navigate = useNavigate();
+  const { productId } = useParams();
+  const isEditMode = Boolean(productId);
+
   const additionalImagesInputRef = useRef<HTMLInputElement>(null);
   const [productData, setProductData] = useState({
     name: '', shortName: '', description: '', price: '', discount: '', stock_quantity: '',
@@ -19,6 +22,31 @@ const AddProductPage = () => {
     categories: [] as string[],
     isActive: true,
   });
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isEditMode) {
+      setIsLoading(true);
+      // ---- Dùng dữ liệu giả để test ----
+      console.log(`Fetching data for product: ${productId}`);
+      const mockProductToEdit = {
+        name: 'Gaming Chair, local pickup only', shortName: 'Gaming Chair', 
+        description: 'A very comfortable chair for gamers.', price: 150.00, discount: 10, 
+        stock_quantity: 56, mainImage: null, additionalImages: [], 
+        categories: ['Furniture', 'Gaming'], isActive: true,
+      };
+      
+      // Chuyển đổi dữ liệu mock để phù hợp với state
+      setProductData({
+        ...mockProductToEdit,
+        mainImage: undefined,
+        price: String(mockProductToEdit.price),
+        discount: String(mockProductToEdit.discount),
+        stock_quantity: String(mockProductToEdit.stock_quantity),
+      });
+      setIsLoading(false);
+    }
+  }, [productId, isEditMode]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setProductData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -87,8 +115,15 @@ const AddProductPage = () => {
     }
   };
 
+  if (isLoading) {
+    return <div>Loading product data...</div>;
+  }
+
   return (
     <div className={s.addProductPage}>
+      <header className={s.header}>
+        <h1>{isEditMode ? 'Edit Product' : 'Add New Product'}</h1>
+      </header>
       <form onSubmit={handleSubmit} className={s.formGrid}>
         <div className={s.mediaColumn}>
             <div className={s.card}>
@@ -126,24 +161,24 @@ const AddProductPage = () => {
           <div className={s.card}>
             <div className={s.formGroup}>
               <label htmlFor="name">Product Name</label>
-              <input type="text" id="name" name="name" onChange={handleChange} required />
+              <input type="text" id="name" name="name" value={productData.name} onChange={handleChange} required />
             </div>
             <div className={s.formGroup}>
               <label htmlFor="shortName">Short Name</label>
-              <input type="text" id="shortName" name="shortName" onChange={handleChange}/>
+              <input type="text" id="shortName" name="shortName" value={productData.shortName} onChange={handleChange} />
             </div>
             <div className={s.formRow}>
               <div className={s.formGroup}>
                 <label htmlFor="price">Price</label>
-                <input type="number" id="price" name="price" required min="0" step="0.01" onChange={handleChange} />
+                <input type="number" id="price" name="price" value={productData.price} required min="0" step="0.01" onChange={handleChange} />
               </div>
               <div className={s.formGroup}>
                 <label htmlFor="discount">Discount (%)</label>
-                <input type="number" id="discount" name="discount" min="0" max="100" onChange={handleChange} />
+                <input type="number" id="discount" name="discount" value={productData.discount} min="0" max="100" onChange={handleChange} />
               </div>
               <div className={s.formGroup}>
                 <label htmlFor="stock_quantity">Stock Quantity</label>
-                <input type="number" id="stock_quantity" name="stock_quantity" required min="0" onChange={handleChange} />
+                <input type="number" id="stock_quantity" name="stock_quantity" value={productData.stock_quantity} required min="0" onChange={handleChange} />
               </div>
             </div>
             <div className={s.formGroup}>
@@ -152,7 +187,7 @@ const AddProductPage = () => {
             </div>
             <div className={s.formGroup}>
               <label htmlFor="description">Description</label>
-              <textarea id="description" name="description" rows={15} onChange={handleChange}></textarea>
+              <textarea id="description" name="description" rows={15} value={productData.description} onChange={handleChange}></textarea>
             </div>
             <div className={s.actions}>
               <div className={s.toggleGroup}>
@@ -161,7 +196,7 @@ const AddProductPage = () => {
               </div>
               <div className={s.buttonGroup}>
                 <button type="button" onClick={() => navigate('/seller-dashboard/products')} className={s.cancelButton}>Cancel</button>
-                <button type="submit" className={s.saveButton}>Save</button>
+                <button type="submit" className={s.saveButton}>{isEditMode ? 'Update Product' : 'Save Product'}</button>
               </div>
             </div>
           </div>

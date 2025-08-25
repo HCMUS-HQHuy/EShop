@@ -57,6 +57,7 @@ const SellerDashboardPage = () => {
             <Route index element={<DashboardOverview />} />
             <Route path="dashboard" element={<DashboardOverview />} />
             <Route path="products/new" element={<AddProductPage />} />
+            <Route path="products/edit/:productId" element={<AddProductPage />} />
             <Route path="products" element={<ProductsPage />} />
             <Route path="orders" element={<ManageOrders />} />
         </Route>
