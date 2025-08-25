@@ -63,7 +63,7 @@ const AddProductPage = () => {
     formData.append('price', productData.price);
     formData.append('discount', productData.discount);
     formData.append('stock_quantity', productData.stock_quantity);
-    formData.append('status', productData.isActive ? 'active' : 'inactive');
+    formData.append('status', productData.isActive ? 'Active' : 'Inactive');
 
     productData.categories.forEach(category => {
       formData.append('categories[]', category);
