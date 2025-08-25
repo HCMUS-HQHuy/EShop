@@ -3,10 +3,10 @@ import path from 'path';
 import fs from 'fs';
 
 // Tạo thư mục temp nếu chưa tồn tại
-const tempDir = path.join(__dirname, 'uploads');
+const tempDir = path.join(__dirname, '..', '..', 'uploads');
 console.log('Upload temp directory:', tempDir);
 if (!fs.existsSync(tempDir)) {
-//   fs.mkdirSync(tempDir, { recursive: true });
+  fs.mkdirSync(tempDir, { recursive: true });
 }
 
 // Cấu hình multer
@@ -22,4 +22,4 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-module.exports = upload;
+export default upload;
