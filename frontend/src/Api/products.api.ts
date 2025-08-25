@@ -11,5 +11,8 @@ const api = axios.create({
 
 const product = {
     fetchAll: () => api.get("/user/products/list"),
+    create: (productData: any) => api.post("/seller/products/add", productData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
 };
 export default product;

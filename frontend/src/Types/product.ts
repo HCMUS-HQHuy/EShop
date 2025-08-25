@@ -1,3 +1,18 @@
+import z from "zod";
+
+const CreatingProductSchema = z.object({
+  name: z.string().min(1).max(200),
+  shortName: z.string().min(1).max(100),
+  categories: z.array(z.string()).min(1),
+  price: z.coerce.number().min(0),
+  discount: z.coerce.number().min(0).max(100).default(0),
+  description: z.string().min(10).max(1000),
+  mainImage: z.file(),
+  additionalImages: z.array(z.file()).max(5),
+  isActive: z.boolean().default(true),
+});
+
+type CreatingProduct = z.infer<typeof CreatingProductSchema>;
 
 type Product = {
   id: number;
@@ -23,4 +38,8 @@ type Color = {
   color: string;
 }
 
-export type { Product, Color };
+export type { Product, Color, CreatingProduct };
+const ProductSchema = {
+  CreatingRequest: CreatingProductSchema,
+};
+export default ProductSchema;
