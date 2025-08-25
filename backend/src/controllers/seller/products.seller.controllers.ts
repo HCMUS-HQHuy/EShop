@@ -258,7 +258,7 @@ async function add(req: types.RequestCustom, res: express.Response) {
     let db: Client | undefined = undefined;
     try {
         product.shop_id = req.user?.shop_id as number;
-        product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].path;
+        product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
         console.log("Product added:", product);
         db = await database.getConnection();
         await db.query('BEGIN');
@@ -300,7 +300,7 @@ async function add(req: types.RequestCustom, res: express.Response) {
                 INSERT INTO product_images (product_id, image_url)
                 VALUES ${valuesImageSQL}
             `;
-            const imageUrls = (req.files['additionalImages'] as Express.Multer.File[]).map(file => file.path);
+            const imageUrls = (req.files['additionalImages'] as Express.Multer.File[]).map(file => file.filename);
             const paramsImage = [productId, ...imageUrls];
             await db.query(sql3, paramsImage);
         }
