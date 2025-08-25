@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 
 import seedAdmin from "config/seedAdmin";
 import configQueryParser from 'config/queryparser.config'
+import configUploadsFile from 'config/uploadsFile.config';
 import routes from "routes/index.routes";
 import services from "services/index.services";
 import mid from "middlewares/index.middlewares";
@@ -25,6 +26,7 @@ const io = new Server(httpServer, {
 const PORT = process.env.PORT || 8220;
 
 configQueryParser(app);
+configUploadsFile(app);
 
 app.get('/', (res: any, req: any)=> {
     req.send('hello from hqh');
