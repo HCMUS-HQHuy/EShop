@@ -3,7 +3,7 @@ import { Client } from 'pg';
 import database from '../../database/index.database';
 
 import * as types from '../../types/index.types';
-import * as utils from '../../utils/index.utils';
+import util from 'utils/index.utils';
 
 // #### VALIDATION FUNCTIONS ####
 
@@ -67,7 +67,16 @@ async function listProducts(params: types.ProductParamsRequest) {
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT product_id, name, price, stock_quantity, shop_id, image_url
+            SELECT 
+                product_id as id,
+                short_name as "shortName",
+                price,
+                discount,
+                stock_quantity as quantity,
+                image_url as img,
+                TO_CHAR(created_at, 'YYYY-MM-DD') as "addedDate",
+                0 as rate,
+                0 as votes
             FROM products
             WHERE name ILIKE $1
                 AND status = '${types.PRODUCT_STATUS.ACTIVE}'
@@ -146,10 +155,7 @@ async function list(req: types.RequestCustom, res: express.Response) {
     console.log("Listing products with params:", req.query);
     const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
     if (!parsedBody.success) {
-        return res.status(400).send({ 
-            error: 'Invalid request data', 
-            details: parsedBody.error.format() 
-        });
+        return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
     const params: types.ProductParamsRequest = parsedBody.data;
     console.log("Listing products with params:", params);
@@ -159,7 +165,7 @@ async function list(req: types.RequestCustom, res: express.Response) {
         res.send(products);
     } catch (error) {
         console.error('Error listing products:', error);
-        res.status(500).send({ error: 'Internal server error' });
+        res.status(500).send(util.response.internalServerError());
     }
 }
 

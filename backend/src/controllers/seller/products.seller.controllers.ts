@@ -75,25 +75,26 @@ async function listProducts(shop_id: number, params: types.ProductParamsRequest)
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT product_id, name, price, stock_quantity, status, created_at
+            SELECT *
             FROM products
             WHERE name ILIKE $1
                 AND shop_id = ${shop_id}
                 AND ($4::numeric IS NULL OR price <= $4)
                 AND ($5::numeric IS NULL OR price >= $5)
                 AND (
-                    $6::int[] IS NULL 
+                    $6::int[] IS NULL
                     OR EXISTS (
                         SELECT 1 FROM product_categories 
                         WHERE product_categories.product_id = products.product_id
                         AND product_categories.category_id = ANY($6::int[])
                     )
                 )
-                AND ($7::text IS NULL OR status = $7)
+                AND ($7::text IS NULL OR 'status' = $7)
                 AND is_deleted = FALSE
             ORDER BY ${params.sortAttribute} ${params.sortOrder}
             LIMIT $2 OFFSET $3
-        `;
+                `;
+        
         const limit         = Number(process.env.PAGINATION_LIMIT);
         const offset        = (params.page - 1) * limit;
         const filter        = params.filter as types.SellerProductFilter;
