@@ -255,9 +255,12 @@ export const productCardCustomizations = {
   categoryProducts: {
     showDiscount: true,
     showFavIcon: true,
+    stopHover: false,
     showDetailsIcon: true,
+    showRemoveIcon: false,
     showNewText: true,
     showWishList: true,
+    showColors: true,
   },
   allProducts: {
     showDiscount: true,
@@ -265,6 +268,9 @@ export const productCardCustomizations = {
     showDetailsIcon: true,
     showNewText: true,
     showWishList: true,
+    stopHover: false,
+    showRemoveIcon: false,
+    showColors: true,
   },
   wishListProducts: {
     showDiscount: true,
@@ -272,6 +278,9 @@ export const productCardCustomizations = {
     stopHover: true,
     showDetailsIcon: false,
     showRemoveIcon: true,
+    showNewText: true,
+    showWishList: true,
+    showColors: true,
   },
   ourProducts: {
     showDiscount: true,

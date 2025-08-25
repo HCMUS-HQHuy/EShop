@@ -7,7 +7,7 @@ import type { RootState } from "src/Types/store.ts";
 
 type prop = {
   numOfProducts?: number;
-  customization: typeof productCardCustomizations.ourProducts;
+  customization: typeof productCardCustomizations[keyof typeof productCardCustomizations];
 };
 
 const ExploreProducts = ({ numOfProducts = -1, customization } : prop) => {

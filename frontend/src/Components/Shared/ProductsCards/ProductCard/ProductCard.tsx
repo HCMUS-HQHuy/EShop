@@ -10,7 +10,7 @@ import type { RootState } from "src/Types/store.ts";
 
 type prop = {
   product: any;
-  customization: typeof productCardCustomizations.ourProducts;
+  customization: typeof productCardCustomizations[keyof typeof productCardCustomizations];
   removeFrom: any;
   loading?: "eager" | "lazy" | undefined;
 };
