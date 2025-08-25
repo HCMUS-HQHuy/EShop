@@ -265,7 +265,8 @@ async function add(req: types.RequestCustom, res: express.Response) {
     if (utils.isAcceptedSeller(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can add products' });
     }
-
+    console.log("Add product request body:", req.body);
+    res.status(501).send({ error: 'Not implemented yet' });
     const parsedBody = types.productSchemas.information.safeParse(req.body);
     if (!parsedBody.success) {
         return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });

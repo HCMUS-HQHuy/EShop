@@ -1,5 +1,5 @@
 import seller from "controllers/seller/index.seller.controllers";
-import auth from   "controllers/auth/index.auth.controllers";
+import auth from   "controllers/shared/auth.controllers";
 import user from   "controllers/user/index.user.controllers";
 import admin from  "controllers/admin/index.admin.controllers";
 
