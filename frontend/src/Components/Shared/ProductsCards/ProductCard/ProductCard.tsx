@@ -7,15 +7,16 @@ import ProductCardIcons from "./ProductCardIcons/ProductCardIcons.tsx";
 import ProductCardInfo from "./ProductCardInfo/ProductCardInfo.tsx";
 import { productCardCustomizations } from "src/Data/staticData.tsx";
 import type { RootState } from "src/Types/store.ts";
+import type { Product } from "src/Types/product.ts";
 
-type prop = {
-  product: any;
+type Props = {
+  product: Product;
   customization: typeof productCardCustomizations[keyof typeof productCardCustomizations];
   removeFrom: any;
   loading?: "eager" | "lazy" | undefined;
 };
 
-const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: prop) => {
+const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: Props) => {
   const { name, discount, img, id, addedDate } = product;
   const {
     stopHover,
@@ -28,7 +29,7 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: p
     showColors,
   } = customization;
   const noHoverClass = stopHover ? s.noHover : "";
-  const hideDiscountClass = discount <= 0 || !showDiscount ? s.hide : "";
+  const hideDiscountClass = Number(discount) <= 0 || !showDiscount ? s.hide : "";
   const hideNewClass = shouldHideNewWord();
   const { loadingProductDetails } = useSelector((state: RootState) => state.loading);
   const navigateTo = useNavigate();
@@ -40,7 +41,7 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: p
   };
 
   function shouldHideNewWord() {
-    return checkDateBeforeMonthToPresent(addedDate) || !showNewText
+    return checkDateBeforeMonthToPresent(new Date(addedDate)) || !showNewText
       ? s.hide
       : "";
   }
@@ -55,7 +56,7 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: p
       <div className={s.productImg}>
         <div className={s.imgHolder}>
           <img
-            src={img}
+            src={`${import.meta.env.VITE_PUBLIC_URL}/${img}`}
             alt={name}
             aria-label={name}
             loading={loading}
