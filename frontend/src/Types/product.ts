@@ -12,6 +12,8 @@ const CreatingProductSchema = z.object({
   isActive: z.boolean().default(true),
 });
 
+
+
 type CreatingProduct = z.infer<typeof CreatingProductSchema>;
 
 type Product = {

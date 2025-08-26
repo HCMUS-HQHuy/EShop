@@ -14,5 +14,6 @@ const product = {
     create: (productData: any) => api.post("/seller/products/add", productData, {
       headers: { "Content-Type": "multipart/form-data" },
     }),
+    shopFetch: () => api.get("/seller/products/list"),
 };
 export default product;

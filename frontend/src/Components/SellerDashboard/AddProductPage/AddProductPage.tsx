@@ -16,7 +16,7 @@ const AddProductPage = () => {
 
   const additionalImagesInputRef = useRef<HTMLInputElement>(null);
   const [productData, setProductData] = useState({
-    name: '', shortName: '', description: '', price: '', discount: '', stock_quantity: '',
+    name: '', shortName: '', sku: '', description: '', price: '', discount: '', stock_quantity: '',
     mainImage: undefined as File | undefined,
     additionalImages: [] as File[],
     categories: [] as string[],
@@ -30,9 +30,9 @@ const AddProductPage = () => {
       // ---- Dùng dữ liệu giả để test ----
       console.log(`Fetching data for product: ${productId}`);
       const mockProductToEdit = {
-        name: 'Gaming Chair, local pickup only', shortName: 'Gaming Chair', 
-        description: 'A very comfortable chair for gamers.', price: 150.00, discount: 10, 
-        stock_quantity: 56, mainImage: null, additionalImages: [], 
+        name: 'Gaming Chair, local pickup only', shortName: 'Gaming Chair', sku: '12',
+        description: 'A very comfortable chair for gamers.', price: 150.00, discount: 10,
+        stock_quantity: 56, mainImage: null, additionalImages: [],
         categories: ['Furniture', 'Gaming'], isActive: true,
       };
       
@@ -87,6 +87,7 @@ const AddProductPage = () => {
     // Thêm các trường dữ liệu dạng text/number vào FormData
     formData.append('name', productData.name);
     formData.append('shortName', productData.shortName);
+    formData.append('sku', productData.sku);
     formData.append('description', productData.description);
     formData.append('price', productData.price);
     formData.append('discount', productData.discount);
@@ -163,9 +164,15 @@ const AddProductPage = () => {
               <label htmlFor="name">Product Name</label>
               <input type="text" id="name" name="name" value={productData.name} onChange={handleChange} required />
             </div>
-            <div className={s.formGroup}>
-              <label htmlFor="shortName">Short Name</label>
-              <input type="text" id="shortName" name="shortName" value={productData.shortName} onChange={handleChange} />
+            <div className={`${s.formRow}`}>
+              <div className={`${s.formGroup}`}>
+                <label htmlFor="shortName">Short Name</label>
+                <input type="text" id="shortName" name="shortName" value={productData.shortName} onChange={handleChange} />
+              </div>
+              <div className={s.formGroup}>
+                <label htmlFor="sku">SKU</label>
+                <input type="text" id="sku" name="sku" value={productData.sku} onChange={handleChange} required />
+              </div>
             </div>
             <div className={s.formRow}>
               <div className={s.formGroup}>
