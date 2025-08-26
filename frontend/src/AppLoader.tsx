@@ -21,10 +21,10 @@ const AppLoader = ({ children }: { children: ReactNode }) => {
         console.log("Fetching initial data...");
         hasFetchedUserData.current = true;
         const fetchAll = async () => {
+            await dispatch(setLoginData());
+            await dispatch(setShopData());
             await Promise.all([
-                dispatch(setLoginData()),
                 dispatch(getCategories()),
-                dispatch(setShopData()),
                 dispatch(fetchProducts()),
             ]);
             setIsReady(true);
