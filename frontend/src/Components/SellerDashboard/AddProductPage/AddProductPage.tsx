@@ -20,6 +20,7 @@ const AddProductPage = () => {
     name: '', shortName: '', sku: '', description: '', price: '', discount: '', stock_quantity: '',
     mainImage: undefined as File | undefined,
     additionalImages: [] as File[],
+    deletedImages: [] as string[],
     categories: [] as string[],
     isActive: true,
   });
@@ -44,6 +45,7 @@ const AddProductPage = () => {
           additionalImages: product.additionalImages,
           categories: product.categories,
           isActive: product.status === 'Active',
+          deletedImages: [],
         });
       }).catch(err => {
         console.error('Error fetching product data:', err);
@@ -75,20 +77,33 @@ const AddProductPage = () => {
   };
 
   const removeAdditionalImage = (indexToRemove: number) => {
-    setProductData(prev => ({ ...prev, additionalImages: prev.additionalImages.filter((_, index) => index !== indexToRemove) }));
+    setProductData(prev => {
+      const updatedAdditionalImages = prev.additionalImages.filter((_, index) => index !== indexToRemove);
+      const removedImage = prev.additionalImages[indexToRemove];
+      const shouldAddToDeleted = removedImage && !(removedImage instanceof File);
+
+      const updatedDeletedImages = shouldAddToDeleted
+        ? [...prev.deletedImages, removedImage as string]
+        : prev.deletedImages;
+
+      return {
+        ...prev,
+        additionalImages: updatedAdditionalImages,
+        deletedImages: updatedDeletedImages,
+      };
+    });
   };
 
   // 3. Đây là phần quan trọng nhất: Sửa lại hoàn toàn handleSubmit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const validationResult = ProductSchema.CreatingRequest.safeParse(productData);
+    const validationResult = isEditMode ? ProductSchema.EditingRequest.safeParse(productData)
+      : ProductSchema.CreatingRequest.safeParse(productData);
     if (!validationResult.success) {
       console.error("Validation errors:", validationResult.error.format());
       alert('Please fix validation errors before submitting.');
       return;
     }
-
-    // Tạo một đối tượng FormData
     const formData = new FormData();
 
     // Thêm các trường dữ liệu dạng text/number vào FormData
@@ -113,7 +128,17 @@ const AddProductPage = () => {
 
     try {
       console.log('Submitting FormData...');
-      await api.product.create(formData);
+      if (isEditMode) {
+        if (productId === undefined)
+          throw new Error('Product ID is required for editing.');
+        productData.deletedImages.forEach(url => {
+          formData.append('deletedImages[]', url);
+        });
+        console.log('Editing product with ID:', productId, formData);
+        await api.product.shopUpdateById(productId, formData);
+      } else {
+        await api.product.create(formData);
+      }
       navigate('/seller/products');
     } catch (err) {
       console.error('Error creating product:', err);
@@ -132,36 +157,36 @@ const AddProductPage = () => {
       </header>
       <form onSubmit={handleSubmit} className={s.formGrid}>
         <div className={s.mediaColumn}>
-            <div className={s.card}>
-                <h3>Main Image</h3>
-                <div className={s.mainImageContainer}>
-                {productData.mainImage ? (
-                    <>
-                    <img src={typeof productData.mainImage === 'string' ? productData.mainImage : URL.createObjectURL(productData.mainImage)} alt="Main Preview" />
-                    <button type="button" className={s.deleteButton} onClick={() => setProductData(p => ({ ...p, mainImage: undefined }))}>&times;</button>
-                    </>
-                ) : (
-                    <ImageUploader onFilesAccepted={handleMainImageChange} />
-                )}
-                </div>
-                <h3>Others Images</h3>
-                <div className={s.othersImagesGrid}>
-                <div className={s.uploadTile} onClick={() => additionalImagesInputRef.current?.click()}>
-                    <IconPlus />
-                    <span>Upload</span>
-                    <input ref={additionalImagesInputRef} type="file" multiple accept="image/*" className={s.hiddenInput} onChange={handleAdditionalImagesChange} />
-                </div>
-                {productData.additionalImages.map((file, index) => (
-                    <div key={index} className={s.imagePreviewTile}>
-                    <img src={typeof file === 'string' ? file : URL.createObjectURL(file)} alt={`Preview ${index}`} />
-                    <button type="button" className={s.deleteButton} onClick={() => removeAdditionalImage(index)}>&times;</button>
-                    </div>
-                ))}
-                {Array.from({ length: 5 - productData.additionalImages.length }).map((_, index) => (
-                    <div key={index} className={s.placeholderTile}></div>
-                ))}
-                </div>
+          <div className={s.card}>
+            <h3>Main Image</h3>
+            <div className={s.mainImageContainer}>
+              {productData.mainImage ? (
+                <>
+                  <img src={typeof productData.mainImage === 'string' ? productData.mainImage : URL.createObjectURL(productData.mainImage)} alt="Main Preview" />
+                  <button type="button" className={s.deleteButton} onClick={() => setProductData(p => ({ ...p, mainImage: undefined }))}>&times;</button>
+                </>
+              ) : (
+                <ImageUploader onFilesAccepted={handleMainImageChange} />
+              )}
             </div>
+            <h3>Others Images</h3>
+            <div className={s.othersImagesGrid}>
+              <div className={s.uploadTile} onClick={() => additionalImagesInputRef.current?.click()}>
+                <IconPlus />
+                <span>Upload</span>
+                <input ref={additionalImagesInputRef} type="file" multiple accept="image/*" className={s.hiddenInput} onChange={handleAdditionalImagesChange} />
+              </div>
+              {productData.additionalImages.map((file, index) => (
+                <div key={index} className={s.imagePreviewTile}>
+                  <img src={typeof file === 'string' ? file : URL.createObjectURL(file)} alt={`Preview ${index}`} />
+                  <button type="button" className={s.deleteButton} onClick={() => removeAdditionalImage(index)}>&times;</button>
+                </div>
+              ))}
+              {Array.from({ length: 5 - productData.additionalImages.length }).map((_, index) => (
+                <div key={index} className={s.placeholderTile}></div>
+              ))}
+            </div>
+          </div>
         </div>
         <div className={s.detailsColumn}>
           <div className={s.card}>

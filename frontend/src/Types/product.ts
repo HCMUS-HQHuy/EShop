@@ -7,14 +7,14 @@ const CreatingProductSchema = z.object({
   price: z.coerce.number().min(0),
   discount: z.coerce.number().min(0).max(100).default(0),
   description: z.string().min(10).max(1000),
-  mainImage: z.file(),
-  additionalImages: z.array(z.file()).max(5),
+  mainImage: z.union([z.file(), z.string()]),
+  additionalImages: z.array(z.union([z.file(), z.string()])).max(5),
   isActive: z.boolean().default(true),
 });
 
 
 const UpdatingProductSchema = CreatingProductSchema.extend({
-  deletedImages: z.array(z.string()).optional(),
+  deletedImages: z.array(z.string()).max(5),
 });
 
 type CreatingProduct = z.infer<typeof CreatingProductSchema>;
@@ -46,5 +46,6 @@ type Color = {
 export type { Product, Color, CreatingProduct };
 const ProductSchema = {
   CreatingRequest: CreatingProductSchema,
+  EditingRequest: UpdatingProductSchema
 };
 export default ProductSchema;
