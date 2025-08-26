@@ -206,14 +206,12 @@ async function getById(req: types.RequestCustom, res: express.Response) {
         db = await database.getConnection();
         const result = await db.query(`
             SELECT
-                name, short_name as "shortName", sku, price, discount, stock_quantity, categories.title as "category",
+                name, short_name as "shortName", sku, price, discount, stock_quantity, product_categories.category_id as "category",
                 products.description, products.image_url as "imageUrl", product_images.image_url as "additionalImage"
             FROM 
                 products 
                 LEFT JOIN 
                     product_categories ON products.product_id = product_categories.product_id
-                LEFT JOIN
-                    categories ON product_categories.category_id = categories.category_id
                 LEFT JOIN
                     product_images ON products.product_id = product_images.product_id
             WHERE products.product_id = $1 AND shop_id = $2
