@@ -63,10 +63,6 @@ const ProductDetailsPage = () => {
   });
   useScrollOnMount(200);
 
-  useEffect(() => {
-    console.log("PRODUCT_DATA:", PRODUCT_DATA);
-  }, [PRODUCT_DATA])
-
   if (PRODUCT_DATA === undefined) {
     return <LoadingPage />;
   }

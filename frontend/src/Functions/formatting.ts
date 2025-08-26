@@ -53,7 +53,6 @@ export function camelCase(str: string) {
 export function setAfterDiscountKey(product: Product | ProductDetailType) {
   const discountedPrice = getDiscountedPrice(product.price, product.discount);
   const formattedDiscountedPrice = formatePrice(discountedPrice);
-  console.log(discountedPrice, formattedDiscountedPrice);
   product.afterDiscount = formattedDiscountedPrice;
 }
 
