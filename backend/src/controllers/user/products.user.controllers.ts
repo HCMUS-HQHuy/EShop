@@ -45,6 +45,7 @@ async function getProductInforById(productId: number): Promise<any | null> {
                 products.short_name as "shortName",
                 products.description as "description",
                 price as "price",
+                discount,
                 stock_quantity as "stockQuantity",
                 shop.shop_name AS "shopName",
                 shop.shop_id AS "shopId",

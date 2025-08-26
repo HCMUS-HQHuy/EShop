@@ -17,6 +17,7 @@ import type { Product, ProductDetailType } from "src/Types/product.ts";
 import { useSelector } from "react-redux";
 import type { RootState } from "src/Types/store.ts";
 import LoadingPage from "../LoadingPage/LoadingPage.tsx";
+import { setAfterDiscountKey, setFormattedPrice } from "src/Functions/formatting.ts";
 
 const ProductDetailsPage = () => {
   const { t } = useTranslation();
@@ -27,7 +28,10 @@ const ProductDetailsPage = () => {
     api.product.getById(PRODUCT_ID).then((response) => {
       const data = response.data;
       if (data) {
-        setProductData(data.data[0]);
+        const productDetails = data.data[0] as ProductDetailType;
+        setAfterDiscountKey(productDetails);
+        setFormattedPrice(productDetails);
+        setProductData(productDetails);
       }
     }).catch((error) => {
       console.error("Error fetching product details:", error);

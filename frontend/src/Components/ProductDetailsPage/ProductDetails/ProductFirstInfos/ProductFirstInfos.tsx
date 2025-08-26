@@ -9,7 +9,7 @@ type Props = {
 }
 
 const ProductFirstInfos = ({ productData }: Props) => {
-  const { name, price, votes, rate } = productData;
+  const { name, price, votes, rate, afterDiscount, discount } = productData;
   const { t } = useTranslation();
 
   // const translatedProductName = translateProduct({
@@ -37,10 +37,14 @@ const ProductFirstInfos = ({ productData }: Props) => {
 
         <span className={s.greenText}>{t("detailsPage.inStock")}</span>
       </div>
+      
+      <div className={s.productInfo}>
+        <div className={s.price}>
+          {afterDiscount}
+          {Number(discount) > 0 && <del className={s.afterDiscount}>{price}</del>}
+        </div>  
+      </div>
 
-      <span className={s.price} aria-label={`Price: ${price}`}>
-        {price}
-      </span>
 
       <p className={s.description}>{productData.description}</p>
     </section>
