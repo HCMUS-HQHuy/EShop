@@ -3,6 +3,7 @@ import { Client } from 'pg';
 import database from 'database/index.database';
 import util, * as utils from 'utils/index.utils';
 import * as types from 'types/index.types';
+import fs from 'fs';
 
 // #### DATABASE FUNCTIONS ####
 
@@ -209,11 +210,11 @@ async function getById(req: types.RequestCustom, res: express.Response) {
                 products.description, products.image_url as "imageUrl", product_images.image_url as "additionalImage"
             FROM 
                 products 
-                JOIN 
+                LEFT JOIN 
                     product_categories ON products.product_id = product_categories.product_id
-                JOIN
+                LEFT JOIN
                     categories ON product_categories.category_id = categories.category_id
-                JOIN 
+                LEFT JOIN
                     product_images ON products.product_id = product_images.product_id
             WHERE products.product_id = $1 AND shop_id = $2
         `, [productId, req.user?.shop_id]);
@@ -248,10 +249,6 @@ async function update(req: types.RequestCustom, res: express.Response) {
     if (utils.isAcceptedSeller(req.user) === false) {
         return res.status(403).send(util.response.authorError('sellers'));
     }
-    if (!req.files || !('mainImage' in req.files)) {
-        return res.status(400).send(util.response.error( 'Main image (mainImage) is required', []));
-    }
-
     const productId = Number(req.params.id);
     if (isNaN(productId) || productId <= 0) {
         return res.status(400).send({ error: 'Invalid product ID' });
@@ -267,6 +264,7 @@ async function update(req: types.RequestCustom, res: express.Response) {
     }
     const parsedBody = types.productSchemas.information.safeParse(req.body);
     if (!parsedBody.success) {
+        console.log('Validation failed', parsedBody.error.issues, req.body);
         return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
     const product: types.ProductInformation = parsedBody.data;
@@ -275,7 +273,10 @@ async function update(req: types.RequestCustom, res: express.Response) {
     let db: Client | undefined = undefined;
     try {
         product.shop_id = req.user?.shop_id as number;
-        product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
+        if (req.files && 'mainImage' in req.files) {
+            product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
+        } else product.mainImage = product.mainImage?.substring(product.mainImage?.lastIndexOf('/') + 1);
+
         console.log("Product added:", product);
         db = await database.getConnection();
         await db.query('BEGIN');
@@ -299,7 +300,6 @@ async function update(req: types.RequestCustom, res: express.Response) {
         ];
         await db.query(sql, data);
         await db.query('DELETE FROM product_categories WHERE product_id = $1', [productId]);
-        await db.query('DELETE FROM product_images WHERE product_id = $1', [productId]);
         const valuesSQL = product.categories
             .map((_, index) => `($1, $${index + 2})`)
             .join(', ');
@@ -312,19 +312,36 @@ async function update(req: types.RequestCustom, res: express.Response) {
             await db.query(sql2, params);
         }
 
-        const valuesImageSQL = (req.files['additionalImages'] as Express.Multer.File[] | undefined)?.map((_, index) => `($1, $${index + 2})`).join(', ');
-        if (valuesImageSQL) {
-            const sql3 = `
-                INSERT INTO product_images (product_id, image_url)
-                VALUES ${valuesImageSQL}
+        if (req.files && 'additionalImages' in req.files) {
+            const valuesImageSQL = (req.files['additionalImages'] as Express.Multer.File[] | undefined)?.map((_, index) => `($1, $${index + 2})`).join(', ');
+            if (valuesImageSQL) {
+                const sql3 = `
+                    INSERT INTO product_images (product_id, image_url)
+                    VALUES ${valuesImageSQL}
+                `;
+                const imageUrls = (req.files['additionalImages'] as Express.Multer.File[]).map(file => file.filename);
+                const paramsImage = [productId, ...imageUrls];
+                await db.query(sql3, paramsImage);
+            }
+        }
+        const deletedImages = product.deletedImages || [];
+        if (deletedImages.length > 0) {
+            console.log('Deleting images:', deletedImages);
+            deletedImages.forEach(url=>{
+                // fs.unlink(`/home/huy/EShop/backend/uploads/${url}`, (err) => {
+                //     if (err) {
+                //         console.error(`Failed to delete image file: ${url}`, err);
+                //     }
+                // });
+            });
+            const deleteSQL = `
+                DELETE FROM product_images
+                WHERE product_id = $1 AND image_url = ANY($2::text[])
             `;
-            const imageUrls = (req.files['additionalImages'] as Express.Multer.File[]).map(file => file.filename);
-            const paramsImage = [productId, ...imageUrls];
-            await db.query(sql3, paramsImage);
+            await db.query(deleteSQL, [productId, deletedImages]);
         }
         await db.query('COMMIT');
-    }
-    catch (error) {
+    } catch (error) {
         if (db) {
             await db.query('ROLLBACK');
         }

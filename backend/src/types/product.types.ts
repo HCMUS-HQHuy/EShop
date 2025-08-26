@@ -23,6 +23,7 @@ const ProductSchema = z.object({
     status: z.enum([PRODUCT_STATUS.ACTIVE, PRODUCT_STATUS.INACTIVE]),
     categories: z.array(z.coerce.number().positive('Category ID must be positive')).max(3, 'Max 3 categories'),
     shop_id: z.number().int().positive().optional(),
+    deletedImages: z.array(z.string().url('Image URL must be valid')).max(5, 'Max 5 images can be deleted').optional()
 });
 
 const BaseProductFilterSchema = z.object({
