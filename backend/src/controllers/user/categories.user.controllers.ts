@@ -3,6 +3,7 @@ import express from "express";
 import { Client } from "pg";
 import database from "database/index.database";
 import { CategoryInfor } from "types/category.types";
+import util from "utils/index.utils";
 
 // #### DATABASE FUNCTIONS ####
 
@@ -26,7 +27,6 @@ async function getCategories(db: Client, parent_id: number|null): Promise<Catego
         }
         const categories: CategoryInfor[] = Array<CategoryInfor>();
         for (const row of result.rows) {
-            // Map the database row to the CategoryInformation type
             const parentCategory: CategoryInfor = {
                 categoryId: row.categoryId,
                 iconName: row.iconName,
@@ -35,7 +35,6 @@ async function getCategories(db: Client, parent_id: number|null): Promise<Catego
                 subCategories: await getCategories(db, row.categoryId)
             };
             categories.push(parentCategory);
-            // console.log("Category fetched:", parentCategory);
         }
         return categories;
     } catch (error: any) {
@@ -46,18 +45,15 @@ async function getCategories(db: Client, parent_id: number|null): Promise<Catego
 
 // #### CONTROLLER FUNCTIONS ####
 
-async function get(req: express.Request, res: express.Response) {
+async function getCategoriesController(req: express.Request, res: express.Response) {
     let db: Client | null = null;
     try {
         db = await database.getConnection();
         const categories = await getCategories(db, null);
-        
-        res.status(200).json(categories);
+        res.status(200).json(util.response.success('Fetched categories successfully', categories));
     } catch (error: any) {
-        res.status(500).json({
-            message: "Error fetching categories",
-            errors: error.message
-        });
+        console.error("Error in getCategoriesController:", error);
+        res.status(500).json(util.response.internalServerError());
     } finally {
         if (db) {
             await database.releaseConnection(db);
@@ -65,21 +61,8 @@ async function get(req: express.Request, res: express.Response) {
     }
 }
 
-// async function getTopLevel(req: express.Request, res: express.Response) {
-//     try {
-//         const categories = await getCategories(true);
-//         res.status(200).json(categories);
-//     } catch (error: any) {
-//         res.status(500).json({
-//             message: "Error fetching categories",
-//             errors: error.message
-//         });
-//     }
-// }
-
 const category = {
-    get
-    // getTopLevel
+    get: getCategoriesController
 };
 
 export default category;
