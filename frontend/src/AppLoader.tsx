@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { RiseLoader } from "react-spinners";
 
 import { setLoginData } from "./Features/userSlice.tsx";
 import { getCategories } from "./Features/categoriesSlice.tsx";
@@ -8,6 +7,7 @@ import { setShopData } from "./Features/sellerSlice.tsx"
 import { fetchProducts } from "./Features/productsSlice.tsx";
 import type { AppDispatch } from "./Types/store.ts";
 import useStoreWebsiteDataToLocalStorage from "./Hooks/App/useStoreWebsiteDataToLocalStorage.tsx";
+import LoadingPage from "./Components/LoadingPage/LoadingPage.tsx";
 
 const AppLoader = ({ children }: { children: ReactNode }) => {
     useStoreWebsiteDataToLocalStorage();
@@ -33,25 +33,7 @@ const AppLoader = ({ children }: { children: ReactNode }) => {
     }, []);
 
     if (!isReady) {
-        return (
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",  
-                    alignItems: "center",
-                    height: "100vh",
-                }}
-            >
-                <RiseLoader
-                    color="#36d7b7"
-                    cssOverride={{ display: "block" }}
-                    loading
-                    margin={10}
-                    size={50}
-                    speedMultiplier={1}
-                />
-            </div>
-        );
+        return <LoadingPage />;
     }
 
     return <>{children}</>;
