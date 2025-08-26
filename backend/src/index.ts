@@ -2,12 +2,12 @@ import 'dotenv/config'
 import express from "express";
 import http from 'http';
 import { Server } from 'socket.io'
-import cors from "cors";
 import cookieParser from 'cookie-parser';
 
 import seedAdmin from "config/seedAdmin";
 import configQueryParser from 'config/queryparser.config'
 import configUploadsFile from 'config/uploadsFile.config';
+import configCors from 'config/cors.config';
 import routes from "routes/index.routes";
 import services from "services/index.services";
 import mid from "middlewares/index.middlewares";
@@ -27,16 +27,11 @@ const PORT = process.env.PORT || 8220;
 
 configQueryParser(app);
 configUploadsFile(app);
+configCors(app);
 
 app.get('/', (res: any, req: any)=> {
     req.send('hello from hqh');
 });
-
-app.use(cors({
-    origin: process.env.FRONT_END_URL,
-    credentials: true, 
-    methods: ['GET', 'POST'],
-}));
 
 app.use(cookieParser());
 app.use(mid.addSocketIO(io));
