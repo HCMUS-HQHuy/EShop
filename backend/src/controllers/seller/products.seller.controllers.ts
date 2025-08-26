@@ -213,9 +213,62 @@ async function remove(req: types.RequestCustom, res: express.Response) {
     }
 }
 
+async function getById(req: types.RequestCustom, res: express.Response) {
+    if (utils.isAcceptedSeller(req.user) === false) {
+        return res.status(403).send(util.response.authorError('sellers'));
+    }
+    const productId = Number(req.params.id);
+    if (isNaN(productId) || productId <= 0) {
+        return res.status(400).send(util.response.error('Invalid product ID', []));
+    }
+    console.log("Fetching product with ID:", productId);
+    let db: Client | undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const result = await db.query(`
+            SELECT
+                name, short_name as "shortName", sku, price, discount, stock_quantity, categories.title as "category",
+                products.description, products.image_url as "imageUrl", product_images.image_url as "additionalImage"
+            FROM 
+                products 
+                JOIN 
+                    product_categories ON products.product_id = product_categories.product_id
+                JOIN
+                    categories ON product_categories.category_id = categories.category_id
+                JOIN 
+                    product_images ON products.product_id = product_images.product_id
+            WHERE products.product_id = $1 AND shop_id = $2
+        `, [productId, req.user?.shop_id]);
+        if (!result.rows[0]) {
+            return res.status(404).send(util.response.error('Product not found', []));
+        }
+        const product = result.rows[0];
+        const data = {
+            name: product.name,
+            shortName: product.shortName,
+            sku: product.sku,
+            price: product.price,
+            discount: product.discount,
+            stock_quantity: product.stock_quantity,
+            description: product.description,
+            imageUrl: `${process.env.PUBLIC_URL}/${product.imageUrl}`,
+            categories: result.rows.map(row => row.category),
+            additionalImages: result.rows.map(row => `${process.env.PUBLIC_URL}/${row.additionalImage}`)
+        }
+        res.status(200).send(util.response.success('Product fetched successfully', [data]));
+    } catch (error) {
+        console.log('error fetch product with id', error);
+        return res.status(500).send(util.response.internalServerError());
+    } finally {
+        if (db) {
+            database.releaseConnection(db);
+        }
+    }
+}
+
 async function update(req: types.RequestCustom, res: express.Response) {
     if (utils.isAcceptedSeller(req.user) === false) {
-        return res.status(403).send({ error: 'Forbidden: Only sellers can update products' });
+        return res.status(403).send(util.response.authorError('sellers'));
     }
     const productId = Number(req.params.id);
     if (isNaN(productId) || productId <= 0) {
@@ -382,6 +435,7 @@ async function display(req: types.RequestCustom, res: express.Response) {
 const sellerProductController = {
     list,
     add,
+    getById,
     remove,
     update,
     hide,
