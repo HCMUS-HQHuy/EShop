@@ -5,6 +5,7 @@ import CategoryInput from 'src/Components/Shared/CategoryInput/CategoryInput.tsx
 import ToggleSwitch from 'src/Components/Shared/ToggleSwitch/ToggleSwitch.tsx';
 import s from './AddProductPage.module.scss';
 import api from 'src/Api/index.api.ts';
+import LoadingPage from 'src/Components/LoadingPage/LoadingPage.tsx';
 
 // Component Icon nhỏ để tái sử dụng
 const IconPlus = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5V19" stroke="#848d97" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M5 12H19" stroke="#848d97" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
@@ -29,22 +30,28 @@ const AddProductPage = () => {
       setIsLoading(true);
       // ---- Dùng dữ liệu giả để test ----
       console.log(`Fetching data for product: ${productId}`);
-      const mockProductToEdit = {
-        name: 'Gaming Chair, local pickup only', shortName: 'Gaming Chair', sku: '12',
-        description: 'A very comfortable chair for gamers.', price: 150.00, discount: 10,
-        stock_quantity: 56, mainImage: null, additionalImages: [],
-        categories: ['Furniture', 'Gaming'], isActive: true,
-      };
-      
-      // Chuyển đổi dữ liệu mock để phù hợp với state
-      setProductData({
-        ...mockProductToEdit,
-        mainImage: undefined,
-        price: String(mockProductToEdit.price),
-        discount: String(mockProductToEdit.discount),
-        stock_quantity: String(mockProductToEdit.stock_quantity),
+      api.product.shopFetchById(productId as string).then(res => {
+        const product = res.data.data[0];
+        setProductData({
+          name: product.name,
+          shortName: product.shortName,
+          sku: product.sku,
+          description: product.description,
+          price: product.price,
+          discount: product.discount,
+          stock_quantity: product.stock_quantity,
+          mainImage: product.imageUrl,
+          additionalImages: product.additionalImages,
+          categories: product.categories,
+          isActive: product.status === 'Active',
+        });
+      }).catch(err => {
+        console.error('Error fetching product data:', err);
+        alert('Failed to load product data.');
+        navigate('/seller/products');
+      }).finally(() => {
+        setIsLoading(false);
       });
-      setIsLoading(false);
     }
   }, [productId, isEditMode]);
 
@@ -105,11 +112,9 @@ const AddProductPage = () => {
     });
 
     try {
-      // Gửi đối tượng formData đi
       console.log('Submitting FormData...');
       await api.product.create(formData);
-      alert('Product created successfully! (Simulation)');
-      navigate('/seller-dashboard/products');
+      navigate('/seller/products');
     } catch (err) {
       console.error('Error creating product:', err);
       alert('Failed to create product.');
@@ -117,7 +122,7 @@ const AddProductPage = () => {
   };
 
   if (isLoading) {
-    return <div>Loading product data...</div>;
+    return <LoadingPage />;
   }
 
   return (
@@ -132,7 +137,7 @@ const AddProductPage = () => {
                 <div className={s.mainImageContainer}>
                 {productData.mainImage ? (
                     <>
-                    <img src={URL.createObjectURL(productData.mainImage)} alt="Main Preview" />
+                    <img src={typeof productData.mainImage === 'string' ? productData.mainImage : URL.createObjectURL(productData.mainImage)} alt="Main Preview" />
                     <button type="button" className={s.deleteButton} onClick={() => setProductData(p => ({ ...p, mainImage: undefined }))}>&times;</button>
                     </>
                 ) : (
@@ -148,7 +153,7 @@ const AddProductPage = () => {
                 </div>
                 {productData.additionalImages.map((file, index) => (
                     <div key={index} className={s.imagePreviewTile}>
-                    <img src={URL.createObjectURL(file)} alt={`Preview ${index}`} />
+                    <img src={typeof file === 'string' ? file : URL.createObjectURL(file)} alt={`Preview ${index}`} />
                     <button type="button" className={s.deleteButton} onClick={() => removeAdditionalImage(index)}>&times;</button>
                     </div>
                 ))}
@@ -202,7 +207,7 @@ const AddProductPage = () => {
                 <label>Product active</label>
               </div>
               <div className={s.buttonGroup}>
-                <button type="button" onClick={() => navigate('/seller-dashboard/products')} className={s.cancelButton}>Cancel</button>
+                <button type="button" onClick={() => navigate('/seller/products')} className={s.cancelButton}>Cancel</button>
                 <button type="submit" className={s.saveButton}>{isEditMode ? 'Update Product' : 'Save Product'}</button>
               </div>
             </div>
