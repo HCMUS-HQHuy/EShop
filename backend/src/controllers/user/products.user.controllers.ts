@@ -176,7 +176,6 @@ async function getRelatedProductsById(productId: number): Promise<any[]> {
 // #### CONTROLLER FUNCTIONS ####
 
 async function list(req: types.RequestCustom, res: express.Response) {
-    console.log("Listing products with params:", req.query);
     const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
     if (!parsedBody.success) {
         return res.status(400).send(util.response.zodValidationError(parsedBody.error));
@@ -190,7 +189,6 @@ async function list(req: types.RequestCustom, res: express.Response) {
             ...product,
             img: `${process.env.PUBLIC_URL}/${product.img}`
         }));
-        console.log(data);
         res.status(200).send(util.response.success('Products fetched successfully', data));
     } catch (error) {
         console.error('Error listing products:', error);
