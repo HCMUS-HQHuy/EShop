@@ -17,7 +17,7 @@ type Props = {
 };
 
 const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: Props) => {
-  const { name, discount, img, id, addedDate } = product;
+  const { shortName, discount, img, id, addedDate } = product;
   const {
     stopHover,
     showDiscount,
@@ -48,7 +48,7 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: P
 
   function navigateToProductDetails() {
     if (loadingProductDetails) return;
-    navigateTo(`/details?product=${name.toLowerCase()}`);
+    navigateTo(`/details?product=${id}`);
   }
 
   return (
@@ -57,8 +57,8 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: P
         <div className={s.imgHolder}>
           <img
             src={`${img}`}
-            alt={name}
-            aria-label={name}
+            alt={shortName}
+            aria-label={shortName}
             loading={loading}
             onClick={navigateToProductDetails}
           />

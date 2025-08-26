@@ -1,28 +1,33 @@
 import { useTranslation } from "react-i18next";
-import { translateProduct } from "../../../Cart/CartProducts/CartProduct";
-import RateStars from "../../../Shared/MidComponents/RateStars/RateStars";
+import { translateProduct } from "../../../Cart/CartProducts/CartProduct.tsx";
+import RateStars from "../../../Shared/MidComponents/RateStars/RateStars.tsx";
 import s from "./ProductFirstInfos.module.scss";
+import type { ProductDetailType } from "src/Types/product.ts";
 
-const ProductFirstInfos = ({ productData }) => {
-  const { shortName, price, votes, rate } = productData;
+type Props = {
+  productData: ProductDetailType;
+}
+
+const ProductFirstInfos = ({ productData }: Props) => {
+  const { name, price, votes, rate } = productData;
   const { t } = useTranslation();
 
-  const translatedProductName = translateProduct({
-    productName: shortName,
-    translateMethod: t,
-    translateKey: "name",
-    uppercase: true,
-  });
+  // const translatedProductName = translateProduct({
+  //   productName: shortName,
+  //   translateMethod: t,
+  //   translateKey: "name",
+  //   uppercase: true,
+  // });
 
-  const translatedDescription = translateProduct({
-    productName: shortName,
-    translateMethod: t,
-    translateKey: "description",
-  });
+  // const translatedDescription = translateProduct({
+  //   productName: shortName,
+  //   translateMethod: t,
+  //   translateKey: "description",
+  // });
 
   return (
     <section className={s.firstInfos}>
-      <h2 className={s.productName}>{translatedProductName}</h2>
+      <h2 className={s.productName}>{name}</h2>
 
       <div className={s.rateAndReviews}>
         <RateStars rate={rate} />
@@ -37,7 +42,7 @@ const ProductFirstInfos = ({ productData }) => {
         {price}
       </span>
 
-      <p className={s.description}>{translatedDescription}</p>
+      <p className={s.description}>{productData.description}</p>
     </section>
   );
 };

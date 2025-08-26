@@ -1,13 +1,20 @@
 import { useDispatch, useSelector } from "react-redux";
-import { updateGlobalState } from "src/Features/globalSlice";
-import PreviewImages from "./ProductImages/PreviewImages";
+import { updateGlobalState } from "src/Features/globalSlice.tsx";
+import PreviewImages from "./ProductImages/PreviewImages.tsx";
 import s from "./ProductPreview.module.scss";
+import type { Product, ProductDetailType } from "src/Types/product.ts";
+import type { RootState } from "src/Types/store.ts";
 
-const ProductPreview = ({ productData, handleZoomInEffect }) => {
-  const { previewImg } = useSelector((state) => state.global);
+type Props = {
+  productData: ProductDetailType,
+  handleZoomInEffect: (event: React.MouseEvent<HTMLImageElement>) => void,
+}
+
+const ProductPreview = ({ productData, handleZoomInEffect }: Props) => {
+  const { previewImg } = useSelector((state: RootState) => state.global);
   const dispatch = useDispatch();
-  const { name, otherImages } = productData;
-  const hasOtherImages = otherImages?.length !== 0 && otherImages;
+  const { name, additionalImages } = productData;
+  const hasOtherImages = additionalImages?.length !== 0 && additionalImages;
 
   function setZoomInPreview(value = false) {
     dispatch(updateGlobalState({ key: "isZoomInPreviewActive", value: value }));
@@ -19,7 +26,7 @@ const ProductPreview = ({ productData, handleZoomInEffect }) => {
 
       <div className={s.previewImgHolder}>
         <img
-          src={previewImg}
+          src={previewImg!}
           alt={name}
           onMouseMove={handleZoomInEffect}
           onMouseEnter={() => setZoomInPreview(true)}

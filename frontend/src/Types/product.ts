@@ -43,7 +43,25 @@ type Color = {
   color: string;
 }
 
-export type { Product, Color, CreatingProduct };
+type ProductDetailType = {
+  id: number;
+  shortName: string;
+  name: string;
+  category: string[];
+  price: string;
+  discount: string;
+  afterDiscount: string;
+  description: string;
+  addedDate: string;
+  img: string;
+  additionalImages: string[];
+  // colors: Color[];
+  rate: number;
+  votes: number;
+  quantity: number;
+}
+
+export type { Product, Color, CreatingProduct, ProductDetailType };
 const ProductSchema = {
   CreatingRequest: CreatingProductSchema,
   EditingRequest: UpdatingProductSchema

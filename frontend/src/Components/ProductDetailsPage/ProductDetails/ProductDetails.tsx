@@ -12,8 +12,13 @@ import ProductFeatures from "./ProductFeatures/ProductFeatures.tsx";
 import ProductFirstInfos from "./ProductFirstInfos/ProductFirstInfos.tsx";
 import ProductSizes from "./ProductSizes/ProductSizes.tsx";
 import type { RootState } from "src/Types/store.ts";
+import type { ProductDetailType } from "src/Types/product.ts";
 
-const ProductDetails = ({ productData }) => {
+type Props = {
+  productData: ProductDetailType;
+}
+
+const ProductDetails = ({ productData }: Props) => {
   if (!productData) return <Navigate to="product-not-found" />;
 
   const { loadingProductDetails } = useSelector((state: RootState) => state.loading);
@@ -21,16 +26,16 @@ const ProductDetails = ({ productData }) => {
     (state: RootState) => state.global
   );
   const dispatch = useDispatch();
-  const zoomInImgRef = useRef();
+  const zoomInImgRef = useRef<HTMLImageElement>(null);
   const isWebsiteOnline = useOnlineStatus();
   const activeClass = isZoomInPreviewActive ? s.active : "";
 
-  function handleZoomInEffect(e) {
-    const imgRect = e.target.getClientRects()[0];
+  function handleZoomInEffect(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    const imgRect = (e.target as HTMLElement).getClientRects()[0];
+    if (!zoomInImgRef.current || !imgRect) return;
     const xPosition = e.clientX - imgRect.left;
     const yPosition = e.clientY - imgRect.top;
     const positions = `-${xPosition * 2}px, -${yPosition * 2}px`;
-
     zoomInImgRef.current.style.transform = `translate(${positions})`;
   }
 
@@ -51,15 +56,15 @@ const ProductDetails = ({ productData }) => {
 
           <section className={s.details}>
             <div className={`${s.zoomInPreview} ${activeClass}`}>
-              <img src={previewImg} alt="product preview" ref={zoomInImgRef} />
+              <img src={previewImg ? previewImg : ''} alt="product preview" ref={zoomInImgRef} />
             </div>
 
             <ProductFirstInfos productData={productData} />
 
             <div className={s.horizontalLine} />
 
-            <ProductColorsSection productData={productData} />
-            {productData?.sizes && <ProductSizes productData={productData} />}
+            {/* <ProductColorsSection productData={productData} /> */}
+            {/* {productData?.sizes && <ProductSizes productData={productData} />} */}
             <ProductDealingControls productData={productData} />
             <ProductFeatures />
           </section>
