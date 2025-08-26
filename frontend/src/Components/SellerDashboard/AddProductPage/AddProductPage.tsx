@@ -21,7 +21,7 @@ const AddProductPage = () => {
     mainImage: undefined as File | undefined,
     additionalImages: [] as File[],
     deletedImages: [] as string[],
-    categories: [] as string[],
+    categories: [] as number[],
     isActive: true,
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -117,7 +117,7 @@ const AddProductPage = () => {
     formData.append('status', productData.isActive ? 'Active' : 'Inactive');
 
     productData.categories.forEach(category => {
-      formData.append('categories[]', category);
+      formData.append('categories[]', String(category));
     });
     if (productData.mainImage) {
       formData.append('mainImage', productData.mainImage);
@@ -219,8 +219,8 @@ const AddProductPage = () => {
               </div>
             </div>
             <div className={s.formGroup}>
-              <label>Category (Tags)</label>
-              <CategoryInput categories={productData.categories} onCategoriesChange={(cats) => setProductData(p => ({ ...p, categories: cats }))} />
+              <label>Categories</label>
+              <CategoryInput categoryIds={productData.categories} onCategoriesChange={(cats) => setProductData(p => ({ ...p, categories: cats }))} />
             </div>
             <div className={s.formGroup}>
               <label htmlFor="description">Description</label>

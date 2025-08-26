@@ -1,12 +1,19 @@
+.container {
+  position: relative;
+}
+
 .categoryInputContainer {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-//   padding: 8px;
-//   border: 1px solid var(--very-light-gray);
+  padding: 8px;
+  border: 1px solid var(--very-light-gray);
   border-radius: 6px;
   background-color: var(--white);
+  cursor: text;
+  transition: border-color 0.2s ease;
 
   &:focus-within {
     border-color: var(--tomato);
@@ -39,12 +46,45 @@
   }
 }
 
-.input {
-  flex-grow: 1;
+.inputCategory {
+  flex-grow: 1; // Quan trọng: Cho phép input co giãn
   border: none;
   outline: none;
-  padding: 5px;
+  padding: 5px 0; // Bỏ padding ngang để nó dính vào tag
   background-color: transparent;
   font-size: 1rem;
-  min-width: 150px;
+  min-width: 150px; // Đặt chiều rộng tối thiểu để không bị quá nhỏ
+}
+
+.suggestionsList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--white);
+  border: 1px solid var(--very-light-gray);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  list-style: none;
+  margin: 2px 0 0; // Thêm khoảng cách nhỏ
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  li {
+    padding: 10px 15px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--skeleton-color1);
+    }
+
+    // 2. Thêm style cho mục gợi ý đang được chọn bằng bàn phím
+    &.activeSuggestion {
+      background-color: var(--tomato);
+      color: var(--white);
+    }
+  }
 }
