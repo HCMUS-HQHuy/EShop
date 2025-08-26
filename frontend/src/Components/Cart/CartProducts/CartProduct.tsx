@@ -1,21 +1,26 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { formatePrice, getNumericPrice } from "src/Functions/formatting";
-import CustomNumberInput from "../../Shared/MiniComponents/CustomNumberInput/CustomNumberInput";
+import { formatePrice, getNumericPrice } from "src/Functions/formatting.ts";
+import CustomNumberInput from "../../Shared/MiniComponents/CustomNumberInput/CustomNumberInput.tsx";
 import s from "./CartProduct.module.scss";
-import RemoveCartProductBtn from "./RemoveCartProductBtn";
+import RemoveCartProductBtn from "./RemoveCartProductBtn.tsx";
+import type { Product } from "src/Types/product.ts";
 
-const CartProduct = ({ data }) => {
+type Props = {
+  data: Product
+}
+
+const CartProduct = ({ data }: Props) => {
   const { img, name, shortName, afterDiscount, quantity, id } = data;
   const priceAfterDiscount = getNumericPrice(afterDiscount);
   const subTotal = formatePrice((quantity * priceAfterDiscount).toFixed(2));
   const { t } = useTranslation();
 
-  const translatedProductName = translateProduct({
-    productName: shortName,
-    translateMethod: t,
-    translateKey: "shortName",
-  });
+  // const translatedProductName = translateProduct({
+  //   productName: shortName,
+  //   translateMethod: t,
+  //   translateKey: "shortName",
+  // });
 
   return (
     <tr className={s.productContainer}>
@@ -25,7 +30,7 @@ const CartProduct = ({ data }) => {
           <RemoveCartProductBtn productId={id} />
         </div>
 
-        <Link to={`/details?product=${name}`}>{translatedProductName}</Link>
+        <Link to={`/details?product=${id}`}>{name}</Link>
       </td>
 
       <td className={s.price}>{afterDiscount}</td>

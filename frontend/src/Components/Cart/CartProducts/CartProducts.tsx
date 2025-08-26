@@ -1,11 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import CartProduct from "./CartProduct";
+import CartProduct from "./CartProduct.tsx";
 import s from "./CartProducts.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const CartProducts = () => {
   const { t } = useTranslation();
-  const { cartProducts } = useSelector((state) => state.products);
+  const { cartProducts } = useSelector((state: RootState) => state.products);
   const productsTable = "cartPage.productsTable";
 
   return (
