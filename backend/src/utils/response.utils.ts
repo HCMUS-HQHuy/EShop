@@ -9,7 +9,7 @@ function successResponse(message: string, data: any[]) {
   };
 }
 
-function errorResponse(message: string, data: any[]) {
+function errorResponse(message: string, data: any[] = []) {
   return {
     message: message,
     error: true,

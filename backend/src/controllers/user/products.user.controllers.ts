@@ -41,17 +41,40 @@ async function getProductInforById(productId: number): Promise<any | null> {
         db = await database.getConnection();
         const sql = `
             SELECT 
-                product_id, products.name as product_name, products.description as product_description, 
-                price, stock_quantity, shop.shop_name AS shop_name, shop.shop_id AS shop_id
+                products.name as "name",
+                products.short_name as "shortName",
+                products.description as "description",
+                price as "price",
+                stock_quantity as "stockQuantity",
+                shop.shop_name AS "shopName",
+                shop.shop_id AS "shopId",
+                products.image_url as "img",
+                product_images.image_url as "additionalImg",
+                product_categories.category_id as "categoryId"
             FROM
                 products
-                JOIN shops as shop ON products.shop_id = shop.shop_id
+                JOIN 
+                    shops as shop ON products.shop_id = shop.shop_id
+                LEFT JOIN 
+                    product_categories ON products.product_id = product_categories.product_id
+                LEFT JOIN
+                    product_images ON products.product_id = product_images.product_id
             WHERE 
-                product_id = $1 
+                products.product_id = $1 
                 AND products.status = '${types.PRODUCT_STATUS.ACTIVE}' AND products.is_deleted = FALSE
         `;
         const result = await db.query(sql, [productId]);
-        return result.rows.length > 0 ? result.rows[0] : null;
+        const product = result.rows;
+        if (product.length === 0) {
+            return null;
+        }
+        const data = {
+            ...product[0],
+            img: `${process.env.PUBLIC_URL}/${product[0].img}`,
+            categoryIds: product.map((p) => p.categoryId),
+            additionalImages: product.map((p) => `${process.env.PUBLIC_URL}/${p.additionalImg}`)
+        };
+        return data;
     } catch (error) {
         console.error('Error fetching product by ID:', error);
         throw error;
@@ -94,10 +117,10 @@ async function listProducts(params: types.ProductParamsRequest) {
             ORDER BY ${params.sortAttribute} ${params.sortOrder}
             LIMIT $2 OFFSET $3
         `;
-        const limit         = Number(process.env.PAGINATION_LIMIT);
-        const offset        = (params.page - 1) * limit;
-        const filter        = params.filter as types.UserProductFilter;
-        const categoriesId  = await getAllCategoriesId(filter?.categories_id);
+        const limit = Number(process.env.PAGINATION_LIMIT);
+        const offset = (params.page - 1) * limit;
+        const filter = params.filter as types.UserProductFilter;
+        const categoriesId = await getAllCategoriesId(filter?.categories_id);
         const queryParams = [
             `%${params.keywords}%`,                         // $1
             limit,                                          // $2
@@ -177,33 +200,33 @@ async function list(req: types.RequestCustom, res: express.Response) {
 async function getDetailById(req: types.RequestCustom, res: express.Response) {
     const productId = Number(req.params.id);
     if (!productId || isNaN(productId)) {
-        return res.status(400).send({ error: 'Product ID is required and must be a number' });
+        return res.status(400).send(util.response.authorError('users'));
     }
     console.log("Fetching product details for ID:", productId);
     if (productId <= 0) {
-        return res.status(400).send({ error: 'Product ID must be a positive number' });
+        return res.status(400).send(util.response.error('Invalid product ID', ['ProductId must be a positive number']));
     }
 
     try {
-        const product = await getProductInforById(productId);
-        if (!product) {
-            return res.status(404).send({ error: 'Product not found' });
+        const data = await getProductInforById(productId);
+        if (!data) {
+            return res.status(404).send(util.response.error('Product not found'));
         }
-        res.send(product);
+        res.status(200).send(util.response.success('Product details fetched successfully', [data]));
     } catch (error) {
         console.error('Error fetching product details:', error);
-        return res.status(500).send({ error: 'Internal server error' });
+        return res.status(500).send(util.response.internalServerError());
     }
 }
 
 async function getRelatedProducts(req: types.RequestCustom, res: express.Response) {
     const productId = Number(req.params.id);
     if (!productId || isNaN(productId)) {
-        return res.status(400).send({ error: 'Product ID is required and must be a number' });
+        return res.status(400).send(util.response.error('Product ID is required and must be a number'));
     }
     console.log("Fetching related products for ID:", productId);
     if (productId <= 0) {
-        return res.status(400).send({ error: 'Product ID must be a positive number' });
+        return res.status(400).send(util.response.error('Product ID must be a positive number'));
     }
 
     try {
