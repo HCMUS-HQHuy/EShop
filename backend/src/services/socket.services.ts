@@ -18,7 +18,6 @@ async function auth(socket: Socket, next: (err?: Error) => void) {
             return next(new Error('Authentication error: No cookies found.'));
         }
         const parsedCookies = cookie.parse(cookiesString as string);
-        console.log("cookiesString: ", parsedCookies);
         const token: string|undefined = parsedCookies['auth_jwt'];
         if (token === undefined) {
             console.log("No token found in cookies");
