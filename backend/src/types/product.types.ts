@@ -13,6 +13,7 @@ export type ProductStatus = typeof PRODUCT_STATUS[keyof typeof PRODUCT_STATUS];
 
 const ProductSchema = z.object({
     name: z.string().min(1, 'Name is required').max(100, 'Name must be <= 100 characters'),
+    sku: z.string().min(1, 'SKU is required').max(50, 'SKU must be <= 50 characters'),
     shortName: z.string().min(1, 'Short name is required').max(50, 'Short name must be <= 50 characters'),
     description: z.string().min(1, 'Description is required').max(1000, 'Description must be <= 1000 characters'),
     price: z.coerce.number().nonnegative('Price must be >= 0'),

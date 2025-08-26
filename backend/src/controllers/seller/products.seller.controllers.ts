@@ -75,7 +75,13 @@ async function listProducts(shop_id: number, params: types.ProductParamsRequest)
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT *
+            SELECT
+                product_id as "productId",
+                image_url as "imageUrl",
+                short_name as "shortName", 
+                sku, price, discount, 
+                stock_quantity as "stockQuantity", 
+                500 as sold, 4 as rating, status
             FROM products
             WHERE name ILIKE $1
                 AND shop_id = ${shop_id}
@@ -93,7 +99,7 @@ async function listProducts(shop_id: number, params: types.ProductParamsRequest)
                 AND is_deleted = FALSE
             ORDER BY ${params.sortAttribute} ${params.sortOrder}
             LIMIT $2 OFFSET $3
-                `;
+        `;
         
         const limit         = Number(process.env.PAGINATION_LIMIT);
         const offset        = (params.page - 1) * limit;
@@ -263,12 +269,13 @@ async function add(req: types.RequestCustom, res: express.Response) {
         db = await database.getConnection();
         await db.query('BEGIN');
         const sql = `
-            INSERT INTO products (name, short_name, price, discount, description, stock_quantity, image_url, shop_id, status)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            INSERT INTO products (name, sku, short_name, price, discount, description, stock_quantity, image_url, shop_id, status)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING product_id
         `;
         const data = [
             product.name,
+            product.sku,
             product.shortName,
             product.price,
             product.discount,
