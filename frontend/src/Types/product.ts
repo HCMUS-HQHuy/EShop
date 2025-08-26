@@ -13,8 +13,12 @@ const CreatingProductSchema = z.object({
 });
 
 
+const UpdatingProductSchema = CreatingProductSchema.extend({
+  deletedImages: z.array(z.string()).optional(),
+});
 
 type CreatingProduct = z.infer<typeof CreatingProductSchema>;
+type UpdatingProduct = z.infer<typeof UpdatingProductSchema>;
 
 type Product = {
   id: number;
@@ -32,7 +36,6 @@ type Product = {
   rate: number;
   votes: number;
   quantity: number;
-//   sold: number;
 }
 
 type Color = {

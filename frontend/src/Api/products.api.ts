@@ -15,5 +15,9 @@ const product = {
       headers: { "Content-Type": "multipart/form-data" },
     }),
     shopFetch: () => api.get("/seller/products/list"),
+    shopFetchById: (id: string) => api.get(`/seller/products/${id}`),
+    shopUpdateById: (id: string, productData: any) => api.put(`/seller/products/${id}/update`, productData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
 };
 export default product;

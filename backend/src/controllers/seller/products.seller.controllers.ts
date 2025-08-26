@@ -48,28 +48,6 @@ async function removeProduct(userId: number, productId: number): Promise<void> {
     }
 }
 
-async function updateProduct(productId: number, product: types.ProductInformation): Promise<void> {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            UPDATE products
-            SET name = $1, price = $2, stock_quantity = $3, shop_id = $4, 
-                status = '${types.PRODUCT_STATUS.PENDING}'
-            WHERE product_id = $5 AND is_deleted = FALSE
-        `;
-        const data = [product.name, product.price, product.stock_quantity, product.shop_id, productId];
-        await db.query(sql, data);
-    } catch (error) {
-        console.error('Error updating product:', error);
-        throw error;
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
-    }
-}
-
 async function listProducts(shop_id: number, params: types.ProductParamsRequest) {
     let db: Client | undefined = undefined;
     try {
@@ -270,6 +248,10 @@ async function update(req: types.RequestCustom, res: express.Response) {
     if (utils.isAcceptedSeller(req.user) === false) {
         return res.status(403).send(util.response.authorError('sellers'));
     }
+    if (!req.files || !('mainImage' in req.files)) {
+        return res.status(400).send(util.response.error( 'Main image (mainImage) is required', []));
+    }
+
     const productId = Number(req.params.id);
     if (isNaN(productId) || productId <= 0) {
         return res.status(400).send({ error: 'Invalid product ID' });
@@ -285,18 +267,75 @@ async function update(req: types.RequestCustom, res: express.Response) {
     }
     const parsedBody = types.productSchemas.information.safeParse(req.body);
     if (!parsedBody.success) {
-        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
+        return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
     const product: types.ProductInformation = parsedBody.data;
+    console.log("Parsed product data:", product);
+
+    let db: Client | undefined = undefined;
     try {
-        // Ensure the shop_id is set from the authenticated user
         product.shop_id = req.user?.shop_id as number;
-        await updateProduct(productId, product);
-    } catch (error) {
-        console.error('Error updating product:', error);
-        return res.status(500).send({ error: 'Internal server error' });
+        product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
+        console.log("Product added:", product);
+        db = await database.getConnection();
+        await db.query('BEGIN');
+        const sql = `
+            UPDATE products
+            SET name = $1, sku = $2, short_name = $3, price = $4, discount = $5, description = $6, stock_quantity = $7, image_url = $8, status = $9
+            WHERE product_id = $10 AND shop_id = $11
+        `;
+        const data = [
+            product.name,
+            product.sku,
+            product.shortName,
+            product.price,
+            product.discount,
+            product.description,
+            product.stock_quantity,
+            product.mainImage,
+            product.status,
+            productId,
+            product.shop_id,
+        ];
+        await db.query(sql, data);
+        await db.query('DELETE FROM product_categories WHERE product_id = $1', [productId]);
+        await db.query('DELETE FROM product_images WHERE product_id = $1', [productId]);
+        const valuesSQL = product.categories
+            .map((_, index) => `($1, $${index + 2})`)
+            .join(', ');
+        if (valuesSQL) {
+            const sql2 = `
+                INSERT INTO product_categories (product_id, category_id)
+                VALUES ${valuesSQL}
+            `;
+            const params = [productId, ...product.categories];
+            await db.query(sql2, params);
+        }
+
+        const valuesImageSQL = (req.files['additionalImages'] as Express.Multer.File[] | undefined)?.map((_, index) => `($1, $${index + 2})`).join(', ');
+        if (valuesImageSQL) {
+            const sql3 = `
+                INSERT INTO product_images (product_id, image_url)
+                VALUES ${valuesImageSQL}
+            `;
+            const imageUrls = (req.files['additionalImages'] as Express.Multer.File[]).map(file => file.filename);
+            const paramsImage = [productId, ...imageUrls];
+            await db.query(sql3, paramsImage);
+        }
+        await db.query('COMMIT');
     }
-    res.status(200).send({ message: 'Product updated successfully' });
+    catch (error) {
+        if (db) {
+            await db.query('ROLLBACK');
+        }
+        console.error('Error adding product:', error);
+        return res.status(500).send(util.response.internalServerError());
+    } finally {
+        if (db) {
+            await database.releaseConnection(db);
+        }
+    }
+    res.status(200).send(util.response.success('Product updated successfully', []));
 }
 
 async function add(req: types.RequestCustom, res: express.Response) {
