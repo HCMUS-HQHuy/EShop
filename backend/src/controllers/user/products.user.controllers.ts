@@ -94,6 +94,7 @@ async function listProducts(params: types.ProductParamsRequest) {
             SELECT 
                 product_id as id,
                 short_name as "shortName",
+                name,
                 price,
                 discount,
                 stock_quantity as quantity,
