@@ -8,7 +8,7 @@ export function getDiscountedPrice(originalPrice: string, discountPercentage: st
 }
 
 export function formatePrice(price: string): string {
-  console.log("Formatting price:", price);
+  // console.log("Formatting price:", price);
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",

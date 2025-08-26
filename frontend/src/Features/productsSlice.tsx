@@ -73,11 +73,11 @@ const productsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.pending, (state) => {
-        console.log("Fetching products...");
+        // console.log("Fetching products...");
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.productsList = [...action.payload];
-        console.log("Products fetched successfully:", state.productsList);
+        // console.log("Products fetched successfully:", state.productsList);
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         console.error("Failed to fetch products:", action.payload);
