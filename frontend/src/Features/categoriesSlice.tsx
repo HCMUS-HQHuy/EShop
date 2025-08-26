@@ -9,9 +9,13 @@ const initialState = {
 
 export const getCategories = createAsyncThunk(
   "categories/getCategories",
-  async () => {
-    const response = await api.categories.getAll();
-    return response.data;
+  async (_, { rejectWithValue }) => {
+      try {
+        const response = await api.categories.getAll();
+        return response.data.data;
+      } catch(error) {
+        return rejectWithValue(error);
+      }
   }
 );
 
