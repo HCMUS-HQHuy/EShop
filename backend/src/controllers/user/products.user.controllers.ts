@@ -162,7 +162,12 @@ async function list(req: types.RequestCustom, res: express.Response) {
 
     try {
         const products = await listProducts(params);
-        res.send(products);
+        const data = products.map(product => ({
+            ...product,
+            img: `${process.env.PUBLIC_URL}/${product.img}`
+        }));
+        console.log(data);
+        res.status(200).send(util.response.success('Products fetched successfully', data));
     } catch (error) {
         console.error('Error listing products:', error);
         res.status(500).send(util.response.internalServerError());
