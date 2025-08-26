@@ -56,7 +56,7 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: P
       <div className={s.productImg}>
         <div className={s.imgHolder}>
           <img
-            src={`${import.meta.env.VITE_PUBLIC_URL}/${img}`}
+            src={`${img}`}
             alt={name}
             aria-label={name}
             loading={loading}
