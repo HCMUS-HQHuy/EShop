@@ -128,10 +128,14 @@ const ManageProducts = () => {
   };
   
   const handleBulkDelete = () => {
+    if (selectedProductIds.length === 0) return;
     if (window.confirm(`Are you sure you want to delete ${selectedProductIds.length} selected products?`)) {
-      setProducts(prev => prev.filter(p => !selectedProductIds.includes(p.productId)));
-      setSelectedProductIds([]); // Reset lựa chọn
-      alert(`${selectedProductIds.length} products deleted.`);
+      api.product.shopDeleteById(selectedProductIds[0]!).then(() => {
+        setProducts(prev => prev.filter(p => !selectedProductIds.includes(p.productId)));
+        setSelectedProductIds([]);
+      }).catch(err => {
+        console.error("Failed to delete products:", err);
+      });
     }
   };
 

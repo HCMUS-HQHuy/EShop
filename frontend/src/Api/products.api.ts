@@ -18,6 +18,7 @@ const product = {
     shopFetchById: (id: string) => api.get(`/seller/products/${id}`),
     shopUpdateById: (id: string, productData: any) => api.put(`/seller/products/${id}/update`, productData, {
       headers: { "Content-Type": "multipart/form-data" },
-    })
+    }),
+    shopDeleteById: (id: string) => api.delete(`/seller/products/${id}/delete`),
 };
 export default product;

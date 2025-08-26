@@ -166,20 +166,20 @@ async function list(req: types.RequestCustom, res: express.Response) {
 
 async function remove(req: types.RequestCustom, res: express.Response) {
     if (utils.isAcceptedSeller(req.user) === false) {
-        return res.status(403).json({ error: 'Forbidden: Only sellers can remove products' });
+        return res.status(403).json(util.response.authorError('sellers'));
     }
     const productId = Number(req.params.id);
     if (isNaN(productId) || productId <= 0) {
-        return res.status(400).json({ error: 'Invalid product ID' });
+        return res.status(400).json(util.response.error('Invalid product ID', []));
     }
     try {
         const productExists = await checkProductExists(productId);
         if (!productExists) {
-            return res.status(404).json({ error: 'Product not found' });
+            return res.status(404).json(util.response.error('Product not found', []));
         }
     } catch (error) {
         console.error('Error checking product existence:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json(util.response.internalServerError());
     }
 
     console.log("Removing product with ID:", productId);
@@ -188,7 +188,7 @@ async function remove(req: types.RequestCustom, res: express.Response) {
         res.status(204).json();
     } catch (error) {
         console.error('Error removing product:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json(util.response.internalServerError());
     }
 }
 
