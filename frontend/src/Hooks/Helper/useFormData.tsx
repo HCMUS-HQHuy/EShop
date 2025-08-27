@@ -16,8 +16,6 @@ const useFormData = ({ initialValues, onSubmit, storeInLocalStorage, localStorag
     hasDataInLocal ? JSON.parse(valuesLocal) : initialValues
   );
 
-  console.log(values);
-
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
 

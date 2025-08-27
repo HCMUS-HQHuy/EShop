@@ -55,11 +55,11 @@ const CheckoutPage = () => {
 
     const isCartEmpty = cartProducts.length === 0;
     const isFormValid = isCheckoutFormValid(event);
-
+    
     event.preventDefault();
     blurInputs(inputs);
     showInvalidInputAlert(event);
-    if (!saveBillingInfoToLocal) localStorage.removeItem("billingInfo");
+    // if (!saveBillingInfoToLocal) localStorage.removeItem("billingInfo");
 
     if (isInputFocused && isCheckboxFocused) return;
     if (!isFormValid) return;
