@@ -5,6 +5,9 @@ import { Client } from "pg";
 import services from "./index.services";
 import database from "database/index.database";
 import { generateCode } from "utils/gencode.utils";
+import { SOCKET_NAMESPACE } from "types/index.types";
+import util from "utils/index.utils";
+import SOCKET_EVENTS from "constants/socketEvents";
 
 const redis_config = {
     host: process.env.REDIS_HOST || "localhost",
@@ -23,7 +26,7 @@ async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Pr
             SELECT
                 p.product_id,
                 c.quantity,
-                p.price AS price_at_purchase
+                p.price * (100 - p.discount) / 100 AS price_after_discount
             FROM
                 cart_data c
             JOIN
@@ -33,13 +36,18 @@ async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Pr
                 AND p.stock_quantity >= c.quantity
             FOR UPDATE OF p;
         `;
-        const productIds = items.map(item => item.product_id);
+        const productIds = items.map(item => item.productId);
         const quantities = items.map(item => item.quantity);
         const result = await db.query(sql, [productIds, quantities]);
         if (result.rows.length !== items.length) {
             throw new Error("Invalid order items: One or more items are out of stock, inactive, or do not exist.");
         }
-        const order_item: types.OrderItemRequest[] = result.rows;
+        const order_item: types.OrderItemRequest[] = result.rows.map(row => ({
+            orderId: 0, // placeholder, will be set when inserting order
+            productId: row.product_id,
+            quantity: row.quantity,
+            priceAtPurchase: row.price_after_discount
+        }));
         return order_item;
     } catch(error) {
         console.error('Error checking order items:', error);
@@ -59,7 +67,7 @@ async function reduceStockQuantities(orderItems: types.OrderItemRequest[], db: C
         WHERE products.product_id = data.product_id;
     `;
 
-    const productIds = orderItems.map(item => item.product_id);
+    const productIds = orderItems.map(item => item.productId);
     const quantities = orderItems.map(item => item.quantity);
 
     const result = await db.query(sql, [productIds, quantities]);
@@ -81,10 +89,10 @@ async function insertOrderItems(orderId: number, orderItems: types.OrderItemRequ
         ) AS t(product_id, quantity, price_at_purchase)
     `;
 
-    const productIds = orderItems.map(item => item.product_id);
+    const productIds = orderItems.map(item => item.productId);
     const quantities = orderItems.map(item => item.quantity);
-    const prices = orderItems.map(item => item.price_at_purchase);
-
+    const prices = orderItems.map(item => item.priceAtPurchase);
+    console.log("Inserting order items with params:", [orderId, productIds, quantities, prices]);
     await db.query(sql, [orderId, productIds, quantities, prices]);
     console.log("All order items inserted.");
 }
@@ -101,40 +109,38 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
         if(!orderItems || !Array.isArray(orderItems)) {
             throw Error;
         }
-// {
-//   partnerCode: 'MOMO',
-//   orderId: 'MOMO25',
-//   requestId: 'MOMO25',
-//   amount: 81129,
-//   orderInfo: 'pay with MoMo user hqh',
-//   orderType: 'momo_wallet',
-//   transId: 4562322486,
-//   resultCode: 0,
-//   message: 'Successful.',
-//   payType: 'napas',
-//   responseTime: 1755060654065,
-//   extraData: '',
-//   signature: '558e4ae430d3b30829d554f161f88915e5ef8841c349a7b46101f44afa730fee'
-// }
-
         const sqlCreateOrder = `
-            INSERT INTO orders (user_id, order_code, receiver_name, shipping_address, phone_number, email, total_amount, payment_method_id, created_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            INSERT INTO orders (
+                user_id, 
+                shop_id,
+                receiver_name, 
+                street_address, 
+                city, 
+                phone_number, 
+                email, 
+                total_amount, 
+                shipping_fee,
+                final_amount,
+                created_at
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
             RETURNING order_id
         `;
-        const orderCode = generateCode("ORD", String(orderData.user_id));
+        const orderCode = generateCode(String(orderData.userId));
         orderData.items = orderItems;
-        orderData.total_amount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.price_at_purchase), 0)
+        orderData.totalAmount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.priceAtPurchase), 0);
         const orderParams = [
-            orderData.user_id,
-            orderCode,
-            orderData.receiver_name,
-            orderData.shipping_address,
-            orderData.phone_number,
+            orderData.userId,
+            orderData.shopId,
+            orderData.receiverName,
+            orderData.streetAddress,
+            orderData.city,
+            orderData.phoneNumber,
             orderData.email,
-            orderData.total_amount,
-            orderData.payment_method_id,
-            orderData.order_at
+            orderData.totalAmount,
+            orderData.shippingFee,
+            orderData.finalAmount,
+            orderData.orderAt
         ];
 
         const orderResult = await db.query(sqlCreateOrder, orderParams);
@@ -144,9 +150,15 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
         const orderId = orderResult.rows[0].order_id;
         await insertOrderItems(orderId, orderItems, db);
         await reduceStockQuantities(orderItems, db);
+        const paymentInfo = await services.payment.create(orderCode, orderData);
+        const sqlCreatePayment = `
+            INSERT INTO payments (payment_code, order_id, payment_method_id, amount)
+            VALUES ($1, $2, $3, $4)
+        `;
+        await db.query(sqlCreatePayment, [paymentInfo.paymentCode, orderId, paymentInfo.payment_method_id, paymentInfo.amount]);
         await db.query(`COMMIT`);
-        services.payment.create(orderCode, orderData);
-        console.log(`Order ${orderData.user_id} created with items:`, orderData.items);
+        console.log(`Order ${orderData.userId} created with items:`, orderData.items);
+        return util.response.success("Order created successfully", [{ payUrl: paymentInfo.payUrl }]);
     } catch (error) {
         if (db) {
             await db.query('ROLLBACK');
@@ -163,14 +175,15 @@ const orderQueue = new Queue("orderQueue", {connection: redis_config});
 const orderWorker = new Worker("orderQueue", processOrder, { connection: redis_config });
 
 orderWorker.on('completed', (job: Job) => {
-    services.socket.sendMessageToUser(job.data.user_id, "order", "your order has completed!");
-    console.log(`${job.id} has completed!`);
+    const response = job.returnvalue;
+    console.log(`${job.id} has completed! and return value: `, response);
+    services.socket.sendMessageToUser(job.data.userId, SOCKET_EVENTS.REDIRECT, response);
 });
 
 // đoạn này cần xử lý thêm gì khi nó failed không? vì vẫn có TH nó failed nhưng không biết nó là từ job nào ?
 orderWorker.on('failed', (job: Job | undefined, err: Error) => {
     if (job) {
-        services.socket.sendMessageToUser(job.data.user_id, "order", err.message);
+        services.socket.sendMessageToUser(job.data.userId, "order", err.message);
         console.log(`${job.id} has failed with ${err.message}`);
     } else {
         console.log(`A job has failed with ${err.message}`);
@@ -179,7 +192,7 @@ orderWorker.on('failed', (job: Job | undefined, err: Error) => {
 
 async function create(orderData: types.CreatingOrderRequest) {
     try {
-        const hoursAgo = Math.floor((Date.now() - new Date(orderData.order_at).getTime()) / 360000);
+        const hoursAgo = Math.floor((Date.now() - new Date(orderData.orderAt).getTime()) / 360000);
         const priority = Math.max(0, Math.min(1000 - hoursAgo, 1000));
         const job = await orderQueue.add("createOrder", orderData, {
             priority: priority,

@@ -32,10 +32,7 @@ router.post("/orders/create", mid.auth, controller.user.order.create);
 router.get("/categories/list", controller.user.category.get);
 // router.get("/categories/toplevel", controller.user.category.getTopLevel);
 
-// #### PAYMENT TEST ####
-router.post("/payment/test", (req: any, res: any) => {
-    console.log('Payment test:', req.body);
-    res.send();
-});
+// #### PAYMENT ROUTES ####
+router.post("/payment/announce", controller.payment.announce);
 
 export default router;

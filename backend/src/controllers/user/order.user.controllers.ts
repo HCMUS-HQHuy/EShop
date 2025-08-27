@@ -1,34 +1,35 @@
 import express from "express";
 import services from "../../services/index.services";
-import * as utils from "../../utils/index.utils";
 import * as types from "../../types/index.types";
+import util from "../../utils/index.utils";
 
 // #### ORDER CONTROLLER ####
 
 async function create(req: types.RequestCustom, res: express.Response) {
-    if (!utils.isUser(req.user)) {
-        return res.status(403).json({ message: "Forbidden: User authentication required" });
+    if (!util.role.isUser(req.user)) {
+        return res.status(403).json(util.response.authorError('users'));
     }
-     if (req.body.user_id && req.body.user_id !== req.user?.user_id) {
-        return res.status(400).json({ message: "Bad Request: User ID mismatch" });
-    }
-    req.body.user_id = req.user?.user_id as number;
-    const parsedBody = types.OrderSchema.creating.safeParse(req.body);
+    console.log(req.body);
+    const parsedBody = types.OrderSchema.creating.safeParse({
+        ...req.body,
+        userId: req.user?.user_id
+    });
     if (!parsedBody.success) {
-        return res.status(400).json({
-            error: 'Invalid request body',
-            details: parsedBody.error.format()
-        });
+        return res
+            .status(400)
+            .json(util.response.zodValidationError(parsedBody.error));
     }
     const orderData: types.CreatingOrderRequest = parsedBody.data;
 
     try {
         await services.order.create(orderData);
-        res.status(201).json({
-            message: "Order created successfully. Please wait a moment for the system to confirm." 
-        });
+        return res
+            .status(201)
+            .json(util.response.success("Order created successfully. Please wait a moment for the system to confirm."));
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+        return res
+            .status(500)
+            .json(util.response.internalServerError());
     }
 }
 

@@ -1,28 +1,32 @@
 ﻿import { z } from 'zod';
 
 export const OrderItemSchema = z.object({
-    order_id: z.coerce.number().int().positive('Order ID must be a positive integer'),
-    product_id: z.coerce.number().int().positive('Product ID must be a positive integer'),
+    orderId: z.coerce.number().int().positive('Order ID must be a positive integer'),
+    productId: z.coerce.number().int().positive('Product ID must be a positive integer'),
     quantity: z.coerce.number().int().positive('Quantity must be a positive integer'),
-    price_at_purchase: z.coerce.number().positive('Price at purchase must be a positive number'),
+    priceAtPurchase: z.coerce.number().positive('Price at purchase must be a positive number'),
 });
 
 export const ItemInCartSchema = z.object({
-    product_id: z.coerce.number().int().positive('Product ID must be a positive integer'),
+    productId: z.coerce.number().int().positive('Product ID must be a positive integer'),
     quantity: z.coerce.number().int().positive('Quantity must be a positive integer'),
-    price_at_purchase: z.coerce.number().positive('Price at purchase must be a positive number').optional(),
+    priceAtPurchase: z.coerce.number().positive('Price at purchase must be a positive number').optional(),
 });
 
 export const CreatingOrderSchema = z.object({
-    user_id: z.coerce.number().int().positive('User ID must be a positive integer'),
-    receiver_name: z.string().min(1, 'Receiver name is required'),
-    shipping_address: z.string().min(1, 'Shipping address is required'),
-    phone_number: z.string().min(10, 'Phone number must be at least 10 characters long'),
+    userId: z.coerce.number().int().positive('User ID must be a positive integer'),
+    shopId: z.coerce.number().int().positive('Shop ID must be a positive integer'),
+    receiverName: z.string().min(1, 'Receiver name is required'),
+    streetAddress: z.string().min(1, 'Shipping address is required'),
+    city: z.string().min(1, 'City is required'),
+    phoneNumber: z.string().min(10, 'Phone number must be at least 10 characters long'),
     email: z.string().email('Invalid email format'),
-    total_amount: z.coerce.number().positive('Total amount must be a positive number').optional(),
-    payment_method_id: z.coerce.number().int().positive('Payment method ID must be a positive integer'),
+    totalAmount: z.coerce.number().min(0, 'Total amount must be a non-negative number'),
+    shippingFee: z.coerce.number().min(0, 'Shipping fee must be a non-negative number'),
+    finalAmount: z.coerce.number().min(0, 'Final amount must be a non-negative number'),
     items: z.array(ItemInCartSchema).min(1, 'At least one order item is required'),
-    order_at: z.string().datetime({ offset: true }).nonempty(),
+    orderAt: z.string().datetime({ offset: true }).nonempty(),
+    paymentMethodId: z.number().min(0, 'Invalid payment method')
 });
 
 export type CreatingOrderRequest = z.infer<typeof CreatingOrderSchema>;

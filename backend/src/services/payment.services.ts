@@ -8,7 +8,7 @@ async function create(order_code: string, orderData: types.CreatingOrderRequest)
     var secretKey = process.env.MOMO_SECRET_KEY as string;
     var orderInfo = 'pay with MoMo user hqh';
     var redirectUrl = '';
-    var ipnUrl = `${process.env.HOST_SERVER}${process.env.API_PREFIX}/user/payment/test`;
+    var ipnUrl = `${process.env.HOST_SERVER}${process.env.API_PREFIX}/user/payment/announce`;
     var requestType = "payWithMethod";
     var amount = (Number(orderData.finalAmount) * 1000).toString() as string;
     var orderId = partnerCode + '-' + order_code;

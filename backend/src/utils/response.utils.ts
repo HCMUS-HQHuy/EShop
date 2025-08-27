@@ -1,7 +1,7 @@
 import { ZodError } from "zod";
 import formatError from "./formatError.utils";
 
-function successResponse(message: string, data: any[]) {
+function successResponse(message: string, data: any[] = []) {
   return {
     message: message,
     error: false,

@@ -50,3 +50,10 @@ export enum SOCKET_NAMESPACE {
   SELLER = '/seller',
   ADMIN = '/admin',
 }
+
+export enum PAYMENT_STATUS {
+    PENDING = 'Pending',
+    COMPLETED = 'Completed',
+    FAILED = 'Failed',
+    REFUNDED = 'Refunded'
+};
