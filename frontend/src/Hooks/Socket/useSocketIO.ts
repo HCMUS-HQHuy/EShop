@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
 import { SOCKET_EVENTS } from "./socketEvents.ts";
 import type { Socket } from "socket.io-client";
+import { useNavigate } from "react-router-dom";
 
 // step 1 -> initialsocket 
 
@@ -23,40 +24,49 @@ import type { Socket } from "socket.io-client";
 
 // step 3 -> return 1 global hook socket
 
-const useSocketIO = (url: string) => {
+const useSocketIO = (namespace: string) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [val, setVal] = useState<any>(null);
+    const navigate = useNavigate();
     
     const socketRef = useRef<Socket | null>(null);
     useEffect(() => {
         function connectHandle() {
+            console.log("Socket connected");
             setIsOpen(true);
         }
         function disconnectHandle() {
+            console.log("Socket disconnected");
             setIsOpen(false);
         }
         function setStatusHandle(data: MessageEvent) {
             console.log("Message received:", data);
             setVal(data);
         }
+        function redirectHandle(data: { url: string }) {
+            console.log("Redirecting to:", data.url);
+            navigate(data.url);
+        }
         function errorHandle(error: Error) {
             console.error("Socket connection error:", error);
         }
 
-        const socket: Socket = io(url, { withCredentials: true });
+        const socket: Socket = io(`${import.meta.env.VITE_BACK_END_SOCKET_URL}${namespace}`, { withCredentials: true });
         socket.on(SOCKET_EVENTS.CONNECTION, connectHandle);
         socket.on(SOCKET_EVENTS.DISCONNECT, disconnectHandle);
         socket.on(SOCKET_EVENTS.SET_SHOP_STATUS, setStatusHandle);
+        socket.on(SOCKET_EVENTS.REDIRECT, redirectHandle);
         socket.on(SOCKET_EVENTS.CONNECT_ERROR, errorHandle);
         socketRef.current = socket;
         return () => {
             socket.off(SOCKET_EVENTS.CONNECTION, connectHandle);
             socket.off(SOCKET_EVENTS.DISCONNECT, disconnectHandle);
             socket.off(SOCKET_EVENTS.SET_SHOP_STATUS, setStatusHandle);
+            socket.off(SOCKET_EVENTS.REDIRECT, redirectHandle);
             socket.off(SOCKET_EVENTS.CONNECT_ERROR, errorHandle);
             socket.disconnect();
         };
-    }, [url]);
+    }, [namespace]);
 
     return { isOpen, val, send: socketRef.current?.send.bind(socketRef.current) };
 };

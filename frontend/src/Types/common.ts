@@ -13,6 +13,12 @@ export enum STORAGE_KEYS {
   WISH_LIST = "wishList",
 };
 
+export enum SOCKET_NAMESPACE {
+  USER = '/user',
+  SELLER = '/seller',
+  ADMIN = '/admin',
+}
+
 export enum ORDER_STATUS {
   PENDING = 'Pending',
   PROCESSING = 'Processing',

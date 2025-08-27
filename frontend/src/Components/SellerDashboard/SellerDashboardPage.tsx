@@ -9,7 +9,7 @@ import ProductsPage from './ManageProducts/ManageProducts.tsx';
 import DashboardOverview from './DashboardOverview/DashboardOverview.tsx';
 import ManageOrders from './ManageOrders/ManageOrders.tsx';
 import StartSelling from './StartSelling/StartSelling.tsx';
-import { SHOP_STATUS, type ShopStatus } from 'src/Types/common.ts';
+import { SHOP_STATUS, SOCKET_NAMESPACE, type ShopStatus } from 'src/Types/common.ts';
 import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
 import { setShopStatus } from 'src/Features/sellerSlice.tsx';
 import type { RootState, AppDispatch } from 'src/Types/store.ts';
@@ -27,7 +27,7 @@ const SellerDashboardPageLayout = () => {
 };
 
 const SellerDashboardPage = () => {
-  const { isOpen, val } = useSocketIO('http://localhost:8220/seller');
+  const { isOpen, val } = useSocketIO(SOCKET_NAMESPACE.SELLER);
   const { status } = useSelector((state: RootState) => state.seller.shopInfo);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
