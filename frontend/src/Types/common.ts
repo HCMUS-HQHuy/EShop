@@ -12,3 +12,11 @@ export enum STORAGE_KEYS {
   CART_PRODUCTS = "cartProducts",
   WISH_LIST = "wishList",
 };
+
+export enum ORDER_STATUS {
+  PENDING = 'Pending',
+  PROCESSING = 'Processing',
+  SHIPPING = 'Shipping',
+  DELIVERED = 'Delivered',
+  CANCELLED = 'Cancelled'
+}

@@ -1,12 +1,17 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { formatePrice, getNumericPrice } from "src/Functions/formatting";
-import ConfirmOrderProductBtn from "./ConfirmOrderProductBtn";
+import { formatePrice, getNumericPrice } from "src/Functions/formatting.ts";
+import ConfirmOrderProductBtn from "./ConfirmOrderProductBtn.tsx";
 import s from "./OrderProduct.module.scss";
-import RemoveOrderProductBtn from "./RemoveOrderProductBtn";
+import RemoveOrderProductBtn from "./RemoveOrderProductBtn.tsx";
+import type { ProductOrderType } from "src/Types/product.ts";
 
-const OrderProduct = ({ data }) => {
-  const { img, name, shortName, afterDiscount, quantity } = data;
+type Props = {
+  data: ProductOrderType
+}
+
+const OrderProduct = ({ data } : Props) => {
+  const { img, name, shortName, afterDiscount, quantity, status } = data;
   const priceAfterDiscount = getNumericPrice(afterDiscount);
   const subTotal = formatePrice((quantity * priceAfterDiscount).toFixed(2));
   const { t } = useTranslation();
@@ -40,6 +45,7 @@ const OrderProduct = ({ data }) => {
       <td>{quantity}</td>
 
       <td>{subTotal}</td>
+      <td className={s.status}>{`${status}`}</td>
     </tr>
   );
 };

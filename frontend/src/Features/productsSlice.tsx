@@ -1,19 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "src/Api/index.api.ts";
-import type { Product } from "src/Types/product.ts";
+import type { ProductType, ProductOrderType } from "src/Types/product.ts";
 import { setAfterDiscountKey, setFormattedPrice } from "src/Functions/formatting.ts";
-import { STORAGE_KEYS } from "src/Types/common.ts";
+import { STORAGE_KEYS, ORDER_STATUS } from "src/Types/common.ts";
 
 type ProductsState = {
   saveBillingInfoToLocal: boolean;
-  productsList: Product[];
-  favoritesProducts: Product[];
-  searchProducts: Product[];
-  orderProducts: Product[];
-  cartProducts: Product[];
-  wishList: Product[];
+  productsList: ProductType[];
+  favoritesProducts: ProductType[];
+  searchProducts: ProductType[];
+  orderProducts: ProductOrderType[];
+  cartProducts: ProductType[];
+  wishList: ProductType[];
   productQuantity: number;
-  selectedProduct: Product | null;
+  selectedProduct: ProductType | null;
   removeOrderProduct: string;
 };
 
@@ -33,7 +33,7 @@ const initialState: ProductsState = {
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_, {rejectWithValue}) => {
   try {
     const response = await api.product.fetchAll();
-    const products: Product[] = response.data.data;
+    const products: ProductType[] = response.data.data;
     products.forEach((product: any) => {
       setAfterDiscountKey(product);
       setFormattedPrice(product);
@@ -74,6 +74,10 @@ const productsSlice = createSlice({
     },
     storeToStorage: (state, { payload: {key} } : {payload: {key: keyof ProductsState}}) => {
       localStorage.setItem(key, JSON.stringify(state[key]));
+    },
+    transferCartToOrder: (state) => {
+      state.orderProducts = state.orderProducts.concat(state.cartProducts.map(product => ({ ...product, status: ORDER_STATUS.PENDING })));
+      state.cartProducts = [];
     }
   },
   extraReducers: (builder) => {
@@ -98,6 +102,7 @@ export const {
   removeByKeyName,
   setEmptyArrays,
   transferProducts,
-  storeToStorage
+  storeToStorage,
+  transferCartToOrder
 } = productsSlice.actions;
 export default productsSlice.reducer;

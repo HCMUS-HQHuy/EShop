@@ -20,7 +20,7 @@ const UpdatingProductSchema = CreatingProductSchema.extend({
 type CreatingProduct = z.infer<typeof CreatingProductSchema>;
 type UpdatingProduct = z.infer<typeof UpdatingProductSchema>;
 
-type Product = {
+type ProductType = {
   id: number;
   shortName: string;
   name: string;
@@ -36,6 +36,25 @@ type Product = {
   rate: number;
   votes: number;
   quantity: number;
+}
+
+type ProductOrderType = {
+  id: number;
+  shortName: string;
+  name: string;
+  category: string[];
+  price: string;
+  discount: string;
+  afterDiscount: string;
+//   description: string;
+  addedDate: string;
+  img: string;
+//   otherImages: string[];
+  colors: Color[];
+  rate: number;
+  votes: number;
+  quantity: number;
+  status: string;
 }
 
 type Color = {
@@ -61,7 +80,7 @@ type ProductDetailType = {
   quantity: number;
 }
 
-export type { Product, Color, CreatingProduct, ProductDetailType };
+export type { ProductType, Color, CreatingProduct, ProductDetailType, ProductOrderType };
 const ProductSchema = {
   CreatingRequest: CreatingProductSchema,
   EditingRequest: UpdatingProductSchema

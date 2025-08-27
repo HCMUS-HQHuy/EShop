@@ -19,7 +19,7 @@ const OrderPage = () => {
         <div className={s.pageComponents} id="order-page">
           <OrderProducts />
           <OrderPageButtons />
-          <ForYouSection />
+          {/* <ForYouSection /> */}
         </div>
       </main>
     </div>

@@ -1,16 +1,17 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { CLEAR_ORDER_PRODUCTS } from "src/Data/constants";
-import { showAlert, updateAlertState } from "src/Features/alertsSlice";
-import useUpdateEffect from "src/Hooks/Helper/useUpdateEffect";
+import { CLEAR_ORDER_PRODUCTS } from "src/Data/constants.tsx";
+import { showAlert, updateAlertState } from "src/Features/alertsSlice.tsx";
+import useUpdateEffect from "src/Hooks/Helper/useUpdateEffect.tsx";
 import s from "./OrderPageButtons.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const OrderPageButtons = () => {
   const { isAlertActive, confirmPurpose } = useSelector(
-    (state) => state.alerts.confirm
+    (state: RootState) => state.alerts.confirm
   );
-  const { orderProducts } = useSelector((state) => state.products);
+  const { orderProducts } = useSelector((state: RootState) => state.products);
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const alertMsgKey = useRef("");
@@ -25,7 +26,7 @@ const OrderPageButtons = () => {
     showConfirmAlert(t(`toastAlert.${alertMsgKey.current}`));
   }
 
-  function showConfirmAlert(alertText) {
+  function showConfirmAlert(alertText: string) {
     if (!orderProducts.length) return;
 
     dispatch(
@@ -45,7 +46,7 @@ const OrderPageButtons = () => {
     );
   }
 
-  useUpdateEffect(() => {
+  useEffect(() => {
     if (!isAlertActive) return;
     const isRemoveOrderProduct = confirmPurpose === CLEAR_ORDER_PRODUCTS;
 

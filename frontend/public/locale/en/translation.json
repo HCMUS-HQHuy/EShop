@@ -483,7 +483,8 @@
       "product": "Product",
       "price": "Price",
       "quantity": "Quantity",
-      "subtotal": "Subtotal"
+      "subtotal": "Subtotal",
+      "status": "Status"
     },
     "cartInfoMenu": {
       "cartTotal": "Cart Total",
