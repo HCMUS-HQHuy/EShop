@@ -112,11 +112,11 @@ CREATE TABLE payment_methods (
 
 CREATE TABLE checkouts (
     checkout_id SERIAL PRIMARY KEY,
-    checkout_code VARCHAR(20) UNIQUE NOT NULL,
     user_id INT NOT NULL,
 
     receiver_name VARCHAR(100) NOT NULL,
-    shipping_address VARCHAR(255) NOT NULL,
+    street_address VARCHAR(255) NOT NULL,
+    city VARCHAR(255) NOT NULL,
     phone_number VARCHAR(15) NOT NULL,
     email VARCHAR(100) NOT NULL,
     grand_total_amount DECIMAL(12, 2) NOT NULL,
