@@ -19,11 +19,15 @@ import type { AppDispatch, RootState } from "src/Types/store.ts";
 import { useNavigate } from "react-router-dom";
 import api from "src/Api/index.api.ts";
 import { formatePrice, getSubTotal } from "src/Functions/formatting.ts";
+import useSocketIO from "src/Hooks/Socket/useSocketIO.ts";
+import { useEffect } from "react";
+import { SOCKET_NAMESPACE } from "src/Types/common.ts";
 
 const CheckoutPage = () => {
   useScrollOnMount(160);
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const { isOpen, val } = useSocketIO(SOCKET_NAMESPACE.USER);
   const { saveBillingInfoToLocal, cartProducts } = useSelector(
     (state: RootState) => state.products
   );
@@ -48,12 +52,16 @@ const CheckoutPage = () => {
     },
   ];
 
+  useEffect(() => {
+    console.log(`socket status: ${val} isopen: ${isOpen}`)
+  }, [val, isOpen]);
+
   function handleSubmitPayment(event: React.FormEvent<HTMLFormElement>) {
     const activeElement = document.activeElement as HTMLElement | null;
     const isCheckboxFocused = activeElement?.id === "save-info";
     const isInputFocused = activeElement?.tagName === "INPUT";
     const inputs = event.currentTarget.querySelectorAll("input");
-
+  
     const isCartEmpty = cartProducts.length === 0;
     const isFormValid = isCheckoutFormValid(event);
     event.preventDefault();
@@ -148,7 +156,7 @@ function showEmptyCartAlert(dispatch: AppDispatch, t: any) {
 }
 
 function finalizeOrder(dispatch: AppDispatch, t: any) {
-  dispatch(transferCartToOrder());
+  // dispatch(transferCartToOrder());
 
   setTimeout(() => {
     dispatch(
