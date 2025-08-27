@@ -1,16 +1,17 @@
 import { useTranslation } from "react-i18next";
-import { billingInputsData } from "src/Data/staticData";
-import BillingInput from "./BillingInput";
+import { billingInputsData } from "src/Data/staticData.tsx";
+import BillingInput from "./BillingInput.tsx";
 import s from "./BillingInputs.module.scss";
 
-const BillingInputs = ({ inputsData }) => {
+const BillingInputs = ({ inputsData }: { inputsData : any}) => {
   const { billingValues, handleChange } = inputsData;
   const { t } = useTranslation();
 
-  function onChange(event, name) {
+  function onChange(event: React.ChangeEvent<HTMLInputElement>, name: string) {
     const isPhoneInput = name === "phoneNumber";
-    const isNumber = !isNaN(+event.nativeEvent.data);
-    const isPaste = event.nativeEvent.inputType === "insertFromPaste";
+    const inputEvent = event.nativeEvent as InputEvent;
+    const isNumber = inputEvent.data ? !isNaN(+inputEvent.data) : true;
+    const isPaste = (event.nativeEvent as InputEvent).inputType === "insertFromPaste";
 
     if (isPhoneInput && !isNumber) return;
     if (isPhoneInput && isPaste) return;
@@ -28,7 +29,7 @@ const BillingInputs = ({ inputsData }) => {
             label: t(`inputsLabels.${translationKey}`),
             required,
             type,
-            onChange: (event) => onChange(event, name),
+            onChange: (event: React.ChangeEvent<HTMLInputElement>) => onChange(event, name),
           };
 
           return <BillingInput key={id} inputData={inputData} />;

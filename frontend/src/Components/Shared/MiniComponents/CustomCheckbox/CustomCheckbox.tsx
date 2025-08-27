@@ -1,26 +1,35 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { updateProductsState } from "src/Features/productsSlice";
-import SvgIcon from "../SvgIcon";
+import { updateProductsState } from "src/Features/productsSlice.tsx";
+import SvgIcon from "../SvgIcon.tsx";
 import s from "./CustomCheckbox.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
-const CustomCheckbox = ({ inputData: { name, isRequired = false, id } }) => {
-  const { saveBillingInfoToLocal } = useSelector((state) => state.products);
+type Props = {
+  inputData: {
+    name: string,
+    isRequired?: boolean,
+    id: string,
+  }
+}
+
+const CustomCheckbox = ({ inputData: { name, isRequired = false, id } }: Props) => {
+  const { saveBillingInfoToLocal } = useSelector((state: RootState) => state.products);
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
-  function handleCheckboxChange(e) {
+  function handleCheckboxChange(e: React.ChangeEvent<HTMLInputElement>) {
     const isInputChecked = e.target.checked;
     setSaveBillingInfo(isInputChecked);
   }
 
-  function handleKeyPress(e) {
+  function handleKeyPress(e: React.KeyboardEvent<HTMLInputElement>) {
     const isEnterPressed = e.keyCode === 13;
     if (!isEnterPressed) return;
     setSaveBillingInfo(!saveBillingInfoToLocal);
   }
 
-  function setSaveBillingInfo(value) {
+  function setSaveBillingInfo(value: boolean) {
     const updateAction = updateProductsState({
       key: "saveBillingInfoToLocal",
       value: value,

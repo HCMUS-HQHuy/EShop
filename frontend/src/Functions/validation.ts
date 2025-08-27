@@ -1,6 +1,7 @@
-import { regexPatterns } from "../Data/globalVariables";
-import { billingInputsData } from "../Data/staticData";
-import { updateClassOnCondition } from "./conditions";
+import type React from "react";
+import { regexPatterns } from "../Data/globalVariables.tsx";
+import { billingInputsData } from "../Data/staticData.tsx";
+import { updateClassOnCondition } from "./conditions.ts";
 
 export function checkAreInputsValid(inputs) {
   return [...inputs].every((input) => !input.classList.contains("invalid"));
@@ -133,24 +134,24 @@ export function registerValidationCheck(inputs) {
 }
 
 
-export function showInvalidInputAlert(event) {
-  const form = new FormData(event.target);
-  const inputs = event.target.querySelectorAll("input");
+export function showInvalidInputAlert(event: React.FormEvent<HTMLFormElement>) {
+  const form = new FormData(event.currentTarget);
+  const inputs = event.currentTarget.querySelectorAll("input");
   let index = 0;
 
   for (const [, value] of form.entries()) {
     const regex = billingInputsData[index]?.regex;
     const isValid = regex ? regex.test(value) : true;
 
-    inputs[index].style.cssText = ``;
+    (inputs[index] as HTMLElement).style.cssText = ``;
 
     if (!isValid) {
-      inputs[index].style.cssText = `
+      (inputs[index] as HTMLElement).style.cssText = `
       border-color: var(--red);
       background-color: #ffdada;
       `;
 
-      inputs[index].focus();
+      (inputs[index] as HTMLElement).focus();
       break;
     }
 
@@ -158,8 +159,8 @@ export function showInvalidInputAlert(event) {
   }
 }
 
-export function isCheckoutFormValid(event) {
-  const form = new FormData(event.target);
+export function isCheckoutFormValid(event: React.FormEvent<HTMLFormElement>) {
+  const form = new FormData(event.currentTarget);
   let hasInvalidInput = false;
   let index = 0;
 

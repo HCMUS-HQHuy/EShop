@@ -1,27 +1,28 @@
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { WEBSITE_NAME } from "src/Data/constants";
-import { showAlert } from "src/Features/alertsSlice";
-import { transferProducts } from "src/Features/productsSlice";
-import { blurInputs } from "src/Functions/componentsFunctions";
+import { WEBSITE_NAME } from "src/Data/constants.tsx";
+import { showAlert } from "src/Features/alertsSlice.tsx";
+import { transferProducts } from "src/Features/productsSlice.tsx";
+import { blurInputs } from "src/Functions/componentsFunctions.ts";
 import {
   isCheckoutFormValid,
   showInvalidInputAlert,
-} from "src/Functions/validation";
-import useScrollOnMount from "src/Hooks/App/useScrollOnMount";
-import useFormData from "src/Hooks/Helper/useFormData";
-import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory";
-import BillingDetails from "./BillingDetails/BillingDetails";
+} from "src/Functions/validation.ts";
+import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
+import useFormData from "src/Hooks/Helper/useFormData.tsx";
+import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory.tsx";
+import BillingDetails from "./BillingDetails/BillingDetails.tsx";
 import s from "./CheckoutPage.module.scss";
-import PaymentSection from "./PaymentSection/PaymentSection";
+import PaymentSection from "./PaymentSection/PaymentSection.tsx";
+import type { AppDispatch, RootState } from "src/Types/store.ts";
 
 const CheckoutPage = () => {
   useScrollOnMount(160);
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { saveBillingInfoToLocal, cartProducts } = useSelector(
-    (state) => state.products
+    (state: RootState) => state.products
   );
   const { values: billingValues, handleChange } = useFormData({
     initialValues: {
@@ -38,18 +39,20 @@ const CheckoutPage = () => {
     localStorageKey: "billingInfo",
   });
 
-  const pageHistory = [t("history.account"), t("history.checkout")];
+  const pageHistory = [t("history.products"), t("history.checkout")];
   const historyPaths = [
     {
       index: 0,
-      path: "/profile",
+      path: "/home",
     },
   ];
 
-  function handleSubmitPayment(event) {
-    const isCheckboxFocused = document.activeElement.id === "save-info";
-    const isInputFocused = document.activeElement.tagName === "INPUT";
-    const inputs = event.target.querySelectorAll("input");
+  function handleSubmitPayment(event: React.FormEvent<HTMLFormElement>) {
+    const activeElement = document.activeElement as HTMLElement | null;
+    const isCheckboxFocused = activeElement?.id === "save-info";
+    const isInputFocused = activeElement?.tagName === "INPUT";
+    const inputs = event.currentTarget.querySelectorAll("input");
+
     const isCartEmpty = cartProducts.length === 0;
     const isFormValid = isCheckoutFormValid(event);
 
@@ -98,7 +101,7 @@ const CheckoutPage = () => {
 };
 export default CheckoutPage;
 
-function showEmptyCartAlert(dispatch, t) {
+function showEmptyCartAlert(dispatch: AppDispatch, t: any) {
   dispatch(
     showAlert({
       alertState: "warning",
@@ -108,7 +111,7 @@ function showEmptyCartAlert(dispatch, t) {
   );
 }
 
-function finalizeOrder(dispatch, t) {
+function finalizeOrder(dispatch: AppDispatch, t: any) {
   dispatch(transferProducts({ from: "cartProducts", to: "orderProducts" }));
 
   setTimeout(() => {

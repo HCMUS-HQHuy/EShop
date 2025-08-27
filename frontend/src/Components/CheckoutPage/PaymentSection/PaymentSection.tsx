@@ -1,15 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import AddCoupon from "../../Cart/CartInfo/AddCoupon";
-import PaymentCalculation from "./PaymentCalculation";
-import PaymentOptionsSelection from "./PaymentOptionsSelection";
-import PaymentProducts from "./PaymentProducts";
+import AddCoupon from "../../Cart/CartInfo/AddCoupon.tsx";
+import PaymentCalculation from "./PaymentCalculation.tsx";
+import PaymentOptionsSelection from "./PaymentOptionsSelection.tsx";
+import PaymentProducts from "./PaymentProducts.tsx";
 import s from "./PaymentSection.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const PaymentSection = () => {
-  const { cartProducts } = useSelector((state) => state.products);
+  const { cartProducts } = useSelector((state: RootState) => state.products);
   const { t } = useTranslation();
-
   return (
     <section className={s.paymentSection}>
       <PaymentProducts products={cartProducts} />

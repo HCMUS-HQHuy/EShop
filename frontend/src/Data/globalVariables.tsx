@@ -56,7 +56,7 @@ export const PRODUCT_SIZES = [
 export const regexPatterns = {
   email: /^[0-9a-zA-Z._]+@[a-z]+\.[a-z]+$/,
   words: /([-]|\s?&\s|'s[-&]?)/g,
-  iraqiPhone: /^\d{11}$/,
+  iraqiPhone: /^\d{10}$/,
 };
 
 export const DEFAULT_LOGIN_DATA = {
