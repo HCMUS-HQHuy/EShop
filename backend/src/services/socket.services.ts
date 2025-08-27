@@ -107,16 +107,17 @@ function initializeSeller(io: Server<DefaultEventsMap, DefaultEventsMap, Default
 }
 
 function initializeUser(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>): void {
-    const adminNamespace = io.of(SOCKET_NAMESPACE.USER);
-    adminNamespace.use(auth);
-    adminNamespace.use((socket, next) => {
+    const userNamespace = io.of(SOCKET_NAMESPACE.USER);
+    userNamespace.use(auth);
+    userNamespace.use((socket, next) => {
         if (util.role.isUser(socket.data.user)) {
             return next();
         }
         next(new Error('Unauthorized'));
     });
-    adminNamespace.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
+    userNamespace.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
         console.log(`🔌 User connected: ${socket.id} infor: `, socket.data.user);
+        socket.join(`user_room_${socket.data.user.user_id}`);
         socket.on(SOCKET_EVENTS.DISCONNECT, () => {
             console.log(`✖️ User disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
         });
@@ -142,8 +143,10 @@ function connect(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap
 function sendMessageToUser(userId: number, event: string, data: any) {
     if (ioInstance === undefined)
         console.log("ioInstance is not initialized\n");
-    else 
-        ioInstance.to(`user_room_${userId}`).emit(event, data);
+    else {
+        console.log(`Sending message to user ${userId} on event ${event} with data:`, data);
+        ioInstance.of(SOCKET_NAMESPACE.USER).to(`user_room_${userId}`).emit(event, data);
+    }
 }
 
 function getInstance(): Server {
