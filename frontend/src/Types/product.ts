@@ -12,7 +12,6 @@ const CreatingProductSchema = z.object({
   isActive: z.boolean().default(true),
 });
 
-
 const UpdatingProductSchema = CreatingProductSchema.extend({
   deletedImages: z.array(z.string()).max(5),
 });
@@ -22,6 +21,7 @@ type UpdatingProduct = z.infer<typeof UpdatingProductSchema>;
 
 type ProductType = {
   id: number;
+  shopId: number;
   shortName: string;
   name: string;
   category: string[];
@@ -40,6 +40,7 @@ type ProductType = {
 
 type ProductOrderType = {
   id: number;
+  shopId: number;
   shortName: string;
   name: string;
   category: string[];
