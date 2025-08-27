@@ -1,5 +1,5 @@
 export const SOCKET_EVENTS = Object.freeze({
-    CONNECTION: "connection",
+    CONNECT: "connect",
     DISCONNECT: "disconnect",
     MESSAGE: "message",
     REDIRECT: "redirect",
