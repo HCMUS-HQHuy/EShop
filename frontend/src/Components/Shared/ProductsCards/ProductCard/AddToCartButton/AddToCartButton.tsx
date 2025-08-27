@@ -1,21 +1,27 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { showAlert } from "src/Features/alertsSlice";
-import { addToArray, removeByKeyName } from "src/Features/productsSlice";
-import { compareDataByObjValue } from "src/Functions/conditions";
-import { isItemFound } from "src/Functions/helper";
-import SvgIcon from "../../../MiniComponents/SvgIcon";
+import { showAlert } from "src/Features/alertsSlice.tsx";
+import { addToArray, removeByKeyName } from "src/Features/productsSlice.tsx";
+import { compareDataByObjValue } from "src/Functions/conditions.ts";
+import { isItemFound } from "src/Functions/helper.ts";
+import SvgIcon from "../../../MiniComponents/SvgIcon.tsx";
 import s from "./AddToCartButton.module.scss";
+import type { ProductDetailType } from "src/Types/product.ts";
+import type { RootState } from "src/Types/store.ts";
 
-const AddToCartButton = ({ product }) => {
+type Props = {
+  product: ProductDetailType
+}
+
+const AddToCartButton = ({ product }: Props) => {
   const { t } = useTranslation();
   const { cartProducts, orderProducts } = useSelector(
-    (state) => state.products
+    (state: RootState) => state.products
   );
   const {
     loginInfo: { isSignIn },
-  } = useSelector((state) => state.user);
+  } = useSelector((state: RootState) => state.user);
   const isProductAlreadyExist = isItemFound(cartProducts, product, "shortName");
   const iconName = isProductAlreadyExist ? "trashCan" : "cart3";
   const [iconNameState, setIconName] = useState(iconName);
@@ -46,7 +52,7 @@ const AddToCartButton = ({ product }) => {
     isProductAlreadyExist ? removeFromCart() : addToCart();
   }
 
-  function showWarning(translateKey) {
+  function showWarning(translateKey: string) {
     dispatch(
       showAlert({
         alertText: t(`toastAlert.${translateKey}`),
@@ -57,7 +63,7 @@ const AddToCartButton = ({ product }) => {
   }
 
   function addToCart() {
-    const addAction = addToArray({ key: "cartProducts", value: product });
+    const addAction = addToArray({ key: "cartProducts", value: { ...product, quantity: 1 } });
     dispatch(addAction);
     setIconName("trashCan");
   }
