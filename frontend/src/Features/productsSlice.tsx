@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "src/Api/index.api.ts";
 import type { Product } from "src/Types/product.ts";
 import { setAfterDiscountKey, setFormattedPrice } from "src/Functions/formatting.ts";
+import { STORAGE_KEYS } from "src/Types/common.ts";
 
 type ProductsState = {
   saveBillingInfoToLocal: boolean;
@@ -22,7 +23,7 @@ const initialState: ProductsState = {
   favoritesProducts: [],
   searchProducts: [],
   orderProducts: [],
-  cartProducts: [],
+  cartProducts: localStorage.getItem(STORAGE_KEYS.CART_PRODUCTS) ? JSON.parse(localStorage.getItem(STORAGE_KEYS.CART_PRODUCTS)!) : [],
   wishList: [],
   productQuantity: 1,
   selectedProduct: null,
@@ -70,6 +71,9 @@ const productsSlice = createSlice({
     transferProducts: (state, { payload: { from, to } }) => {
       state[to] = state[to].concat(state[from]);
       state[from] = [];
+    },
+    storeToStorage: (state, { payload: {key} } : {payload: {key: keyof ProductsState}}) => {
+      localStorage.setItem(key, JSON.stringify(state[key]));
     }
   },
   extraReducers: (builder) => {
@@ -94,5 +98,6 @@ export const {
   removeByKeyName,
   setEmptyArrays,
   transferProducts,
+  storeToStorage
 } = productsSlice.actions;
 export default productsSlice.reducer;

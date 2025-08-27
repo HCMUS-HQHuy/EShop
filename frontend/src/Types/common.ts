@@ -7,3 +7,8 @@ export const SHOP_STATUS = {
 } as const;
 
 export type ShopStatus = typeof SHOP_STATUS[keyof typeof SHOP_STATUS];
+
+export enum STORAGE_KEYS {
+  CART_PRODUCTS = "cartProducts",
+  WISH_LIST = "wishList",
+};

@@ -2,16 +2,17 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { showAlert } from "src/Features/alertsSlice.tsx";
-import { addToArray, removeByKeyName } from "src/Features/productsSlice.tsx";
+import { addToArray, removeByKeyName, storeToStorage } from "src/Features/productsSlice.tsx";
 import { compareDataByObjValue } from "src/Functions/conditions.ts";
 import { isItemFound } from "src/Functions/helper.ts";
 import SvgIcon from "../../../MiniComponents/SvgIcon.tsx";
 import s from "./AddToCartButton.module.scss";
-import type { ProductDetailType } from "src/Types/product.ts";
+import type { Product, ProductDetailType } from "src/Types/product.ts";
 import type { RootState } from "src/Types/store.ts";
+import { STORAGE_KEYS } from "src/Types/common.ts";
 
 type Props = {
-  product: ProductDetailType
+  product: Product
 }
 
 const AddToCartButton = ({ product }: Props) => {
@@ -65,6 +66,7 @@ const AddToCartButton = ({ product }: Props) => {
   function addToCart() {
     const addAction = addToArray({ key: "cartProducts", value: { ...product, quantity: 1 } });
     dispatch(addAction);
+    dispatch(storeToStorage({ key: STORAGE_KEYS.CART_PRODUCTS }));
     setIconName("trashCan");
   }
 
@@ -76,6 +78,7 @@ const AddToCartButton = ({ product }: Props) => {
     });
 
     dispatch(removeAction);
+    dispatch(storeToStorage({ key: STORAGE_KEYS.CART_PRODUCTS }));
     setIconName("cart3");
   }
 
