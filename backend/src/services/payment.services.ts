@@ -10,7 +10,7 @@ async function create(order_code: string, orderData: types.CreatingOrderRequest)
     var redirectUrl = '';
     var ipnUrl = `${process.env.HOST_SERVER}${process.env.API_PREFIX}/user/payment/test`;
     var requestType = "payWithMethod";
-    var amount = orderData.total_amount as number * 100;
+    var amount = (Number(orderData.finalAmount) * 1000).toString() as string;
     var orderId = partnerCode + '-' + order_code;
     var requestId = orderId;
     var extraData = '';
@@ -41,15 +41,17 @@ async function create(order_code: string, orderData: types.CreatingOrderRequest)
         orderGroupId: orderGroupId,
         signature : signature
     });
-    axios.post('https://test-payment.momo.vn/v2/gateway/api/create', requestBody, {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(response => {
+    try {
+        const response = await axios.post('https://test-payment.momo.vn/v2/gateway/api/create', requestBody, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
         console.log('✅ MoMo response:', response.data);
-    }).catch(error => {
+    } catch (error: any) {
         console.error('❌ Lỗi khi gọi MoMo:', error.response?.data || error.message);
-    });
+        throw new Error('Momo Error');
+    }
 }
 
 const payment = {
