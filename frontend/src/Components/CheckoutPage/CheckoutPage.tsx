@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { WEBSITE_NAME } from "src/Data/constants.tsx";
 import { showAlert } from "src/Features/alertsSlice.tsx";
-import { transferProducts } from "src/Features/productsSlice.tsx";
+import { transferCartToOrder, transferProducts } from "src/Features/productsSlice.tsx";
 import { blurInputs } from "src/Functions/componentsFunctions.ts";
 import {
   isCheckoutFormValid,
@@ -16,6 +16,7 @@ import BillingDetails from "./BillingDetails/BillingDetails.tsx";
 import s from "./CheckoutPage.module.scss";
 import PaymentSection from "./PaymentSection/PaymentSection.tsx";
 import type { AppDispatch, RootState } from "src/Types/store.ts";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutPage = () => {
   useScrollOnMount(160);
@@ -55,7 +56,6 @@ const CheckoutPage = () => {
 
     const isCartEmpty = cartProducts.length === 0;
     const isFormValid = isCheckoutFormValid(event);
-    
     event.preventDefault();
     blurInputs(inputs);
     showInvalidInputAlert(event);
@@ -68,7 +68,6 @@ const CheckoutPage = () => {
       showEmptyCartAlert(dispatch, t);
       return;
     }
-
     finalizeOrder(dispatch, t);
   }
 
@@ -112,7 +111,7 @@ function showEmptyCartAlert(dispatch: AppDispatch, t: any) {
 }
 
 function finalizeOrder(dispatch: AppDispatch, t: any) {
-  dispatch(transferProducts({ from: "cartProducts", to: "orderProducts" }));
+  dispatch(transferCartToOrder());
 
   setTimeout(() => {
     dispatch(

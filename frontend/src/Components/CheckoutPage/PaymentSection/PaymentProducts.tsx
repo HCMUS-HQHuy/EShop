@@ -2,10 +2,10 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { translateProduct } from "../../Cart/CartProducts/CartProduct.tsx";
 import s from "./PaymentProducts.module.scss";
-import type { Product } from "src/Types/product.ts";
+import type { ProductType } from "src/Types/product.ts";
 
 type Props = {
-  products: Product[]
+  products: ProductType[]
 }
 
 const PaymentProducts = ({ products }: Props) => {
