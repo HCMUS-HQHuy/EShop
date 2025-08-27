@@ -110,8 +110,11 @@ CREATE TABLE payment_methods (
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
-CREATE TABLE checkouts (
-    checkout_id SERIAL PRIMARY KEY,
+CREATE TABLE orders (
+    order_id SERIAL PRIMARY KEY,
+    order_code VARCHAR(20) UNIQUE NOT NULL,
+
+    shop_id INT NOT NULL,     -- Thêm liên kết trực tiếp đến shop
     user_id INT NOT NULL,
 
     receiver_name VARCHAR(100) NOT NULL,
@@ -119,19 +122,6 @@ CREATE TABLE checkouts (
     city VARCHAR(255) NOT NULL,
     phone_number VARCHAR(15) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    grand_total_amount DECIMAL(12, 2) NOT NULL,
-    
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_checkout_user FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-
-CREATE TABLE orders (
-    order_id SERIAL PRIMARY KEY,
-    order_code VARCHAR(20) UNIQUE NOT NULL,
-    
-    checkout_id INT NOT NULL, -- Thêm liên kết đến phiên checkout cha
-    shop_id INT NOT NULL,     -- Thêm liên kết trực tiếp đến shop
-    user_id INT NOT NULL,
 
     total_amount DECIMAL(12, 2) NOT NULL,
     shipping_fee DECIMAL(12, 2) NOT NULL DEFAULT 0,
@@ -140,19 +130,18 @@ CREATE TABLE orders (
     status VARCHAR(20) NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Processing', 'Shipping', 'Delivered', 'Cancelled')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT fk_order_checkout FOREIGN KEY (checkout_id) REFERENCES checkouts(checkout_id) ON DELETE CASCADE,
     CONSTRAINT fk_order_shop FOREIGN KEY (shop_id) REFERENCES shops(shop_id),
     CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE payments (
     payment_id SERIAL PRIMARY KEY,
-    checkout_id INT NOT NULL,
+    order_id INT NOT NULL,
     payment_method_id INT NOT NULL,
     amount DECIMAL(12, 2) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Completed', 'Failed', 'Refunded')),
 
-    CONSTRAINT fk_payment_checkout FOREIGN KEY (checkout_id) REFERENCES checkouts(checkout_id),
+    CONSTRAINT fk_payment_order FOREIGN KEY (order_id) REFERENCES orders(order_id),
     CONSTRAINT fk_payment_method FOREIGN KEY (payment_method_id) REFERENCES payment_methods(payment_method_id)
 );
 
