@@ -47,7 +47,12 @@ async function create(order_code: string, orderData: types.CreatingOrderRequest)
                 'Content-Type': 'application/json'
             }
         })
-        console.log('✅ MoMo response:', response.data);
+        return {
+            paymentCode: response.data.orderId,
+            payment_method_id: 2,
+            amount: response.data.amount,
+            payUrl: response.data.shortLink
+        }
     } catch (error: any) {
         console.error('❌ Lỗi khi gọi MoMo:', error.response?.data || error.message);
         throw new Error('Momo Error');
