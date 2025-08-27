@@ -513,6 +513,7 @@
     "loginSuccess": "You logged in successfully, Welcome back!",
     "loginFailed": "Failed to login, Please check your internet connection.",
     "addToCart": "Please sign in to add product to cart.",
+    "productAddedToCart": "Product added to cart successfully.",
     "addToFavorite": "Please sign in to add/remove product to favorites.",
     "addToWishList": "Please sign in to add/remove product to wishlist.",
     "signInSuccess": "You signed in successfully, Welcome!",
