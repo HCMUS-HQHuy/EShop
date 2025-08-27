@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
-import { translateProduct } from "src/Components/Cart/CartProducts/CartProduct.tsx";
+// import { translateProduct } from "src/Components/Cart/CartProducts/CartProduct.tsx";
 import RateStars from "src/Components/Shared/MidComponents/RateStars/RateStars.tsx";
 import ProductColors from "src/Components/Shared/MiniComponents/ProductColors/ProductColors.tsx";
 import s from "./ProductCardInfo.module.scss";
-import type { Product } from "src/Types/product.ts";
+import type { ProductType } from "src/Types/product.ts";
 
 type Props = {
-  product: Product;
+  product: ProductType;
   showColors: boolean;
   navigateToProductDetails: () => void;
 }

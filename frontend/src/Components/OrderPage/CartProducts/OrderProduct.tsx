@@ -11,16 +11,16 @@ type Props = {
 }
 
 const OrderProduct = ({ data } : Props) => {
-  const { img, name, shortName, afterDiscount, quantity, status } = data;
+  const { id, name, img, shortName, afterDiscount, quantity, status } = data;
   const priceAfterDiscount = getNumericPrice(afterDiscount);
   const subTotal = formatePrice((quantity * priceAfterDiscount).toFixed(2));
   const { t } = useTranslation();
 
-  const translatedProduct = translateProduct({
-    productName: shortName,
-    translateMethod: t,
-    translateKey: "shortName",
-  });
+  // const translatedProduct = translateProduct({
+  //   productName: shortName,
+  //   translateMethod: t,
+  //   translateKey: "shortName",
+  // });
 
   return (
     <tr className={s.productContainer}>
@@ -29,15 +29,15 @@ const OrderProduct = ({ data } : Props) => {
           <img src={img} alt={`${shortName} product`} />
           <RemoveOrderProductBtn
             productName={shortName}
-            translatedProduct={translatedProduct}
+            translatedProduct={name}
           />
           <ConfirmOrderProductBtn
             productName={shortName}
-            translatedProduct={translatedProduct}
+            translatedProduct={name}
           />
         </div>
 
-        <Link to={`/details?product=${name}`}>{translatedProduct}</Link>
+        <Link to={`/details?product=${id}`}>{name}</Link>
       </td>
 
       <td className={s.price}>{afterDiscount}</td>
@@ -51,18 +51,18 @@ const OrderProduct = ({ data } : Props) => {
 };
 export default OrderProduct;
 
-export function translateProduct({
-  productName,
-  translateMethod,
-  translateKey,
-  uppercase = false,
-  dynamicData = {},
-}) {
-  const shortNameKey = productName?.replaceAll(" ", "");
-  const productTrans = `products.${shortNameKey}`;
-  const translateText = translateMethod(
-    `${productTrans}.${translateKey}`,
-    dynamicData
-  );
-  return uppercase ? translateText.toUpperCase() : translateText;
-}
+// export function translateProduct({
+//   productName,
+//   translateMethod,
+//   translateKey,
+//   uppercase = false,
+//   dynamicData = {},
+// }) {
+//   const shortNameKey = productName?.replaceAll(" ", "");
+//   const productTrans = `products.${shortNameKey}`;
+//   const translateText = translateMethod(
+//     `${productTrans}.${translateKey}`,
+//     dynamicData
+//   );
+//   return uppercase ? translateText.toUpperCase() : translateText;
+// }
