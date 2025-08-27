@@ -17,6 +17,8 @@ import s from "./CheckoutPage.module.scss";
 import PaymentSection from "./PaymentSection/PaymentSection.tsx";
 import type { AppDispatch, RootState } from "src/Types/store.ts";
 import { useNavigate } from "react-router-dom";
+import api from "src/Api/index.api.ts";
+import { formatePrice, getSubTotal } from "src/Functions/formatting.ts";
 
 const CheckoutPage = () => {
   useScrollOnMount(160);
@@ -27,11 +29,9 @@ const CheckoutPage = () => {
   );
   const { values: billingValues, handleChange } = useFormData({
     initialValues: {
-      firstName: "",
-      companyName: "",
-      address: "",
+      receiverName: "",
       streetAddress: "",
-      cityOrTown: "",
+      city: "",
       phoneNumber: "",
       email: "",
     },
@@ -68,7 +68,34 @@ const CheckoutPage = () => {
       showEmptyCartAlert(dispatch, t);
       return;
     }
-    finalizeOrder(dispatch, t);
+
+    const fees = {
+      totalAmount: getSubTotal(cartProducts),
+      shippingFee: 0,
+    };
+    console.log(fees);
+    const data = {
+      shopId: (cartProducts[0]!).shopId,
+      ...billingValues,
+      totalAmount: fees.totalAmount,
+      shippingFee: fees.shippingFee,
+      finalAmount: fees.totalAmount + fees.shippingFee,
+      items: cartProducts.map((product) => ({
+        productId: product.id,
+        quantity: product.quantity,
+      })),
+      paymentMethodId: 2,
+      orderAt: new Date().toISOString(),
+    };
+    console.log("Submitting order data:", data);
+    api.order
+      .create(data)
+      .then(() => {
+        finalizeOrder(dispatch, t);
+      }).catch((error) => {
+        console.error("Error creating order:", error);
+        showAlertText(dispatch, "checkoutError");
+      });
   }
 
   return (
@@ -99,6 +126,16 @@ const CheckoutPage = () => {
   );
 };
 export default CheckoutPage;
+
+function showAlertText(dispatch: AppDispatch, text: string) {
+  dispatch(
+    showAlert({
+      alertState: "error",
+      alertText: text,
+      alertType: "alert",
+    })
+  );
+}
 
 function showEmptyCartAlert(dispatch: AppDispatch, t: any) {
   dispatch(

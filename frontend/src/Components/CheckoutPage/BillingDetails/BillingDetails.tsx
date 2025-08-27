@@ -2,11 +2,6 @@ import { useTranslation } from "react-i18next";
 import CustomCheckbox from "../../Shared/MiniComponents/CustomCheckbox/CustomCheckbox.tsx";
 import BillingInputs from "../BillingDetailsInputs/BillingInputs.tsx";
 import s from "./BillingDetails.module.scss";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "src/Types/store.ts";
-import { useEffect } from "react";
-import { storeToStorage } from "src/Features/productsSlice.tsx";
-import { STORAGE_KEYS } from "src/Types/common.ts";
 
 type Props = {
   inputsData: {

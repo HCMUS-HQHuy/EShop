@@ -423,6 +423,8 @@
     "lastName": "Last Name",
     "email": "Email",
     "username": "Username",
+    "receiverName": "Receiver Name",
+    "city": "City",
     "companyName": "Company Name",
     "streetAddress": "Street Address",
     "apartment": "Apartment, floor, etc. (optional)",
