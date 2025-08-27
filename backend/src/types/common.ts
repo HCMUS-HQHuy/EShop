@@ -44,3 +44,9 @@ export interface ValidationResult {
 export const regex = {
     phone: /^\+?[0-9]{10,15}$/
 }
+
+export enum SOCKET_NAMESPACE {
+  USER = '/user',
+  SELLER = '/seller',
+  ADMIN = '/admin',
+}

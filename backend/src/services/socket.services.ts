@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { Client } from 'pg';
 
 import { SOCKET_EVENTS } from 'constants/socketEvents';
+import { SOCKET_NAMESPACE } from 'types/index.types';
 import * as types from "types/index.types"
 import util from 'utils/index.utils';
 import database from 'database/index.database';
@@ -70,7 +71,7 @@ async function getUserInfor(userId: number): Promise<types.UserInfor | Error>{
 }
 
 function initializeAdmin(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>): void {
-    const adminNamespace = io.of('/admin');
+    const adminNamespace = io.of(SOCKET_NAMESPACE.ADMIN);
     adminNamespace.use(auth);
     adminNamespace.use((socket, next) => {
         if (util.role.isAdmin(socket.data.user)) {
@@ -87,7 +88,7 @@ function initializeAdmin(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultE
 }
 
 function initializeSeller(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>): void {
-    const sellerNamespace = io.of('/seller');
+    const sellerNamespace = io.of(SOCKET_NAMESPACE.SELLER);
     sellerNamespace.use(auth);
     sellerNamespace.use((socket, next) => {
         console.log("check role for seller");
@@ -105,6 +106,23 @@ function initializeSeller(io: Server<DefaultEventsMap, DefaultEventsMap, Default
     });
 }
 
+function initializeUser(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>): void {
+    const adminNamespace = io.of(SOCKET_NAMESPACE.USER);
+    adminNamespace.use(auth);
+    adminNamespace.use((socket, next) => {
+        if (util.role.isUser(socket.data.user)) {
+            return next();
+        }
+        next(new Error('Unauthorized'));
+    });
+    adminNamespace.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
+        console.log(`🔌 User connected: ${socket.id} infor: `, socket.data.user);
+        socket.on(SOCKET_EVENTS.DISCONNECT, () => {
+            console.log(`✖️ User disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
+        });
+    });
+}
+
 function connect(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>): void {
     ioInstance = io;
     console.log("Socket Server is running");
@@ -116,6 +134,7 @@ function connect(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap
             console.log(`✖️ Client disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
         });
     });
+    initializeUser(io);
     initializeAdmin(io);
     initializeSeller(io);
 }
