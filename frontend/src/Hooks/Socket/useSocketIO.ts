@@ -39,7 +39,7 @@ const useSocketIO = (namespace: string) => {
             console.log("Socket disconnected");
             setIsOpen(false);
         }
-        function setStatusHandle(data: MessageEvent) {
+        function setStatusHandle(data: any) {
             console.log("Message received:", data);
             setVal(data);
         }
@@ -52,14 +52,15 @@ const useSocketIO = (namespace: string) => {
         }
 
         const socket: Socket = io(`${import.meta.env.VITE_BACK_END_SOCKET_URL}${namespace}`, { withCredentials: true });
-        socket.on(SOCKET_EVENTS.CONNECTION, connectHandle);
+        socket.on(SOCKET_EVENTS.CONNECT, connectHandle);
         socket.on(SOCKET_EVENTS.DISCONNECT, disconnectHandle);
         socket.on(SOCKET_EVENTS.SET_SHOP_STATUS, setStatusHandle);
         socket.on(SOCKET_EVENTS.REDIRECT, redirectHandle);
         socket.on(SOCKET_EVENTS.CONNECT_ERROR, errorHandle);
         socketRef.current = socket;
         return () => {
-            socket.off(SOCKET_EVENTS.CONNECTION, connectHandle);
+            if (!socketRef.current) return;
+            socket.off(SOCKET_EVENTS.CONNECT, connectHandle);
             socket.off(SOCKET_EVENTS.DISCONNECT, disconnectHandle);
             socket.off(SOCKET_EVENTS.SET_SHOP_STATUS, setStatusHandle);
             socket.off(SOCKET_EVENTS.REDIRECT, redirectHandle);
@@ -68,7 +69,7 @@ const useSocketIO = (namespace: string) => {
         };
     }, [namespace]);
 
-    return { isOpen, val, send: socketRef.current?.send.bind(socketRef.current) };
+    return { isOpen, val, emit: socketRef.current?.emit.bind(socketRef.current) };
 };
 
 export default useSocketIO;
