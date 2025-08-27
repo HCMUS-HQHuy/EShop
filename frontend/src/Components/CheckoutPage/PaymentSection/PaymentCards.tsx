@@ -1,15 +1,23 @@
 import { useRef, useState } from "react";
-import { SCREEN_SIZES } from "src/Data/globalVariables";
-import { paymentCards } from "src/Data/staticData";
-import useEventListener from "src/Hooks/Helper/useEventListener";
-import ToolTip from "../../Shared/MiniComponents/ToolTip";
+import { SCREEN_SIZES } from "src/Data/globalVariables.tsx";
+import useEventListener from "src/Hooks/Helper/useEventListener.tsx";
+import ToolTip from "../../Shared/MiniComponents/ToolTip.tsx";
 import s from "./PaymentCards.module.scss";
 
-const PaymentCards = () => {
+type Props = {
+  paymentCards: {
+    img: string,
+    alt: string,
+    link: string,
+    id: number
+  }[]
+}
+
+const PaymentCards = ({ paymentCards }: Props) => {
   const [isLaptopScreen, setIsLaptopScreen] = useState(
     window.innerWidth >= SCREEN_SIZES.laptop
   );
-  const debounceId = useRef(null);
+  const debounceId = useRef<NodeJS.Timeout | undefined>(undefined);
 
   useEventListener(window, "resize", () => {
     clearTimeout(debounceId.current);

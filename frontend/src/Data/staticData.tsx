@@ -14,6 +14,7 @@ import {
   saudiFlag,
   usaFlag,
   visaCard,
+  momoLogo
 } from "src/Assets/Images/Images.ts";
 import {
   car,
@@ -198,6 +199,15 @@ export const paymentCards = [
     id: 4,
   },
 ];
+
+export const MomoPayment = [
+  {
+    img: momoLogo,
+    alt: "Momo card",
+    link: "https://www.momo.vn/",
+    id: 1,
+  },
+]
 
 export const LANGUAGES = [
   {

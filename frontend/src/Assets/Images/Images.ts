@@ -35,7 +35,7 @@ import visaCard from "./visa.webp";
 import womanWithHat from "./woman-with-hat.webp";
 import member2Img from "./woman.webp";
 import womenShopping from "./women-shopping.webp";
-
+import momoLogo from "./MOMO-Logo-App.png";
 export {
   appStore,
   appleLogo,
@@ -74,4 +74,5 @@ export {
   visaCard,
   womanWithHat,
   womenShopping,
+  momoLogo
 };

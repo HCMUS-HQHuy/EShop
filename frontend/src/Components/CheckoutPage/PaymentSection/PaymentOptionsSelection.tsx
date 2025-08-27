@@ -1,14 +1,35 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import PaymentCards from "./PaymentCards";
+import { paymentCards, MomoPayment } from "src/Data/staticData.tsx";
+import PaymentCards from "./PaymentCards.tsx";
 import s from "./PaymentOptionsSelection.module.scss";
 
 const PaymentOptionsSelection = () => {
-  const [paymentType, setPaymentType] = useState("bank");
+  const [paymentType, setPaymentType] = useState("momo");
   const { t } = useTranslation();
 
   return (
     <div className={s.paymentOptions}>
+
+      <div className={s.input}>
+        <div className={s.wrapper}>
+          <input
+            type="radio"
+            name="payment"
+            value="momo"
+            id="momo-option"
+            checked={paymentType === "momo"}
+            onChange={(e) => setPaymentType(e.target.value)}
+            aria-checked={paymentType === "momo"}
+            aria-labelledby="momo-label"
+          />
+          <label id="momo-label" htmlFor="momo-option">
+            {t("momo")}
+          </label>
+        </div>
+        <PaymentCards paymentCards={MomoPayment} />
+      </div>
+{/* 
       <div className={s.input}>
         <div className={s.wrapper}>
           <input
@@ -25,9 +46,8 @@ const PaymentOptionsSelection = () => {
             {t("bank")}
           </label>
         </div>
-
-        <PaymentCards />
-      </div>
+        <PaymentCards paymentCards={paymentCards} />
+      </div> */}
 
       <div className={s.input}>
         <div className={s.wrapper}>
