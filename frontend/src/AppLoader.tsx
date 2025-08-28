@@ -8,6 +8,7 @@ import { fetchProducts } from "./Features/productsSlice.tsx";
 import type { AppDispatch } from "./Types/store.ts";
 import useStoreWebsiteDataToLocalStorage from "./Hooks/App/useStoreWebsiteDataToLocalStorage.tsx";
 import LoadingPage from "./Components/LoadingPage/LoadingPage.tsx";
+import { getPaymentMethods } from "./Features/paymentSlice.tsx";
 
 const AppLoader = ({ children }: { children: ReactNode }) => {
     useStoreWebsiteDataToLocalStorage();
@@ -26,6 +27,7 @@ const AppLoader = ({ children }: { children: ReactNode }) => {
             await Promise.all([
                 dispatch(getCategories()),
                 dispatch(fetchProducts()),
+                dispatch(getPaymentMethods())
             ]);
             setIsReady(true);
         };

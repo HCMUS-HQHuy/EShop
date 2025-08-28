@@ -3,12 +3,15 @@ import categories from './categories.api.ts';
 import seller from './seller.api.ts';
 import product from './products.api.ts';
 import order from './order.api.ts';
+import paymentMethods from './paymentMethods.api.ts';
+
 const api = {
   user,
   categories,
   seller,
   product,
-  order
+  order,
+  paymentMethods
 };
 
 export default api;
