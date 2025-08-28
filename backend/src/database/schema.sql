@@ -106,7 +106,9 @@ CREATE TABLE payment_methods (
     -- 'MoMo', 'COD' (Cash on Delivery), 'BankTransfer'
     code VARCHAR(20) NOT NULL UNIQUE, 
     name VARCHAR(100) NOT NULL,
-    description TEXT,
+    -- description TEXT,
+    img VARCHAR(255),
+    link VARCHAR(255),
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
