@@ -30,6 +30,7 @@ export const pagesRequireSignIn = [
   "/cart",
   "/order",
 ];
+export const authPaths = ["/login", "/signup", "/forgot-password", "/reset-password"];
 export const PRODUCT_SIZES = [
   {
     size: "XS",

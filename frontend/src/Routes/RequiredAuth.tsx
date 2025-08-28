@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
-import { pagesRequireSignIn } from "src/Data/globalVariables.tsx";
+import { pagesRequireSignIn, authPaths } from "src/Data/globalVariables.tsx";
 import { showAlert } from "src/Features/alertsSlice.tsx";
 import type { RootState } from "src/Types/store.ts";
 
@@ -17,10 +17,10 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   const isPageRequiringSignIn = (page: string) =>
     !isSignIn && pagesRequireSignIn.includes(page);
 
-  if (isLoginOrSignUpPage && isSignIn) return <Navigate to="/" />;
+  if (authPaths.includes(pathName) && isSignIn) return <Navigate to="/" />;
   if (isPageRequiringSignIn(pathName)) {
     loginFirstAlert();
-    return <Navigate to="/signup" />;
+    return <Navigate to="/login" />;
   }
 
   function loginFirstAlert() {
