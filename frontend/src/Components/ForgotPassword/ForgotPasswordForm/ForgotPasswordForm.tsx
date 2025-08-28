@@ -56,7 +56,7 @@ const ResetPasswordForm = () => {
         <button type="submit" className={s.loginBtn}>
           {t("buttons.send")}
         </button>
-        <a href="/login">{t("forgotPasswordPage.cancel")}</a>
+        <Link to="/login">{t("forgotPasswordPage.cancel")}</Link>
       </div>
 
       <p className={s.signUpMessage}>

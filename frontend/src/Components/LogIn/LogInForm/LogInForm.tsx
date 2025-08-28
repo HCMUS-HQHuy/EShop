@@ -52,7 +52,7 @@ const LogInForm = () => {
         <button type="submit" className={s.loginBtn}>
           {t("buttons.login")}
         </button>
-        <a href="/forgot-password">{t("loginSignUpPage.forgotPassword")}</a>
+        <Link to="/forgot-password">{t("loginSignUpPage.forgotPassword")}</Link>
       </div>
 
       <p className={s.signUpMessage}>
