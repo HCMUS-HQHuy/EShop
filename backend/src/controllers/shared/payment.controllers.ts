@@ -15,10 +15,11 @@ async function getAll(req: types.RequestCustom, res: express.Response) {
             SELECT payment_method_id, code, name, img, link
             FROM payment_methods
             WHERE is_active = true
+            ORDER BY code DESC
         `
         const result = await db.query(sql);
         const data = result.rows.map(row => ({
-            paymentMethodId: row.payment_method_id,
+            id: row.payment_method_id,
             code: row.code,
             name: row.name,
             img: row.img ? `${process.env.STATIC_URL}/${row.img}` : null,
