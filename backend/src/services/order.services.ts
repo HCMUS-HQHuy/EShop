@@ -5,7 +5,7 @@ import { Client } from "pg";
 import services from "./index.services";
 import database from "database/index.database";
 import { generateCode } from "utils/gencode.utils";
-import { SOCKET_NAMESPACE } from "types/index.types";
+import { PAYMENT_METHOD } from "types/index.types";
 import util from "utils/index.utils";
 import SOCKET_EVENTS from "constants/socketEvents";
 
@@ -152,13 +152,18 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
         await reduceStockQuantities(orderItems, db);
         const paymentInfo = await services.payment.create(orderCode, orderData);
         const sqlCreatePayment = `
-            INSERT INTO payments (payment_code, order_id, payment_method_id, amount)
+            INSERT INTO payments (payment_code, order_id, payment_method_code, amount)
             VALUES ($1, $2, $3, $4)
         `;
-        await db.query(sqlCreatePayment, [paymentInfo.paymentCode, orderId, paymentInfo.payment_method_id, paymentInfo.amount]);
+        await db.query(sqlCreatePayment, [paymentInfo.paymentCode, orderId, paymentInfo.paymentMethodCode, paymentInfo.amount]);
         await db.query(`COMMIT`);
         console.log(`Order ${orderData.userId} created with items:`, orderData.items);
-        return util.response.success("Order created successfully", [{ payUrl: paymentInfo.payUrl }]);
+        return util
+            .response
+            .success("Order created successfully", [{
+                isRedirect: true,
+                url: paymentInfo.url
+            }]);
     } catch (error) {
         if (db) {
             await db.query('ROLLBACK');

@@ -1,4 +1,5 @@
 ﻿import { z } from 'zod';
+import { PAYMENT_METHOD } from './common';
 
 export const OrderItemSchema = z.object({
     orderId: z.coerce.number().int().positive('Order ID must be a positive integer'),
@@ -26,7 +27,7 @@ export const CreatingOrderSchema = z.object({
     finalAmount: z.coerce.number().min(0, 'Final amount must be a non-negative number'),
     items: z.array(ItemInCartSchema).min(1, 'At least one order item is required'),
     orderAt: z.string().datetime({ offset: true }).nonempty(),
-    paymentMethodId: z.number().min(0, 'Invalid payment method')
+    paymentMethodCode: z.enum(PAYMENT_METHOD, 'Invalid payment method')
 });
 
 export type CreatingOrderRequest = z.infer<typeof CreatingOrderSchema>;

@@ -57,3 +57,10 @@ export enum PAYMENT_STATUS {
     FAILED = 'Failed',
     REFUNDED = 'Refunded'
 };
+
+export enum PAYMENT_METHOD {
+    MOMO = 'Momo',
+    COD = 'COD',
+    BANK_TRANSFER = 'Bank Transfer',
+    PAYPAL = 'PayPal'
+}

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import * as types from "types/index.types"
 
-async function create(order_code: string, orderData: types.CreatingOrderRequest) {
+async function MoMoMethod(order_code: string, orderData: types.CreatingOrderRequest) {
     var partnerCode = process.env.MOMO_PARTNER_CODE as string;
     var accessKey = process.env.MOMO_ACCESS_KEY as string;
     var secretKey = process.env.MOMO_SECRET_KEY as string;
@@ -49,13 +49,29 @@ async function create(order_code: string, orderData: types.CreatingOrderRequest)
         })
         return {
             paymentCode: response.data.orderId,
-            payment_method_id: 2,
             amount: response.data.amount,
-            payUrl: response.data.shortLink
+            redirect: true,
+            url: response.data.shortLink,
+            paymentMethodCode: types.PAYMENT_METHOD.MOMO
         }
     } catch (error: any) {
         console.error('❌ Lỗi khi gọi MoMo:', error.response?.data || error.message);
         throw new Error('Momo Error');
+    }
+}
+
+async function create(order_code: string, orderData: types.CreatingOrderRequest) {
+    switch (orderData.paymentMethodCode) {
+        case types.PAYMENT_METHOD.MOMO:
+            return await MoMoMethod(order_code, orderData);
+        default:
+            return {
+                paymentCode: order_code,
+                amount: orderData.finalAmount,
+                redirect: false,
+                url: `${process.env.HOST_CLIENT}`,
+                paymentMethodCode: types.PAYMENT_METHOD.COD
+            };
     }
 }
 
