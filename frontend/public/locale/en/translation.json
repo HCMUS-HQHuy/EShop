@@ -278,6 +278,8 @@
     "placeOrder": "Place Order",
     "backToHome": "Back to home page",
     "createAccount": "Create Account",
+    "send": "Send",
+    "resetPassword": "Reset Password",
     "signUpWithGoogle": "Sign Up With Google",
     "login": "Log In",
     "confirmReceiveAll": "Confirm receive all",
@@ -442,6 +444,17 @@
     "forgotPassword": "Forgot password?",
     "alreadyHaveAcc": "Already have an account?",
     "dontHaveAcc": "don't you have an account? "
+  },
+  "forgotPasswordPage": {
+    "title": "Forgot Password",
+    "cancel": "Remember password?",
+    "description": "Enter your email address to reset your password."
+  },
+  "resetPasswordPage": {
+    "title": "Reset Password",
+    "description": "Enter your new password below.",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password"
   },
   "favoritePage": {
     "title": "Favorites ({{numberOfProducts}})"

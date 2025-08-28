@@ -14,6 +14,8 @@ import ProductsPage from "src/Components/ProductsPage/ProductsPage.tsx";
 import SearchPage from "src/Components/Search/SearchPage.tsx";
 import SignUp from "src/Components/SignUp/SignUp.tsx";
 import WishList from "src/Components/WishList/WishList.tsx";
+import ResetPassword from "src/Components/ResetPassword/ResetPassword.tsx";
+import ForgotPassword from "src/Components/ForgotPassword/ForgotPassword.tsx";
 
 import StartSellingPage from "src/Components/SellerDashboard/StartSelling/StartSelling.tsx"
 import SellerDashboardPage from "src/Components/SellerDashboard/SellerDashboardPage.tsx";
@@ -32,6 +34,8 @@ export const ROUTES_CONFIG = [
   { path: "/order", element: <OrderPage /> },
   { path: "/signup", element: <SignUp /> },
   { path: "/login", element: <LogIn /> },
+  { path: "/forgot-password", element: <ForgotPassword /> },
+  { path: "/reset-password", element: <ResetPassword /> },
   { path: "/profile/*", element: <AccountPage /> },
   { path: "/search", element: <SearchPage /> },
   { path: "/seller/*", element: <SellerDashboardPage /> },
