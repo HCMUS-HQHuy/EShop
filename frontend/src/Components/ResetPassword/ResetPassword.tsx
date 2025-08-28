@@ -6,7 +6,7 @@ import s from "./ResetPassword.module.scss";
 import ResetPasswordForm from "./ResetPasswordForm/ResetPasswordForm.tsx";
 
 const ResetPassword = () => {
-  useScrollOnMount(260);
+  useScrollOnMount(100);
 
   return (
     <>

@@ -6,7 +6,7 @@ import s from "./SignUp.module.scss";
 import SignUpForm from "./SignUpForm/SignUpForm.tsx";
 
 const SignUp = () => {
-  useScrollOnMount(260);
+  useScrollOnMount(100);
 
   return (
     <>
