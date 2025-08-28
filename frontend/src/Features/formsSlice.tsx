@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { FormKeys, FormState } from "src/Types/forms.ts";
+import type { FormState } from "src/Types/forms.ts";
 
 const initialState: FormState= {
   signUp: {
@@ -11,6 +11,13 @@ const initialState: FormState= {
   login: {
     email: "",
     password: "",
+  },
+  resetPassword: {
+    password: "",
+    confirmedPassword: "",
+  },
+  forgotPassword: {
+    email: "",
   },
   sellerRegistrationForm: {
     shopName: "",

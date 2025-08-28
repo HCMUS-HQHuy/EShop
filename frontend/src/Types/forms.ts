@@ -13,6 +13,15 @@ export const LoginSchema = z.object({
   password: passwordSchema,
 });
 
+export const ResetPasswordSchema = z.object({
+  password: passwordSchema,
+  confirmedPassword: passwordSchema,
+});
+
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email address."),
+});
+
 // Register schema
 export const RegisterSchema = LoginSchema.extend({
   confirmPassword: z.string(),
@@ -52,7 +61,9 @@ export type LoginFormValues = z.infer<typeof LoginSchema>;
 export type RegisterFormValues = z.infer<typeof RegisterSchema>;
 export type SellerRegistrationFormValues = z.infer<typeof SellerRegistrationFormSchema>;
 export type LoginInforValues = z.infer<typeof LoginInforSchema>;
-export type FormState = { signUp: RegisterFormValues; login: LoginFormValues; sellerRegistrationForm: SellerRegistrationFormValues };
+export type ResetPasswordFormValues = z.infer<typeof ResetPasswordSchema>;
+export type ForgotPasswordFormValues = z.infer<typeof ForgotPasswordSchema>;
+export type FormState = { signUp: RegisterFormValues; login: LoginFormValues; sellerRegistrationForm: SellerRegistrationFormValues; resetPassword: ResetPasswordFormValues; forgotPassword: ForgotPasswordFormValues };
 export type FormKeys = keyof FormState;
 
 // Export schemas
@@ -61,6 +72,8 @@ export const formSchemas = {
   register: RegisterSchema,
   loginInfo: LoginInforSchema,
   sellerRegistration: SellerRegistrationFormSchema,
+  resetPassword: ResetPasswordSchema,
+  forgotPassword: ForgotPasswordSchema,
 };
 
 export default formSchemas;
