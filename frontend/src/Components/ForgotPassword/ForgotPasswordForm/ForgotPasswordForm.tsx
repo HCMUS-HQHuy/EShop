@@ -12,12 +12,14 @@ import type { RootState, AppDispatch } from "src/Types/store.ts";
 import type { ForgotPasswordFormValues, LoginFormValues } from "src/Types/forms.ts";
 import type { TFunction } from "i18next";
 import api from "src/Api/index.api.ts";
+import { useRef } from "react";
 
 const ResetPasswordForm = () => {
   const { email } = useSelector((state: RootState) => state.forms.forgotPassword);
   const isWebsiteOnline = useOnlineStatus();
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
+  const isSending = useRef<boolean>(false);
 
   async function forgotPassword(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,7 +28,10 @@ const ResetPasswordForm = () => {
       internetConnectionAlert(dispatch, t);
       return;
     }
-    console.log(email);
+    if (isSending.current) {
+      dispatch(showAlert({ alertText: 'Request is already being sent', alertState: "warning", alertType: "alert" }));
+      return;
+    }
     const result = AuthSchemas.forgotPassword.safeParse({
       email: email
     });
@@ -36,12 +41,16 @@ const ResetPasswordForm = () => {
     }
     const credentials: ForgotPasswordFormValues = result.data;
     try {
+      isSending.current = true;
+      dispatch(showAlert({ alertText: 'Sent Request', alertState: "success", alertType: "alert" }));
       const response = await api.user.forgotPassword(credentials);
       console.log("Login data set:", response);
-      dispatch(showAlert({ alertText: 'Sent Request', alertState: "success", alertType: "alert" }));
+      dispatch(showAlert({ alertText: 'Password reset email sent, please check your inbox', alertState: "success", alertType: "alert" }));
     } catch (error) {
       console.error("Forgot password request failed:", error);
       internetConnectionAlert(dispatch, t);
+    } finally {
+      isSending.current = false;
     }
   }
 
