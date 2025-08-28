@@ -33,6 +33,7 @@ router.get("/categories/list", controller.user.category.get);
 // router.get("/categories/toplevel", controller.user.category.getTopLevel);
 
 // #### PAYMENT ROUTES ####
-router.post("/payment/announce", controller.payment.announce);
+router.post("/payment/announce", controller.user.payment.announce);
+router.get("/payment/methods", mid.auth, controller.payment.getAll);
 
 export default router;
