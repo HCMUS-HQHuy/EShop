@@ -138,12 +138,12 @@ CREATE TABLE payments (
     payment_id SERIAL PRIMARY KEY,
     order_id INT NOT NULL,
     payment_code VARCHAR(20) UNIQUE NOT NULL,
-    payment_method_id INT NOT NULL,
+    payment_method_code VARCHAR(20) NOT NULL,
     amount DECIMAL(12, 2) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Completed', 'Failed', 'Refunded')),
 
     CONSTRAINT fk_payment_order FOREIGN KEY (order_id) REFERENCES orders(order_id),
-    CONSTRAINT fk_payment_method FOREIGN KEY (payment_method_id) REFERENCES payment_methods(payment_method_id)
+    CONSTRAINT fk_payment_method FOREIGN KEY (payment_method_code) REFERENCES payment_methods(code)
 );
 
 CREATE TABLE order_items (
