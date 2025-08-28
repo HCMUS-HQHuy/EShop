@@ -1,6 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { Client } from "pg";
+import crypto from "crypto";
 import database from "database/index.database";
 import * as types from "types/index.types";
 import util from "utils/index.utils";
@@ -25,11 +26,10 @@ async function deleteFromTokens(db: Client, userId: number, token: string): Prom
     `, [userId, token]);
     if (tokenInDb.rows.length === 0)
         return false;
-    // console.log("Token found in database, deleting...", tokenInDb.rowCount, tokenInDb.rows.length);
-    // await db.query(`
-    //     DELETE FROM tokens
-    //     WHERE user_id = $1 AND token = $2
-    // `, [userId, token]);
+    await db.query(`
+        DELETE FROM tokens
+        WHERE user_id = $1 AND token = $2
+    `, [userId, token]);
     return true;
 }
 
@@ -182,6 +182,7 @@ async function forgotPassword(req: express.Request, res: express.Response) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
+        await db.query("BEGIN");
         const { email } = req.body;
         const user = await db.query(`
             SELECT *
@@ -191,48 +192,54 @@ async function forgotPassword(req: express.Request, res: express.Response) {
         if (user.rows.length === 0) {
             return res.status(404).json(util.response.error("User not found"));
         }
-        const token = jwt.sign({ userId: user.rows[0].user_id }, process.env.JWT_SECRET as string, { expiresIn: "10m" });
-        console.log("Generated reset token:", token);
-        await insertIntoTokens(db, user.rows[0].user_id, token);
-        const url = `${process.env.FRONT_END_URL}/reset-password?token=${token}`;
-        await services.email.sendResetPassword(email, user.rows[0].username, url);
-        return res.status(200).json(util.response.success("Password reset email sent"));
-    } catch (error: any) {
-        console.error("Error getting database connection:", error);
-        return res.status(500).json(util.response.internalServerError());
-    } finally {
-        if (db)
-            database.releaseConnection(db);
-    }
-}
-
-async function resetPassword(req: express.Request, res: express.Response) {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const token = req.query.token as string;
-        jwt.verify(token, process.env.JWT_SECRET as string);
-        const payload = jwt.decode(token) as { userId: string };
-
-        if (await deleteFromTokens(db, Number(payload.userId), token) === false) {
-            return res.status(400).json(util.response.error("Invalid token"));
-        }
-        const { password } = req.body; // validate later
-        const hashedPassword = util.password.hash(password);
-        const query = `
+        const newPassword = crypto.randomBytes(6).toString("base64").slice(0, 10);
+        await services.email.sendResetPassword(email, user.rows[0].username, newPassword);
+        const hashedPassword = util.password.hash(newPassword);
+        await db.query(`
             UPDATE users
             SET password = $1
             WHERE user_id = $2
-        `;
-        await db.query(query, [hashedPassword, payload.userId]);
+        `, [hashedPassword, user.rows[0].user_id]);
+        await db.query(`COMMIT`);
+        return res.status(200).json(util.response.success("Password reset email sent"));
     } catch (error: any) {
         console.error("Error getting database connection:", error);
+        if (db)
+            await db.query("ROLLBACK");
         return res.status(500).json(util.response.internalServerError());
     } finally {
         if (db)
             database.releaseConnection(db);
     }
 }
+
+// async function resetPassword(req: express.Request, res: express.Response) {
+//     let db: Client | undefined = undefined;
+//     try {
+//         db = await database.getConnection();
+//         const token = req.query.token as string;
+//         jwt.verify(token, process.env.JWT_SECRET as string);
+//         const payload = jwt.decode(token) as { userId: string };
+
+//         if (await deleteFromTokens(db, Number(payload.userId), token) === false) {
+//             return res.status(400).json(util.response.error("Invalid token"));
+//         }
+//         const { password } = req.body; // validate later
+//         const hashedPassword = util.password.hash(password);
+//         const query = `
+//             UPDATE users
+//             SET password = $1
+//             WHERE user_id = $2
+//         `;
+//         await db.query(query, [hashedPassword, payload.userId]);
+//     } catch (error: any) {
+//         console.error("Error getting database connection:", error);
+//         return res.status(500).json(util.response.internalServerError());
+//     } finally {
+//         if (db)
+//             database.releaseConnection(db);
+//     }
+// }
 
 function logout(req: express.Request, res: express.Response) {
     res.clearCookie("auth_jwt");
@@ -248,7 +255,7 @@ const authenController = {
     registerUser,
     verifyEmail,
     forgotPassword,
-    resetPassword,
+    // resetPassword,
     logout
 }
 

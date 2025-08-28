@@ -39,9 +39,9 @@ async function sendVerifyEmail(to: string, username: string, verifyUrl: string) 
     await sendEmail(mailOptions);
 }
 
-async function sendResetPasswordEmail(to: string, username: string, resetUrl: string) {
+async function sendResetPasswordEmail(to: string, username: string, newPassword: string) {
     const resetPassword = path.join(templatePath, 'password-reset.ejs');
-    const html = await ejs.renderFile(resetPassword, { username, resetUrl });
+    const html = await ejs.renderFile(resetPassword, { username, newPassword });
     const mailOptions = {
         from: process.env.GMAIL_USER,
         to,
