@@ -35,7 +35,7 @@ const PaymentOptionsSelection = () => {
                 name="payment"
                 value={method.code}
                 id={`${method.code}-option`}
-                checked={paymentType === method.id}
+                checked={paymentType === method.code}
                 onChange={() => handleSelection(method.id)}
               />
               <label id={`${method.code}-label`} htmlFor={`${method.code}-option`}>

@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "src/Api/index.api.ts";
+import { PAYMENT_METHOD } from "src/Types/common.ts";
 import type { PaymentMethodInforType } from "src/Types/paymentMethodInfor.ts";
 
 const initialState = {
   paymentMethodList: Array<PaymentMethodInforType>(),
-  paymentType: 1,
+  paymentType: PAYMENT_METHOD.COD,
   status: 'idle'
 }
 

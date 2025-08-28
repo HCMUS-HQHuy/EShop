@@ -43,15 +43,16 @@ const useSocketIO = (namespace: string) => {
             setVal(data);
         }
         function redirectHandle(data: any) {
-            const { payUrl } = data.data[0];
-            console.log("Redirecting to:", payUrl);
+            const { url } = data.data[0];
+            console.log("Redirecting to:", url);
+            if (url === null) return;
             const width = 1000;
             const height = 700;
             const left = window.screenX + (window.innerWidth - width) / 2;
             const top = window.screenY + (window.innerHeight - height) / 2;
             const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
-
-            window.open(payUrl, '_blank', features);
+            
+            window.open(url, '_blank', features);
         }
         function errorHandle(error: Error) {
             console.error("Socket connection error:", error);

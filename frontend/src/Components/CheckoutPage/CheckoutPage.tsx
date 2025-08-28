@@ -93,7 +93,7 @@ const CheckoutPage = () => {
         productId: product.id,
         quantity: product.quantity,
       })),
-      paymentMethodId: paymentType,
+      paymentMethodCode: paymentType,
       orderAt: new Date().toISOString(),
     };
     console.log("Submitting order data:", data);

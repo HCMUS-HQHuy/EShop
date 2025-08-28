@@ -26,3 +26,11 @@ export enum ORDER_STATUS {
   DELIVERED = 'Delivered',
   CANCELLED = 'Cancelled'
 }
+
+export enum PAYMENT_METHOD {
+  COD = 'COD',
+  MOMO = 'MOMO',
+  ZALOPAY = 'ZALOPAY',
+  PAYPAL = 'PAYPAL',
+  STRIPE = 'STRIPE'
+}
