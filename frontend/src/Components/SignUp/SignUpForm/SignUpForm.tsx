@@ -37,7 +37,8 @@ const SignUpForm = () => {
     }
     const formData: RegisterFormValues = result.data;
     try {
-      await dispatch(newSignUp(formData)).unwrap();
+      const response = await dispatch(newSignUp(formData)).unwrap();
+      console.log("Registration successful:", response);
       signInAlert(t, dispatch);
     } catch (error) {
       const errorResponse = (error as any)?.data;

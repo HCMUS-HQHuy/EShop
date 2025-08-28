@@ -519,7 +519,7 @@
     "productAddedToCart": "Product added to cart successfully.",
     "addToFavorite": "Please sign in to add/remove product to favorites.",
     "addToWishList": "Please sign in to add/remove product to wishlist.",
-    "signInSuccess": "You signed in successfully, Welcome!",
+    "signInSuccess": "User registered successfully. Please verify your email.",
     "signInFailed": "Failed to sign in, Please check your internet connection.",
     "signOutSuccess": "You Signed out of your account.",
     "pageRequiringSignIn": "Please sign in to visit this page.",

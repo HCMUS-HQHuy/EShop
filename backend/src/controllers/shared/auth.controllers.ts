@@ -4,80 +4,7 @@ import { Client } from "pg";
 import database from "database/index.database";
 import * as types from "types/index.types";
 import util from "utils/index.utils";
-
-// #### VALIDATION FUNCTIONS ####
-
-// #### DATABASE FUNCTIONS ####
-
-async function checkUserExists(input: Partial<types.UserRegistration>): Promise<{
-    usernameExists: boolean;
-    emailExists: boolean;
-}> {
-    let db: Client | undefined;
-    const result = {
-        usernameExists: false,
-        emailExists: false
-    };
-    try {
-        db = await database.getConnection();
-
-        const query = `
-            SELECT username, email
-            FROM users
-            WHERE username = $1 OR email = $2
-        `;
-        const values = [input.username, input.email];
-        const dbResult = await db.query(query, values);
-
-        for (const row of dbResult.rows) {
-            if (row.username === input.username) {
-                result.usernameExists = true;
-            }
-            if (row.email === input.email) {
-                result.emailExists = true;
-            }
-        }
-        return result;
-    } catch (error: any) {
-        console.error("Database validation error:", error);
-        return result;
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
-    }
-}
-
-async function signup(registrationData: types.UserRegistration): Promise<void> {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        registrationData.password = util.password.hash(registrationData.password);
-
-        const query = `
-            INSERT INTO users (username, password, email, role) 
-            VALUES ($1, $2, $3, $4)
-        `;
-        await db.query(query, [
-            registrationData.username,
-            registrationData.password,
-            registrationData.email,
-            types.USER_ROLE.USER
-        ]);
-        console.log("User registered successfully");
-
-    } catch (error: any) {
-        console.error("Registration error:", error);
-        throw error;
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-            console.log("Database connection released.");
-        }
-    }
-}
-
-// #### CONTROLLER FUNCTIONS ####
+import services from "services/index.services";
 
 async function login(req: express.Request, res: express.Response) {
     console.log("Login request received:", req.body);
@@ -115,6 +42,7 @@ async function login(req: express.Request, res: express.Response) {
             });
         }
         const user: types.UserInfor = parsedUser.data;
+        
         console.log("User authenticated successfully", user);
         const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1y" }); // 1y = 1 year for testing purposes
         res.cookie("auth_jwt", token, {
@@ -139,60 +67,108 @@ async function login(req: express.Request, res: express.Response) {
 }
 
 async function registerUser(req: express.Request, res: express.Response) {
-
     const parsedBody = types.autheFormSchemas.userRegistration.safeParse(req.body);
     if (!parsedBody.success) {
         console.error("Validation error:", req.body, parsedBody.error);
-        return res.status(400).json({
-            message: "Invalid input",
-            error: true,
-            data: util.formatError(parsedBody.error)
-        });
+        return res.status(400).json(util.response.zodValidationError(parsedBody.error));
     }
-
     const registrationData: types.UserRegistration = parsedBody.data;
-    console.log("Register request received:", registrationData);
-    // find data and check conditions for existing user
+
+    let db: Client|undefined = undefined;
     try {
-        const { usernameExists, emailExists } = await checkUserExists(registrationData);
-
-        if (usernameExists || emailExists) {
-            const conflictErrors: Record<string, string> = {};
-            if (usernameExists) {
-                conflictErrors.username = "Username already exists";
+        db = await database.getConnection();
+        const { email, username, password } = registrationData;
+        const hashedPassword = util.password.hash(password);
+        {
+            const query = `
+                SELECT username, email
+                FROM users
+                WHERE username = $1 OR email = $2
+            `;
+            const values = [username, email];
+            const dbResult = await db.query(query, values);
+            const result = { username: '', email: '' };
+            for (const row of dbResult.rows) {
+                if (row.username === username) {
+                    result.username = 'Username is already taken';
+                }
+                if (row.email === email) {
+                    result.email = 'Email is already exists';
+                }
             }
-            if (emailExists) {
-                conflictErrors.email = "Email already exists";
+            if (result.username !== '' || result.email !== '') {
+                return res.status(400).json(util.response.error("Validation error", [result]));
             }
-
-            return res.status(409).json({
-                message: "User already exists",
-                error: true,
-                data: conflictErrors
-            });
         }
-    } catch (error: any) {
-        console.error("Error checking user existence:", error);
-        return res.status(500).json({
-            message: "error",
-            error: true,
-            data: [error.message]
-        });
-    }
+        await db.query("BEGIN");
 
-    // update data for registration
-    try {
-        await signup(registrationData);
-        return res.status(201).json({
-            message: "User registered successfully"
-        });
+        const query = `
+            INSERT INTO users (username, password, email, role) 
+            VALUES ($1, $2, $3, $4)
+            RETURNING user_id
+        `;
+        const result = await db.query(query, [
+            username,
+            hashedPassword,
+            email,
+            types.USER_ROLE.USER
+        ]);
+        const userId: number = result.rows[0].user_id;
+
+        const token = jwt.sign({userId, email, username}, process.env.JWT_SECRET as string, { expiresIn: "1y" });
+
+        const sql = `
+            INSERT INTO tokens (user_id, token, created_at, expires_at)
+            VALUES ($1, $2, $3, $4)
+        `;
+        const param = [userId, token, new Date(), new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)];
+        await db.query(sql, param);
+        const url = `${process.env.BASE_API_URL}/auth/verify-email?token=${token}`;
+        await services.email.send(email, username, url);
+        await db.query("COMMIT");
+        return res.status(201).json(util.response.success("User registered successfully. Please verify your email."));
     } catch (error: any) {
         console.error("Registration error:", error);
-        return res.status(500).json({
-            message: "Registration failed",
-            error: true,
-            data: [error.message]
-        });
+        return res.status(500).json(util.response.internalServerError());
+    } finally {
+        if (db)
+            database.releaseConnection(db);
+    }
+}
+
+async function verifyEmail(req: express.Request, res: express.Response) {
+    let db: Client|undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const token = req.query.token as string;
+        jwt.verify(token, process.env.JWT_SECRET as string);
+        const payload = jwt.decode(token) as { userId: string, email: string, username: string };
+
+        const tokenInDb = await db.query(`
+            SELECT *
+            FROM tokens
+            WHERE user_id = $1 and token = $2 AND expires_at > NOW()
+        `, [payload.userId, token]);
+        if (tokenInDb.rows.length === 0) {
+            return res.status(400).json(util.response.error("Invalid token"));
+        }
+        await db.query(`
+            DELETE FROM tokens
+            WHERE user_id = $1 AND token = $2
+        `, [payload.userId, token]);
+        const query = `
+            UPDATE users
+            SET is_verified = TRUE
+            WHERE user_id = $1 AND username = $2
+        `;
+        await db.query(query, [payload.userId, payload.username]);
+        return res.redirect(`${process.env.FRONT_END_URL}/login`);
+    } catch (error: any) {
+        console.error("Error getting database connection:", error);
+        return res.status(500).json(util.response.internalServerError());
+    } finally {
+        if (db) 
+            database.releaseConnection(db);
     }
 }
 
@@ -208,6 +184,7 @@ function logout(req: express.Request, res: express.Response) {
 const authenController = {
     login,
     registerUser,
+    verifyEmail,
     logout
 }
 
