@@ -31,6 +31,7 @@ const CheckoutPage = () => {
   const { saveBillingInfoToLocal, cartProducts } = useSelector(
     (state: RootState) => state.products
   );
+  const { paymentType } = useSelector((state: RootState) => state.payment);
   const { values: billingValues, handleChange } = useFormData({
     initialValues: {
       receiverName: "",
@@ -92,7 +93,7 @@ const CheckoutPage = () => {
         productId: product.id,
         quantity: product.quantity,
       })),
-      paymentMethodId: 2,
+      paymentMethodId: paymentType,
       orderAt: new Date().toISOString(),
     };
     console.log("Submitting order data:", data);
