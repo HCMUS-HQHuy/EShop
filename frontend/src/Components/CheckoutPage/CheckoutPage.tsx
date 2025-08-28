@@ -157,7 +157,7 @@ function showEmptyCartAlert(dispatch: AppDispatch, t: any) {
 }
 
 function finalizeOrder(dispatch: AppDispatch, t: any) {
-  // dispatch(transferCartToOrder());
+  dispatch(transferCartToOrder());
 
   setTimeout(() => {
     dispatch(
