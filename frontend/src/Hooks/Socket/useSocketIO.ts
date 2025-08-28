@@ -43,9 +43,9 @@ const useSocketIO = (namespace: string) => {
             setVal(data);
         }
         function redirectHandle(data: any) {
-            const { url } = data.data[0];
+            const { url, isRedirect } = data.data[0];
+            if (isRedirect === false) return;
             console.log("Redirecting to:", url);
-            if (url === null) return;
             const width = 1000;
             const height = 700;
             const left = window.screenX + (window.innerWidth - width) / 2;

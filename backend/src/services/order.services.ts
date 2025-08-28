@@ -161,7 +161,7 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
         return util
             .response
             .success("Order created successfully", [{
-                isRedirect: true,
+                isRedirect: paymentInfo.redirect,
                 url: paymentInfo.url
             }]);
     } catch (error) {
