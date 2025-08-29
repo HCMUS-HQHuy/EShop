@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { showAlert } from "src/Features/alertsSlice.tsx";
-import { loginUser, setLoginData } from "src/Features/userSlice.tsx";
+import { setLoginData } from "src/Features/userSlice.tsx";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 
 import s from "./ResetPasswordForm.module.scss";
@@ -39,20 +39,8 @@ const ResetPasswordForm = () => {
     }
     const credentials: ResetPasswordFormValues = result.data;
     try {
-      const response = await api.user.resetPassword(token, credentials);
-      console.log(response);
-     if (!Array.isArray(response.data?.data) || response.data?.data?.length === 0) {
-      alert("ngu")
-     } else {
-      const userInfo = {
-        email: response?.data?.data[0].email,
-        password: response?.data?.data[0].password
-      }
-      await dispatch(loginUser(userInfo))
-      navigate("/")
-     }
-      console.log("response0",response);
-
+      await api.user.resetPassword(credentials);
+      navigate("/");
     } catch (error) {
       console.error("Reset password request failed:", error);
       internetConnectionAlert(dispatch, t);
