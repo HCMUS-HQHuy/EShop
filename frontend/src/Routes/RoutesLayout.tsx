@@ -21,7 +21,7 @@ const RoutesLayout = () => {
     <div className="App" tabIndex={-1}>
       <SkipContentLink scrollTo={skipLinkSectionId} />
       <UpdateNotification />
-      <FirstHeader />
+      {/* <FirstHeader /> */}
       <Header />
       <MobileNav />
       <GlobalOverlay />
