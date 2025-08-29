@@ -1,7 +1,7 @@
 import { ZodError } from "zod";
 import formatError from "./formatError.utils";
 
-function successResponse(message: string, data: any = {}) {
+function successResponse(message: string, data: { [key: string]: any } = {}) {
   return {
     message: message,
     error: false,
@@ -9,7 +9,7 @@ function successResponse(message: string, data: any = {}) {
   };
 }
 
-function errorResponse(message: string, data: any = {}) {
+function errorResponse(message: string, data: { [key: string]: any } = {}) {
   return {
     message: message,
     error: true,
