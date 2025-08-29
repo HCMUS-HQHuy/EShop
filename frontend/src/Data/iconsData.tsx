@@ -179,7 +179,14 @@ export const iconsData = [
       </svg>
     ),
   },
-
+  {
+    name: "chat",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16">
+        <path d="M2 0a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2v2.293a.5.5 0 0 0 .854.354L8 13h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm0 1h12a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H7.586L4 14.586V12H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+      </svg>
+    )
+  },
   {
     name: "gamepad",
     icon: (
