@@ -26,9 +26,9 @@ async function getConnection(): Promise<Client> {
     }
 }
 
-async function releaseConnection(client: Client): Promise<void> {
+async function releaseConnection(client: Client|undefined): Promise<void> {
     try {
-        await client.end();
+        await client?.end();
     } catch (error) {
         console.error("Error releasing database connection:", error);
     }

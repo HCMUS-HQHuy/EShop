@@ -40,6 +40,7 @@ seedAdmin().then(() => {
     try {
         routes(app);
         services.socket.connect(io);
+        services.cronJobs.startAll();
         httpServer.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
