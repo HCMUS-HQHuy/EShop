@@ -142,9 +142,6 @@ const AddProductPage = () => {
 
   return (
     <div className={s.addProductPage}>
-      <header className={s.header}>
-        <h1>{isEditMode ? 'Edit Product' : 'Add New Product'}</h1>
-      </header>
       <form onSubmit={handleSubmit} className={s.formGrid}>
         <div className={s.mediaColumn}>
           <div className={s.card}>

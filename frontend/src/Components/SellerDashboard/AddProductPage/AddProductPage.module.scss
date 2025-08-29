@@ -1,11 +1,14 @@
 .addProductPage {
   background-color: var(--skeleton-color1);
   padding: 30px;
+  padding-left: 8%;
+  padding-right: 8%;
+  height: calc(100vh - 100px);
 }
 
 .formGrid {
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
+  grid-template-columns: 1fr 1.4fr;
   gap: 30px;
   @media (max-width: 1024px) { grid-template-columns: 1fr; }
 }

@@ -1,20 +1,35 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { pagesRequireSignIn, authPaths } from "src/Data/globalVariables.tsx";
 import { showAlert } from "src/Features/alertsSlice.tsx";
-import { APP_MODE, SHOP_STATUS } from "src/Types/common.ts";
+import useSocketIO from "src/Hooks/Socket/useSocketIO.ts";
+import { APP_MODE, SHOP_STATUS, SOCKET_NAMESPACE } from "src/Types/common.ts";
 import type { RootState } from "src/Types/store.ts";
 
 const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   const { loginInfo } = useSelector((state: RootState) => state.user);
   const { appMode } = useSelector((state: RootState) => state.global);
   const { status } = useSelector((state: RootState) => state.seller.shopInfo);
+  const { isOpen, val } = useSocketIO(SOCKET_NAMESPACE.SELLER);
   const { isSignIn } = loginInfo;
   const location = useLocation();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const pathName = location.pathname;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (
+      pathName === '/become-seller' &&
+      isSignIn &&
+      appMode === APP_MODE.SELLER &&
+      status === SHOP_STATUS.ACTIVE
+    ) {
+      navigate('/seller/dashboard', { replace: true });
+    }
+  }, [appMode, status]);
 
   const isPageRequiringSignIn = (page: string) =>
     !isSignIn && (pagesRequireSignIn.includes(page) || isPageForSeller(page));
@@ -25,12 +40,8 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
     loginFirstAlert();
     return <Navigate to="/login" />;
   }
-  if (isPageForSeller(pathName) && appMode !== APP_MODE.SELLER)
-    return <Navigate to='/'/>;
-
-  if (pathName === '/become-seller') {
-    if (isSignIn && appMode === APP_MODE.SELLER && status === SHOP_STATUS.ACTIVE) 
-      return <Navigate to='/seller/dashboard' />;
+  if (isPageForSeller(pathName) && appMode !== APP_MODE.SELLER) {
+    return <Navigate to='/' />;
   }
 
   function loginFirstAlert() {

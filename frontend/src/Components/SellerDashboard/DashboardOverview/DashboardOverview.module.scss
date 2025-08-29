@@ -1,6 +1,7 @@
 .mainContent {
   flex-grow: 1;
-  padding: 30px;
+  padding: 20px;
+  padding-inline:8%;
   overflow-y: auto; // Cho phép cuộn nếu nội dung dài
 }
 

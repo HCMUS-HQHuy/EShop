@@ -18,7 +18,6 @@ import ResetPassword from "src/Components/ResetPassword/ResetPassword.tsx";
 import ForgotPassword from "src/Components/ForgotPassword/ForgotPassword.tsx";
 
 import StartSellingPage from "src/Components/SellerDashboard/StartSelling/StartSelling.tsx"
-import SellerDashboardPage from "src/Components/SellerDashboard/SellerDashboardPage.tsx";
 import ChatPageLayout from "src/Components/Chat/ChatPageLayout.tsx";
 import DashboardOverview from "src/Components/SellerDashboard/DashboardOverview/DashboardOverview.tsx";
 import ManageOrders from "src/Components/SellerDashboard/ManageOrders/ManageOrders.tsx";
