@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { CONTACT_EMAILS, WEBSITE_NAME } from "src/Data/constants";
-import CopyRightsText from "./CopyRightsText/CopyRightsText";
-import CustomEmailInput from "./CustomEmailInput/CustomEmailInput";
+import { CONTACT_EMAILS, WEBSITE_NAME } from "src/Data/constants.tsx";
+import CopyRightsText from "./CopyRightsText/CopyRightsText.tsx";
+import CustomEmailInput from "./CustomEmailInput/CustomEmailInput.tsx";
 import s from "./Footer.module.scss";
-import RepoStarsForks from "./RepoStarsForks/RepoStarsForks";
-import DownloadAppInfo from "./WebsiteSocialMedia/DownloadAppInfo";
+import RepoStarsForks from "./RepoStarsForks/RepoStarsForks.tsx";
+import DownloadAppInfo from "./WebsiteSocialMedia/DownloadAppInfo.tsx";
 
 const Footer = () => {
   const { t } = useTranslation();
