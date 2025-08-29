@@ -5,14 +5,6 @@ import s from './ManageProducts.module.scss';
 import api from 'src/Api/index.api.ts';
 import * as types from 'src/Types/product.ts';
 
-// --- Dữ liệu giả (sau này sẽ lấy từ API) ---
-// const mockProducts = [
-//   { id: 'p001', imageUrl: 'https://via.placeholder.com/40x40', name: 'Gaming Chair, local pickup only', sku: 'CLW-BLK-01', stock: 56, price: 150.00, discount: 10, sold: 120, rating: { score: 4.8, count: 82 }, status: 'Active' },
-//   { id: 'p002', imageUrl: 'https://via.placeholder.com/40x40', name: 'Heimer Miller Sofa (Mint Condition)', sku: 'WBH-RED-05', stock: 24, price: 89.99, discount: 0, sold: 250, rating: { score: 4.9, count: 156 }, status: 'Active' },
-//   { id: 'p003', imageUrl: 'https://via.placeholder.com/40x40', name: 'Playstation 4 Limited Edition', sku: 'OGT-50B-01', stock: 0, price: 12.50, discount: 0, sold: 500, rating: { score: 4.5, count: 230 }, status: 'OutOfStock' },
-//   { id: 'p004', imageUrl: 'https://via.placeholder.com/40x40', name: 'Brand New Bike, Local buyer only', sku: 'MSL-WHT-11', stock: 12, price: 210.00, discount: 15, sold: 45, rating: { score: 4.2, count: 21 }, status: 'LowStock' },
-//   { id: 'p005', imageUrl: 'https://via.placeholder.com/40x40', name: 'Lego Star War edition', sku: 'HWB-OAK-01', stock: 52, price: 45.00, discount: 0, sold: 88, rating: { score: 0, count: 0 }, status: 'Active' },
-// ];
 
 const rate = z.object({
   count: z.coerce.number().min(0),
@@ -30,7 +22,6 @@ const productViewSchema = z.object({
   sold: z.coerce.number().min(0),
   rating: rate,
   status: z.enum(['Active', 'Inactive', 'Banned']),
-  // addedDate: z.date(),
 });
 
 type Rating = z.infer<typeof rate>;
@@ -63,7 +54,8 @@ const ManageProducts = () => {
     const fetchProducts = async () => {
       try {
         const response = await api.product.shopFetch();
-        const parsed = z.array(productViewSchema).safeParse(response.data.map((product: ProductView) => ({
+        const products = response.data.products as ProductView[];
+        const parsed = z.array(productViewSchema).safeParse(products.map((product: ProductView) => ({
           productId: String(product.productId),
           imageUrl: String(product.imageUrl),
           shortName: String(product.shortName),
@@ -77,7 +69,6 @@ const ManageProducts = () => {
             score: Number(product.rating),
           },
           status: String(product.status),
-          // addedDate: product.addedDate,
         })));
         if (parsed.success) {
           setProducts(parsed.data);

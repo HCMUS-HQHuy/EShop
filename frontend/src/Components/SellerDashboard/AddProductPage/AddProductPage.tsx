@@ -29,21 +29,11 @@ const AddProductPage = () => {
   useEffect(() => {
     if (isEditMode) {
       setIsLoading(true);
-      // ---- Dùng dữ liệu giả để test ----
       console.log(`Fetching data for product: ${productId}`);
       api.product.shopFetchById(productId as string).then(res => {
-        const product = res.data.data[0];
+        const { product } = res.data;
         setProductData({
-          name: product.name,
-          shortName: product.shortName,
-          sku: product.sku,
-          description: product.description,
-          price: product.price,
-          discount: product.discount,
-          stock_quantity: product.stock_quantity,
-          mainImage: product.imageUrl,
-          additionalImages: product.additionalImages,
-          categories: product.categories,
+          ...product,
           isActive: product.status === 'Active',
           deletedImages: [],
         });

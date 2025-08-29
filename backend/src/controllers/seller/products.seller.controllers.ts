@@ -147,20 +147,20 @@ async function displayProduct(productId: number): Promise<void> {
 // #### CONTROLLER FUNCTIONS ####
 async function list(req: types.RequestCustom, res: express.Response) {
     if (utils.isAcceptedSeller(req.user) === false) {
-        return res.status(403).send({ error: 'Forbidden: Only sellers can list products' });
+        return res.status(403).send(util.response.authorError('sellers'));
     }
     const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
     if (!parsedBody.success) {
-        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
+        return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
     const params: types.ProductParamsRequest = parsedBody.data;
     console.log("Listing products with params:", params);
     try {
         const products = await listProducts(req.user?.shop_id as number, params);
-        res.send(products);
+        res.status(200).send(util.response.success('Products listed successfully', { products: products }));
     } catch (error) {
         console.error('Error listing products:', error);
-        res.status(500).send({ error: 'Internal server error' });
+        res.status(500).send(util.response.internalServerError());
     }
 }
 
@@ -207,7 +207,7 @@ async function getById(req: types.RequestCustom, res: express.Response) {
         const result = await db.query(`
             SELECT
                 name, short_name as "shortName", sku, price, discount, stock_quantity, product_categories.category_id as "category",
-                products.description, products.image_url as "imageUrl", product_images.image_url as "additionalImage"
+                products.description, products.image_url as "mainImage", product_images.image_url as "additionalImage"
             FROM 
                 products 
                 LEFT JOIN 
@@ -228,11 +228,11 @@ async function getById(req: types.RequestCustom, res: express.Response) {
             discount: product.discount,
             stock_quantity: product.stock_quantity,
             description: product.description,
-            imageUrl: `${process.env.PUBLIC_URL}/${product.imageUrl}`,
+            mainImage: `${process.env.PUBLIC_URL}/${product.mainImage}`,
             categories: result.rows.map(row => row.category),
             additionalImages: result.rows.map(row => `${process.env.PUBLIC_URL}/${row.additionalImage}`)
         }
-        res.status(200).send(util.response.success('Product fetched successfully', { products: data }));
+        res.status(200).send(util.response.success('Product fetched successfully', { product: data }));
     } catch (error) {
         console.log('error fetch product with id', error);
         return res.status(500).send(util.response.internalServerError());
@@ -281,7 +281,7 @@ async function update(req: types.RequestCustom, res: express.Response) {
         const sql = `
             UPDATE products
             SET name = $1, sku = $2, short_name = $3, price = $4, discount = $5, description = $6, stock_quantity = $7, image_url = $8, status = $9
-            WHERE product_id = $10 AND shop_id = $11
+            WHERE shop_id = $10 AND product_id = $11
         `;
         const data = [
             product.name,
@@ -293,8 +293,8 @@ async function update(req: types.RequestCustom, res: express.Response) {
             product.stock_quantity,
             product.mainImage,
             product.status,
-            productId,
             product.shop_id,
+            productId,
         ];
         await db.query(sql, data);
         await db.query('DELETE FROM product_categories WHERE product_id = $1', [productId]);
