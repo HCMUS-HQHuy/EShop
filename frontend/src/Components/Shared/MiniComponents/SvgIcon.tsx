@@ -1,7 +1,7 @@
-import { iconsData } from "src/Data/iconsData";
+import { iconsData } from "src/Data/iconsData.tsx";
 
-const SvgIcon = ({ name }) => {
-  const iconData = iconsData.find((iconData) => iconData.name === name);
+const SvgIcon = ({ name }: { name: string}) => {
+  const iconData = iconsData.find((iconData: { name: string }) => iconData.name === name);
   return iconData && iconData?.icon;
 };
 

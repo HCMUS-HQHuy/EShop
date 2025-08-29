@@ -1,14 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import IconWithCount from "../../NavTools/IconWithCount/IconWithCount";
-import SearchProductsInput from "../../NavTools/SearchInput/SearchProductsInput";
-import UserMenuIcon from "../../NavTools/UserMenuIcon/UserMenuIcon";
+import IconWithCount from "../../NavTools/IconWithCount/IconWithCount.tsx";
+import SearchProductsInput from "../../NavTools/SearchInput/SearchProductsInput.tsx";
+import UserMenuIcon from "../../NavTools/UserMenuIcon/UserMenuIcon.tsx";
 import s from "./NavTools.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
-const NavTools = ({ showHeart = true, showCart = true, showUser = true }) => {
+const NavTools = ({ showHeart = true, showCart = true, showUser = true, showChat = true }) => {
   const { t } = useTranslation();
   const { cartProducts, favoritesProducts } = useSelector(
-    (state) => state.products
+    (state: RootState) => state.products
   );
 
   return (
@@ -33,6 +34,15 @@ const NavTools = ({ showHeart = true, showCart = true, showUser = true }) => {
             routePath: "/cart",
             countLength: cartProducts.length,
             title: t("navTools.cart"),
+          }}
+        />
+        <IconWithCount
+          props={{
+            visibility: showChat,
+            iconName: "chat",
+            routePath: "/chat",
+            countLength: cartProducts.length,
+            title: t("navTools.chat"),
           }}
         />
 

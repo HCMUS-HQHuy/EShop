@@ -25,7 +25,8 @@
   "navTools": {
     "favorite": "Favorites",
     "cart": "Cart",
-    "userMenu": "User menu"
+    "userMenu": "User menu",
+    "chat": "Chat"
   },
   "homeSlider": {
     "title": "Up to 30% off Voucher"
