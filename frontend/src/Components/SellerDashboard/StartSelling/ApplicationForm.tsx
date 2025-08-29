@@ -53,7 +53,7 @@ const StartSellingPage = () => {
             await dispatch(setShopData()).unwrap();
             sentFormAlert(t, dispatch);
         } catch (error: any) {
-            errorAlert(dispatch, error.data[0]);
+            errorAlert(dispatch, error.data.message);
         }
     };   
 

@@ -34,9 +34,9 @@ export const newShop = createAsyncThunk(
   async (shopInfo: SellerRegistrationFormValues, { rejectWithValue }) => {
     try {
       const response = await api.seller.createShop(shopInfo);
-      return response.data;
+      return response;
     } catch (error: any) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response);
     }
   }
 );
@@ -46,7 +46,7 @@ export const setShopData = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.seller.getShopInfo();
-      return response.data;
+      return response.data.shopInfo;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }
@@ -77,15 +77,7 @@ const sellerSlice = createSlice({
     })
 
     builder.addCase(setShopData.fulfilled, (state, action) => {
-      console.log("Shop data fetched successfully:", action.payload.data[0]);
-      state.shopInfo = { 
-        name: action.payload.data[0].shopName,
-        email: action.payload.data[0].email,
-        phoneNumber: action.payload.data[0].phoneNumber,
-        description: action.payload.data[0].shopDescription,
-        address: action.payload.data[0].address,
-        status: action.payload.data[0].status,
-      };
+      state.shopInfo = { ...action.payload };
       console.log("Shop info updated:", state.shopInfo);
     });
     builder.addCase(setShopData.pending, (state) => {

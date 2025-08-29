@@ -7,10 +7,18 @@ import Banned from './BannedComponent.tsx';
 import styles from './StartSellingPage.module.scss';
 import { SHOP_STATUS } from 'src/Types/common.ts';
 import type { RootState } from 'src/Types/store.ts';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const StartSelling = () => {
-    console.log("StartSelling component rendered");
     const status = useSelector((state: RootState) => state.seller.shopInfo.status);
+    const navigate = useNavigate();
+
+    useEffect(()=>{
+        if (status === SHOP_STATUS.ACTIVE) {
+            navigate('/seller');
+        }
+    },[navigate, status])
 
     const renderContent = () => {
         if (status === null)
