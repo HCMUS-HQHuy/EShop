@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { showAlert } from "src/Features/alertsSlice.tsx";
-import { loginUser, setLoginData } from "src/Features/userSlice.tsx";
+import { setLoginData } from "src/Features/userSlice.tsx";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 
 import s from "./LogInForm.module.scss";
@@ -11,6 +11,8 @@ import AuthSchemas from 'src/Types/forms.ts';
 import type { RootState, AppDispatch } from "src/Types/store.ts";
 import type { LoginFormValues } from "src/Types/forms.ts";
 import type { TFunction } from "i18next";
+import api from "src/Api/index.api.ts";
+import { updateInput } from "src/Features/formsSlice.tsx";
 
 const LogInForm = () => {
   const { email, password } = useSelector((state: RootState) => state.forms.login);
@@ -35,10 +37,13 @@ const LogInForm = () => {
       return;
     }
     const credentials: LoginFormValues = result.data;
-    await dispatch(loginUser(credentials));
-    const response = await dispatch(setLoginData());
-    console.log("Login data set:", response);
-    logInAlert(dispatch, t);
+    try {
+      await api.user.login(credentials);
+      await dispatch(setLoginData());
+      logInAlert(dispatch, t);
+    } catch (error) {
+      console.error("Failed to set login data:", error);
+    }
   }
 
   return (
