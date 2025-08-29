@@ -50,7 +50,7 @@ async function getCategoriesController(req: express.Request, res: express.Respon
     try {
         db = await database.getConnection();
         const categories = await getCategories(db, null);
-        res.status(200).json(util.response.success('Fetched categories successfully', categories));
+        res.status(200).json(util.response.success('Fetched categories successfully', { categories: categories }));
     } catch (error: any) {
         console.error("Error in getCategoriesController:", error);
         res.status(500).json(util.response.internalServerError());

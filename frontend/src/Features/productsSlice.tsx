@@ -33,14 +33,13 @@ const initialState: ProductsState = {
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_, {rejectWithValue}) => {
   try {
     const response = await api.product.fetchAll();
-    const products: ProductType[] = response.data.data;
+    const products: ProductType[] = response.data.products;
     products.forEach((product: any) => {
       setAfterDiscountKey(product);
       setFormattedPrice(product);
     });
     return products;
   } catch (error: any) {
-    console.error('Featch Product Errors: ', error);
     return rejectWithValue(error.response.data);
   }
 });

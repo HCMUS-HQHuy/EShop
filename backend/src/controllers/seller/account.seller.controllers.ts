@@ -34,10 +34,10 @@ async function createSellerAccount(user_id: number, data: types.ShopCreationRequ
 // #### CONTROLLER FUNCTIONS ####
 async function create(req: types.RequestCustom, res: express.Response) {
     if (utils.isUser(req.user) === false) {
-        return res.status(403).json(util.response.error("Authorization Error", ['Only users have permission to create a seller account.']));
+        return res.status(403).json(util.response.authorError('users'));
     }
     if (utils.isSeller(req.user)) {
-        return res.status(403).json(util.response.error("Invalid Request", ['Sellers cannot create twice seller account.']));
+        return res.status(403).json(util.response.error('Sellers cannot create twice seller account.'));
     }
 
     const parsedBody = types.shopSchemas.CreationRequest.safeParse({
@@ -62,16 +62,16 @@ async function create(req: types.RequestCustom, res: express.Response) {
 
     try {
         await createSellerAccount(req.user?.user_id as number, requestData);
-        return res.status(201).json(util.response.success("Seller account created successfully", []));
+        return res.status(201).json(util.response.success("Seller account created successfully"));
     } catch (error) {
         console.error("Error creating seller account:", error);
-        return res.status(500).json(util.response.error("Internal server error", []));
+        return res.status(500).json(util.response.internalServerError());
     }
 }
 
 async function getInformation(req: types.RequestCustom, res: express.Response) {
     if (utils.isSeller(req.user) === false) {
-        return res.status(403).json(util.response.error("Authorization Error", ['Only sellers have permission to access this route.']));
+        return res.status(403).json(util.response.authorError("sellers"));
     }
 
     const shopId: number = req.user?.shop_id as number;
@@ -92,10 +92,10 @@ async function getInformation(req: types.RequestCustom, res: express.Response) {
             address: result.rows[0].address,
             status: result.rows[0].status
         };
-        return res.status(200).json(util.response.success("Seller information retrieved successfully", [shopInfor]));
+        return res.status(200).json(util.response.success("Seller information retrieved successfully", { shopInfor: shopInfor }));
     } catch (error) {
         console.error("Error fetching seller information:", error);
-        return res.status(500).json(util.response.error("Internal server error", []));
+        return res.status(500).json(util.response.internalServerError());
     } finally {
         if (db) {
             await database.releaseConnection(db);

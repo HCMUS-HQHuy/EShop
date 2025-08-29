@@ -198,7 +198,7 @@ async function getById(req: types.RequestCustom, res: express.Response) {
     }
     const productId = Number(req.params.id);
     if (isNaN(productId) || productId <= 0) {
-        return res.status(400).send(util.response.error('Invalid product ID', []));
+        return res.status(400).send(util.response.error('Invalid product ID'));
     }
     console.log("Fetching product with ID:", productId);
     let db: Client | undefined = undefined;
@@ -217,7 +217,7 @@ async function getById(req: types.RequestCustom, res: express.Response) {
             WHERE products.product_id = $1 AND shop_id = $2
         `, [productId, req.user?.shop_id]);
         if (!result.rows[0]) {
-            return res.status(404).send(util.response.error('Product not found', []));
+            return res.status(404).send(util.response.error('Product not found'));
         }
         const product = result.rows[0];
         const data = {
@@ -232,7 +232,7 @@ async function getById(req: types.RequestCustom, res: express.Response) {
             categories: result.rows.map(row => row.category),
             additionalImages: result.rows.map(row => `${process.env.PUBLIC_URL}/${row.additionalImage}`)
         }
-        res.status(200).send(util.response.success('Product fetched successfully', [data]));
+        res.status(200).send(util.response.success('Product fetched successfully', { products: data }));
     } catch (error) {
         console.log('error fetch product with id', error);
         return res.status(500).send(util.response.internalServerError());
@@ -359,7 +359,7 @@ async function add(req: types.RequestCustom, res: express.Response) {
     }
     console.log("Files received:", req.files);
     if (!req.files || !('mainImage' in req.files)) {
-        return res.status(400).send(util.response.error( 'Main image (mainImage) is required', []));
+        return res.status(400).send(util.response.error( 'Main image (mainImage) is required'));
     }
     console.log("Add product request body:", req.body);
     const parsedBody = types.productSchemas.information.safeParse(req.body);
@@ -419,6 +419,7 @@ async function add(req: types.RequestCustom, res: express.Response) {
             await db.query(sql3, paramsImage);
         }
         await db.query('COMMIT');
+        res.status(201).send(util.response.success('Product added successfully'));
     }
     catch (error) {
         if (db) {
@@ -431,7 +432,6 @@ async function add(req: types.RequestCustom, res: express.Response) {
             await database.releaseConnection(db);
         }
     }
-    res.status(201).send(util.response.success('Product added successfully', []));
 };
 
 async function hide(req: types.RequestCustom, res: express.Response) {

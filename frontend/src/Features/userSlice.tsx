@@ -18,7 +18,7 @@ export const newSignUp = createAsyncThunk(
   async (userInfor: RegisterFormValues, { rejectWithValue }) => {
     try {
       const response = await api.user.signUp(userInfor);
-      return response.data;
+      return response;
     } catch (error: any) {
       if (error.response?.data) {
         return rejectWithValue(error.response.data);
@@ -32,7 +32,7 @@ export const signOut = createAsyncThunk (
   "user/signOut",
   async () => {
     const response = await api.user.logout();
-    return response.data;
+    return response;
   }
 );
 
@@ -40,7 +40,7 @@ export const setLoginData = createAsyncThunk(
   "user/getLoginData",
   async () => {
     const response = await api.user.getInfor();
-    return response.data;
+    return response.data.userInfor;
   }
 );
 

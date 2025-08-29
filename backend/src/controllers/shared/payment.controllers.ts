@@ -25,7 +25,7 @@ async function getAll(req: types.RequestCustom, res: express.Response) {
             img: row.img ? `${process.env.STATIC_URL}/${row.img}` : null,
             link: row.link
         }));
-        res.status(200).json(util.response.success('Success', data));
+        res.status(200).json(util.response.success('Success', { paymentMethods: data }));
     } catch (error) {
         console.error('Error fetching payment methods:', error);
         res.status(500).json(util.response.internalServerError());

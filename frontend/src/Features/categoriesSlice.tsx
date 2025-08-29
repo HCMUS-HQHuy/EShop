@@ -12,7 +12,7 @@ export const getCategories = createAsyncThunk(
   async (_, { rejectWithValue }) => {
       try {
         const response = await api.categories.getAll();
-        return response.data.data;
+        return response.data.categories;
       } catch(error) {
         return rejectWithValue(error);
       }

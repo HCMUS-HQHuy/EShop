@@ -192,7 +192,7 @@ async function list(req: types.RequestCustom, res: express.Response) {
             ...product,
             img: `${process.env.PUBLIC_URL}/${product.img}`
         }));
-        res.status(200).send(util.response.success('Products fetched successfully', data));
+        res.status(200).send(util.response.success('Products fetched successfully', { products: data }));
     } catch (error) {
         console.error('Error listing products:', error);
         res.status(500).send(util.response.internalServerError());

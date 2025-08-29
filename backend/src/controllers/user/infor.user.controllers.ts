@@ -2,6 +2,7 @@ import express from "express";
 import { RequestCustom } from "types/user.types";
 import database from "database/index.database";
 import { Client } from "pg";
+import util from "utils/index.utils";
 
 // #### CONTROLLER FUNCTIONS ####
 
@@ -20,10 +21,10 @@ async function get(req: RequestCustom, res: express.Response) {
         const result = await db.query(sql, [userId]);
         const userInfo = result.rows[0];
 
-        res.status(200).json(userInfo);
+        res.status(200).json(util.response.success('Fetched user info successfully', { userInfor: userInfo }));
     } catch (error) {
         console.error("Error fetching user info:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json(util.response.internalServerError());
     } finally {
         if (db)
             await database.releaseConnection(db);
