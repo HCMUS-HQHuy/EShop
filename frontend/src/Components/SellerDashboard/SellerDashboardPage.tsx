@@ -14,6 +14,7 @@ import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
 import { setShopStatus } from 'src/Features/sellerSlice.tsx';
 import type { RootState, AppDispatch } from 'src/Types/store.ts';
 import AddProductPage from './AddProductPage/AddProductPage.tsx';
+import ChatPageLayout from '../Chat/ChatPageLayout.tsx';
 
 const SellerDashboardPageLayout = () => {
   return (

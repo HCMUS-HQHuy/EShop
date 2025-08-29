@@ -1,0 +1,11 @@
+.chatLayout {
+  display: grid;
+  grid-template-columns: 320px 1fr; // Cột trái 320px, cột phải chiếm phần còn lại
+  height: calc(100vh - 80px); // Chiều cao trừ đi header
+  background-color: var(--white);
+  border: 1px solid var(--very-light-gray);
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 1400px;
+  overflow: hidden;
+}

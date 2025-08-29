@@ -1,0 +1,93 @@
+.chatWindow {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.noChatSelected {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: var(--light-gray);
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--very-light-gray);
+  background-color: var(--white);
+}
+
+.avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 15px; }
+.name { font-weight: 600; font-size: 1.1rem; }
+.context {
+  font-size: 0.85rem;
+  color: var(--light-gray);
+  span { margin-right: 5px; }
+  a { color: var(--tomato); text-decoration: none; &:hover { text-decoration: underline; } }
+}
+
+.messageList {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.message {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 70%;
+  .bubble {
+    padding: 12px 16px;
+    border-radius: 18px;
+    line-height: 1.4;
+  }
+  .timestamp { font-size: 0.75rem; color: var(--light-gray); }
+}
+
+.sent {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+  .bubble { background-color: var(--tomato); color: var(--white); border-bottom-right-radius: 4px; }
+}
+
+.received {
+  align-self: flex-start;
+  .bubble { background-color: var(--skeleton-color2); color: var(--primary); border-bottom-left-radius: 4px; }
+}
+
+.messageInput {
+  display: flex;
+  padding: 15px;
+  border-top: 1px solid var(--very-light-gray);
+  background-color: var(--white);
+  
+  textarea {
+    flex-grow: 1;
+    border: 1px solid var(--very-light-gray);
+    border-radius: 18px;
+    padding: 10px 15px;
+    resize: none;
+    font-size: 1rem;
+    max-height: 100px;
+    &:focus { outline: none; border-color: var(--tomato); }
+  }
+  
+  button {
+    margin-left: 15px;
+    padding: 0 25px;
+    border: none;
+    background-color: var(--tomato);
+    color: var(--white);
+    border-radius: 18px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}

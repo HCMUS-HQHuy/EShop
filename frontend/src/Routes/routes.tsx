@@ -19,6 +19,7 @@ import ForgotPassword from "src/Components/ForgotPassword/ForgotPassword.tsx";
 
 import StartSellingPage from "src/Components/SellerDashboard/StartSelling/StartSelling.tsx"
 import SellerDashboardPage from "src/Components/SellerDashboard/SellerDashboardPage.tsx";
+import ChatPageLayout from "src/Components/Chat/ChatPageLayout.tsx";
 
 export const ROUTES_CONFIG = [
   { path: "/", element: <Home /> },
@@ -39,5 +40,6 @@ export const ROUTES_CONFIG = [
   { path: "/profile/*", element: <AccountPage /> },
   { path: "/search", element: <SearchPage /> },
   { path: "/seller/*", element: <SellerDashboardPage /> },
+  { path: "/chat", element: <ChatPageLayout /> },
   { path: "*", element: <NotFoundPage /> },
 ];
