@@ -1,3 +1,9 @@
+.mainContent {
+  flex-grow: 1;
+  padding: 30px;
+  overflow-y: auto; // Cho phép cuộn nếu nội dung dài
+}
+
 .overview h1 {
   font-size: 1.8rem;
   color: var(--primary);

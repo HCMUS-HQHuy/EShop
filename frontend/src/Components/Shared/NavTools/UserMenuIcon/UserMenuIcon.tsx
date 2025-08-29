@@ -1,13 +1,13 @@
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import useEventListener from "src/Hooks/Helper/useEventListener";
-import useToggle from "src/Hooks/Helper/useToggle";
-import SvgIcon from "../../MiniComponents/SvgIcon";
-import ToolTip from "../../MiniComponents/ToolTip";
-import UserMenu from "../../UserMenu/UserMenu";
+import useEventListener from "src/Hooks/Helper/useEventListener.tsx";
+import useToggle from "src/Hooks/Helper/useToggle.tsx";
+import SvgIcon from "../../MiniComponents/SvgIcon.tsx";
+import ToolTip from "../../MiniComponents/ToolTip.tsx";
+import UserMenu from "../../UserMenu/UserMenu.tsx";
 import s from "./UserMenuIcon.module.scss";
 
-const UserMenuIcon = ({ visibility }) => {
+const UserMenuIcon = ({ visibility }: { visibility: boolean }) => {
   const { t } = useTranslation();
   const [isMenuUserActive, toggleMenuUserActive] = useToggle(false);
   const userContainerRef = useRef();

@@ -1,7 +1,15 @@
-import SvgIcon from "../MiniComponents/SvgIcon";
+import SvgIcon from "../MiniComponents/SvgIcon.tsx";
 import s from "./UserMenuItemWithCount.module.scss";
 
-const UserMenuItemWithCount = ({ props: { iconName, countLength, title } }) => {
+type Props = {
+  props: {
+    iconName: string,
+    countLength: number,
+    title: string
+  }
+}
+
+const UserMenuItemWithCount = ({ props: { iconName, countLength, title } }: Props) => {
   const countNoun = countLength > 99 ? "99+" : countLength;
 
   return (

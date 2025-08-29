@@ -20,6 +20,11 @@ import ForgotPassword from "src/Components/ForgotPassword/ForgotPassword.tsx";
 import StartSellingPage from "src/Components/SellerDashboard/StartSelling/StartSelling.tsx"
 import SellerDashboardPage from "src/Components/SellerDashboard/SellerDashboardPage.tsx";
 import ChatPageLayout from "src/Components/Chat/ChatPageLayout.tsx";
+import DashboardOverview from "src/Components/SellerDashboard/DashboardOverview/DashboardOverview.tsx";
+import ManageOrders from "src/Components/SellerDashboard/ManageOrders/ManageOrders.tsx";
+import StartSelling from "src/Components/SellerDashboard/StartSelling/StartSelling.tsx";
+import AddProductPage from "src/Components/SellerDashboard/AddProductPage/AddProductPage.tsx";
+import ManageProducts from "src/Components/SellerDashboard/ManageProducts/ManageProducts.tsx";
 
 export const ROUTES_CONFIG = [
   { path: "/", element: <Home /> },
@@ -39,7 +44,13 @@ export const ROUTES_CONFIG = [
   { path: "/reset-password", element: <ResetPassword /> },
   { path: "/profile/*", element: <AccountPage /> },
   { path: "/search", element: <SearchPage /> },
-  { path: "/seller/*", element: <SellerDashboardPage /> },
+  { path: "/seller", element: <DashboardOverview /> },
+  { path: "/seller/products", element: <ManageProducts /> },
+  { path: "/seller/products/new", element: <AddProductPage /> },
+  { path: "/seller/products/edit/:productId", element: <AddProductPage /> },
+  { path: "/seller/orders", element: <ManageOrders /> },
+  { path: "/seller/chats", element: <ChatPageLayout /> },
+  { path: "/become-seller", element: <StartSelling /> },
   { path: "/chat", element: <ChatPageLayout /> },
   { path: "*", element: <NotFoundPage /> },
 ];

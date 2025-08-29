@@ -19,6 +19,10 @@
     "profile": "Profile",
     "signUp": "Sign Up",
     "login": "Log In",
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "orders": "Orders",
+    "chat": "Chat",
     "sellerCenter": "Seller Center",
     "becomeSeller": "Become Seller"
   },
@@ -517,6 +521,8 @@
   },
   "userMenuItems": {
     "profile": "Manage My Account",
+    "seller": "My Seller Account",
+    "backToUser": "Back to User Account",
     "cart": "My Order",
     "cancellations": "My Cancellations",
     "reviews": "My Reviews",

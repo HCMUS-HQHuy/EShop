@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { APP_MODE } from "src/Types/common.ts";
 
 const initialState = {
   isOverlayActive: false,
@@ -7,6 +8,7 @@ const initialState = {
   isSectionsMenuActive: false,
   isZoomInPreviewActive: false,
   previewImg: null,
+  appMode: APP_MODE.USER
 };
 
 const globalSlice = createSlice({
