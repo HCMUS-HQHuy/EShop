@@ -27,9 +27,7 @@ async function getAllCategoriesId(categories: number[] | undefined): Promise<num
         console.error('Error fetching categories:', error);
         throw error;
     } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
+        await database.releaseConnection(db);
     }
 }
 
@@ -81,9 +79,7 @@ async function getProductInforById(productId: number): Promise<any | null> {
         console.error('Error fetching product by ID:', error);
         throw error;
     } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
+        await database.releaseConnection(db);
     }
 }
 
@@ -139,9 +135,7 @@ async function listProducts(params: types.ProductParamsRequest) {
         console.error('Error listing products:', error);
         throw error;
     } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
+        await database.releaseConnection(db);
     }
 }
 
@@ -170,9 +164,7 @@ async function getRelatedProductsById(productId: number): Promise<any[]> {
         console.error('Error fetching related products:', error);
         throw error;
     } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
+        await database.releaseConnection(db);
     }
 }
 
@@ -206,7 +198,7 @@ async function getDetailById(req: types.RequestCustom, res: express.Response) {
     }
     console.log("Fetching product details for ID:", productId);
     if (productId <= 0) {
-        return res.status(400).send(util.response.error('Invalid product ID', ['ProductId must be a positive number']));
+        return res.status(400).send(util.response.error('ProductId must be a positive number', ));
     }
 
     try {
@@ -214,7 +206,7 @@ async function getDetailById(req: types.RequestCustom, res: express.Response) {
         if (!data) {
             return res.status(404).send(util.response.error('Product not found'));
         }
-        res.status(200).send(util.response.success('Product details fetched successfully', [data]));
+        res.status(200).send(util.response.success('Product details fetched successfully', { product: data }));
     } catch (error) {
         console.error('Error fetching product details:', error);
         return res.status(500).send(util.response.internalServerError());
@@ -236,7 +228,7 @@ async function getRelatedProducts(req: types.RequestCustom, res: express.Respons
         res.send(relatedProducts);
     } catch (error) {
         console.error('Error fetching related products:', error);
-        return res.status(500).send({ error: 'Internal server error' });
+        return res.status(500).send(util.response.internalServerError());
     }
 }
 

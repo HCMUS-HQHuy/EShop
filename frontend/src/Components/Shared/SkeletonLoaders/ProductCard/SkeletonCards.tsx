@@ -1,4 +1,4 @@
-import SkeletonCard from "./SkeletonCard";
+import SkeletonCard from "./SkeletonCard.tsx";
 
 const SkeletonCards = ({ numberOfCards = 4 }) => {
   const cards = Array.from({ length: numberOfCards });

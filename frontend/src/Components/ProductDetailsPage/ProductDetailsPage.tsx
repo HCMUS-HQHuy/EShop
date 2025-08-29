@@ -13,7 +13,7 @@ import s from "./ProductDetailsPage.module.scss";
 import RelatedItemsSection from "./RelatedItemsSection/RelatedItemsSection.tsx";
 import api from "src/Api/index.api.ts";
 import { useEffect, useState } from "react";
-import type { Product, ProductDetailType } from "src/Types/product.ts";
+import type { ProductDetailType } from "src/Types/product.ts";
 import { useSelector } from "react-redux";
 import type { RootState } from "src/Types/store.ts";
 import LoadingPage from "../LoadingPage/LoadingPage.tsx";
@@ -26,9 +26,10 @@ const ProductDetailsPage = () => {
   useEffect(() => {
     if (PRODUCT_DATA != undefined) return;
     api.product.getById(PRODUCT_ID).then((response) => {
-      const data = response.data;
-      if (data) {
-        const productDetails = data.data[0] as ProductDetailType;
+      const { product } = response.data;
+      console.log(response);
+      if (product) {
+        const productDetails = product as ProductDetailType;
         setAfterDiscountKey(productDetails);
         setFormattedPrice(productDetails);
         setProductData(productDetails);
