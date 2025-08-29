@@ -1,11 +1,13 @@
+.chatPageContainer {
+  width: 100%;
+  height: calc(100vh - 100px);
+  overflow: hidden;
+}
+
 .chatLayout {
   display: grid;
-  grid-template-columns: 320px 1fr; // Cột trái 320px, cột phải chiếm phần còn lại
-  height: calc(100vh - 80px); // Chiều cao trừ đi header
+  grid-template-columns: 350px 1fr; 
+  height: 100%; // Chiếm toàn bộ chiều cao của container cha
   background-color: var(--white);
-  border: 1px solid var(--very-light-gray);
-  border-radius: 8px;
-  margin: 20px auto;
-  max-width: 1400px;
-  overflow: hidden;
+  border-top: 1px solid var(--very-light-gray); // Thêm đường kẻ ngăn cách với Header
 }

@@ -12,20 +12,23 @@ const mockConversations = [
 
 const ChatPageLayout = () => {
   const [conversations, setConversations] = useState(mockConversations);
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>('conv1');
-
+  // 1. Thay đổi state ban đầu để không có cuộc trò chuyện nào được chọn
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
-
   return (
-    <div className={s.chatLayout}>
-      <ConversationList 
-        conversations={conversations}
-        selectedConversationId={selectedConversationId}
-        onSelectConversation={setSelectedConversationId}
-      />
-      <ChatWindow 
-        conversation={selectedConversation}
-      />
+    // 2. Sử dụng một class container mới để dễ dàng style full-bleed
+    <div className={s.chatPageContainer}>
+      <div className={s.chatLayout}>
+        <ConversationList
+          conversations={conversations}
+          selectedConversationId={selectedConversationId}
+          onSelectConversation={setSelectedConversationId}
+        />
+        {/* 3. Truyền selectedConversation vào ChatWindow */}
+        <ChatWindow
+          conversation={selectedConversation}
+        />
+      </div>
     </div>
   );
 };

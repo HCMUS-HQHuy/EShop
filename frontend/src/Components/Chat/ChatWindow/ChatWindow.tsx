@@ -7,6 +7,20 @@ interface ChatWindowProps {
   conversation: Conversation | undefined;
 }
 
+const ChatPlaceholder = () => (
+  <div className={s.placeholder}>
+    {/* Bạn có thể thay thế bằng một file ảnh SVG hoặc PNG thực tế */}
+    <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="50" y="25" width="100" height="150" rx="10" fill="#EDECEE"/>
+        <rect x="55" y="30" width="90" height="10" rx="5" fill="#BDBDBD"/>
+        <rect x="60" y="50" width="80" height="80" rx="5" fill="#FAFAFA"/>
+        <circle cx="100" cy="90" r="15" fill="#DB4444"/>
+        <rect x="75" y="115" width="50" height="5" rx="2.5" fill="#BDBDBD"/>
+    </svg>
+    <h3>Mẹo! Chat giúp làm sáng tỏ thêm thông tin, tăng hiệu quả mua bán</h3>
+  </div>
+);
+
 const ChatWindow = ({ conversation }: ChatWindowProps) => {
   const [newMessage, setNewMessage] = useState('');
 
@@ -25,7 +39,11 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
   };
 
   if (!conversation) {
-    return <div className={s.noChatSelected}><h2>Select a conversation to start messaging</h2></div>;
+    return (
+      <div className={s.chatWindow}>
+        <ChatPlaceholder />
+      </div>
+    );
   }
 
   return (
