@@ -135,91 +135,89 @@ const ManageProducts = () => {
   }
 
   return (
-    // <div className={s.mainContent}>
-      <div className={s.manageProductsPage}>
-        <header className={s.header}>
-          <h1>Products</h1>
-          <div className={s.headerActions}>
-            <button className={s.uploadBtn}>↑ Upload CSV</button>
-            <button onClick={() => navigate('new')} className={s.addProductBtn}>+ Add product</button>
-          </div>
-        </header>
+    <div className={s.manageProductsPage}>
+      <header className={s.header}>
+        <h1>Products</h1>
+        <div className={s.headerActions}>
+          <button className={s.uploadBtn}>↑ Upload CSV</button>
+          <button onClick={() => navigate('new')} className={s.addProductBtn}>+ Add product</button>
+        </div>
+      </header>
 
-        <div className={s.card}>
-          <div className={s.filterTabs}>
-            <button onClick={() => setActiveTab('All')} className={activeTab === 'All' ? s.active : ''}>All {products.length}</button>
-            <button onClick={() => setActiveTab('OutOfStock')} className={activeTab === 'OutOfStock' ? s.active : ''}>Out of stock {products.filter(p => p.stockQuantity === 0).length}</button>
-            <button onClick={() => setActiveTab('LowStock')} className={activeTab === 'LowStock' ? s.active : ''}>Low stock {products.filter(p => p.stockQuantity > 0 && p.stockQuantity <= 15).length}</button>
-          </div>
-
-          <div className={s.toolbar}>
-            <input 
-              type="text" 
-              placeholder="Search..." 
-              className={s.searchInput}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button className={s.filterBtn}>Filters</button>
-          </div>
-
-          <div className={s.tableContainer}>
-            <table className={s.productTable}>
-              <thead>
-                <tr>
-                  <th><input type="checkbox" checked={selectedProductIds.length === filteredProducts.length && filteredProducts.length > 0} onChange={handleSelectAll} /></th>
-                  <th>Product name</th>
-                  <th>SKU</th>
-                  <th>Price</th>
-                  <th>Discount</th>
-                  <th>Stock</th>
-                  <th>Sold</th>
-                  <th>Rating</th>
-                  <th>Status</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map(product => (
-                  <tr key={product.productId} className={selectedProductIds.includes(product.productId) ? s.selected : ''}>
-                    <td><input type="checkbox" checked={selectedProductIds.includes(product.productId)} onChange={() => handleSelectProduct(product.productId)} /></td>
-                    <td className={s.productCell}>
-                      <img src={`${import.meta.env.VITE_PUBLIC_URL}/${product.imageUrl}`} alt={product.shortName} className={s.productImage} />
-                      <span>{product.shortName}</span>
-                    </td>
-                    <td>{product.sku}</td>
-                    {/* 4. Thêm các ô dữ liệu mới vào body của bảng */}
-                    <td>${product.price.toFixed(2)}</td>
-                    <td>
-                      {product.discount > 0 ? `${product.discount}%` : '—'}
-                    </td>
-                    <td>{product.stockQuantity}</td>
-                    <td>{product.sold}</td>
-                    <td>
-                      <StarRating score={product.rating.score} count={product.rating.count} />
-                    </td>
-                    <td><span className={`${s.status} ${s[product.status.toLowerCase()]}`}>{product.status}</span></td>
-                    <td><button className={s.moreActionsBtn} onClick={() => handleEditProduct(product.productId)}>...</button></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <div className={s.card}>
+        <div className={s.filterTabs}>
+          <button onClick={() => setActiveTab('All')} className={activeTab === 'All' ? s.active : ''}>All {products.length}</button>
+          <button onClick={() => setActiveTab('OutOfStock')} className={activeTab === 'OutOfStock' ? s.active : ''}>Out of stock {products.filter(p => p.stockQuantity === 0).length}</button>
+          <button onClick={() => setActiveTab('LowStock')} className={activeTab === 'LowStock' ? s.active : ''}>Low stock {products.filter(p => p.stockQuantity > 0 && p.stockQuantity <= 15).length}</button>
         </div>
 
-        {selectedProductIds.length > 0 && (
-          <div className={s.bulkActionBar}>
-            <span>{selectedProductIds.length} items selected</span>
-            <div className={s.bulkActions}>
-              <button>Print labels</button>
-              <button>Export CSV</button>
-              <button onClick={handleBulkDelete} className={s.deleteAction}>Delete</button>
-            </div>
-            <button onClick={() => setSelectedProductIds([])} className={s.clearSelection}>Clear selections</button>
-          </div>
-        )}
+        <div className={s.toolbar}>
+          <input 
+            type="text" 
+            placeholder="Search..." 
+            className={s.searchInput}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className={s.filterBtn}>Filters</button>
+        </div>
+
+        <div className={s.tableContainer}>
+          <table className={s.productTable}>
+            <thead>
+              <tr>
+                <th><input type="checkbox" checked={selectedProductIds.length === filteredProducts.length && filteredProducts.length > 0} onChange={handleSelectAll} /></th>
+                <th>Product name</th>
+                <th>SKU</th>
+                <th>Price</th>
+                <th>Discount</th>
+                <th>Stock</th>
+                <th>Sold</th>
+                <th>Rating</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredProducts.map(product => (
+                <tr key={product.productId} className={selectedProductIds.includes(product.productId) ? s.selected : ''}>
+                  <td><input type="checkbox" checked={selectedProductIds.includes(product.productId)} onChange={() => handleSelectProduct(product.productId)} /></td>
+                  <td className={s.productCell}>
+                    <img src={`${import.meta.env.VITE_PUBLIC_URL}/${product.imageUrl}`} alt={product.shortName} className={s.productImage} />
+                    <span>{product.shortName}</span>
+                  </td>
+                  <td>{product.sku}</td>
+                  {/* 4. Thêm các ô dữ liệu mới vào body của bảng */}
+                  <td>${product.price.toFixed(2)}</td>
+                  <td>
+                    {product.discount > 0 ? `${product.discount}%` : '—'}
+                  </td>
+                  <td>{product.stockQuantity}</td>
+                  <td>{product.sold}</td>
+                  <td>
+                    <StarRating score={product.rating.score} count={product.rating.count} />
+                  </td>
+                  <td><span className={`${s.status} ${s[product.status.toLowerCase()]}`}>{product.status}</span></td>
+                  <td><button className={s.moreActionsBtn} onClick={() => handleEditProduct(product.productId)}>...</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    // </div>
+
+      {selectedProductIds.length > 0 && (
+        <div className={s.bulkActionBar}>
+          <span>{selectedProductIds.length} items selected</span>
+          <div className={s.bulkActions}>
+            <button>Print labels</button>
+            <button>Export CSV</button>
+            <button onClick={handleBulkDelete} className={s.deleteAction}>Delete</button>
+          </div>
+          <button onClick={() => setSelectedProductIds([])} className={s.clearSelection}>Clear selections</button>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -15,7 +15,7 @@ const NavTools = ({ showHeart = true, showCart = true, showUser = true, showChat
   return (
     <div className={s.navTools}>
       <SearchProductsInput />
-
+      
       <div className={s.tools}>
         <IconWithCount
           props={{
