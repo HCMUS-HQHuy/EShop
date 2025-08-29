@@ -84,15 +84,15 @@ async function getInformation(req: types.RequestCustom, res: express.Response) {
             WHERE shop_id = $1
         `;
         const result = await db.query(sql, [shopId]);
-        const shopInfor = {
-            shopName: result.rows[0].shop_name,
+        const shopInfo = {
+            name: result.rows[0].shop_name,
             email: result.rows[0].email,
             phoneNumber: result.rows[0].phone_number,
-            shopDescription: result.rows[0].shop_description,
+            description: result.rows[0].shop_description,
             address: result.rows[0].address,
             status: result.rows[0].status
         };
-        return res.status(200).json(util.response.success("Seller information retrieved successfully", { shopInfor: shopInfor }));
+        return res.status(200).json(util.response.success("Seller information retrieved successfully", { shopInfo: shopInfo }));
     } catch (error) {
         console.error("Error fetching seller information:", error);
         return res.status(500).json(util.response.internalServerError());
