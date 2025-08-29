@@ -34,14 +34,9 @@ async function deleteFromTokens(db: Client, userId: number, token: string): Prom
 }
 
 async function login(req: express.Request, res: express.Response) {
-    console.log("Login request received:", req.body);
     const parsedBody = types.autheFormSchemas.userCredentials.safeParse(req.body);
     if (!parsedBody.success) {
-        return res.status(200).json({
-            message: "error",
-            error: true,
-            data: [parsedBody.error.format()]
-        });
+        return res.status(200).json(util.response.zodValidationError(parsedBody.error));
     }
     const credential: types.UserCredentials = parsedBody.data;
 
@@ -55,14 +50,10 @@ async function login(req: express.Request, res: express.Response) {
         const result = await db.query(query, [credential.email]);
 
         if (result.rows.length === 0)
-            return res.status(401).json({
-                message: "Invalid credentials"
-            });
+            return res.status(401).json(util.response.error("Invalid credentials"));
         const password: string = result.rows[0].password;
         if (!util.password.compare(credential.password, password)) {
-            return res.status(401).json({
-                message: "Invalid credentials"
-            });
+            return res.status(401).json(util.response.error("Invalid credentials"));
         }
         const user: types.UserInfor = result.rows[0];
         const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1y" }); // 1y = 1 year for testing purposes
@@ -73,17 +64,10 @@ async function login(req: express.Request, res: express.Response) {
             sameSite: "strict",
             maxAge: 365 * 24 * 60 * 60 * 1000 // 1 year in milliseconds
         });
-        return res.status(201).json({
-            message: "successful",
-            error: false,
-            data: [user]
-        });
+        return res.status(201).json(util.response.success("Login successful", {userInfor: user}));
     } catch (error: any) {
         console.error("Authentication error:", error);
-        return res.status(401).json({
-            message: "Authentication failed",
-            errors: error.message || "Authentication failed"
-        });
+        return res.status(501).json(util.response.internalServerError());
     }
 }
 
@@ -185,23 +169,28 @@ async function forgotPassword(req: express.Request, res: express.Response) {
         await db.query("BEGIN");
         const { email } = req.body;
         const user = await db.query(`
-            SELECT *
+            SELECT username, user_id as "userId"
             FROM users
             WHERE email = $1
         `, [email]);
         if (user.rows.length === 0) {
             return res.status(404).json(util.response.error("User not found"));
         }
+        const { username, userId } = user.rows[0];
         const newPassword = crypto.randomBytes(6).toString("base64").slice(0, 10);
-        await services.email.sendResetPassword(email, user.rows[0].username, newPassword);
+        await services.email.sendResetPassword(email, username, newPassword);
         const hashedPassword = util.password.hash(newPassword);
         await db.query(`
             UPDATE users
             SET password = $1
             WHERE user_id = $2
-        `, [hashedPassword, user.rows[0].user_id]);
+        `, [hashedPassword, userId]);
         await db.query(`COMMIT`);
-        return res.status(200).json(util.response.success("Password reset email sent"));
+        return res.status(200).json(util.response.success("Password reset email sent", {
+            email: email,
+            redirect: true,
+            redirectUrl: '/login'
+        }));
     } catch (error: any) {
         console.error("Error getting database connection:", error);
         if (db)
@@ -213,41 +202,37 @@ async function forgotPassword(req: express.Request, res: express.Response) {
     }
 }
 
-// async function resetPassword(req: express.Request, res: express.Response) {
-//     let db: Client | undefined = undefined;
-//     try {
-//         db = await database.getConnection();
-//         const token = req.query.token as string;
-//         jwt.verify(token, process.env.JWT_SECRET as string);
-//         const payload = jwt.decode(token) as { userId: string };
+async function resetPassword(req: express.Request, res: express.Response) {
+    let db: Client | undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const token = req.query.token as string;
+        jwt.verify(token, process.env.JWT_SECRET as string);
+        const payload = jwt.decode(token) as { userId: string };
 
-//         if (await deleteFromTokens(db, Number(payload.userId), token) === false) {
-//             return res.status(400).json(util.response.error("Invalid token"));
-//         }
-//         const { password } = req.body; // validate later
-//         const hashedPassword = util.password.hash(password);
-//         const query = `
-//             UPDATE users
-//             SET password = $1
-//             WHERE user_id = $2
-//         `;
-//         await db.query(query, [hashedPassword, payload.userId]);
-//     } catch (error: any) {
-//         console.error("Error getting database connection:", error);
-//         return res.status(500).json(util.response.internalServerError());
-//     } finally {
-//         if (db)
-//             database.releaseConnection(db);
-//     }
-// }
+        if (await deleteFromTokens(db, Number(payload.userId), token) === false) {
+            return res.status(400).json(util.response.error("Invalid token"));
+        }
+        const { password } = req.body; // validate later
+        const hashedPassword = util.password.hash(password);
+        const query = `
+            UPDATE users
+            SET password = $1
+            WHERE user_id = $2
+        `;
+        await db.query(query, [hashedPassword, payload.userId]);
+    } catch (error: any) {
+        console.error("Error getting database connection:", error);
+        return res.status(500).json(util.response.internalServerError());
+    } finally {
+        if (db)
+            database.releaseConnection(db);
+    }
+}
 
 function logout(req: express.Request, res: express.Response) {
     res.clearCookie("auth_jwt");
-    return res.status(200).json({
-        message: "successful",
-        error: false,
-        data: []
-    });
+    return res.status(200).json(util.response.success("Logout successful"));
 }
 
 const authenController = {
@@ -255,7 +240,7 @@ const authenController = {
     registerUser,
     verifyEmail,
     forgotPassword,
-    // resetPassword,
+    resetPassword,
     logout
 }
 

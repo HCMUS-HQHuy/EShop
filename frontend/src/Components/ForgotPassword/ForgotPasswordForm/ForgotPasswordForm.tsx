@@ -1,8 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { showAlert } from "src/Features/alertsSlice.tsx";
-import { loginUser, setLoginData } from "src/Features/userSlice.tsx";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 
 import s from "./ForgotPasswordForm.module.scss";
@@ -13,6 +12,7 @@ import type { ForgotPasswordFormValues, LoginFormValues } from "src/Types/forms.
 import type { TFunction } from "i18next";
 import api from "src/Api/index.api.ts";
 import { useRef } from "react";
+import { updateInput } from "src/Features/formsSlice.tsx";
 
 const ResetPasswordForm = () => {
   const { email } = useSelector((state: RootState) => state.forms.forgotPassword);
@@ -20,6 +20,7 @@ const ResetPasswordForm = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const isSending = useRef<boolean>(false);
+  const navigate = useNavigate();
 
   async function forgotPassword(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,7 +45,10 @@ const ResetPasswordForm = () => {
       isSending.current = true;
       dispatch(showAlert({ alertText: 'Sent Request', alertState: "success", alertType: "alert" }));
       const response = await api.user.forgotPassword(credentials);
-      console.log("Login data set:", response);
+      const details = response.data;
+      console.log("Login data set:", details);
+      dispatch(updateInput({key: "email", formName: "login", value: email}));
+      navigate(details.redirectUrl);
       dispatch(showAlert({ alertText: 'Password reset email sent, please check your inbox', alertState: "success", alertType: "alert" }));
     } catch (error) {
       console.error("Forgot password request failed:", error);
@@ -65,13 +69,7 @@ const ResetPasswordForm = () => {
         <button type="submit" className={s.loginBtn}>
           {t("buttons.send")}
         </button>
-        <Link to="/login">{t("forgotPasswordPage.cancel")}</Link>
       </div>
-
-      <p className={s.signUpMessage}>
-        <span>{t("loginSignUpPage.dontHaveAcc")}</span>
-        <Link to="/signup">{t("nav.signUp")}</Link>
-      </p>
     </form>
   );
 };

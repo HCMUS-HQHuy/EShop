@@ -28,14 +28,6 @@ export const newSignUp = createAsyncThunk(
   }
 );
 
-export const loginUser = createAsyncThunk(
-  "user/login",
-  async (credentials: LoginFormValues) => {
-    const response = await api.user.login(credentials);
-    return response.data;
-  }
-);
-
 export const signOut = createAsyncThunk (
   "user/signOut",
   async () => {
@@ -60,20 +52,7 @@ const userSlice = createSlice({
       Object.assign(state.loginInfo, payload.updatedUserData);
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(loginUser.fulfilled, (state, action) => {
-      state.status = 'idle';
-      console.log("User logged in:", action.payload);
-    })
-    builder.addCase(loginUser.pending, (state) => {
-      state.status = 'pending';
-      console.log("Logging in user...");
-    })
-    builder.addCase(loginUser.rejected, (state, action) => {
-      state.status = 'idle';
-      console.error("User login failed:", action.error);
-    })
-    
+  extraReducers: (builder) => {    
     builder.addCase(newSignUp.fulfilled, (state, action) => {
       state.status = 'idle';
       console.log("User signed up:", action.payload);
