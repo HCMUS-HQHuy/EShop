@@ -169,17 +169,11 @@ CREATE TABLE order_items (
 -- Conversation (dùng cho 2 bên chat, có thể admin - shop, admin - customer, shop - customer)
 CREATE TABLE conversations (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Ai tham gia vào conversation nào
-CREATE TABLE conversation_members (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    conversation_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
-    FOREIGN KEY (conversation_id) REFERENCES conversations(id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    UNIQUE(conversation_id, user_id)
+    participant1_id  BIGINT NOT NULL,
+    participant2_id  BIGINT NOT NULL,
+    FOREIGN KEY (participant1_id) REFERENCES users(user_id),
+    FOREIGN KEY (participant2_id) REFERENCES users(user_id),
+    created_at TIMESTAMP NOT NULL
 );
 
 -- Tin nhắn
@@ -188,8 +182,8 @@ CREATE TABLE messages (
     conversation_id BIGINT NOT NULL,
     sender_id BIGINT NOT NULL,
     content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    sent_at TIMESTAMP NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (conversation_id) REFERENCES conversations(id),
-    FOREIGN KEY (sender_id) REFERENCES users(id)
+    FOREIGN KEY (sender_id) REFERENCES users(user_id)
 );
