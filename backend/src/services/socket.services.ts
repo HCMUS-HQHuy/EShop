@@ -64,9 +64,49 @@ async function getUserInfor(userId: number): Promise<types.UserInfor | Error>{
         console.error('Error fetching user information:', error);
         throw error;
     } finally {
-        if (db) {
-            await database.releaseConnection(db);
+        await database.releaseConnection(db);
+    }
+}
+
+async function createConversation(userId1: number, userId2: number): Promise<number> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const checkExisting = await db.query(`
+            SELECT conversation_id 
+            FROM conversations 
+            WHERE (participant1_id = $1 AND participant2_id = $2) OR (participant1_id = $2 AND participant2_id = $1)
+        `, [userId1, userId2]);
+        if (checkExisting.rows.length > 0) {
+            return checkExisting.rows[0].conversation_id;
         }
+        const result = await db.query(
+            'INSERT INTO conversations (participant1_id, participant2_id) VALUES ($1, $2) RETURNING conversation_id',
+            [userId1, userId2]
+        );
+        return result.rows[0].conversation_id;
+    } catch (error) {
+        console.error('Error creating conversation:', error);
+        throw error;
+    } finally {
+        await database.releaseConnection(db);
+    }
+}
+
+async function createMessage(senderId: number, conversationId: number, content: string): Promise<void> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const sql = `
+            INSERT INTO messages (sender_id, conversation_id, content, sent_at)
+            VALUES ($1, $2, $3, NOW())
+        `;
+        await db.query(sql, [senderId, conversationId, content]);
+    } catch (error) {
+        console.error('Error creating message:', error);
+        throw error;
+    } finally {
+        await database.releaseConnection(db);
     }
 }
 
@@ -131,6 +171,20 @@ function connect(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap
     io.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
         console.log(`🔌 New client connected: ${socket.id}`);
         console.log(`🔌 New client connected: ${socket.id} infor: `, socket.data.user);
+
+        // socket.on(SOCKET_EVENTS.JOIN_A_CONVERSATION, async (data: { conversationId: number | undefined, userId: number }) => {
+        //     if (data.conversationId == undefined) {
+        //         data.conversationId = await createConversation(socket.data.user.user_id, data.userId);
+        //     }
+        //     socket.join(`conversationId-${data.conversationId}`);
+        // });
+
+        // socket.on(SOCKET_EVENTS.MESSAGE, async (data: { conversationId: number, content: string }) => {
+        //     console.log(`📩 Message from user ${socket.data.user.user_id}:`, data);
+        //     await createMessage(socket.data.user.user_id, data.conversationId, data.content);
+        //     socket.to(`conversationId-${data.conversationId}`).emit(SOCKET_EVENTS.MESSAGE, { ...data, senderId: socket.data.user.user_id });
+        // });
+
         socket.on(SOCKET_EVENTS.DISCONNECT, () => {
             console.log(`✖️ Client disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
         });
