@@ -5,68 +5,13 @@ import { Client } from 'pg';
 import database from 'database/index.database';
 import SOCKET_EVENTS from 'constants/socketEvents';
 
-async function createConversation(userId1: number, userId2: number): Promise<number> {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const checkExisting = await db.query(`
-            SELECT conversation_id 
-            FROM conversations 
-            WHERE (participant1_id = $1 AND participant2_id = $2) OR (participant1_id = $2 AND participant2_id = $1)
-        `, [userId1, userId2]);
-        if (checkExisting.rows.length > 0) {
-            return checkExisting.rows[0].conversation_id;
-        }
-        const result = await db.query(
-            'INSERT INTO conversations (participant1_id, participant2_id) VALUES ($1, $2) RETURNING conversation_id',
-            [userId1, userId2]
-        );
-        return result.rows[0].conversation_id;
-    } catch (error) {
-        console.error('Error creating conversation:', error);
-        throw error;
-    } finally {
-        await database.releaseConnection(db);
-    }
+async function createConversation(db: Client, userId1: number, userId2: number): Promise<number> {
+    const result = await db.query(
+        'INSERT INTO conversations (participant1_id, participant2_id, created_at) VALUES ($1, $2, NOW()) RETURNING id',
+        [userId1, userId2]
+    );
+    return result.rows[0].id;
 }
-
-// async function createConversation(req: types.RequestCustom, res: express.Response) {
-//     if (util.role.isGuest(req.user)) {
-//         return res.status(403).json(util.response.authorError('admin, sellers, users'));
-//     }
-//     let db: Client|undefined = undefined;
-//     try {
-//         db = await database.getConnection();
-//         await db.query('BEGIN');
-
-//         const userId: number  = req.user?.user_id!;
-//         const otherUserId: number = req.body.otherUserId!;
-//         const createConversationSql = `
-//             INSERT INTO conversations (id, created_at)
-//             VALUES (DEFAULT, NOW())
-//             RETURNING id
-//         `;
-//         const conversationResult = await db.query(createConversationSql);
-//         const conversationId: number = conversationResult.rows[0].id;
-//         const sql = `
-//             INSERT INTO conversation_members (conversation_id, user_id)
-//             VALUES ($1, $2), ($1, $3)
-//         `;
-//         await db.query(sql, [conversationId, userId, otherUserId]);
-//         await db.query('COMMIT');
-//         res.status(201).json(util.response.success('Created conversation', { conversation: {
-//             id: conversationId,
-//             createdAt: new Date(),
-//             members: [ userId, otherUserId ]
-//         } }));
-//     } catch (error) {
-//         console.error('Error sending message:', error);
-//         if (db) await db.query('ROLLBACK');
-//         res.status(500).json(util.response.internalServerError());
-//     } finally {
-//         await database.releaseConnection(db);
-//     }
-// }
 
 async function sendMessage(req: types.RequestCustom, res: express.Response) {
     if (util.role.isGuest(req.user)) {
@@ -87,16 +32,18 @@ async function sendMessage(req: types.RequestCustom, res: express.Response) {
         `, [receiverId, req.user?.user_id]);
 
         if (resultCheck.rows.length === 0) {
-            conversationId = await createConversation(req.user?.user_id!, receiverId);
+            conversationId = await createConversation(db, req.user?.user_id!, receiverId);
         } else if (conversationId !== resultCheck.rows[0].id) {
             console.error('Conversation ID does not match existing conversation between users');
+            conversationId = resultCheck.rows[0].id;
         }
 
         const sql = `
-            INSERT INTO messages (conversation_id, sender_id, content, created_at)
+            INSERT INTO messages (conversation_id, sender_id, content, sent_at)
             VALUES ($1, $2, $3, NOW())
             RETURNING *
         `;
+        console.log('Inserting message with conversationId:', conversationId, 'senderId:', req.user?.user_id, 'content:', content);
         const result = await db.query(sql, [conversationId, req.user?.user_id, content]);
         const message = result.rows[0];
         req.io?.to(`user_room_${receiverId}`).emit(SOCKET_EVENTS.MESSAGE, {
@@ -125,24 +72,38 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
         const sql = `
             SELECT DISTINCT ON (c.id)
                 c.id AS "conversationId",
-                cm.user_id AS "userId",
-                u.username AS "username",
+                withUser.user_id AS "withUserId",
+                withUser.username AS "username",
                 m.content AS "lastMessage",
-                m.created_at AS "lastMessageAt",
+                m.sent_at AS "lastMessageAt",
+                m.is_read AS "isRead",
                 CASE
-                    WHEN messagewith.user_id != $1 THEN u.username
+                    WHEN m.sender_id != $1 THEN u.username
                     ELSE 'You'
                 END AS "sender"
-            FROM conversations c
-            JOIN conversation_members cm ON c.id = cm.conversation_id AND cm.user_id = $1
-            JOIN conversation_members messagewith ON c.id = messagewith.conversation_id AND messagewith.user_id <> $1
+            FROM (SELECT * FROM conversations WHERE participant1_id = $1 OR participant2_id = $1) c
+            JOIN users withUser ON  withUser.user_id IN (c.participant2_id, c.participant1_id) AND withUser.user_id != $1
             JOIN messages m ON c.id = m.conversation_id
-            JOIN users u ON messagewith.sender_id = u.user_id
-            ORDER BY c.id, m.created_at DESC
+            JOIN users u ON m.sender_id = u.user_id
+            ORDER BY c.id, m.sent_at DESC
             OFFSET 0 LIMIT 10
         `;
         const result = await db.query(sql, [req.user?.user_id]);
-        const data = result.rows;
+        const data = result.rows.map(row => ({
+            id: row.conversationId,
+            withUser: {
+                userId: row.withUserId,
+                name: row.username,
+                avatar: `${process.env.STATIC_URL}/defaultavt.png`
+            },
+            lastMessage: {
+                sender: row.sender,
+                content: row.lastMessage,
+                timestamp: row.lastMessageAt
+            },
+            unreadCount: row.isRead ? 0 : 1,
+            context: { type: 'product', name: 'Classic Leather Watch' } // Placeholder context
+        }));
         res.status(200).json(util.response.success('Success', { conversations: data }));
     } catch (error) {
         console.error('Error fetching conversations:', error);
@@ -154,9 +115,52 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
     }
 };
 
+async function getConversation(req: types.RequestCustom, res: express.Response) {
+    if (util.role.isGuest(req.user)) {
+        return res.status(403).json(util.response.authorError('admin, sellers, users'));
+    }
+    const conversationId: number = parseInt(req.params.sellerId);
+    if (!Number.isInteger(conversationId) || conversationId < 1) {
+        return res.status(400).json(util.response.error('Invalid conversation ID'));
+    }
+
+    let db: Client|undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const sql = `
+            SELECT 
+                id as "messageId",
+                content,
+                sender_id as "senderId",
+                sent_at as "sentAt",
+                is_read as "isRead"
+            FROM messages
+            WHERE conversation_id = $1
+        `;
+        const result = await db.query(sql, [conversationId]);
+        console.log('Fetched messages for userId', req.user?.user_id, ':', result.rows);
+        const data = result.rows.map(row => ({
+                id: row.messageId,
+                sender: Number(row.senderId) === req.user?.user_id ? 'me' : 'other',
+                content: row.content,
+                timestamp: row.sentAt,
+                isRead: row.isRead
+            }));
+        res.status(200).json(util.response.success('Success', { messages: data }));
+    } catch (error) {
+        console.error('Error fetching conversations:', error);
+        res.status(500).json(util.response.internalServerError());
+    } finally {
+        if (db) {
+            database.releaseConnection(db);
+        }
+    }
+};
+
 const chat = {
-  getConversations,
-  sendMessage
+    getConversation,
+    getConversations,
+    sendMessage
 };
 
 export default chat;
