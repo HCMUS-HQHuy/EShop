@@ -15,40 +15,19 @@ type Props = {
 
 const ContactToShopButton = ({ productData }: Props) => {
   const { loginInfo } = useSelector((state: RootState) => state.user);
-  const { favoritesProducts } = useSelector((state: RootState) => state.products);
   const dispatch = useDispatch();
   const navigateTo = useNavigate();
   const { t } = useTranslation();
-  const isFavoriteProduct = favoritesProducts.some(
-    (product) => product.shortName === productData.shortName
-  );
 
   function addProductToFavorite() {
-    const isProductAlreadyExist = isItemFound(
-      favoritesProducts,
-      productData,
-      "shortName"
-    );
-
     if (!loginInfo.isSignIn) navigateTo("/signup");
-    if (isProductAlreadyExist) {
-      dispatch(
-        removeByKeyName({
-          dataKey: "favoritesProducts",
-          itemKey: "shortName",
-          keyValue: productData.shortName,
-        })
-      );
-      return;
-    }
-
-    dispatch(addToArray({ key: "favoritesProducts", value: productData }));
+    
   }
 
   return (
     <button
       type="button"
-      className={`${s.addToFav} ${isFavoriteProduct ? s.active : ""}`}
+      className={`${s.addToFav}`}
       aria-label={t("detailsPage.contact")}
       onClick={addProductToFavorite}
     >

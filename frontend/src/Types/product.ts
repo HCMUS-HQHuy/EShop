@@ -64,21 +64,20 @@ type Color = {
 }
 
 type ProductDetailType = {
-  id: number;
-  shortName: string;
+  shopId: number;
   name: string;
-  category: string[];
+  shortName: string;
+  description: string;
   price: string;
   discount: string;
-  afterDiscount: string;
-  description: string;
-  addedDate: string;
+  stockQuantity: number;
+  sellerId: number;
+  shopName: string;
   img: string;
+  additionalImg: string;
+  categoryIds: number[];
   additionalImages: string[];
-  // colors: Color[];
-  rate: number;
-  votes: number;
-  quantity: number;
+  afterDiscount: string;
 }
 
 export type { ProductType, Color, CreatingProduct, ProductDetailType, ProductOrderType };

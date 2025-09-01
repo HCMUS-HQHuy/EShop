@@ -27,7 +27,7 @@ const ProductDetailsPage = () => {
     if (PRODUCT_DATA != undefined) return;
     api.product.getById(PRODUCT_ID).then((response) => {
       const { product } = response.data;
-      console.log(response);
+      console.log(product);
       if (product) {
         const productDetails = product as ProductDetailType;
         setAfterDiscountKey(productDetails);
@@ -51,7 +51,7 @@ const ProductDetailsPage = () => {
     },
     {
       index: 1,
-      path: `/category?type=${PRODUCT_DATA?.category}`,
+      path: `/category?type=${PRODUCT_DATA?.categoryIds[0]}`,
     },
   ];
 
@@ -83,7 +83,7 @@ const ProductDetailsPage = () => {
           <PagesHistory history={history} historyPaths={historyPaths} />
           <ProductDetails productData={PRODUCT_DATA} />
           <RelatedItemsSection
-            productType={PRODUCT_DATA.category}
+            productType={PRODUCT_DATA.categoryIds[0]}
             currentProduct={PRODUCT_DATA}
           />
         </main>
