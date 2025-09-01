@@ -64,6 +64,7 @@ type Color = {
 }
 
 type ProductDetailType = {
+  id: number;
   shopId: number;
   name: string;
   shortName: string;

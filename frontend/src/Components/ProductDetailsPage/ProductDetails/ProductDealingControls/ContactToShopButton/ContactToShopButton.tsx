@@ -15,13 +15,12 @@ type Props = {
 
 const ContactToShopButton = ({ productData }: Props) => {
   const { loginInfo } = useSelector((state: RootState) => state.user);
-  const dispatch = useDispatch();
   const navigateTo = useNavigate();
   const { t } = useTranslation();
 
-  function addProductToFavorite() {
+  function contactToShop() {
     if (!loginInfo.isSignIn) navigateTo("/signup");
-    
+    navigateTo(`/chat?shopId=${productData.shopId}`, { state: { shopName: productData.shopName, productId: productData.id, productName: productData.name } });
   }
 
   return (
@@ -29,7 +28,7 @@ const ContactToShopButton = ({ productData }: Props) => {
       type="button"
       className={`${s.addToFav}`}
       aria-label={t("detailsPage.contact")}
-      onClick={addProductToFavorite}
+      onClick={contactToShop}
     >
       <div className={s.heartBackground} />
       <SvgIcon name="shop" />

@@ -39,6 +39,7 @@ async function getProductInforById(productId: number): Promise<any | null> {
         db = await database.getConnection();
         const sql = `
             SELECT
+                products.product_id as "id",
                 products.shop_id as "shopId",
                 products.name as "name",
                 products.short_name as "shortName",
