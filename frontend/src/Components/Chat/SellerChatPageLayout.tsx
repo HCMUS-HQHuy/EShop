@@ -10,7 +10,7 @@ const mockConversations = [
   { id: 'conv3', withUser: { name: 'Seller Store ABC', avatar: 'https://i.pravatar.cc/40?u=seller2' }, lastMessage: 'Okay, thank you!', timestamp: 'Aug 18', unreadCount: 0, context: { type: 'product', name: 'Wireless Headphones' } },
 ];
 
-const ChatPageLayout = () => {
+const SellerChatPageLayout = () => {
   const [conversations, setConversations] = useState(mockConversations);
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const selectedConversation = conversations.find(c => c.id === selectedConversationId);
@@ -30,4 +30,4 @@ const ChatPageLayout = () => {
   );
 };
 
-export default ChatPageLayout;
+export default SellerChatPageLayout;

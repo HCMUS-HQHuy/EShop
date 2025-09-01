@@ -20,7 +20,7 @@ const ContactToShopButton = ({ productData }: Props) => {
 
   function contactToShop() {
     if (!loginInfo.isSignIn) navigateTo("/signup");
-    navigateTo(`/chat?shopId=${productData.shopId}`, { state: { shopName: productData.shopName, productId: productData.id, productName: productData.name } });
+    navigateTo(`/chats?shopId=${productData.shopId}`, { state: { shopName: productData.shopName, productId: productData.id, productName: productData.name } });
   }
 
   return (

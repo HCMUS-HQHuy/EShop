@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import s from './ChatWindow.module.scss';
 
-// Định nghĩa props
 type Conversation = { id: string; withUser: { name: string; avatar: string; }; context: { type: string; name: string; }; };
 interface ChatWindowProps {
   conversation: Conversation | undefined;
@@ -9,7 +8,6 @@ interface ChatWindowProps {
 
 const ChatPlaceholder = () => (
   <div className={s.placeholder}>
-    {/* Bạn có thể thay thế bằng một file ảnh SVG hoặc PNG thực tế */}
     <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="50" y="25" width="100" height="150" rx="10" fill="#EDECEE"/>
         <rect x="55" y="30" width="90" height="10" rx="5" fill="#BDBDBD"/>
