@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import s from './ChatWindow.module.scss';
+import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
+import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
+import api from 'src/Api/index.api.ts';
+import { useSelector } from 'react-redux';
+import type { RootState } from 'src/Types/store.ts';
+import type { ConversationType, MessageType } from 'src/Types/conversation.ts';
 
-type Conversation = { id: string; withUser: { name: string; avatar: string; }; context: { type: string; name: string; }; };
 interface ChatWindowProps {
-  conversation: Conversation | undefined;
+  conversation: ConversationType | undefined;
 }
 
 const ChatPlaceholder = () => (
@@ -21,20 +26,28 @@ const ChatPlaceholder = () => (
 
 const ChatWindow = ({ conversation }: ChatWindowProps) => {
   const [newMessage, setNewMessage] = useState('');
+  const { isOpen, val, emit } = useSocketIO('');
+  const { loginInfo } = useSelector((state: RootState) => state.user);
+  const [messages, setMessages] = useState<MessageType[]>([]);
+  // const mockMessages = [
+  //   { id: 1, sender: 'other', text: 'Hi, I have a question about the Classic Leather Watch. Is it still available?', timestamp: '10:44 AM' },
+  //   { id: 2, sender: 'me', text: 'Hello! Yes, it is still available!', timestamp: '10:45 AM' },
+  //   { id: 3, sender: 'other', text: 'Great! I would like to purchase it.', timestamp: '10:46 AM' },
+  // ];
 
-  // Dữ liệu giả cho tin nhắn trong một cuộc trò chuyện
-  const mockMessages = [
-    { id: 1, sender: 'other', text: 'Hi, I have a question about the Classic Leather Watch. Is it still available?', timestamp: '10:44 AM' },
-    { id: 2, sender: 'me', text: 'Hello! Yes, it is still available!', timestamp: '10:45 AM' },
-    { id: 3, sender: 'other', text: 'Great! I would like to purchase it.', timestamp: '10:46 AM' },
-  ];
+  useEffect(()=>{
+    if (!conversation || !conversation.id) return;
+    api.chat.getConversation(conversation.id).then(response=>{
+      const messages: MessageType[] = response.data.messages;
+      if (!messages) {
+        console.error("Invalid messages data:", messages);
+        return;
+      }
+      console.log("Fetched messages:", messages);
+      setMessages(messages);
+    });
+  }, [conversation]);
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() === '') return;
-    // TODO: Gửi tin nhắn mới đến backend qua API hoặc WebSocket
-    console.log('Sending message:', newMessage);
-    setNewMessage('');
-  };
 
   if (!conversation) {
     return (
@@ -43,6 +56,19 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
       </div>
     );
   }
+
+  const handleSendMessage = () => {
+    if (newMessage.trim() === '') return;
+    console.log(newMessage);
+    const data = {
+      content: newMessage,
+      conversationId: conversation.id,
+      receiverId: conversation.withUser.userId
+    }
+    console.log('Sending message:', data);
+    api.chat.sendMessage(data);
+    setNewMessage('');
+  };
 
   return (
     <div className={s.chatWindow}>
@@ -58,9 +84,9 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
       </header>
 
       <div className={s.messageList}>
-        {mockMessages.map(msg => (
-          <div key={msg.id} className={`${s.message} ${msg.sender === 'me' ? s.sent : s.received}`}>
-            <div className={s.bubble}>{msg.text}</div>
+        {messages.map(msg => (
+          <div key={msg.timestamp} className={`${s.message} ${msg.sender === 'me' ? s.sent : s.received}`}>
+            <div className={s.bubble}>{msg.content}</div>
             <span className={s.timestamp}>{msg.timestamp}</span>
           </div>
         ))}

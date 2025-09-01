@@ -36,8 +36,4 @@ router.get("/categories/list", controller.user.category.get);
 router.post("/payment/announce", controller.user.payment.announce);
 router.get("/payment/methods", mid.auth, controller.payment.getAll);
 
-// #### CHAT ROUTES ####
-router.get("/chat/conversations", mid.auth, controller.shared.chat.getConversations);
-router.post("/chat/messages", mid.auth, controller.shared.chat.sendMessage);
-
 export default router;

@@ -54,6 +54,11 @@ const useSocketIO = (namespace: string) => {
             
             window.open(url, '_blank', features);
         }
+
+        function receiveMessage(data: any) {
+            console.log("Message received:", data);
+        }
+
         function errorHandle(error: Error) {
             console.error("Socket connection error:", error);
         }
@@ -63,6 +68,7 @@ const useSocketIO = (namespace: string) => {
         socket.on(SOCKET_EVENTS.DISCONNECT, disconnectHandle);
         socket.on(SOCKET_EVENTS.SET_SHOP_STATUS, setStatusHandle);
         socket.on(SOCKET_EVENTS.REDIRECT, redirectHandle);
+        socket.on(SOCKET_EVENTS.MESSAGE, receiveMessage);
         socket.on(SOCKET_EVENTS.CONNECT_ERROR, errorHandle);
         socketRef.current = socket;
         return () => {

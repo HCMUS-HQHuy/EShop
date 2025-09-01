@@ -4,6 +4,7 @@ import adminRoutes from "routes/admin.routes";
 import userRoutes from "routes/user.routes";
 import sellerRoutes from "routes/seller.routes";
 import authen from "routes/auth.route";
+import chat from "routes/chat.routes";
 
 const router: express.Router = express.Router();
 
@@ -19,6 +20,7 @@ export default function routes(app: express.Application): void {
     router.use("/admin", adminRoutes);
     router.use("/user", userRoutes);
     router.use("/seller", sellerRoutes);
+    router.use("/chat", chat);
     app.use(prefixApi, router);
     console.log("Routes initialized");
 }
