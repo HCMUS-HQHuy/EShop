@@ -188,6 +188,14 @@ export const iconsData = [
     )
   },
   {
+    name: "shop",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16">
+        <path d="M2 6a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6zm2-4a2 2 0 0 0-2 2v1h12V4a2 2 0 0 0-2-2H4z"/>
+      </svg>
+    )
+  },
+  {
     name: "gamepad",
     icon: (
       <svg strokeWidth="2" viewBox="0 0 56 56" data-stroke-hover>

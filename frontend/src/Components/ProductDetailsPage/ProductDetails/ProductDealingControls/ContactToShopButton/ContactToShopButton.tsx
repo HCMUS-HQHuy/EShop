@@ -5,7 +5,7 @@ import SvgIcon from "src/Components/Shared/MiniComponents/SvgIcon.tsx";
 import ToolTip from "src/Components/Shared/MiniComponents/ToolTip.tsx";
 import { addToArray, removeByKeyName } from "src/Features/productsSlice.tsx";
 import { isItemFound } from "src/Functions/helper.ts";
-import s from "./AddToFavButton.module.scss";
+import s from "./ContactToShopButton.module.scss";
 import type { ProductDetailType } from "src/Types/product.ts";
 import type { RootState } from "src/Types/store.ts";
 
@@ -13,7 +13,7 @@ type Props = {
   productData: ProductDetailType;
 };
 
-const AddToFavButton = ({ productData }: Props) => {
+const ContactToShopButton = ({ productData }: Props) => {
   const { loginInfo } = useSelector((state: RootState) => state.user);
   const { favoritesProducts } = useSelector((state: RootState) => state.products);
   const dispatch = useDispatch();
@@ -49,13 +49,13 @@ const AddToFavButton = ({ productData }: Props) => {
     <button
       type="button"
       className={`${s.addToFav} ${isFavoriteProduct ? s.active : ""}`}
-      aria-label={t("detailsPage.addToFav")}
+      aria-label={t("detailsPage.contact")}
       onClick={addProductToFavorite}
     >
       <div className={s.heartBackground} />
-      <SvgIcon name="heart" />
-      <ToolTip left="50%" top="60px" content={t("detailsPage.addToFav")} />
+      <SvgIcon name="shop" />
+      <ToolTip left="50%" top="60px" content={t("detailsPage.contact")} />
     </button>
   );
 };
-export default AddToFavButton;
+export default ContactToShopButton;
