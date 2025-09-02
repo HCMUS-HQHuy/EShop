@@ -70,22 +70,12 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT DISTINCT ON (c.id)
+            SELECT
                 c.id AS "conversationId",
                 withUser.user_id AS "withUserId",
-                withUser.username AS "username",
-                m.content AS "lastMessage",
-                m.sent_at AS "lastMessageAt",
-                m.is_read AS "isRead",
-                CASE
-                    WHEN m.sender_id != $1 THEN u.username
-                    ELSE 'You'
-                END AS "sender"
+                withUser.username AS "username"
             FROM (SELECT * FROM conversations WHERE participant1_id = $1 OR participant2_id = $1) c
             JOIN users withUser ON  withUser.user_id IN (c.participant2_id, c.participant1_id) AND withUser.user_id != $1
-            JOIN messages m ON c.id = m.conversation_id
-            JOIN users u ON m.sender_id = u.user_id
-            ORDER BY c.id, m.sent_at DESC
             OFFSET 0 LIMIT 10
         `;
         const result = await db.query(sql, [req.user?.user_id]);
@@ -101,9 +91,35 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
                 content: row.lastMessage,
                 timestamp: row.lastMessageAt
             },
-            unreadCount: row.isRead ? 0 : 1,
+            messages: [] as any[],
+            unreadCount: 0,
             context: { type: 'product', name: 'Classic Leather Watch' } // Placeholder context
         }));
+        for (const conv of data) {
+            const sql = `
+                SELECT 
+                    content,
+                    sent_at as "sentAt",
+                    is_read as "isRead",
+                    CASE
+                        WHEN sender_id = $2 THEN 'me'
+                        ELSE 'other'
+                    END AS "sender"
+                FROM messages
+                WHERE conversation_id = $1
+                ORDER BY sent_at DESC
+                OFFSET 0 LIMIT 20
+            `;
+            const result = await db.query(sql, [conv.id, req.user?.user_id]);
+            conv.messages = result.rows.map(row => ({
+                sender: row.sender,
+                content: row.content,
+                timestamp: row.sentAt,
+                isRead: row.isRead
+            }));
+            conv.lastMessage = conv.messages[0];
+            conv.unreadCount = conv.messages.filter(msg => !msg.isRead && msg.sender === 'other').length;
+        }
         res.status(200).json(util.response.success('Success', { conversations: data }));
     } catch (error) {
         console.error('Error fetching conversations:', error);
