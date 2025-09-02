@@ -31,7 +31,7 @@ const RoutesLayout = () => {
       <GlobalOverlay />
       <ScrollToTop />
       <Outlet />
-      { appMode === APP_MODE.USER && <Footer />}
+      {/* { appMode === APP_MODE.USER && <Footer />} */}
       <ConnectionLabelAlert isOnline={isWebsiteOnline} />
       <ToastAlert />
       <ToastConfirm />
