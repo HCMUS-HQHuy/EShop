@@ -117,7 +117,7 @@ function initializeAdmin(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultE
         if (util.role.isAdmin(socket.data.user)) {
             return next();
         }
-        next(new Error('Unauthorized'));
+        next(new Error('Unauthorized for admin'));
     });
     adminNamespace.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
         console.log(`🔌 Admin connected: ${socket.id} infor: `, socket.data.user);
@@ -135,7 +135,7 @@ function initializeSeller(io: Server<DefaultEventsMap, DefaultEventsMap, Default
         if (util.role.isSeller(socket.data.user)) {
             return next();
         }
-        next(new Error('Unauthorized'));
+        next(new Error('Unauthorized for seller'));
     });
     sellerNamespace.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
         console.log(`🔌 Seller connected: ${socket.id} infor: `, socket.data.user);
@@ -150,13 +150,14 @@ function initializeUser(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEv
     const userNamespace = io.of(SOCKET_NAMESPACE.USER);
     userNamespace.use(auth);
     userNamespace.use((socket, next) => {
+        console.log("check role for user", socket.data.user);
         if (util.role.isUser(socket.data.user)) {
             return next();
         }
-        next(new Error('Unauthorized'));
+        next(new Error('Unauthorized for user'));
     });
     userNamespace.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
-        console.log(`🔌 User connected: ${socket.id} infor: `, socket.data.user);
+        console.log(`🔌 User connected: ${socket.id} infor: `, socket.data.user, 'join room: ', `user_room_${socket.data.user.user_id}`);
         socket.join(`user_room_${socket.data.user.user_id}`);
         socket.on(SOCKET_EVENTS.DISCONNECT, () => {
             console.log(`✖️ User disconnected: ${socket.id} for user ${socket.data.user.user_id}`);

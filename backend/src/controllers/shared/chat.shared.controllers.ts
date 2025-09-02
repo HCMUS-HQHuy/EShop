@@ -4,6 +4,8 @@ import * as types from 'types/index.types';
 import { Client } from 'pg';
 import database from 'database/index.database';
 import SOCKET_EVENTS from 'constants/socketEvents';
+import { SOCKET_NAMESPACE } from 'types/index.types';
+import { ConversationMessageType } from 'types/conversation.types';
 
 async function createConversation(db: Client, userId1: number, userId2: number): Promise<number> {
     const result = await db.query(
@@ -41,18 +43,19 @@ async function sendMessage(req: types.RequestCustom, res: express.Response) {
         const sql = `
             INSERT INTO messages (conversation_id, sender_id, content, sent_at)
             VALUES ($1, $2, $3, NOW())
-            RETURNING *
+            RETURNING
+                conversation_id as "conversationId",
+                CASE sender_id
+                    WHEN $2 THEN 'other'
+                    ELSE 'me'
+                END as "sender",
+                content,
+                sent_at as "timestamp"
         `;
-        console.log('Inserting message with conversationId:', conversationId, 'senderId:', req.user?.user_id, 'content:', content);
+        console.log('Inserting message with conversationId:', conversationId, 'senderId:', req.user?.user_id, 'content:', content, 'receiver: ', receiverId);
         const result = await db.query(sql, [conversationId, req.user?.user_id, content]);
-        const message = result.rows[0];
-        req.io?.to(`user_room_${receiverId}`).emit(SOCKET_EVENTS.MESSAGE, {
-            messageId: message.id,
-            conversationId: message.conversation_id,
-            senderId: message.sender_id,
-            content: message.content,
-            sentAt: message.created_at
-        });
+        const message: ConversationMessageType = result.rows[0];
+        req.io?.of(SOCKET_NAMESPACE.USER).to(`user_room_${receiverId}`).emit(SOCKET_EVENTS.MESSAGE, message);
         res.status(201).json(util.response.success('Message sent', { message }));
     } catch (error) {
         console.error('Error sending message:', error);
@@ -86,11 +89,7 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
                 name: row.username,
                 avatar: `${process.env.STATIC_URL}/defaultavt.png`
             },
-            lastMessage: {
-                sender: row.sender,
-                content: row.lastMessage,
-                timestamp: row.lastMessageAt
-            },
+            lastMessage: {},
             messages: [] as any[],
             unreadCount: 0,
             context: { type: 'product', name: 'Classic Leather Watch' } // Placeholder context
@@ -118,7 +117,7 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
                 timestamp: row.sentAt,
                 isRead: row.isRead
             }));
-            conv.lastMessage = conv.messages[0];
+            conv.lastMessage = conv.messages[conv.messages.length - 1] || {};
             conv.unreadCount = conv.messages.filter(msg => !msg.isRead && msg.sender === 'other').length;
         }
         res.status(200).json(util.response.success('Success', { conversations: data }));
