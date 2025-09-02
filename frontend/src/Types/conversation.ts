@@ -1,3 +1,4 @@
+import type { USER_ROLE } from "./common.ts";
 
 type MessageType = {
   sender: string;
@@ -14,6 +15,7 @@ type ConversationType = {
     withUser: {
         userId: number;
         name: string;
+        role: USER_ROLE;
         avatar: string;
     };
     context: {

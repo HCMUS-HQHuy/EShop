@@ -9,7 +9,7 @@ import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
 import type { RootState } from 'src/Types/store.ts';
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessageToConversation, setConversations } from 'src/Features/conversationSlice.tsx';
-import { SOCKET_NAMESPACE } from 'src/Types/common.ts';
+import { SOCKET_NAMESPACE, USER_ROLE } from 'src/Types/common.ts';
 
 // Dữ liệu giả - sau này sẽ lấy từ API
 // const mockConversations: ConversationsType[] = [
@@ -19,14 +19,19 @@ import { SOCKET_NAMESPACE } from 'src/Types/common.ts';
 // ];
 
 const ChatPageLayout = () => {
-  const { sellerId, shopName, productId , productName } = useLocation().state || {};
-  const { conversations, selectedConversationId} = useSelector((state: RootState) => state.conversation);
+  const { sellerId, shopName, productId, productName } = useLocation().state || {};
+  const { conversations, selectedConversationId } = useSelector((state: RootState) => state.conversation);
   const dispatch = useDispatch();
   let selectedConversation: ConversationType | undefined = conversations.find(c => c.id === selectedConversationId);
   if (sellerId) {
     selectedConversation = {
       id: undefined,
-      withUser: { userId: sellerId, name: shopName, avatar: 'https://i.pravatar.cc/40?u=tempuser' },
+      withUser: {
+        userId: sellerId, 
+        name: shopName,
+        role: USER_ROLE.SELLER, 
+        avatar: 'https://i.pravatar.cc/40?u=tempuser'
+      },
       context: { type: 'product', name: productName },
       lastMessage: { sender: 'other', content: '', timestamp: '' },
       unreadCount: 0,
@@ -36,7 +41,7 @@ const ChatPageLayout = () => {
 
   const { isOpen, val } = useSocketIO(SOCKET_NAMESPACE.USER);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log('SocketIO status:', isOpen, val);
     if (isOpen && val) {
       const messageData: ConversationMessageType = val;
@@ -45,7 +50,7 @@ const ChatPageLayout = () => {
     }
   }, [isOpen, val]);
 
-  useEffect(()=>{
+  useEffect(() => {
     api.chat.getConversations().then(response => {
       const conversations: ConversationType[] = response.data.conversations;
       console.log('Conversation list: ', conversations);
@@ -61,7 +66,7 @@ const ChatPageLayout = () => {
     <div className={s.chatPageContainer}>
       <div className={s.chatLayout}>
         <div className={s.conversationList}>
-          <ConversationList/>
+          <ConversationList />
         </div>
         <div className={s.chatWindow}>
           <ChatWindow

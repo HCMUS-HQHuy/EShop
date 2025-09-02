@@ -39,3 +39,9 @@ export enum PAYMENT_METHOD {
   PAYPAL = 'PAYPAL',
   STRIPE = 'STRIPE'
 }
+
+export enum USER_ROLE {
+  ADMIN = 'admin',
+  CUSTOMER = 'customer',
+  SELLER = 'seller'
+}

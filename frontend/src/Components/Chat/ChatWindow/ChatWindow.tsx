@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'src/Types/store.ts';
 import type { ConversationType, MessageType } from 'src/Types/conversation.ts';
 import { addMessageToConversation } from 'src/Features/conversationSlice.tsx';
+import { APP_MODE, USER_ROLE } from 'src/Types/common.ts';
 
 interface ChatWindowProps {
   conversation: ConversationType | undefined;
@@ -25,6 +26,7 @@ const ChatPlaceholder = () => (
 
 const ChatWindow = ({ conversation }: ChatWindowProps) => {
   const [newMessage, setNewMessage] = useState('');
+  const { appMode } = useSelector((state: RootState) => state.global);
   const { loginInfo } = useSelector((state: RootState) => state.user);
   const { messages } = useSelector((state: RootState) => state.conversation.conversations.find(c => c.id === conversation?.id)) || { messages: [] };
   const dispatch = useDispatch();
@@ -42,15 +44,23 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
     );
   }
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() === '') return;
+  const handleSendMessage = async () => {
+    if (newMessage.trim() === '' || conversation === undefined) return;
     console.log(newMessage);
+    if (conversation.id === undefined) {
+      const conversationData = await api.chat.createConversation({
+        participant2Id: conversation.withUser.userId,
+        participant1Role: appMode === APP_MODE.SELLER ? USER_ROLE.SELLER : USER_ROLE.CUSTOMER,
+        participant2Role: conversation.withUser.role,
+        context: conversation.context
+      });
+      conversation = conversationData.data.conversation as ConversationType;
+    }
     const data = {
       content: newMessage,
       conversationId: conversation.id,
       receiverId: conversation.withUser.userId
     }
-    console.log('Sending message:', data);
     api.chat.sendMessage(data);
     dispatch(addMessageToConversation({
       conversationId: conversation.id!,

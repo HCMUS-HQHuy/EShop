@@ -166,24 +166,27 @@ CREATE TABLE order_items (
     CONSTRAINT fk_order_item_product FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE SET NULL
 );
 
--- Conversation (dùng cho 2 bên chat, có thể admin - shop, admin - customer, shop - customer)
+-- Tạo bảng Conversations
 CREATE TABLE conversations (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    participant1_id  BIGINT NOT NULL,
-    participant2_id  BIGINT NOT NULL,
-    FOREIGN KEY (participant1_id) REFERENCES users(user_id),
-    FOREIGN KEY (participant2_id) REFERENCES users(user_id),
-    created_at TIMESTAMP NOT NULL
+    id SERIAL PRIMARY KEY,  -- Tự động tăng ID cho mỗi cuộc trò chuyện
+    participant1_id INT NOT NULL,  -- ID của người tham gia đầu tiên
+    participant2_id INT NOT NULL,  -- ID của người tham gia thứ hai
+    participant1_role CHAR(10) CHECK (participant1_role IN ('admin', 'seller', 'customer')) NOT NULL,  -- Vai trò của participant1
+    participant2_role CHAR(10) CHECK (participant2_role IN ('admin', 'seller', 'customer')) NOT NULL,  -- Vai trò của participant2
+    context JSONB,  -- Lưu trữ thông tin context dưới dạng JSON
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- Thời gian tạo cuộc trò chuyện
+    FOREIGN KEY (participant1_id) REFERENCES users(user_id) ON DELETE CASCADE,  -- Ràng buộc khóa ngoại với bảng users
+    FOREIGN KEY (participant2_id) REFERENCES users(user_id) ON DELETE CASCADE  -- Ràng buộc khóa ngoại với bảng users
 );
 
--- Tin nhắn
+-- Tạo bảng Messages
 CREATE TABLE messages (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    conversation_id BIGINT NOT NULL,
-    sender_id BIGINT NOT NULL,
-    content TEXT NOT NULL,
-    sent_at TIMESTAMP NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (conversation_id) REFERENCES conversations(id),
-    FOREIGN KEY (sender_id) REFERENCES users(user_id)
+    id SERIAL PRIMARY KEY,  -- Tự động tăng ID cho mỗi tin nhắn
+    conversation_id INT NOT NULL,  -- ID của cuộc trò chuyện
+    sender_id INT NOT NULL,  -- ID của người gửi
+    content TEXT NOT NULL,  -- Nội dung tin nhắn
+    sent_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- Thời gian gửi tin nhắn
+    is_read BOOLEAN DEFAULT FALSE,  -- Trạng thái tin nhắn (đọc hay chưa đọc)
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,  -- Ràng buộc khóa ngoại với bảng conversations
+    FOREIGN KEY (sender_id) REFERENCES users(user_id) ON DELETE CASCADE  -- Ràng buộc khóa ngoại với bảng users
 );

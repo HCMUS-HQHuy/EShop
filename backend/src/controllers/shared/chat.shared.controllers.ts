@@ -7,12 +7,34 @@ import SOCKET_EVENTS from 'constants/socketEvents';
 import { SOCKET_NAMESPACE } from 'types/index.types';
 import { ConversationMessageType } from 'types/conversation.types';
 
-async function createConversation(db: Client, userId1: number, userId2: number): Promise<number> {
-    const result = await db.query(
-        'INSERT INTO conversations (participant1_id, participant2_id, created_at) VALUES ($1, $2, NOW()) RETURNING id',
-        [userId1, userId2]
-    );
-    return result.rows[0].id;
+async function createConversation(req: types.RequestCustom, res: express.Response) {
+    if (util.role.isGuest(req.user)) {
+        return res.status(403).json(util.response.authorError('admin, sellers, users'));
+    }
+    console.log(req.body);
+    let db: Client|undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const result = await db.query(`
+            INSERT INTO conversations (
+                participant1_id, 
+                participant2_id, 
+                participant1_role, 
+                participant2_role, 
+                context, 
+                created_at
+            ) 
+            VALUES ($1, $2, $3, $4, $5, NOW())
+            RETURNING id
+            `, [req.user?.user_id, req.body.participant2Id, req.body.participant1Role, req.body.participant2Role, JSON.stringify(req.body.context)]
+        );
+        return result.rows[0].id;
+    } catch (error) {
+        console.error('Error creating conversation:', error);
+        throw error;
+    } finally {
+        await database.releaseConnection(db);
+    }
 }
 
 async function sendMessage(req: types.RequestCustom, res: express.Response) {
@@ -22,22 +44,10 @@ async function sendMessage(req: types.RequestCustom, res: express.Response) {
     let db: Client|undefined = undefined;
     try {
         db = await database.getConnection();
-        let { conversationId, receiverId, content } = req.body;
+        const { conversationId, receiverId, content } = req.body;
 
-        if (!receiverId || !content) {
+        if (!conversationId || !receiverId || !content) {
             return res.status(400).json(util.response.error('Missing required fields'));
-        }
-
-        const resultCheck = await db.query(`
-            SELECT id FROM conversations
-            WHERE (participant1_id = $1 AND participant2_id = $2) OR (participant1_id = $2 AND participant2_id = $1)
-        `, [receiverId, req.user?.user_id]);
-
-        if (resultCheck.rows.length === 0) {
-            conversationId = await createConversation(db, req.user?.user_id!, receiverId);
-        } else if (conversationId !== resultCheck.rows[0].id) {
-            console.error('Conversation ID does not match existing conversation between users');
-            conversationId = resultCheck.rows[0].id;
         }
 
         const sql = `
@@ -80,6 +90,8 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
         const sql = `
             SELECT
                 c.id AS "conversationId",
+                c.participant2_role AS "participant2Role",
+                c.context AS "context",
                 withUser.user_id AS "withUserId",
                 withUser.username AS "username"
             FROM (SELECT * FROM conversations WHERE participant1_id = $1 OR participant2_id = $1) c
@@ -92,12 +104,13 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
             withUser: {
                 userId: row.withUserId,
                 name: row.username,
+                role: row.participant2Role,
                 avatar: `${process.env.STATIC_URL}/defaultavt.png`
             },
             lastMessage: {},
             messages: [] as any[],
             unreadCount: 0,
-            context: { type: 'product', name: 'Classic Leather Watch' } // Placeholder context
+            context: row.context
         }));
         for (const conv of data) {
             const sql = `
@@ -179,6 +192,7 @@ async function getConversation(req: types.RequestCustom, res: express.Response) 
 };
 
 const chat = {
+    createConversation,
     getConversation,
     getConversations,
     sendMessage
