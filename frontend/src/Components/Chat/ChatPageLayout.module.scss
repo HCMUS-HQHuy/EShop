@@ -1,13 +1,22 @@
 .chatPageContainer {
   width: 100%;
-  height: calc(100vh - 100px);
-  overflow: hidden;
+  height: calc(100vh - 110px);
+  overflow: auto;
 }
 
 .chatLayout {
   display: grid;
   grid-template-columns: 350px 1fr; 
-  height: 100%; // Chiếm toàn bộ chiều cao của container cha
+  height: 100%;
   background-color: var(--white);
-  border-top: 1px solid var(--very-light-gray); // Thêm đường kẻ ngăn cách với Header
+}
+
+.conversationList {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.chatWindow {
+  height: 100%;
+  overflow-y: auto;
 }

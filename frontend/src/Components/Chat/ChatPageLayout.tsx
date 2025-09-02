@@ -41,14 +41,18 @@ const ChatPageLayout = () => {
   return (
     <div className={s.chatPageContainer}>
       <div className={s.chatLayout}>
-        <ConversationList
-          conversations={conversations}
-          selectedConversationId={selectedConversationId}
-          onSelectConversation={setSelectedConversationId}
-        />
-        <ChatWindow
-          conversation={selectedConversation}
-        />
+        <div className={s.conversationList}>
+          <ConversationList
+            conversations={conversations}
+            selectedConversationId={selectedConversationId}
+            onSelectConversation={setSelectedConversationId}
+          />
+        </div>
+        <div className={s.chatWindow}>
+          <ChatWindow
+            conversation={selectedConversation}
+          />
+        </div>
       </div>
     </div>
   );
