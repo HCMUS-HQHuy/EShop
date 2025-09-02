@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import s from './ChatWindow.module.scss';
 import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
 import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
@@ -29,6 +29,7 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
   const { isOpen, val, emit } = useSocketIO('');
   const { loginInfo } = useSelector((state: RootState) => state.user);
   const [messages, setMessages] = useState<MessageType[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   // const mockMessages = [
   //   { id: 1, sender: 'other', text: 'Hi, I have a question about the Classic Leather Watch. Is it still available?', timestamp: '10:44 AM' },
   //   { id: 2, sender: 'me', text: 'Hello! Yes, it is still available!', timestamp: '10:45 AM' },
@@ -48,6 +49,9 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
     });
   }, [conversation]);
 
+  useEffect(()=>{
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   if (!conversation) {
     return (
@@ -67,6 +71,7 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
     }
     console.log('Sending message:', data);
     api.chat.sendMessage(data);
+    setMessages(prevMsgs => [...prevMsgs, { ...data, sender: 'me', timestamp: new Date().toLocaleTimeString() }]);
     setNewMessage('');
   };
 
@@ -90,6 +95,7 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
             <span className={s.timestamp}>{msg.timestamp}</span>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
       <footer className={s.messageInput}>
