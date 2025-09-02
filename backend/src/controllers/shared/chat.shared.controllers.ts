@@ -111,6 +111,7 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
                 OFFSET 0 LIMIT 20
             `;
             const result = await db.query(sql, [conv.id, req.user?.user_id]);
+            result.rows.reverse();
             conv.messages = result.rows.map(row => ({
                 sender: row.sender,
                 content: row.content,
