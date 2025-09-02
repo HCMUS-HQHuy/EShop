@@ -84,27 +84,31 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
     if (util.role.isGuest(req.user)) {
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
+    const userRole =  req.query.userRole;
     let db: Client|undefined = undefined;
     try {
         db = await database.getConnection();
         const sql = `
             SELECT
                 c.id AS "conversationId",
-                c.participant2_role AS "participant2Role",
+                CASE
+                    WHEN c.participant1_id = $1 THEN c.participant2_role
+                    ELSE c.participant1_role
+                END AS "userRole",
                 c.context AS "context",
                 withUser.user_id AS "withUserId",
                 withUser.username AS "username"
-            FROM (SELECT * FROM conversations WHERE participant1_id = $1 OR participant2_id = $1) c
+            FROM (SELECT * FROM conversations WHERE (participant1_id = $1 AND participant1_role = $2)  OR (participant2_id = $1 AND participant2_role = $2)) c
             JOIN users withUser ON  withUser.user_id IN (c.participant2_id, c.participant1_id) AND withUser.user_id != $1
             OFFSET 0 LIMIT 10
         `;
-        const result = await db.query(sql, [req.user?.user_id]);
+        const result = await db.query(sql, [req.user?.user_id, userRole]);
         const data = result.rows.map(row => ({
             id: row.conversationId,
             withUser: {
                 userId: row.withUserId,
                 name: row.username,
-                role: row.participant2Role,
+                role: row.userRole,
                 avatar: `${process.env.STATIC_URL}/defaultavt.png`
             },
             lastMessage: {},

@@ -51,7 +51,7 @@ const ChatPageLayout = () => {
   }, [isOpen, val]);
 
   useEffect(() => {
-    api.chat.getConversations().then(response => {
+    api.chat.getConversations(USER_ROLE.CUSTOMER).then(response => {
       const conversations: ConversationType[] = response.data.conversations;
       console.log('Conversation list: ', conversations);
       if (!Array.isArray(conversations))
