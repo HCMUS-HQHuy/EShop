@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react';
 import ConversationList from './ConversationList/ConversationList.tsx';
 import ChatWindow from './ChatWindow/ChatWindow.tsx';
 import s from './ChatPageLayout.module.scss';
-import type { ConversationType, ConversationsType } from 'src/Types/conversation.ts';
+import type { ConversationType } from 'src/Types/conversation.ts';
 import api from 'src/Api/index.api.ts';
 import { useLocation } from 'react-router-dom';
+import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
+import type { RootState } from 'src/Types/store.ts';
+import { useDispatch, useSelector } from 'react-redux';
+import { setConversations } from 'src/Features/conversationSlice.tsx';
 
 // Dữ liệu giả - sau này sẽ lấy từ API
 // const mockConversations: ConversationsType[] = [
@@ -14,25 +18,37 @@ import { useLocation } from 'react-router-dom';
 // ];
 
 const ChatPageLayout = () => {
-  const [conversations, setConversations] = useState<ConversationsType[]>([]);
-  const shopId: number | undefined = useLocation().state?.shopId;
   const { sellerId, shopName, productId , productName } = useLocation().state || {};
-  const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
+  const { conversations, selectedConversationId} = useSelector((state: RootState) => state.conversation);
+  const dispatch = useDispatch();
   let selectedConversation: ConversationType | undefined = conversations.find(c => c.id === selectedConversationId);
-  if (shopId) {
+  if (sellerId) {
     selectedConversation = {
       id: undefined,
       withUser: { userId: sellerId, name: shopName, avatar: 'https://i.pravatar.cc/40?u=tempuser' },
-      context: { type: 'product', name: productName }
+      context: { type: 'product', name: productName },
+      lastMessage: { sender: 'other', content: '', timestamp: '' },
+      unreadCount: 0,
+      messages: []
     }
   };
 
+  const { isOpen, val } = useSocketIO('');
+
+  useEffect(()=>{
+    console.log('SocketIO status:', isOpen, val);
+    if (isOpen && val) {
+
+    }
+  }, [isOpen, val]);
+
   useEffect(()=>{
     api.chat.getConversations().then(response => {
-      const conversations: ConversationsType[] = response.data.conversations;
+      const conversations: ConversationType[] = response.data.conversations;
+      console.log('Conversation list: ', conversations);
       if (!Array.isArray(conversations))
-        console.error("Invalid conversations data:", conversations);
-      setConversations(conversations);
+        console.error("Invalid conversations data:");
+      dispatch(setConversations(conversations));
     }).catch(error => {
       console.error("Failed to fetch conversations:", error);
     });
@@ -42,11 +58,7 @@ const ChatPageLayout = () => {
     <div className={s.chatPageContainer}>
       <div className={s.chatLayout}>
         <div className={s.conversationList}>
-          <ConversationList
-            conversations={conversations}
-            selectedConversationId={selectedConversationId}
-            onSelectConversation={setSelectedConversationId}
-          />
+          <ConversationList/>
         </div>
         <div className={s.chatWindow}>
           <ChatWindow

@@ -1,6 +1,5 @@
 
 interface MessageType {
-//   id: number;
   sender: string;
   content: string;
   timestamp: string;
@@ -17,11 +16,9 @@ type ConversationType = {
         type: string;
         name: string;
     };
-}
-
-type ConversationsType = ConversationType & {
+    messages: MessageType[];
     lastMessage: MessageType;
     unreadCount: number;
 }
 
-export type {ConversationsType, ConversationType, MessageType};
+export type { ConversationType, MessageType };

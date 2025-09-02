@@ -1,11 +1,10 @@
-import React, { use, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import s from './ChatWindow.module.scss';
-import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
-import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
 import api from 'src/Api/index.api.ts';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'src/Types/store.ts';
 import type { ConversationType, MessageType } from 'src/Types/conversation.ts';
+import { addMessageToConversation } from 'src/Features/conversationSlice.tsx';
 
 interface ChatWindowProps {
   conversation: ConversationType | undefined;
@@ -26,28 +25,10 @@ const ChatPlaceholder = () => (
 
 const ChatWindow = ({ conversation }: ChatWindowProps) => {
   const [newMessage, setNewMessage] = useState('');
-  const { isOpen, val, emit } = useSocketIO('');
   const { loginInfo } = useSelector((state: RootState) => state.user);
-  const [messages, setMessages] = useState<MessageType[]>([]);
+  const { messages } = useSelector((state: RootState) => state.conversation.conversations.find(c => c.id === conversation?.id)) || { messages: [] };
+  const dispatch = useDispatch();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  // const mockMessages = [
-  //   { id: 1, sender: 'other', text: 'Hi, I have a question about the Classic Leather Watch. Is it still available?', timestamp: '10:44 AM' },
-  //   { id: 2, sender: 'me', text: 'Hello! Yes, it is still available!', timestamp: '10:45 AM' },
-  //   { id: 3, sender: 'other', text: 'Great! I would like to purchase it.', timestamp: '10:46 AM' },
-  // ];
-
-  useEffect(()=>{
-    if (!conversation || !conversation.id) return;
-    api.chat.getConversation(conversation.id).then(response=>{
-      const messages: MessageType[] = response.data.messages;
-      if (!messages) {
-        console.error("Invalid messages data:", messages);
-        return;
-      }
-      console.log("Fetched messages:", messages);
-      setMessages(messages);
-    });
-  }, [conversation]);
 
   useEffect(()=>{
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -71,7 +52,11 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
     }
     console.log('Sending message:', data);
     api.chat.sendMessage(data);
-    setMessages(prevMsgs => [...prevMsgs, { ...data, sender: 'me', timestamp: new Date().toLocaleTimeString() }]);
+    dispatch(addMessageToConversation({
+      conversationId: conversation.id!,
+      sender: 'me',
+      message: newMessage
+    }));
     setNewMessage('');
   };
 

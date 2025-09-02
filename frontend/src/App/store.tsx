@@ -8,6 +8,7 @@ import userSlice from "src/Features/userSlice.tsx";
 import categoriesSlice from "src/Features/categoriesSlice.tsx";
 import sellerSlice from "src/Features/sellerSlice.tsx";
 import paymentSlice from "src/Features/paymentSlice.tsx";
+import conversationSlice from "src/Features/conversationSlice.tsx";
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     categories: categoriesSlice,
     seller: sellerSlice,
     payment: paymentSlice,
+    conversation: conversationSlice
   },
 });
 

@@ -1,13 +1,17 @@
-import type { ConversationsType } from 'src/Types/conversation.ts';
+import type { ConversationType } from 'src/Types/conversation.ts';
 import s from './ConversationList.module.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from 'src/Types/store.ts';
+import { setSelectedConversationId } from 'src/Features/conversationSlice.tsx';
 
-interface ConversationListProps {
-  conversations: ConversationsType[];
-  selectedConversationId: number | null;
-  onSelectConversation: (id: number) => void;
-}
+const ConversationList = () => {
+  const { conversations, selectedConversationId } = useSelector((state: RootState) => state.conversation);
+  const dispatch = useDispatch();
 
-const ConversationList = ({ conversations, selectedConversationId, onSelectConversation }: ConversationListProps) => {
+  const selectConversationId = (id: number) => {
+    dispatch(setSelectedConversationId(id));
+  };
+
   return (
     <aside className={s.conversationList}>
       <header className={s.header}>
@@ -19,7 +23,7 @@ const ConversationList = ({ conversations, selectedConversationId, onSelectConve
           <div 
             key={convo.id} 
             className={`${s.conversationItem} ${selectedConversationId === convo.id ? s.selected : ''}`}
-            onClick={() => onSelectConversation(convo.id!)}
+            onClick={() => selectConversationId(convo.id!)}
           >
             <img src={convo.withUser.avatar} alt={convo.withUser.name} className={s.avatar} />
             <div className={s.details}>
