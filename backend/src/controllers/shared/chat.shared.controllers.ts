@@ -52,11 +52,16 @@ async function sendMessage(req: types.RequestCustom, res: express.Response) {
                 content,
                 sent_at as "timestamp"
         `;
-        console.log('Inserting message with conversationId:', conversationId, 'senderId:', req.user?.user_id, 'content:', content, 'receiver: ', receiverId);
         const result = await db.query(sql, [conversationId, req.user?.user_id, content]);
         const message: ConversationMessageType = result.rows[0];
-        req.io?.of(SOCKET_NAMESPACE.USER).to(`user_room_${receiverId}`).emit(SOCKET_EVENTS.MESSAGE, message);
-        res.status(201).json(util.response.success('Message sent', { message }));
+        const data = {
+            conversationId: Number(message.conversationId),
+            content: message.content,
+            sender: message.sender,
+            timestamp: message.timestamp
+        }
+        req.io?.of(SOCKET_NAMESPACE.USER).to(`user_room_${receiverId}`).emit(SOCKET_EVENTS.MESSAGE, data);
+        res.status(201).json(util.response.success('Message sent', { message: data }));
     } catch (error) {
         console.error('Error sending message:', error);
         res.status(500).json(util.response.internalServerError());

@@ -55,7 +55,7 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
     dispatch(addMessageToConversation({
       conversationId: conversation.id!,
       sender: 'me',
-      message: newMessage
+      content: newMessage
     }));
     setNewMessage('');
   };

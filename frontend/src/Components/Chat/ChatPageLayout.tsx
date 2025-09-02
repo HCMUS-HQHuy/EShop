@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import ConversationList from './ConversationList/ConversationList.tsx';
 import ChatWindow from './ChatWindow/ChatWindow.tsx';
 import s from './ChatPageLayout.module.scss';
-import type { ConversationType } from 'src/Types/conversation.ts';
+import type { ConversationType, ConversationMessageType } from 'src/Types/conversation.ts';
 import api from 'src/Api/index.api.ts';
 import { useLocation } from 'react-router-dom';
 import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
 import type { RootState } from 'src/Types/store.ts';
 import { useDispatch, useSelector } from 'react-redux';
-import { setConversations } from 'src/Features/conversationSlice.tsx';
+import { addMessageToConversation, setConversations } from 'src/Features/conversationSlice.tsx';
+import { SOCKET_NAMESPACE } from 'src/Types/common.ts';
 
 // Dữ liệu giả - sau này sẽ lấy từ API
 // const mockConversations: ConversationsType[] = [
@@ -33,12 +34,14 @@ const ChatPageLayout = () => {
     }
   };
 
-  const { isOpen, val } = useSocketIO('');
+  const { isOpen, val } = useSocketIO(SOCKET_NAMESPACE.USER);
 
   useEffect(()=>{
     console.log('SocketIO status:', isOpen, val);
     if (isOpen && val) {
-
+      const messageData: ConversationMessageType = val;
+      console.log('Received message via SocketIO:', messageData);
+      dispatch(addMessageToConversation(messageData));
     }
   }, [isOpen, val]);
 

@@ -1,8 +1,12 @@
 
-interface MessageType {
+type MessageType = {
   sender: string;
   content: string;
-  timestamp: string;
+  timestamp?: string;
+}
+
+type ConversationMessageType = MessageType & {
+    conversationId: number;
 }
 
 type ConversationType = {
@@ -21,4 +25,4 @@ type ConversationType = {
     unreadCount: number;
 }
 
-export type { ConversationType, MessageType };
+export type { ConversationType, MessageType, ConversationMessageType };

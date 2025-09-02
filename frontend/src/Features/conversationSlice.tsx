@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { ConversationType } from "src/Types/conversation.ts";
+import type { ConversationMessageType, ConversationType } from "src/Types/conversation.ts";
 
 const initialState = {
   conversations: [] as ConversationType[],
@@ -14,16 +14,17 @@ const conversationSlice = createSlice({
       state.conversations = action.payload;
     },
     setSelectedConversationId: (state, action: {payload: number | null}) => {
-      state.selectedConversationId = action.payload;
+        state.selectedConversationId = action.payload;
     },
-    addMessageToConversation: (state, action: {payload: {conversationId: number, sender: string, message: string}}) => {
-        const { conversationId, message, sender } = action.payload;
+    addMessageToConversation: (state, action: {payload: ConversationMessageType}) => {
+        const { conversationId, content, sender } = action.payload;
+        console.log("Adding message to conversation:", action.payload);
         const conversation = state.conversations.find(conv => conv.id === conversationId);
         if (conversation) {
             conversation.messages.push({
                 sender: sender,
-                content: message,
-                timestamp: new Date().toISOString()
+                content: content,
+                timestamp: action.payload.timestamp || new Date().toISOString()
             });
         } else console.warn("Conversation not found:", conversationId);
     }

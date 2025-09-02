@@ -57,6 +57,7 @@ const useSocketIO = (namespace: string) => {
 
         function receiveMessage(data: any) {
             console.log("Message received:", data);
+            setVal(data);
         }
 
         function errorHandle(error: Error) {
@@ -77,6 +78,7 @@ const useSocketIO = (namespace: string) => {
             socket.off(SOCKET_EVENTS.DISCONNECT, disconnectHandle);
             socket.off(SOCKET_EVENTS.SET_SHOP_STATUS, setStatusHandle);
             socket.off(SOCKET_EVENTS.REDIRECT, redirectHandle);
+            socket.off(SOCKET_EVENTS.MESSAGE, receiveMessage);
             socket.off(SOCKET_EVENTS.CONNECT_ERROR, errorHandle);
             socket.disconnect();
         };
