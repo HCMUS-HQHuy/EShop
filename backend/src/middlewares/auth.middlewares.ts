@@ -45,7 +45,6 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
             shop_id: infor.shop_id,
             shop_status: infor.shop_status
         } as types.UserInfor;
-        console.log('request.user in seller account:', req.user);
         next();
     } catch (error) {
         console.error("Database connection error:", error);
