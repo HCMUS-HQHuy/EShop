@@ -10,7 +10,8 @@ import type { ProductDetailType } from "src/Types/product.ts";
 import type { RootState } from "src/Types/store.ts";
 import { USER_ROLE } from "src/Types/common.ts";
 import type { ConversationType } from "src/Types/conversation.ts";
-import { setTemporaryConversation } from "src/Features/conversationSlice.tsx";
+import { addConversation, findConversation, setSelectedConversationId, setTemporaryConversation } from "src/Features/conversationSlice.tsx";
+import api from "src/Api/index.api.ts";
 
 type Props = {
   productData: ProductDetailType;
@@ -18,11 +19,12 @@ type Props = {
 
 const ContactToShopButton = ({ productData }: Props) => {
   const { loginInfo } = useSelector((state: RootState) => state.user);
+  const { selectedConversation } = useSelector((state: RootState) => state.conversation);
   const navigateTo = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
-  function contactToShop() {
+  async function contactToShop() {
     if (!loginInfo.isSignIn) navigateTo("/signup");
 
     const temporaryConversation: ConversationType = {
@@ -38,8 +40,31 @@ const ContactToShopButton = ({ productData }: Props) => {
       unreadCount: 0,
       messages: []
     };
-    dispatch(setTemporaryConversation(temporaryConversation));
-    navigateTo(`/chats?conversationId=temp`);
+
+    try {
+      dispatch(findConversation(temporaryConversation));
+      if (selectedConversation) {
+        navigateTo(`/chats?conversationId=${selectedConversation.id}`);
+        return;
+      }
+      const response = await api.chat.getConversation({
+        context: temporaryConversation.context,
+
+        participant2Id: productData.sellerId,
+        participant2Role: USER_ROLE.SELLER,
+        participant1Role: USER_ROLE.CUSTOMER,
+      });
+      if (response.data.conversation) {
+        dispatch(addConversation(response.data.conversation));
+        dispatch(setSelectedConversationId(response.data.conversation.id));
+        navigateTo(`/chats?conversationId=${response.data.conversation.id}`);
+      } else {
+        dispatch(setTemporaryConversation(temporaryConversation));
+        navigateTo(`/chats?conversationId=temp`);
+      }
+    } catch (error: any) {
+      console.error("Error fetching conversation:", error);
+    }
   }
 
   return (

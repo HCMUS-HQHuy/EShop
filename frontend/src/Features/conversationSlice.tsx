@@ -39,9 +39,31 @@ const conversationSlice = createSlice({
                 timestamp: action.payload.timestamp || new Date().toISOString()
             });
         } else console.warn("Conversation not found:", conversationId);
+    },
+    findConversation: (state, action: {payload: ConversationType}) => {
+      const { context, withUser } = action.payload;
+      const conversation = state.conversations.find(conv =>
+        conv.context === context &&
+        conv.withUser.userId === withUser.userId &&
+        conv.withUser.role === withUser.role
+      );
+      if (conversation) {
+        state.selectedConversationId = conversation.id;
+        state.selectedConversation = conversation;
+      } else {
+        state.selectedConversationId = null;
+        state.selectedConversation = null;
+      }
     }
   }
 });
 
-export const { setConversations, setSelectedConversationId, addMessageToConversation, addConversation, setTemporaryConversation } = conversationSlice.actions;
+export const { 
+  setConversations, 
+  setSelectedConversationId, 
+  addMessageToConversation, 
+  addConversation, 
+  setTemporaryConversation, 
+  findConversation 
+} = conversationSlice.actions;
 export default conversationSlice.reducer;

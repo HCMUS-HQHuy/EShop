@@ -12,10 +12,10 @@ async function createConversation(req: types.RequestCustom, res: express.Respons
     if (util.role.isGuest(req.user)) {
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
-    console.log(req.body);
     let db: Client|undefined = undefined;
     try {
         db = await database.getConnection();
+        const params = [req.user?.user_id, req.body.participant2Id, req.body.participant1Role, req.body.participant2Role, JSON.stringify(req.body.context)];
         const result = await db.query(`
             INSERT INTO conversations (
                 participant1_id,
@@ -24,11 +24,10 @@ async function createConversation(req: types.RequestCustom, res: express.Respons
                 participant2_role, 
                 context,
                 created_at
-            ) 
+            )
             VALUES ($1, $2, $3, $4, $5, NOW())
             RETURNING id
-            `, [req.user?.user_id, req.body.participant2Id, req.body.participant1Role, req.body.participant2Role, JSON.stringify(req.body.context)]
-        );
+        `, params);
 
         const data = {
             id: result.rows[0].id,
@@ -192,41 +191,43 @@ async function getConversation(req: types.RequestCustom, res: express.Response) 
     if (util.role.isGuest(req.user)) {
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
-    const conversationId: number = parseInt(req.params.sellerId);
-    if (!Number.isInteger(conversationId) || conversationId < 1) {
-        return res.status(400).json(util.response.error('Invalid conversation ID'));
-    }
-
     let db: Client|undefined = undefined;
     try {
         db = await database.getConnection();
-        const sql = `
-            SELECT 
-                id as "messageId",
-                content,
-                sender_id as "senderId",
-                sent_at as "sentAt",
-                is_read as "isRead"
-            FROM messages
-            WHERE conversation_id = $1
-        `;
-        const result = await db.query(sql, [conversationId]);
-        console.log('Fetched messages for userId', req.user?.user_id, ':', result.rows);
-        const data = result.rows.map(row => ({
-                id: row.messageId,
-                sender: Number(row.senderId) === req.user?.user_id ? 'me' : 'other',
-                content: row.content,
-                timestamp: row.sentAt,
-                isRead: row.isRead
-            }));
-        res.status(200).json(util.response.success('Success', { messages: data }));
-    } catch (error) {
-        console.error('Error fetching conversations:', error);
-        res.status(500).json(util.response.internalServerError());
-    } finally {
-        if (db) {
-            database.releaseConnection(db);
+        const params = [req.user?.user_id, req.body.participant2Id, req.body.participant1Role, req.body.participant2Role, JSON.stringify(req.body.context)];
+        const result = await db.query(`
+            SELECT id, users.username as name
+            FROM conversations JOIN users ON users.user_id = conversations.participant2_id
+            WHERE 
+                participant1_id = $1
+                AND participant1_role = $3
+                AND participant2_id = $2
+                AND participant2_role = $4
+                AND context = $5
+        `, params);
+        if (result.rows.length === 0) {
+            return res.status(404).json(util.response.error('Conversation not found'));
         }
+        const data = {
+            id: result.rows[0].id,
+            withUser: {
+                userId: req.body.participant2Id,
+                name: result.rows[0].name,
+                role: req.body.participant2Role,
+                avatar: `${process.env.STATIC_URL}/defaultavt.png`
+            },
+            lastMessage: {},
+            messages: [],
+            unreadCount: 0,
+            context: req.body.context
+        }
+        console.log(data);
+        return res.status(201).json(util.response.success('Conversation created', { conversation: data }));
+    } catch (error) {
+        console.error('Error creating conversation:', error);
+        throw error;
+    } finally {
+        await database.releaseConnection(db);
     }
 };
 
