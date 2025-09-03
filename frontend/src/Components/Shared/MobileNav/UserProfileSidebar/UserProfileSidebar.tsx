@@ -1,12 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { userImg, userPicturePlaceholder } from "src/Assets/Images/Images";
+import { userImg, userPicturePlaceholder } from "src/Assets/Images/Images.ts";
 import s from "./UserProfileSidebar.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const UserProfileSidebar = () => {
-  const { isMobileMenuActive } = useSelector((state) => state.global);
-  const { loginInfo } = useSelector((state) => state.user);
+  const { isMobileMenuActive } = useSelector((state: RootState) => state.global);
+  const { loginInfo } = useSelector((state: RootState) => state.user);
   const { username, isSignIn } = loginInfo;
   const { t } = useTranslation();
 

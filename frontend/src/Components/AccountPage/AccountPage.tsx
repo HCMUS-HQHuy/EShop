@@ -10,20 +10,8 @@ import AccountMenuSection from "./AccountMenuSection/AccountMenuSection.tsx";
 import s from "./AccountPage.module.scss";
 import EditProfileForm from "./EditProfileForm/EditProfileForm.tsx";
 // Import component mới để đăng ký shop
-import OpenShopForm from "./OpenShopForm/OpenShopForm.tsx";
 import ProfileContentNotFound from "./AccountMenuSection/ProfileContentNotFound/ProfileContentNotFound.tsx";
 import type { RootState } from "src/Types/store.ts";
-
-const AccountLayout = () => {
-  return (
-    <div className={s.accountPageContent}>
-      <AccountMenuSection />
-      <div className={s.contentPanel}>
-        <Outlet />
-      </div>
-    </div>
-  );
-};
 
 const AccountPage = () => {
   const { loginInfo } = useSelector((state: RootState) => state.user);
@@ -53,13 +41,12 @@ const AccountPage = () => {
             </p>
           </div>
 
-          <Routes>
-            <Route path="/" element={<AccountLayout />}>
-              <Route index element={<EditProfileForm />} />
-              <Route path="open-shop" element={<OpenShopForm />} />
-              <Route path="*" element={<ProfileContentNotFound />} />
-            </Route>
-          </Routes>
+           <div className={s.accountPageContent}>
+            <AccountMenuSection />
+            <div className={s.contentPanel}>
+              <EditProfileForm />
+            </div>
+          </div>
         </main>
       </div>
     </>
