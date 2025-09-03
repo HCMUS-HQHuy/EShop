@@ -33,9 +33,6 @@ const OtherSections = ({ item }: {item: CategoryInfor}) => {
     <a href={url} key={`item-${item.categoryId}`}>
       {item.title}
     </a>
-    // <li key={`item-${item.categoryId}`} role="menuitem">
-    //   <a href={url}>{item.title}</a>
-    // </li>
   );
 };
 
@@ -72,10 +69,7 @@ const SectionsMenu = () => {
 
         <h2>{t("sectionsMenu.title")}</h2>
         {categoryList.map((item, index) => {
-          if (item.subCategories.length === 0) {
-            return <OtherSections key={`item-${index}`} item={item} />;
-          }
-          return <LargeMenu key={`item-${index}`} MenuItem={item} />;
+          return <OtherSections key={`item-${index}`} item={item} />;
         })}
 
         {/* <DropDownMenu nameMenu={t("sectionsMenu.womenFashion.title")}>

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { stereo } from "src/Assets/Images/Images";
-import PostCounter from "./PostCounter";
+import { stereo } from "src/Assets/Images/Images.ts";
+import PostCounter from "./PostCounter.tsx";
 import s from "./ProductPoster.module.scss";
 
 const ProductPoster = () => {

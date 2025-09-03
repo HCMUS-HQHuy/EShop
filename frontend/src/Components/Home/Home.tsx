@@ -29,9 +29,9 @@ const Home = () => {
       <main className={s.home}>
         <div className={s.container}>
           <div className={s.introductionContainer}>
-            <SectionsMenu />
+            {/* <SectionsMenu />
 
-            <div className={s.line} />
+            <div className={s.line} /> */}
 
             <MainSlider />
           </div>
