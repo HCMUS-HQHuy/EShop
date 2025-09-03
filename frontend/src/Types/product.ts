@@ -24,14 +24,12 @@ type ProductType = {
   shopId: number;
   shortName: string;
   name: string;
-  category: string[];
+  categoryIds: number[];
   price: string;
   discount: string;
   afterDiscount: string;
-//   description: string;
   addedDate: string;
   img: string;
-//   otherImages: string[];
   colors: Color[];
   rate: number;
   votes: number;
@@ -43,7 +41,7 @@ type ProductOrderType = {
   shopId: number;
   shortName: string;
   name: string;
-  category: string[];
+  categoryIds: number[];
   price: string;
   discount: string;
   afterDiscount: string;

@@ -38,6 +38,7 @@ export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_
       setAfterDiscountKey(product);
       setFormattedPrice(product);
     });
+    console.log(`products: `, products);
     return products;
   } catch (error: any) {
     return rejectWithValue(error.response.data);

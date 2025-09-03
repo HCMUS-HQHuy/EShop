@@ -7,10 +7,10 @@ import ProductCardIcons from "./ProductCardIcons/ProductCardIcons.tsx";
 import ProductCardInfo from "./ProductCardInfo/ProductCardInfo.tsx";
 import { productCardCustomizations } from "src/Data/staticData.tsx";
 import type { RootState } from "src/Types/store.ts";
-import type { Product } from "src/Types/product.ts";
+import type { ProductType } from "src/Types/product.ts";
 
 type Props = {
-  product: Product;
+  product: ProductType;
   customization: typeof productCardCustomizations[keyof typeof productCardCustomizations];
   removeFrom: any;
   loading?: "eager" | "lazy" | undefined;

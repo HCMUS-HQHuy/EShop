@@ -85,7 +85,45 @@ async function getProductInforById(productId: number): Promise<any | null> {
     }
 }
 
-async function listProducts(params: types.ProductParamsRequest) {
+async function getRelatedProductsById(productId: number): Promise<any[]> {
+    let db: Client | undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const sql = `
+            SELECT product_id, name, price, stock_quantity, shop_id, image_url
+            FROM products
+            WHERE product_id != $1
+                AND product_id IN (
+                    SELECT product_id FROM product_categories
+                    WHERE category_id IN (
+                        SELECT category_id FROM product_categories 
+                        WHERE product_id = $1
+                    )
+                )
+                AND status = '${types.PRODUCT_STATUS.ACTIVE}'
+                AND is_deleted = FALSE
+            LIMIT 10
+        `;
+        const result = await db.query(sql, [productId]);
+        return result.rows;
+    } catch (error) {
+        console.error('Error fetching related products:', error);
+        throw error;
+    } finally {
+        await database.releaseConnection(db);
+    }
+}
+
+// #### CONTROLLER FUNCTIONS ####
+
+async function list(req: types.RequestCustom, res: express.Response) {
+    const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
+    if (!parsedBody.success) {
+        return res.status(400).send(util.response.zodValidationError(parsedBody.error));
+    }
+    const params: types.ProductParamsRequest = parsedBody.data;
+    console.log("Listing products with params:", params);
+
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -132,64 +170,23 @@ async function listProducts(params: types.ProductParamsRequest) {
             categoriesId.length > 0 ? categoriesId : null,  // $6
         ];
         const result = await db.query(sql, queryParams);
-        return result.rows;
+        const products = result.rows;
+        for (const product of products) {
+            product.img = `${process.env.PUBLIC_URL}/${product.img}`;
+            const sql = `
+                SELECT category_id
+                FROM product_categories
+                WHERE product_id = $1
+            `;
+            const result = await db.query(sql, [product.id]);
+            product.categoryIds = result.rows.map(row => row.category_id);
+        }
+        res.status(200).send(util.response.success('Products fetched successfully', { products: products }));
     } catch (error) {
         console.error('Error listing products:', error);
-        throw error;
+        return res.status(500).send(util.response.internalServerError());
     } finally {
         await database.releaseConnection(db);
-    }
-}
-
-async function getRelatedProductsById(productId: number): Promise<any[]> {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            SELECT product_id, name, price, stock_quantity, shop_id, image_url
-            FROM products
-            WHERE product_id != $1
-                AND product_id IN (
-                    SELECT product_id FROM product_categories
-                    WHERE category_id IN (
-                        SELECT category_id FROM product_categories 
-                        WHERE product_id = $1
-                    )
-                )
-                AND status = '${types.PRODUCT_STATUS.ACTIVE}'
-                AND is_deleted = FALSE
-            LIMIT 10
-        `;
-        const result = await db.query(sql, [productId]);
-        return result.rows;
-    } catch (error) {
-        console.error('Error fetching related products:', error);
-        throw error;
-    } finally {
-        await database.releaseConnection(db);
-    }
-}
-
-// #### CONTROLLER FUNCTIONS ####
-
-async function list(req: types.RequestCustom, res: express.Response) {
-    const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
-    if (!parsedBody.success) {
-        return res.status(400).send(util.response.zodValidationError(parsedBody.error));
-    }
-    const params: types.ProductParamsRequest = parsedBody.data;
-    console.log("Listing products with params:", params);
-
-    try {
-        const products = await listProducts(params);
-        const data = products.map(product => ({
-            ...product,
-            img: `${process.env.PUBLIC_URL}/${product.img}`
-        }));
-        res.status(200).send(util.response.success('Products fetched successfully', { products: data }));
-    } catch (error) {
-        console.error('Error listing products:', error);
-        res.status(500).send(util.response.internalServerError());
     }
 }
 

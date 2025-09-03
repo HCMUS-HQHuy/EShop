@@ -1,28 +1,30 @@
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { WEBSITE_NAME } from "src/Data/constants";
-import { SIMPLE_DELAYS } from "src/Data/globalVariables";
-import { productCardCustomizations } from "src/Data/staticData";
-import { updateLoadingState } from "src/Features/loadingSlice";
-import useScrollOnMount from "src/Hooks/App/useScrollOnMount";
-import useUpdateLoadingOnSamePage from "src/Hooks/App/useUpdateLoadingOnSamePage";
-import useGetSearchParam from "src/Hooks/Helper/useGetSearchParam";
-import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus";
+import { WEBSITE_NAME } from "src/Data/constants.tsx";
+import { SIMPLE_DELAYS } from "src/Data/globalVariables.tsx";
+import { productCardCustomizations } from "src/Data/staticData.tsx";
+import { updateLoadingState } from "src/Features/loadingSlice.tsx";
+import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
+import useUpdateLoadingOnSamePage from "src/Hooks/App/useUpdateLoadingOnSamePage.tsx";
+import useGetSearchParam from "src/Hooks/Helper/useGetSearchParam.tsx";
+import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 import CategoriesSection from "../Home/CategoriesSection/CategoriesSection.tsx";
-import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory";
-import SkeletonCards from "../Shared/SkeletonLoaders/ProductCard/SkeletonCards";
-import ProductsCategory from "./ProductsCategory";
+import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory.tsx";
+import SkeletonCards from "../Shared/SkeletonLoaders/ProductCard/SkeletonCards.tsx";
+import ProductsCategory from "./ProductsCategory.tsx";
 import s from "./ProductsCategoryPage.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const ProductsCategoryPage = () => {
-  const { loadingCategoryPage } = useSelector((state) => state.loading);
+  const { loadingCategoryPage } = useSelector((state: RootState) => state.loading);
   const { t } = useTranslation();
   const categoryType = useGetSearchParam("type");
   const categoryTypeTrans = t(`categoriesData.${categoryType}`);
   const isWebsiteOnline = useOnlineStatus();
 
   useUpdateLoadingOnSamePage({
+    loadingState: null,
     loadingKey: "loadingCategoryPage",
     actionMethod: updateLoadingState,
     delays: SIMPLE_DELAYS,
@@ -42,7 +44,7 @@ const ProductsCategoryPage = () => {
 
       <div className="container">
         <main className={s.categoryPage}>
-          <PagesHistory history={["/", categoryTypeTrans]} />
+          <PagesHistory history={["/", categoryTypeTrans]} historyPaths={undefined} />
 
           <section className={s.categoryContent} id="category-page">
             {!loadingCategoryPage && isWebsiteOnline && (
