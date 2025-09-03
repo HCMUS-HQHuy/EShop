@@ -206,7 +206,7 @@ async function getConversation(req: types.RequestCustom, res: express.Response) 
                 AND context = $5
         `, params);
         if (result.rows.length === 0) {
-            return res.status(404).json(util.response.error('Conversation not found'));
+            return res.status(200).json(util.response.error('Conversation not found'));
         }
         const data = {
             id: result.rows[0].id,
