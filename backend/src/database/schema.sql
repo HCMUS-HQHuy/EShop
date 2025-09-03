@@ -171,8 +171,8 @@ CREATE TABLE conversations (
     id SERIAL PRIMARY KEY,  -- Tự động tăng ID cho mỗi cuộc trò chuyện
     participant1_id INT NOT NULL,  -- ID của người tham gia đầu tiên
     participant2_id INT NOT NULL,  -- ID của người tham gia thứ hai
-    participant1_role CHAR(10) CHECK (participant1_role IN ('admin', 'seller', 'customer')) NOT NULL,  -- Vai trò của participant1
-    participant2_role CHAR(10) CHECK (participant2_role IN ('admin', 'seller', 'customer')) NOT NULL,  -- Vai trò của participant2
+    participant1_role CHAR(10) CHECK (participant1_role IN ('Admin', 'Seller', 'Customer')) NOT NULL,  -- Vai trò của participant1
+    participant2_role CHAR(10) CHECK (participant2_role IN ('Admin', 'Seller', 'Customer')) NOT NULL,  -- Vai trò của participant2
     context JSONB,  -- Lưu trữ thông tin context dưới dạng JSON
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- Thời gian tạo cuộc trò chuyện
     FOREIGN KEY (participant1_id) REFERENCES users(user_id) ON DELETE CASCADE,  -- Ràng buộc khóa ngoại với bảng users
