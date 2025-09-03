@@ -1,15 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { APP_MODE } from "src/Types/common.ts";
 
-const initialState = {
-  isOverlayActive: false,
-  isMobileMenuActive: false,
-  isProfileMenuActive: false,
-  isSectionsMenuActive: false,
-  isZoomInPreviewActive: false,
-  previewImg: null,
-  appMode: APP_MODE.USER
-};
+const globalStateStr = localStorage.getItem("globalState");
+const initialState = globalStateStr
+  ? JSON.parse(globalStateStr)
+  : {
+      isOverlayActive: false,
+      isMobileMenuActive: false,
+      isProfileMenuActive: false,
+      isSectionsMenuActive: false,
+      isZoomInPreviewActive: false,
+      previewImg: null,
+      appMode: APP_MODE.USER
+  };
 
 const globalSlice = createSlice({
   initialState,
@@ -20,6 +23,7 @@ const globalSlice = createSlice({
     },
     updateGlobalState: (state, { payload: { key, value } }) => {
       state[key] = value;
+      localStorage.setItem("globalState", JSON.stringify(state));
     },
   },
 });
