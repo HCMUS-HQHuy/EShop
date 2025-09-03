@@ -1,0 +1,25 @@
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  border: 1px solid var(--very-light-gray);
+  color: var(--primary);
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--tomato);
+    color: var(--tomato);
+    background-color: rgba(219, 68, 68, 0.05);
+  }
+
+  .icon {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+}
