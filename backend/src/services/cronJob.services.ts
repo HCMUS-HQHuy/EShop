@@ -35,7 +35,7 @@ async function startRemoveMessageJob() {
             // for testing
             const sql = `
                 DELETE FROM messages
-                WHERE created_at < NOW() - INTERVAL '10 minutes'
+                WHERE sent_at < NOW() - INTERVAL '10 minutes'
                 RETURNING *;
             `;
             const response = await db.query(sql);
