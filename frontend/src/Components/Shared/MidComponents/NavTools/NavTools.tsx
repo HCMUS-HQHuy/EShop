@@ -40,7 +40,7 @@ const NavTools = ({ showHeart = true, showCart = true, showUser = true, showChat
           props={{
             visibility: showChat,
             iconName: "chat",
-            routePath: "/chat",
+            routePath: "/chats",
             countLength: cartProducts.length,
             title: t("navTools.chat"),
           }}
