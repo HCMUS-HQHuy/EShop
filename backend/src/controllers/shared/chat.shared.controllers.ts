@@ -5,6 +5,7 @@ import { Client } from 'pg';
 import database from 'database/index.database';
 import SOCKET_EVENTS from 'constants/socketEvents';
 import { SOCKET_NAMESPACE } from 'types/index.types';
+import { USER_ROLE } from 'types/index.types';
 import { ConversationMessageType } from 'types/conversation.types';
 
 async function createConversation(req: types.RequestCustom, res: express.Response) {
@@ -85,6 +86,26 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
     const userRole =  req.query.userRole;
+    switch (userRole) {
+        case USER_ROLE.ADMIN:
+            if (!util.role.isAdmin(req.user)) {
+                return res.status(403).json(util.response.authorError('admin'));
+            }
+            break;
+        case USER_ROLE.SELLER:
+            if (!util.role.isSeller(req.user)) {
+                return res.status(403).json(util.response.authorError('sellers'));
+            }
+            break;
+        case USER_ROLE.CUSTOMER:
+            if (!util.role.isUser(req.user)) {
+                return res.status(403).json(util.response.authorError('customers'));
+            }
+            break;
+        default:
+            return res.status(400).json(util.response.error('Invalid user role'));
+    }
+    
     let db: Client|undefined = undefined;
     try {
         db = await database.getConnection();

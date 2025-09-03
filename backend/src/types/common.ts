@@ -1,9 +1,10 @@
-export const USER_ROLE = {
-    ADMIN: 'Admin',
-    SELLER: 'Seller',
-    USER: 'User',
-    GUEST: 'Guest'
-} as const;
+export enum USER_ROLE {
+    ADMIN = 'Admin',
+    SELLER = 'Seller',
+    CUSTOMER = 'Customer',
+    GUEST = 'Guest',
+    USER = 'User'
+};
 
 export const SORT_ATTRIBUTES = ['name', 'created_at'] as const;
 
@@ -34,7 +35,6 @@ export type UserStatus = typeof USER_STATUS[keyof typeof USER_STATUS];
 export type SortAttribute = typeof SORT_ATTRIBUTES[number];
 export type SortOrder = typeof SORT_ORDERS[number];
 export type OrderStatus = typeof ORDER_STATUSES[keyof typeof ORDER_STATUSES];
-export type UserRole = typeof USER_ROLE[keyof typeof USER_ROLE];
 
 export interface ValidationResult {
     valid: boolean;
@@ -63,4 +63,4 @@ export enum PAYMENT_METHOD {
     COD = 'COD',
     BANK_TRANSFER = 'Bank Transfer',
     PAYPAL = 'PayPal'
-}
+};
