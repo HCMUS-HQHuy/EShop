@@ -41,7 +41,7 @@ export enum PAYMENT_METHOD {
 }
 
 export enum USER_ROLE {
-  ADMIN = 'admin',
-  CUSTOMER = 'customer',
-  SELLER = 'seller'
+  ADMIN = 'Admin',
+  CUSTOMER = 'Customer',
+  SELLER = 'Seller'
 }

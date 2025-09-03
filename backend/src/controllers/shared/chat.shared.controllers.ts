@@ -18,18 +18,32 @@ async function createConversation(req: types.RequestCustom, res: express.Respons
         db = await database.getConnection();
         const result = await db.query(`
             INSERT INTO conversations (
-                participant1_id, 
-                participant2_id, 
+                participant1_id,
+                participant2_id,
                 participant1_role, 
                 participant2_role, 
-                context, 
+                context,
                 created_at
             ) 
             VALUES ($1, $2, $3, $4, $5, NOW())
             RETURNING id
             `, [req.user?.user_id, req.body.participant2Id, req.body.participant1Role, req.body.participant2Role, JSON.stringify(req.body.context)]
         );
-        return result.rows[0].id;
+
+        const data = {
+            id: result.rows[0].id,
+            withUser: {
+                userId: req.body.participant2Id,
+                name: req.body.participant2Name,
+                role: req.body.participant2Role,
+                avatar: `${process.env.STATIC_URL}/defaultavt.png`
+            },
+            lastMessage: {},
+            messages: [],
+            unreadCount: 0,
+            context: req.body.context
+        }
+        return res.status(201).json(util.response.success('Conversation created', { conversation: data }));
     } catch (error) {
         console.error('Error creating conversation:', error);
         throw error;
@@ -42,6 +56,7 @@ async function sendMessage(req: types.RequestCustom, res: express.Response) {
     if (util.role.isGuest(req.user)) {
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
+    console.log(req.body);
     let db: Client|undefined = undefined;
     try {
         db = await database.getConnection();
@@ -105,7 +120,6 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
         default:
             return res.status(400).json(util.response.error('Invalid user role'));
     }
-    
     let db: Client|undefined = undefined;
     try {
         db = await database.getConnection();

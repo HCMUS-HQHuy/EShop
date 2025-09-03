@@ -19,6 +19,7 @@ type ConversationType = {
         avatar: string;
     };
     context: {
+        productId: number;
         type: string;
         name: string;
     };

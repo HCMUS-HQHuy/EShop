@@ -3,10 +3,12 @@ import s from './ConversationList.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'src/Types/store.ts';
 import { setSelectedConversationId } from 'src/Features/conversationSlice.tsx';
+import { useNavigate } from 'react-router-dom';
 
 const ConversationList = () => {
   const { conversations, selectedConversationId } = useSelector((state: RootState) => state.conversation);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const selectConversationId = (id: number) => {
     dispatch(setSelectedConversationId(id));

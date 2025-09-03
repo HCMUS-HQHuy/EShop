@@ -3,7 +3,8 @@ import type { ConversationMessageType, ConversationType } from "src/Types/conver
 
 const initialState = {
   conversations: [] as ConversationType[],
-  selectedConversationId: null as number | null,
+  selectedConversation: null as ConversationType | null,
+  selectedConversationId: null as number | null | undefined,
 };
 
 const conversationSlice = createSlice({
@@ -14,7 +15,18 @@ const conversationSlice = createSlice({
       state.conversations = action.payload;
     },
     setSelectedConversationId: (state, action: {payload: number | null}) => {
-        state.selectedConversationId = action.payload;
+      state.selectedConversationId = action.payload;
+      if (action.payload === null) {
+        state.selectedConversation = null;
+      } else {
+        state.selectedConversation = state.conversations.find(conv => conv.id === action.payload) || null;
+      }
+    },
+    setTemporaryConversation: (state, action: {payload: ConversationType}) => {
+      state.selectedConversation = action.payload;
+    },
+    addConversation: (state, action: {payload: ConversationType}) => {
+      state.conversations.push(action.payload);
     },
     addMessageToConversation: (state, action: {payload: ConversationMessageType}) => {
         const { conversationId, content, sender } = action.payload;
@@ -31,5 +43,5 @@ const conversationSlice = createSlice({
   }
 });
 
-export const { setConversations, setSelectedConversationId, addMessageToConversation } = conversationSlice.actions;
+export const { setConversations, setSelectedConversationId, addMessageToConversation, addConversation, setTemporaryConversation } = conversationSlice.actions;
 export default conversationSlice.reducer;

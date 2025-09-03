@@ -4,34 +4,16 @@ import ChatWindow from './ChatWindow/ChatWindow.tsx';
 import s from './ChatPageLayout.module.scss';
 import type { ConversationType, ConversationMessageType } from 'src/Types/conversation.ts';
 import api from 'src/Api/index.api.ts';
-import { useLocation } from 'react-router-dom';
 import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
 import type { RootState } from 'src/Types/store.ts';
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessageToConversation, setConversations } from 'src/Features/conversationSlice.tsx';
 import { SOCKET_NAMESPACE, USER_ROLE } from 'src/Types/common.ts';
 
-const ChatPageLayout = () => {
-  const { sellerId, shopName, productId, productName } = useLocation().state || {};
-  const { conversations, selectedConversationId } = useSelector((state: RootState) => state.conversation);
-  const dispatch = useDispatch();
-  let selectedConversation: ConversationType | undefined = conversations.find(c => c.id === selectedConversationId);
-  if (sellerId) {
-    selectedConversation = {
-      id: undefined,
-      withUser: {
-        userId: sellerId, 
-        name: shopName,
-        role: USER_ROLE.SELLER, 
-        avatar: 'https://i.pravatar.cc/40?u=tempuser'
-      },
-      context: { type: 'product', name: productName },
-      lastMessage: { sender: 'other', content: '', timestamp: '' },
-      unreadCount: 0,
-      messages: []
-    }
-  };
 
+const ChatPageLayout = () => {
+  const { conversations, selectedConversation } = useSelector((state: RootState) => state.conversation);
+  const dispatch = useDispatch();
   const { isOpen, val } = useSocketIO(SOCKET_NAMESPACE.USER);
 
   useEffect(() => {

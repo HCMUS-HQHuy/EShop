@@ -71,3 +71,46 @@ export function getSubTotal(cartProducts: Product[], key: keyof Product = "quant
 
   return total.toFixed(2);
 }
+
+export function formatDateTime(
+  isoString: string,
+  formatType: 'full' | 'dateOnly' | 'timeOnly' | 'short' = 'full',
+  locale: string = 'en-US' // Mặc định là tiếng Anh
+): string {
+  try {
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) {
+      return "Invalid Date";
+    }
+
+    const options: Intl.DateTimeFormatOptions = {};
+
+    switch (formatType) {
+      case 'full':
+        options.year = 'numeric';
+        options.month = 'long';
+        options.day = 'numeric';
+        options.hour = '2-digit';
+        options.minute = '2-digit';
+        break;
+      case 'dateOnly':
+        options.year = 'numeric';
+        options.month = 'long';
+        options.day = 'numeric';
+        break;
+      case 'timeOnly':
+        options.hour = '2-digit';
+        options.minute = '2-digit';
+        break;
+      case 'short':
+        options.year = '2-digit';
+        options.month = '2-digit';
+        options.day = '2-digit';
+        break;
+    }
+
+    return new Intl.DateTimeFormat(locale, options).format(date);
+  } catch (error) {
+    return "Invalid Date";
+  }
+}
