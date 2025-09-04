@@ -209,7 +209,7 @@ async function getById(req: types.RequestCustom, res: express.Response) {
                 name, short_name as "shortName", sku, price, discount, stock_quantity, product_categories.category_id as "category",
                 products.description, products.image_url as "mainImage", product_images.image_url as "additionalImage"
             FROM 
-                products 
+                products
                 LEFT JOIN 
                     product_categories ON products.product_id = product_categories.product_id
                 LEFT JOIN
@@ -229,7 +229,10 @@ async function getById(req: types.RequestCustom, res: express.Response) {
             stock_quantity: product.stock_quantity,
             description: product.description,
             mainImage: `${process.env.PUBLIC_URL}/${product.mainImage}`,
-            categories: result.rows.map(row => row.category),
+            categories: result.rows.map(row => row.category).reduce((acc: number[], curr: number) => {
+                if (!acc.includes(curr)) acc.push(curr);
+                return acc;
+            }, []),
             additionalImages: result.rows.map(row => `${process.env.PUBLIC_URL}/${row.additionalImage}`)
         }
         res.status(200).send(util.response.success('Product fetched successfully', { product: data }));
