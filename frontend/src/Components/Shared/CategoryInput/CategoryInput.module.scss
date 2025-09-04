@@ -76,7 +76,7 @@
 .searchInput {
   width: 100%;
   padding: 12px 15px;
-  border: 0px;
+  border: none !important; 
   border-bottom: 1px solid var(--very-light-gray);
   font-size: 1rem;
   &:focus { outline: none; }
