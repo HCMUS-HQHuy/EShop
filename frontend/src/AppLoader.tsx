@@ -10,11 +10,13 @@ import useStoreWebsiteDataToLocalStorage from "./Hooks/App/useStoreWebsiteDataTo
 import LoadingPage from "./Components/LoadingPage/LoadingPage.tsx";
 import { getPaymentMethods } from "./Features/paymentSlice.tsx";
 import api from "./Api/index.api.ts";
+import { conversationFetch } from "./Features/conversationSlice.tsx";
 
 const AppLoader = ({ children }: { children: ReactNode }) => {
     useStoreWebsiteDataToLocalStorage();
     const [isReady, setIsReady] = useState(false);
     const { isSignIn } = useSelector((state: RootState) => state.user.loginInfo);
+    const { userRole } = useSelector((state: RootState) => state.global);
 
     const dispatch = useDispatch<AppDispatch>();
     const hasFetchedUserData = useRef(false);
@@ -28,7 +30,8 @@ const AppLoader = ({ children }: { children: ReactNode }) => {
             if (isTokenValid && !isSignIn) {
                 await Promise.all([
                     dispatch(setLoginData()),
-                    dispatch(setShopData())
+                    dispatch(setShopData()),
+                    dispatch(conversationFetch(userRole))
                 ]);
             }
             await Promise.all([

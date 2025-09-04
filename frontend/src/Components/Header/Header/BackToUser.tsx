@@ -4,13 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import { USER_ROLE } from 'src/Types/common.ts';
 import s from './BackToUser.module.scss';
 import { updateGlobalState } from 'src/Features/globalSlice.tsx';
+import { conversationFetch } from 'src/Features/conversationSlice.tsx';
+import type { AppDispatch } from 'src/Types/store.ts';
 
 const BackToUser = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   const handleSwitchToUserMode = () => {
     dispatch(updateGlobalState({key: "userRole", value: USER_ROLE.CUSTOMER }));
+    dispatch(conversationFetch(USER_ROLE.CUSTOMER));
     navigate('/');
   };
 

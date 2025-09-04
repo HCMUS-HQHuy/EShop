@@ -1,9 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { APP_MODE, USER_ROLE } from "src/Types/common.ts";
+import { USER_ROLE } from "src/Types/common.ts";
+
+type GlobalState = {
+  isOverlayActive: boolean;
+  isMobileMenuActive: boolean;
+  isProfileMenuActive: boolean;
+  isSectionsMenuActive: boolean;
+  isZoomInPreviewActive: boolean;
+  previewImg: string | null;
+  userRole: USER_ROLE;
+};
 
 const globalStateStr = localStorage.getItem("globalState");
 const initialState = globalStateStr
-  ? JSON.parse(globalStateStr)
+  ? JSON.parse(globalStateStr) as GlobalState
   : {
       isOverlayActive: false,
       isMobileMenuActive: false,

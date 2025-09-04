@@ -5,9 +5,10 @@ import useSignOut from "src/Hooks/App/useSignOut.tsx";
 import SvgIcon from "../MiniComponents/SvgIcon.tsx";
 import s from "./UserMenu.module.scss";
 import UserMenuItemWithCount from "./UserMenuItemWithCount.tsx";
-import type { RootState } from "src/Types/store.ts";
+import type { AppDispatch, RootState } from "src/Types/store.ts";
 import { updateGlobalState } from "src/Features/globalSlice.tsx";
 import { USER_ROLE } from "src/Types/common.ts";
+import { conversationFetch } from "src/Features/conversationSlice.tsx";
 
 type Props = {
   isActive: boolean;
@@ -16,14 +17,13 @@ type Props = {
 
 const UserMenu = ({ isActive, toggler }: Props) => {
   const { wishList, orderProducts } = useSelector((state: RootState) => state.products);
-  const { userRole } = useSelector((state: RootState)=>state.global);
   const wishListLength = wishList.length;
   const orderProductsLength = orderProducts.length;
   const activeClass = isActive ? s.active : "";
   const navigateTo = useNavigate();
   const { t } = useTranslation();
   const signOut = useSignOut();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   function handleSignOut() {
     signOut();
@@ -32,10 +32,7 @@ const UserMenu = ({ isActive, toggler }: Props) => {
 
   function switchModeToSeller() {
     dispatch(updateGlobalState({ key: "userRole", value: USER_ROLE.SELLER }));
-  }
-
-  function switchModeToUser() {
-    dispatch(updateGlobalState({ key: "userRole", value: USER_ROLE.CUSTOMER }));
+    dispatch(conversationFetch(USER_ROLE.SELLER));
   }
 
   return (

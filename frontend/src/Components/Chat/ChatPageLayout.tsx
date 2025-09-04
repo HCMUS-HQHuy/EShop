@@ -8,18 +8,13 @@ import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
 import type { AppDispatch, RootState } from 'src/Types/store.ts';
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessageToConversation, conversationFetch } from 'src/Features/conversationSlice.tsx';
-import { USER_ROLE } from 'src/Types/common.ts';
 import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
 
-const ChatPageLayout = ( { userRole } : { userRole : USER_ROLE } ) => {
+const ChatPageLayout = () => {
   const { conversations, selectedConversation } = useSelector((state: RootState) => state.conversation);
   const dispatch = useDispatch<AppDispatch>();
   const listen = useSocketIO();
 
-  useEffect(() => {
-    dispatch(conversationFetch(userRole));
-  }, []);
-  
   listen(SOCKET_EVENTS.MESSAGE, (message) => {
     const messageData: ConversationMessageType = message;
     console.log('Received message via SocketIO:', messageData);

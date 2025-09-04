@@ -46,11 +46,11 @@ export const ROUTES_CONFIG = [
   { path: "/search", element: <SearchPage /> },
   { path: "/seller", element: <DashboardOverview /> },
   { path: "/become-seller", element: <StartSelling /> },
-  { path: "/chats", element: <ChatPageLayout userRole={USER_ROLE.CUSTOMER} /> },
+  { path: "/chats", element: <ChatPageLayout /> },
   { path: "/seller/products", element: <ManageProducts /> },
   { path: "/seller/products/new", element: <AddProductPage /> },
   { path: "/seller/products/edit/:productId", element: <AddProductPage /> },
   { path: "/seller/orders", element: <ManageOrders /> },
-  { path: "/seller/chats", element: <ChatPageLayout userRole={USER_ROLE.SELLER}/> },
+  { path: "/seller/chats", element: <ChatPageLayout /> },
   { path: "*", element: <NotFoundPage /> },
 ];
