@@ -9,6 +9,7 @@ import type { AppDispatch, RootState } from "./Types/store.ts";
 import useStoreWebsiteDataToLocalStorage from "./Hooks/App/useStoreWebsiteDataToLocalStorage.tsx";
 import LoadingPage from "./Components/LoadingPage/LoadingPage.tsx";
 import { getPaymentMethods } from "./Features/paymentSlice.tsx";
+import api from "./Api/index.api.ts";
 
 const AppLoader = ({ children }: { children: ReactNode }) => {
     useStoreWebsiteDataToLocalStorage();
@@ -23,9 +24,12 @@ const AppLoader = ({ children }: { children: ReactNode }) => {
         console.log("Fetching initial data...");
         hasFetchedUserData.current = true;
         const fetchAll = async () => {
-            await dispatch(setLoginData());
-            if (isSignIn) {
-                await dispatch(setShopData());
+            const isTokenValid = await api.user.validToken();
+            if (isTokenValid && !isSignIn) {
+                await Promise.all([
+                    dispatch(setLoginData()),
+                    dispatch(setShopData())
+                ]);
             }
             await Promise.all([
                 dispatch(getCategories()),

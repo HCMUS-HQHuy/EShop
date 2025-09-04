@@ -4,6 +4,7 @@ import type { RegisterFormValues } from "src/Types/forms.ts";
 import api from "./config.api.ts";
 
 const user = {
+  validToken: () => api.get("/auth/validate-token"),
   login: (credentials: LoginFormValues) => api.post("/auth/login", credentials),
   signUp: (userData: RegisterFormValues) => api.post("/auth/register", userData),
   forgotPassword: (data: ForgotPasswordFormValues) => api.post("/auth/forgot-password", data),
