@@ -12,15 +12,7 @@ import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
 
 const ChatPageLayout = () => {
   const { conversations, selectedConversation } = useSelector((state: RootState) => state.conversation);
-  const dispatch = useDispatch<AppDispatch>();
-  const listen = useSocketIO();
-
-  listen(SOCKET_EVENTS.MESSAGE, (message) => {
-    const messageData: ConversationMessageType = message;
-    console.log('Received message via SocketIO:', messageData);
-    dispatch(addMessageToConversation(messageData));
-  });
-
+  
   return (
     <div className={s.chatPageContainer}>
       <div className={s.chatLayout}>
