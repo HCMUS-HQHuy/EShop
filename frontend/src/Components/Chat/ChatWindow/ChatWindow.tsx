@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'src/Types/store.ts';
 import type { ConversationType, MessageType } from 'src/Types/conversation.ts';
 import { addConversation, addMessageToConversation, setSelectedConversationId } from 'src/Features/conversationSlice.tsx';
-import { APP_MODE, USER_ROLE } from 'src/Types/common.ts';
 import { formatDateTime } from 'src/Functions/formatting.ts';
 import { useNavigate } from 'react-router-dom';
 
@@ -38,7 +37,6 @@ const ChatPlaceholder = () => (
 const ChatWindow = ({ conversation }: ChatWindowProps) => {
   const [newMessage, setNewMessage] = useState('');
   const { userRole } = useSelector((state: RootState) => state.global);
-  const { loginInfo } = useSelector((state: RootState) => state.user);
   const { messages } = useSelector((state: RootState) => state.conversation.selectedConversation) || { messages: [] };
   const dispatch = useDispatch();
   const navigate = useNavigate();
