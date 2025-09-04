@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { paymentCards, MomoPayment } from "src/Data/staticData.tsx";
 import PaymentCards from "./PaymentCards.tsx";
 import s from "./PaymentOptionsSelection.module.scss";
 import { useDispatch, useSelector } from "react-redux";
