@@ -14,7 +14,7 @@ const Header = () => {
   const navToolsProps = useNavToolsProps();
   const { userRole } = useSelector((state: RootState) => state.global);
   const { name } = useSelector((state: RootState) => state.seller.shopInfo);
-  const headerName = userRole === USER_ROLE.CUSTOMER ? name : WEBSITE_NAME;
+  const headerName = userRole === USER_ROLE.SELLER ? name : WEBSITE_NAME;
   const headerNameLink = userRole === USER_ROLE.SELLER ? "/seller" : "/";
 
   return (
