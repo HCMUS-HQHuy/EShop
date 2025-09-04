@@ -6,3 +6,4 @@ export * from 'types/cart.types';
 export * from 'types/order.types';
 export * from 'types/authenform';
 export * from 'types/account.types';
+export * from 'types/conversation.types';

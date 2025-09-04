@@ -1,14 +1,11 @@
 import express from 'express';
 import util from 'utils/index.utils';
-import * as types from 'types/index.types';
 import { Client } from 'pg';
 import database from 'database/index.database';
 import SOCKET_EVENTS from 'constants/socketEvents';
-import { SOCKET_NAMESPACE } from 'types/index.types';
-import { USER_ROLE } from 'types/index.types';
-import { ConversationMessageType } from 'types/conversation.types';
+import { USER_ROLE, ConversationMessageType, RequestCustom } from 'types/index.types';
 
-async function createConversation(req: types.RequestCustom, res: express.Response) {
+async function createConversation(req: RequestCustom, res: express.Response) {
     if (util.role.isGuest(req.user)) {
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
@@ -51,7 +48,7 @@ async function createConversation(req: types.RequestCustom, res: express.Respons
     }
 }
 
-async function sendMessage(req: types.RequestCustom, res: express.Response) {
+async function sendMessage(req: RequestCustom, res: express.Response) {
     if (util.role.isGuest(req.user)) {
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
@@ -95,7 +92,7 @@ async function sendMessage(req: types.RequestCustom, res: express.Response) {
     }
 }
 
-async function getConversations(req: types.RequestCustom, res: express.Response) {
+async function getConversations(req: RequestCustom, res: express.Response) {
     if (util.role.isGuest(req.user)) {
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
@@ -187,7 +184,7 @@ async function getConversations(req: types.RequestCustom, res: express.Response)
     }
 };
 
-async function getConversation(req: types.RequestCustom, res: express.Response) {
+async function getConversation(req: RequestCustom, res: express.Response) {
     if (util.role.isGuest(req.user)) {
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
