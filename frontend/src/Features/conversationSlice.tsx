@@ -15,6 +15,7 @@ const conversationSlice = createSlice({
       state.conversations = action.payload;
     },
     setSelectedConversationId: (state, action: {payload: number | null}) => {
+      console.log("Setting selected conversation ID to:", action.payload);
       state.selectedConversationId = action.payload;
       if (action.payload === null) {
         state.selectedConversation = null;
@@ -26,20 +27,38 @@ const conversationSlice = createSlice({
       state.selectedConversation = action.payload;
     },
     addConversation: (state, action: {payload: ConversationType}) => {
+      if (state.conversations.find(conv => conv.id === action.payload.id)) {
+        console.warn("Conversation already exists:", action.payload.id);
+        return;
+      }
       state.conversations.push(action.payload);
+      const conversationSet = state.conversations;
+      for (let i = conversationSet.length - 1; i > 0; i--) {
+          conversationSet[i] = conversationSet[i - 1]!;
+      }
+      conversationSet[0] = action.payload;
     },
     addMessageToConversation: (state, action: {payload: ConversationMessageType}) => {
         const { conversationId, content, sender } = action.payload;
         console.log("Adding message to conversation:", action.payload);
-        const conversation = state.conversations.find(conv => conv.id === conversationId);
+        const conversationIndex = state.conversations.findIndex(conv => conv.id === conversationId);
+        const conversation = conversationIndex !== -1 ? state.conversations[conversationIndex] : null;
         if (conversation) {
           conversation.messages.push({
               sender: sender,
               content: content,
               timestamp: action.payload.timestamp || new Date().toISOString()
           });
-          if (state.selectedConversationId === conversationId)
+          conversation.lastMessage = conversation.messages[conversation.messages.length - 1]!;
+          conversation.unreadCount = sender === 'other' ? (conversation.unreadCount || 0) + 1 : conversation.unreadCount || 0;
+          if (state.selectedConversationId === conversationId) {
+            conversation.unreadCount = 0;
             state.selectedConversation = conversation;
+          }
+          for (let i = conversationIndex; i > 0; i--) {
+            state.conversations[i] = state.conversations[i - 1]!;
+          }
+          state.conversations[0] = conversation;
         } else console.warn("Conversation not found:", conversationId);
     },
     findConversation: (state, action: {payload: ConversationType}) => {
