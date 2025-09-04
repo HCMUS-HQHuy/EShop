@@ -87,7 +87,7 @@ function sendMessageToUser(userId: number, event: string, data: any) {
         console.log("ioInstance is not initialized\n");
     else {
         console.log(`Sending message to user ${userId} on event ${event} with data:`, data);
-        ioInstance.of(SOCKET_NAMESPACE.USER).to(`user_room_${userId}`).emit(event, data);
+        ioInstance.to(`user_room_${userId}`).emit(event, data);
     }
 }
 

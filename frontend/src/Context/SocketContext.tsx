@@ -34,10 +34,23 @@ const SocketProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
             console.log('New message received:', message);
             dispatch(addMessageToConversation(message));
         };
+        const redirectHandle = (data: any) => {
+            const { url, isRedirect } = data.data[0];
+            if (isRedirect === false) return;
+            console.log("Redirecting to:", url);
+            const width = 1000;
+            const height = 700;
+            const left = window.screenX + (window.innerWidth - width) / 2;
+            const top = window.screenY + (window.innerHeight - height) / 2;
+            const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
+            window.open(url, '_blank', features);
+        }
+
         newSocket.on(SOCKET_EVENTS.CONNECT, onConnect);
         newSocket.on(SOCKET_EVENTS.DISCONNECT, onDisconnect);
         newSocket.on(SOCKET_EVENTS.CONNECT_ERROR, onError);
         newSocket.on(SOCKET_EVENTS.MESSAGE, newMessageHandler);
+        newSocket.on(SOCKET_EVENTS.REDIRECT, redirectHandle);
         newSocket.connect();
         setSocket(newSocket);
         return () => {
@@ -45,6 +58,7 @@ const SocketProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
             newSocket.off(SOCKET_EVENTS.DISCONNECT, onDisconnect);
             newSocket.off(SOCKET_EVENTS.CONNECT_ERROR, onError);
             newSocket.off(SOCKET_EVENTS.MESSAGE, newMessageHandler);
+            newSocket.off(SOCKET_EVENTS.REDIRECT, redirectHandle);
             newSocket.disconnect();
         };
     }, [isSignIn]);
