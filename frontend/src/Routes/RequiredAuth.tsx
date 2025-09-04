@@ -19,17 +19,6 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   const pathName = location.pathname;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (
-      pathName === '/become-seller' &&
-      isSignIn &&
-      userRole === USER_ROLE.SELLER &&
-      status === SHOP_STATUS.ACTIVE
-    ) {
-      navigate('/seller/dashboard', { replace: true });
-    }
-  }, [userRole, status]);
-
   const isPageRequiringSignIn = (page: string) =>
     !isSignIn && (pagesRequireSignIn.includes(page) || isPageForSeller(page));
   const isPageForSeller = (page: string) => page.startsWith("/seller");
@@ -39,11 +28,20 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
     loginFirstAlert();
     return <Navigate to="/login" />;
   }
-  if (isPageForSeller(pathName) && userRole !== USER_ROLE.SELLER) {
-    return <Navigate to='/' />;
-  }
-  if (userRole === USER_ROLE.SELLER && !isPageForSeller(pathName)) {
-    return <Navigate to='/seller' />;
+  switch (userRole) {
+    case USER_ROLE.CUSTOMER:
+      if (isPageForSeller(pathName)) {
+        loginFirstAlert();
+        return <Navigate to="/" />;
+      }
+      break;
+    case USER_ROLE.SELLER:
+      if (!isPageForSeller(pathName))
+        return <Navigate to="/seller" />;
+      break;
+    default:
+      console.error("Unknown user role:", userRole);
+      break;
   }
 
   function loginFirstAlert() {
