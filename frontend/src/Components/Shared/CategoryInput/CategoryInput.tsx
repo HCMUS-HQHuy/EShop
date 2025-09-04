@@ -1,45 +1,88 @@
-import React, { use, useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import s from './CategoryInput.module.scss';
-import { useSelector } from 'react-redux';
 import type { RootState } from 'src/Types/store.ts';
 import type { CategoryInfor } from 'src/Types/category.ts';
+import { showAlert } from 'src/Features/alertsSlice.tsx';
 
 interface CategoryInputProps {
   categoryIds: number[];
-  onCategoriesChange: (categories: number[]) => void;
+  onCategoriesChange: (categoryIds: number[]) => void;
   placeholder?: string;
 }
 
+interface CategoryOptionProps {
+  category: CategoryInfor;
+  selectedIds: number[];
+  onToggle: (categoryId: number) => void;
+  level: number;
+}
+
+const CategoryOption = ({ category, selectedIds, onToggle, level }: CategoryOptionProps) => {
+  return (
+    <>
+      <li 
+        onClick={() => onToggle(category.categoryId)}
+        style={{ paddingLeft: `${15 + level * 20}px` }}
+      >
+        <input
+          type="checkbox"
+          checked={selectedIds.includes(category.categoryId)}
+          readOnly
+        />
+        <span>{category.title}</span>
+      </li>
+      {category.subCategories && category.subCategories.map(child => (
+        <CategoryOption
+          key={child.categoryId}
+          category={child}
+          selectedIds={selectedIds}
+          onToggle={onToggle}
+          level={level + 1}
+        />
+      ))}
+    </>
+  );
+};
+
+const filterCategories = (categories: CategoryInfor[], searchTerm: string): CategoryInfor[] => {
+  const lowerCaseSearchTerm = searchTerm.toLowerCase();
+  
+  return categories.reduce((acc, category) => {
+    const childrenMatch = category.subCategories ? filterCategories(category.subCategories, searchTerm) : [];
+    const selfMatch = category.title.toLowerCase().includes(lowerCaseSearchTerm);
+
+    if (selfMatch || childrenMatch.length > 0) {
+      acc.push({ ...category, subCategories: childrenMatch });
+    }
+    
+    return acc;
+  }, [] as CategoryInfor[]);
+};
+
 const CategoryInput = ({ categoryIds, onCategoriesChange, placeholder }: CategoryInputProps) => {
   const { categoryList } = useSelector((state: RootState) => state.categories);
-  const [inputValue, setInputValue] = useState('');
-  const [categoryOutput, setCategoryOutput] = useState<CategoryInfor[]>([]);
-  const [suggestions, setSuggestions] = useState<CategoryInfor[]>([]);
-  const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    setCategoryOutput(categoryList.filter(cat => categoryIds.includes(cat.categoryId)));
-  }, [categoryList, categoryIds]);
-
-  useEffect(() => {
-    console.log("Category list from store:", categoryList, categoryIds);
-    if (inputValue) {
-      const filteredSuggestions = categoryList
-        .filter(cat => cat.title.toLowerCase().includes(inputValue.toLowerCase()))
-        .filter(cat => !categoryIds.includes(cat.categoryId));
-      setSuggestions(filteredSuggestions);
-    } else {
-      setSuggestions(categoryList);
-    }
-    setActiveIndex(-1);
-  }, [inputValue, categoryList, categoryIds]);
+  const flat = (categories: CategoryInfor[]): CategoryInfor[] => {
+    return categories.reduce((acc, category) => {
+      acc.push(category);
+      if (category.subCategories) {
+        acc.push(...flat(category.subCategories));
+      }
+      return acc;
+    }, [] as CategoryInfor[]);
+  };
+  const selectedCategories = flat(categoryList).filter(cat => categoryIds.includes(cat.categoryId));
+  const filteredCategoryList = searchTerm ? filterCategories(categoryList, searchTerm) : categoryList;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsSuggestionsVisible(false);
+        setIsOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -48,89 +91,78 @@ const CategoryInput = ({ categoryIds, onCategoriesChange, placeholder }: Categor
     };
   }, []);
 
-  const addCategory = (newCategory: CategoryInfor) => {
-    if (newCategory && !categoryIds.includes(newCategory.categoryId) && categoryIds.length < 3) {
-      onCategoriesChange([...categoryIds, newCategory.categoryId]);
-      setCategoryOutput([...categoryOutput, newCategory]);
+  const handleToggleCategory = (categoryId: number) => {
+    const isSelected = categoryIds.includes(categoryId);
+    let newSelectedIds: number[];
+
+    if (isSelected) {
+      newSelectedIds = categoryIds.filter(id => id !== categoryId);
+    } else {
+      if (categoryIds.length < 3) {
+        newSelectedIds = [...categoryIds, categoryId];
+      } else {
+        dispatch(showAlert({ alertState: 'error', alertText: "You can select up to 3 categories.", alertType: 'alert' }));
+        return;
+      }
     }
-    setInputValue('');
-    // setIsSuggestionsVisible(false);
-  };
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    switch (e.key) {
-      case 'Enter':
-      case ',':
-        e.preventDefault();
-        if (activeIndex > -1 && suggestions[activeIndex]) {
-          addCategory(suggestions[activeIndex]);
-          setActiveIndex(-1);
-        }
-        break;
-
-      case 'ArrowDown':
-        e.preventDefault();
-        setActiveIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
-        break;
-
-      case 'ArrowUp':
-        e.preventDefault();
-        setActiveIndex(prev => (prev > 0 ? prev - 1 : prev));
-        break;
-
-      case 'Backspace':
-        if (!inputValue && categoryIds.length > 0 && categoryIds[categoryIds.length - 1] != undefined) {
-          removeCategory(categoryIds[categoryIds.length - 1]!);
-        }
-        break;
-
-      case 'Escape':
-        setIsSuggestionsVisible(false);
-        break;
-    }
-  };
-
-  const removeCategory = (categoryToRemove: number) => {
-    onCategoriesChange(categoryIds.filter((categoryId) => categoryId !== categoryToRemove));
-    setCategoryOutput(categoryOutput.filter(cat => cat.categoryId !== categoryToRemove));
+    onCategoriesChange(newSelectedIds);
   };
 
   return (
-    <div className={s.container}>
-      <div className={s.categoryInputContainer}>
-        {categoryOutput.map((category: CategoryInfor) => (
-          <div key={category.categoryId} className={s.categoryTag}>
-            {category.title}
-            <button type="button" onClick={() => removeCategory(category.categoryId)}>&times;</button>
-          </div>
-        ))}
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setIsSuggestionsVisible(true)}
-          placeholder={categoryOutput.length === 0 ? (placeholder || "Add a category...") : ""}
-          className={s.inputCategory}
-          autoComplete="off"
-        />
+    <div className={s.container} ref={containerRef}>
+      <div className={`${s.displayBox} ${isOpen ? s.isOpen : ''}`} onClick={() => setIsOpen(!isOpen)}>
+        <div className={s.tagsContainer}>
+          {selectedCategories.length > 0 ? (
+            selectedCategories.map(cat => (
+              <div key={cat.categoryId} className={s.categoryTag}>
+                {cat.title}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToggleCategory(cat.categoryId);
+                  }}
+                >
+                  &times;
+                </button>
+              </div>
+            ))
+          ) : (
+            <span className={s.placeholder}>{placeholder || "Select categories..."}</span>
+          )}
+        </div>
+        <span className={s.arrowIcon}>▼</span>
       </div>
 
-      {isSuggestionsVisible && suggestions.length > 0 && (
-        <ul className={s.suggestionsList}>
-          {suggestions.map((suggestion, index) => (
-            <li key={suggestion.title} 
-              className={index === activeIndex ? s.activeSuggestion : ''}
-              onMouseDown={() => addCategory(suggestion)}
-              >
-                {suggestion.title}
-            </li>
-          ))}
-        </ul>
+            {isOpen && (
+        <div className={s.dropdown}>
+          <input
+            type="text"
+            className={s.searchInput}
+            placeholder="Search categories..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <ul className={s.optionsList}>
+            {filteredCategoryList.length > 0 ? (
+              // 4. Thay thế .map() cũ bằng .map() gọi CategoryOption
+              filteredCategoryList.map(cat => (
+                <CategoryOption
+                  key={cat.categoryId}
+                  category={cat}
+                  selectedIds={categoryIds}
+                  onToggle={handleToggleCategory}
+                  level={0} // Bắt đầu từ cấp 0
+                />
+              ))
+            ) : (
+              <li className={s.noResults}>No categories found</li>
+            )}
+          </ul>
+        </div>
       )}
     </div>
   );
 };
-
 
 export default CategoryInput;

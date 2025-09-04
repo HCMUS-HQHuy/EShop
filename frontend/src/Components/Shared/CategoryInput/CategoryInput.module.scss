@@ -1,23 +1,38 @@
 .container {
   position: relative;
+  width: 100%;
 }
 
-.categoryInputContainer {
+/* Ô hiển thị chính */
+.displayBox {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  padding: 8px;
-  border: 1px solid var(--very-light-gray);
-  border-radius: 6px;
+  justify-content: space-between;
   background-color: var(--white);
-  cursor: text;
+  border: 1px solid var(--very-light-gray);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  min-height: 48px;
   transition: border-color 0.2s ease;
 
-  &:focus-within {
+  &.isOpen {
     border-color: var(--tomato);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
   }
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.placeholder {
+  color: var(--light-gray);
+  padding-left: 8px;
 }
 
 .categoryTag {
@@ -32,59 +47,71 @@
   font-weight: 500;
 
   button {
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 1.2rem;
-    color: var(--light-gray);
-    padding: 0;
+    border: none; background: none; cursor: pointer;
+    font-size: 1.2rem; color: var(--light-gray); padding: 0;
     line-height: 1;
-
-    &:hover {
-      color: var(--dark-red);
-    }
+    &:hover { color: var(--dark-red); }
   }
 }
 
-.inputCategory {
-  flex-grow: 1; // Quan trọng: Cho phép input co giãn
-  border: none;
-  outline: none;
-  padding: 5px 0; // Bỏ padding ngang để nó dính vào tag
-  background-color: transparent;
-  font-size: 1rem;
-  min-width: 150px; // Đặt chiều rộng tối thiểu để không bị quá nhỏ
+.arrowIcon {
+  color: var(--light-gray);
+  padding: 0 10px;
 }
 
-.suggestionsList {
+/* Dropdown Menu */
+.dropdown {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
   background-color: var(--white);
-  border: 1px solid var(--very-light-gray);
+  border: 1px solid var(--tomato);
   border-top: none;
   border-radius: 0 0 8px 8px;
-  list-style: none;
-  margin: 2px 0 0; // Thêm khoảng cách nhỏ
-  padding: 0;
-  max-height: 200px;
-  overflow-y: auto;
   z-index: 10;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 15px;
+  border: 0px;
+  border-bottom: 1px solid var(--very-light-gray);
+  font-size: 1rem;
+  &:focus { outline: none; }
+}
+
+.optionsList {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  max-height: 250px;
+  overflow-y: auto;
 
   li {
-    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+        padding: 10px 15px 10px 0; 
     cursor: pointer;
+    transition: background-color 0.2s ease;
 
     &:hover {
       background-color: var(--skeleton-color1);
     }
 
-    // 2. Thêm style cho mục gợi ý đang được chọn bằng bàn phím
-    &.activeSuggestion {
-      background-color: var(--tomato);
-      color: var(--white);
+    input[type="checkbox"] {
+      margin-right: 12px;
+      margin-left: 15px; // Thêm margin-left để thay cho padding đã bỏ
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
     }
+  }
+
+  .noResults {
+    color: var(--light-gray);
+    padding: 10px 15px;
+    font-style: italic;
   }
 }
