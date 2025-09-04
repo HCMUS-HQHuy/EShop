@@ -14,16 +14,16 @@ import { SOCKET_NAMESPACE, USER_ROLE } from 'src/Types/common.ts';
 const ChatPageLayout = () => {
   const { conversations, selectedConversation } = useSelector((state: RootState) => state.conversation);
   const dispatch = useDispatch();
-  const { isOpen, val } = useSocketIO(SOCKET_NAMESPACE.USER);
+  const { isConnected, message } = useSocketIO();
 
   useEffect(() => {
-    console.log('SocketIO status:', isOpen, val);
-    if (isOpen && val) {
-      const messageData: ConversationMessageType = val;
+    console.log('SocketIO status:', isConnected, message);
+    if (isConnected && message) {
+      const messageData: ConversationMessageType = message;
       console.log('Received message via SocketIO:', messageData);
       dispatch(addMessageToConversation(messageData));
     }
-  }, [isOpen, val]);
+  }, [isConnected, message]);
 
   useEffect(() => {
     api.chat.getConversations(USER_ROLE.CUSTOMER).then(response => {

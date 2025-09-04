@@ -7,13 +7,16 @@ import AppLoader from "./AppLoader.tsx";
 import { store } from "./App/store.tsx";
 import "./Styles/main.scss";
 import "./i18n.js";
+import { SocketProvider } from "./Context/SocketContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <Provider store={store}>
       <HelmetProvider>
         <AppLoader>
-          <App />
+          <SocketProvider>
+            <App />
+          </SocketProvider>
         </AppLoader>
       </HelmetProvider>
     </Provider>
