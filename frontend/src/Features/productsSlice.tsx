@@ -32,14 +32,14 @@ const initialState: ProductsState = {
 
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_, {rejectWithValue}) => {
   try {
-    const response = await api.product.fetchAll();
-    const products: ProductType[] = response.data.products;
+    const response = await Promise.all([api.product.fetchAll(), api.user.getOrders()]);
+    const products: ProductType[] = response[0].data.products;
+    const orders: ProductOrderType[] = response[1].data.orders;
     products.forEach((product: any) => {
       setAfterDiscountKey(product);
       setFormattedPrice(product);
     });
-    console.log(`products: `, products);
-    return products;
+    return {products, orders};
   } catch (error: any) {
     return rejectWithValue(error.response.data);
   }
@@ -86,8 +86,9 @@ const productsSlice = createSlice({
         // console.log("Fetching products...");
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
-        state.productsList = [...action.payload];
-        // console.log("Products fetched successfully:", state.productsList);
+        console.log("Products fetched successfully.", action.payload);
+        state.productsList = [...action.payload.products];
+        state.orderProducts = [...action.payload.orders];
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         console.error("Failed to fetch products:", action.payload);

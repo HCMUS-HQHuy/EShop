@@ -41,17 +41,11 @@ type ProductOrderType = {
   shopId: number;
   shortName: string;
   name: string;
-  categoryIds: number[];
   price: string;
   discount: string;
   afterDiscount: string;
-//   description: string;
-  addedDate: string;
+  orderAt: string;
   img: string;
-//   otherImages: string[];
-  colors: Color[];
-  rate: number;
-  votes: number;
   quantity: number;
   status: string;
 }

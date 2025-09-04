@@ -11,7 +11,8 @@ const user = {
   loginWithTemporaryPassword: (data: LoginFormValues) => api.post("/auth/login-by-temporary-password", data),
   resetPassword: (data: ResetPasswordFormValues) => api.post(`/auth/reset-password`, data),
   logout: () => api.post("/auth/logout"),
-  getInfor: () => api.get(`/user/getinfor`)
+  getInfor: () => api.get(`/user/getinfor`),
+  getOrders: () => api.get(`/user/orders`),
 };
 
 export default user;
