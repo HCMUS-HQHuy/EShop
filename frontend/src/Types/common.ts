@@ -13,11 +13,6 @@ export enum STORAGE_KEYS {
   WISH_LIST = "wishList",
 };
 
-export enum APP_MODE {
-  USER = 'user',
-  SELLER = 'seller'
-}
-
 export enum SOCKET_NAMESPACE {
   USER = '/user',
   SELLER = '/seller',

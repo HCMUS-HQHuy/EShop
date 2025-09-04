@@ -3,20 +3,20 @@ import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import s from "./Nav.module.scss";
 import type { RootState } from "src/Types/store.ts";
-import { APP_MODE } from "src/Types/common.ts";
+import { USER_ROLE } from "src/Types/common.ts";
 import { useEffect } from "react";
 
 const Nav = () => {
   const { t, i18n } = useTranslation();
   const { loginInfo } = useSelector((state: RootState) => state.user);
-  const { appMode } = useSelector((state: RootState) => state.global);
+  const { userRole } = useSelector((state: RootState) => state.global);
   const navDirection = i18n.dir() === "ltr" ? "ltr" : "rtl";
 
   useEffect(()=>{
-    console.log(appMode);
-  }, [appMode])
+    console.log(userRole);
+  }, [userRole])
 
-  if (appMode === APP_MODE.SELLER) {
+  if (userRole === USER_ROLE.SELLER) {
     return (
       <nav className={s.nav} dir={navDirection}>
         <ul>

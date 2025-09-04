@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { APP_MODE } from "src/Types/common.ts";
+import { APP_MODE, USER_ROLE } from "src/Types/common.ts";
 
 const globalStateStr = localStorage.getItem("globalState");
 const initialState = globalStateStr
@@ -11,7 +11,7 @@ const initialState = globalStateStr
       isSectionsMenuActive: false,
       isZoomInPreviewActive: false,
       previewImg: null,
-      appMode: APP_MODE.USER
+      userRole: USER_ROLE.CUSTOMER
   };
 
 const globalSlice = createSlice({

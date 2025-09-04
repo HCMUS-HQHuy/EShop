@@ -7,15 +7,15 @@ import MobileNavIcon from "./MobileNavIcon.jsx";
 import Nav from "./Nav.jsx";
 import type { RootState } from "src/Types/store.ts";
 import { useSelector } from "react-redux";
-import { APP_MODE } from "src/Types/common.ts";
+import { USER_ROLE } from "src/Types/common.ts";
 import BackToUser from "./BackToUser.tsx";
 
 const Header = () => {
   const navToolsProps = useNavToolsProps();
-  const { appMode } = useSelector((state: RootState) => state.global);
+  const { userRole } = useSelector((state: RootState) => state.global);
   const { name } = useSelector((state: RootState) => state.seller.shopInfo);
-  const headerName = appMode === APP_MODE.SELLER ? name : WEBSITE_NAME;
-  const headerNameLink = appMode === APP_MODE.SELLER ? "/seller" : "/";
+  const headerName = userRole === USER_ROLE.CUSTOMER ? name : WEBSITE_NAME;
+  const headerNameLink = userRole === USER_ROLE.SELLER ? "/seller" : "/";
 
   return (
     <header className={s.header} dir="ltr">
@@ -26,8 +26,8 @@ const Header = () => {
 
         <div className={s.headerContent}>
           <Nav />
-          { appMode === APP_MODE.USER && <NavTools {...navToolsProps} /> }
-          { appMode === APP_MODE.SELLER && <BackToUser/>}
+          { userRole === USER_ROLE.CUSTOMER && <NavTools {...navToolsProps} /> }
+          { userRole === USER_ROLE.SELLER && <BackToUser/>}
         </div>
 
         <MobileNavIcon />

@@ -7,7 +7,7 @@ import s from "./UserMenu.module.scss";
 import UserMenuItemWithCount from "./UserMenuItemWithCount.tsx";
 import type { RootState } from "src/Types/store.ts";
 import { updateGlobalState } from "src/Features/globalSlice.tsx";
-import { APP_MODE } from "src/Types/common.ts";
+import { USER_ROLE } from "src/Types/common.ts";
 
 type Props = {
   isActive: boolean;
@@ -16,7 +16,7 @@ type Props = {
 
 const UserMenu = ({ isActive, toggler }: Props) => {
   const { wishList, orderProducts } = useSelector((state: RootState) => state.products);
-  const { appMode } = useSelector((state: RootState)=>state.global);
+  const { userRole } = useSelector((state: RootState)=>state.global);
   const wishListLength = wishList.length;
   const orderProductsLength = orderProducts.length;
   const activeClass = isActive ? s.active : "";
@@ -31,11 +31,11 @@ const UserMenu = ({ isActive, toggler }: Props) => {
   }
 
   function switchModeToSeller() {
-    dispatch(updateGlobalState({ key: "appMode", value: APP_MODE.SELLER }));
+    dispatch(updateGlobalState({ key: "userRole", value: USER_ROLE.SELLER }));
   }
 
   function switchModeToUser() {
-    dispatch(updateGlobalState({ key: "appMode", value: APP_MODE.USER }));
+    dispatch(updateGlobalState({ key: "userRole", value: USER_ROLE.CUSTOMER }));
   }
 
   return (

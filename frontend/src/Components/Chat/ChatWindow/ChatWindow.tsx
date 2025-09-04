@@ -37,7 +37,7 @@ const ChatPlaceholder = () => (
 
 const ChatWindow = ({ conversation }: ChatWindowProps) => {
   const [newMessage, setNewMessage] = useState('');
-  const { appMode } = useSelector((state: RootState) => state.global);
+  const { userRole } = useSelector((state: RootState) => state.global);
   const { loginInfo } = useSelector((state: RootState) => state.user);
   const { messages } = useSelector((state: RootState) => state.conversation.selectedConversation) || { messages: [] };
   const dispatch = useDispatch();
@@ -62,7 +62,7 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
     if (conversation.id === undefined) {
       const conversationData = await api.chat.createConversation({
         participant2Id: conversation.withUser.userId,
-        participant1Role: appMode === APP_MODE.SELLER ? USER_ROLE.SELLER : USER_ROLE.CUSTOMER,
+        participant1Role: userRole,
         participant2Role: conversation.withUser.role,
         context: conversation.context
       });

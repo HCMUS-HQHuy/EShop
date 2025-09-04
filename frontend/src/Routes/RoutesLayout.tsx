@@ -13,13 +13,11 @@ import ToastAlert from "src/Components/Shared/PopUps/ToastAlert/ToastAlert.tsx";
 import ToastConfirm from "src/Components/Shared/PopUps/ToastConfirm/ToastConfirm.tsx";
 import useCurrentSkipLinkId from "src/Hooks/App/useCurrentSkipLinkId.tsx";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
-import { APP_MODE } from "src/Types/common.ts";
 import type { RootState } from "src/Types/store.ts";
 
 const RoutesLayout = () => {
   const skipLinkSectionId = useCurrentSkipLinkId();
   const isWebsiteOnline = useOnlineStatus();
-  const { appMode } = useSelector((state: RootState)=> state.global);
 
   return (
     <div className="App" tabIndex={-1}>

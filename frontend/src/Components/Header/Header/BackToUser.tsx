@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { APP_MODE } from 'src/Types/common.ts';
+import { USER_ROLE } from 'src/Types/common.ts';
 import s from './BackToUser.module.scss';
 import { updateGlobalState } from 'src/Features/globalSlice.tsx';
 
@@ -10,7 +10,7 @@ const BackToUser = () => {
   const navigate = useNavigate();
 
   const handleSwitchToUserMode = () => {
-    dispatch(updateGlobalState({key: "appMode", value: APP_MODE.USER }));
+    dispatch(updateGlobalState({key: "userRole", value: USER_ROLE.CUSTOMER }));
     navigate('/');
   };
 
