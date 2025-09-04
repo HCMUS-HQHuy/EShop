@@ -206,8 +206,12 @@ async function getById(req: types.RequestCustom, res: express.Response) {
         db = await database.getConnection();
         const result = await db.query(`
             SELECT
-                name, short_name as "shortName", sku, price, discount, stock_quantity, product_categories.category_id as "category",
-                products.description, products.image_url as "mainImage", product_images.image_url as "additionalImage"
+                name, sku, price, discount, stock_quantity, status,
+                short_name as "shortName",
+                product_categories.category_id as "category",
+                products.description,
+                products.image_url as "mainImage", 
+                product_images.image_url as "additionalImage"
             FROM 
                 products
                 LEFT JOIN 
@@ -221,13 +225,7 @@ async function getById(req: types.RequestCustom, res: express.Response) {
         }
         const product = result.rows[0];
         const data = {
-            name: product.name,
-            shortName: product.shortName,
-            sku: product.sku,
-            price: product.price,
-            discount: product.discount,
-            stock_quantity: product.stock_quantity,
-            description: product.description,
+            ...product,
             mainImage: `${process.env.PUBLIC_URL}/${product.mainImage}`,
             categories: result.rows.map(row => row.category).reduce((acc: number[], curr: number) => {
                 if (!acc.includes(curr)) acc.push(curr);

@@ -32,9 +32,10 @@ const AddProductPage = () => {
       console.log(`Fetching data for product: ${productId}`);
       api.product.shopFetchById(productId as string).then(res => {
         const { product } = res.data;
+        console.log('Fetched product data:', product.status);
         setProductData({
           ...product,
-          isActive: product.status === 'Active',
+          isActive: Boolean(product.status === "Active"),
           deletedImages: [],
         });
       }).catch(err => {
