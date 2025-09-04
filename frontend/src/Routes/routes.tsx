@@ -24,7 +24,7 @@ import ManageOrders from "src/Components/SellerDashboard/ManageOrders/ManageOrde
 import StartSelling from "src/Components/SellerDashboard/StartSelling/StartSelling.tsx";
 import AddProductPage from "src/Components/SellerDashboard/AddProductPage/AddProductPage.tsx";
 import ManageProducts from "src/Components/SellerDashboard/ManageProducts/ManageProducts.tsx";
-import SellerChatPageLayout from "src/Components/Chat/SellerChatPageLayout.tsx";
+import { USER_ROLE } from "src/Types/common.ts";
 
 export const ROUTES_CONFIG = [
   { path: "/", element: <Home /> },
@@ -45,12 +45,12 @@ export const ROUTES_CONFIG = [
   { path: "/profile/*", element: <AccountPage /> },
   { path: "/search", element: <SearchPage /> },
   { path: "/seller", element: <DashboardOverview /> },
+  { path: "/become-seller", element: <StartSelling /> },
+  { path: "/chats", element: <ChatPageLayout userRole={USER_ROLE.CUSTOMER} /> },
   { path: "/seller/products", element: <ManageProducts /> },
   { path: "/seller/products/new", element: <AddProductPage /> },
   { path: "/seller/products/edit/:productId", element: <AddProductPage /> },
   { path: "/seller/orders", element: <ManageOrders /> },
-  { path: "/seller/chats", element: <SellerChatPageLayout /> },
-  { path: "/become-seller", element: <StartSelling /> },
-  { path: "/chats", element: <ChatPageLayout /> },
+  { path: "/seller/chats", element: <ChatPageLayout userRole={USER_ROLE.SELLER}/> },
   { path: "*", element: <NotFoundPage /> },
 ];

@@ -5,27 +5,19 @@ import s from './ChatPageLayout.module.scss';
 import type { ConversationType, ConversationMessageType } from 'src/Types/conversation.ts';
 import api from 'src/Api/index.api.ts';
 import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
-import type { RootState } from 'src/Types/store.ts';
+import type { AppDispatch, RootState } from 'src/Types/store.ts';
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessageToConversation, setConversations } from 'src/Features/conversationSlice.tsx';
+import { addMessageToConversation, conversationFetch } from 'src/Features/conversationSlice.tsx';
 import { USER_ROLE } from 'src/Types/common.ts';
 import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
 
-const ChatPageLayout = () => {
+const ChatPageLayout = ( { userRole } : { userRole : USER_ROLE } ) => {
   const { conversations, selectedConversation } = useSelector((state: RootState) => state.conversation);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const listen = useSocketIO();
 
   useEffect(() => {
-    api.chat.getConversations(USER_ROLE.CUSTOMER).then(response => {
-      const conversations: ConversationType[] = response.data.conversations;
-      console.log('Conversation list: ', conversations);
-      if (!Array.isArray(conversations))
-        console.error("Invalid conversations data:");
-      dispatch(setConversations(conversations));
-    }).catch(error => {
-      console.error("Failed to fetch conversations:", error);
-    });
+    dispatch(conversationFetch(userRole));
   }, []);
   
   listen(SOCKET_EVENTS.MESSAGE, (message) => {

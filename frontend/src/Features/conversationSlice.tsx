@@ -1,4 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import api from "src/Api/index.api.ts";
+import type { USER_ROLE } from "src/Types/common.ts";
 import type { ConversationMessageType, ConversationType } from "src/Types/conversation.ts";
 
 const initialState = {
@@ -7,20 +9,34 @@ const initialState = {
   selectedConversationId: null as number | null | undefined,
 };
 
+export const conversationFetch = createAsyncThunk(
+  "conversation/getConversations",
+  async (userRole: USER_ROLE, { rejectWithValue }) => {
+      try {
+        const response = await api.chat.getConversations(userRole);
+        return response.data.conversations;
+      } catch(error) {
+        console.warn("Error fetching conversations:", error);
+        return rejectWithValue(error);
+      }
+  }
+);
+
 const conversationSlice = createSlice({
   initialState,
   name: "conversationSlice",
   reducers: {
-    setConversations: (state, action: {payload: ConversationType[]}) => {
-      state.conversations = action.payload;
-    },
     setSelectedConversationId: (state, action: {payload: number | null}) => {
       console.log("Setting selected conversation ID to:", action.payload);
       state.selectedConversationId = action.payload;
       if (action.payload === null) {
         state.selectedConversation = null;
       } else {
-        state.selectedConversation = state.conversations.find(conv => conv.id === action.payload) || null;
+        const conversation = state.conversations.find(conv => conv.id === action.payload);
+        if (conversation) {
+          conversation.unreadCount = 0;
+          state.selectedConversation =  conversation;
+        }
       }
     },
     setTemporaryConversation: (state, action: {payload: ConversationType}) => {
@@ -52,7 +68,6 @@ const conversationSlice = createSlice({
           conversation.lastMessage = conversation.messages[conversation.messages.length - 1]!;
           conversation.unreadCount = sender === 'other' ? (conversation.unreadCount || 0) + 1 : conversation.unreadCount || 0;
           if (state.selectedConversationId === conversationId) {
-            conversation.unreadCount = 0;
             state.selectedConversation = conversation;
           }
           for (let i = conversationIndex; i > 0; i--) {
@@ -76,11 +91,24 @@ const conversationSlice = createSlice({
         state.selectedConversation = null;
       }
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(conversationFetch.fulfilled, (state, action) => {
+      state.conversations = action.payload;
+      state.selectedConversation = null;
+      state.selectedConversationId = null;
+      console.log("Conversations fetched:", action);
+    });
+    builder.addCase(conversationFetch.pending, (state) => {
+      console.log("Fetching conversations...");
+    });
+    builder.addCase(conversationFetch.rejected, (state, action) => {
+      console.error("Fetching conversations failed:", action.error);
+    });
   }
 });
 
 export const { 
-  setConversations, 
   setSelectedConversationId, 
   addMessageToConversation, 
   addConversation, 
