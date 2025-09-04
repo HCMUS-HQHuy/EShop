@@ -25,6 +25,7 @@ import StartSelling from "src/Components/SellerDashboard/StartSelling/StartSelli
 import AddProductPage from "src/Components/SellerDashboard/AddProductPage/AddProductPage.tsx";
 import ManageProducts from "src/Components/SellerDashboard/ManageProducts/ManageProducts.tsx";
 import { USER_ROLE } from "src/Types/common.ts";
+import OrderDetailPage from "src/Components/SellerDashboard/OrderDetailPage/OrderDetailPage.tsx";
 
 export const ROUTES_CONFIG = [
   { path: "/", element: <Home /> },
@@ -51,6 +52,7 @@ export const ROUTES_CONFIG = [
   { path: "/seller/products/new", element: <AddProductPage /> },
   { path: "/seller/products/edit/:productId", element: <AddProductPage /> },
   { path: "/seller/orders", element: <ManageOrders /> },
+  { path: "/seller/orders/:orderId", element: <OrderDetailPage /> },
   { path: "/seller/chats", element: <ChatPageLayout /> },
   { path: "*", element: <NotFoundPage /> },
 ];

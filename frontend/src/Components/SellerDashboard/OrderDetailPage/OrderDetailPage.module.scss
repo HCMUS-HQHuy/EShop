@@ -1,0 +1,168 @@
+.orderDetailPage {
+    padding: 30px;
+    background-color: var(--skeleton-color1);
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding-left: 8%;
+    padding-right: 8%;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.headerInfo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.backLink {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+h1 {
+    font-size: 1.8rem;
+}
+
+.status {
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--white);
+  
+  &.processing { background-color: var(--blue); }
+  &.shipped { background-color: var(--orange-degree2); }
+  &.delivered { background-color: var(--green); }
+  &.cancelled { background-color: var(--light-gray); }
+}
+
+.layoutGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+}
+
+.card {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.sideContent {
+    margin: 5px 0;
+}
+
+.statusSelector {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--very-light-gray);
+    margin-bottom: 15px;
+}
+
+.updateBtn {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.itemsTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 16px 10px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--very-light-gray);
+  }
+
+  th {
+    font-weight: 500;
+    color: var(--light-gray);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+  }
+
+  td {
+    color: var(--primary);
+    font-weight: 500;
+  }
+
+  // Căn chỉnh các cột
+  th:not(:first-child):not(.nameCol),
+  td:not(:first-child):not(.nameCol) {
+    text-align: right;
+  }
+
+  .imageCol { width: 60px; }
+  .skuCol { width: 120px; }
+  .nameCol { text-align: left; }
+  .totalCol { font-weight: 600; }
+  
+  img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain; // Contain để thấy rõ sản phẩm
+    border: 1px solid var(--very-light-gray);
+    border-radius: 6px;
+  }
+}
+
+.discountCell {
+  color: var(--tomato); // Màu đỏ cho giảm giá
+  font-weight: 600;
+}
+
+/* --- Tóm tắt đơn hàng (Order Summary) --- */
+.summaryContainer {
+  width: 50%;
+  max-width: 350px;
+  margin-left: auto; // Đẩy sang phải
+  margin-top: 25px;
+  padding-top: 20px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.95rem;
+  
+  span:first-child {
+    color: var(--light-gray);
+  }
+  span:last-child {
+    font-weight: 600;
+    color: var(--primary);
+  }
+}
+
+.grandTotal {
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 1px solid var(--very-light-gray);
+  font-size: 1.1rem;
+
+  span {
+    font-weight: 700;
+    color: var(--primary) !important;
+  }
+}
