@@ -9,21 +9,13 @@ import type { RootState } from 'src/Types/store.ts';
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessageToConversation, setConversations } from 'src/Features/conversationSlice.tsx';
 import { SOCKET_NAMESPACE, USER_ROLE } from 'src/Types/common.ts';
+import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
 
 
 const ChatPageLayout = () => {
   const { conversations, selectedConversation } = useSelector((state: RootState) => state.conversation);
   const dispatch = useDispatch();
-  const { isConnected, message } = useSocketIO();
-
-  useEffect(() => {
-    console.log('SocketIO status:', isConnected, message);
-    if (isConnected && message) {
-      const messageData: ConversationMessageType = message;
-      console.log('Received message via SocketIO:', messageData);
-      dispatch(addMessageToConversation(messageData));
-    }
-  }, [isConnected, message]);
+  const listen = useSocketIO();
 
   useEffect(() => {
     api.chat.getConversations(USER_ROLE.SELLER).then(response => {
@@ -36,6 +28,12 @@ const ChatPageLayout = () => {
       console.error("Failed to fetch conversations:", error);
     });
   }, []);
+
+  listen(SOCKET_EVENTS.MESSAGE, (message) => {
+    const messageData: ConversationMessageType = message;
+    console.log('Received message via SocketIO:', messageData);
+    dispatch(addMessageToConversation(messageData));
+  });
 
   return (
     <div className={s.chatPageContainer}>

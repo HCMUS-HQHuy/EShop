@@ -26,7 +26,7 @@ import { SocketContext } from "src/Context/SocketContext.tsx";
 // step 3 -> return 1 global hook socket
 
 type EventHandler = (data: any) => void;
-type Event = keyof typeof SOCKET_EVENTS;
+type Event = typeof SOCKET_EVENTS[keyof typeof SOCKET_EVENTS];
 
 const useSocketIO = () => {
     const socket = useContext<Socket | null>(SocketContext);
@@ -50,7 +50,7 @@ const useSocketIO = () => {
             });
         };
     }, [socket]);
-    return { listen };
+    return listen;
 };
 
 export default useSocketIO;
