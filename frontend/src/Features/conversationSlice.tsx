@@ -33,11 +33,13 @@ const conversationSlice = createSlice({
         console.log("Adding message to conversation:", action.payload);
         const conversation = state.conversations.find(conv => conv.id === conversationId);
         if (conversation) {
-            conversation.messages.push({
-                sender: sender,
-                content: content,
-                timestamp: action.payload.timestamp || new Date().toISOString()
-            });
+          conversation.messages.push({
+              sender: sender,
+              content: content,
+              timestamp: action.payload.timestamp || new Date().toISOString()
+          });
+          if (state.selectedConversationId === conversationId)
+            state.selectedConversation = conversation;
         } else console.warn("Conversation not found:", conversationId);
     },
     findConversation: (state, action: {payload: ConversationType}) => {
