@@ -3,6 +3,7 @@ import authenController from "controllers/shared/auth.shared.controllers";
 
 const route = express.Router();
 
+route.get("/validate-token", authenController.validateToken);
 route.post("/login", authenController.login);
 route.post("/register", authenController.registerUser);
 route.post("/logout", authenController.logout);

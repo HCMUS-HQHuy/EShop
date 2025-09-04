@@ -33,6 +33,14 @@ async function deleteFromTokens(db: Client, userId: number, token: string): Prom
     return true;
 }
 
+async function validateToken(req: express.Request, res: express.Response) {
+    const token = req.cookies["auth_jwt"];
+    if (!token) {
+        return res.status(200).json(util.response.error("No token provided"));
+    }
+    return res.status(200).json(util.response.success("Token is valid"));
+}
+
 async function login(req: express.Request, res: express.Response) {
     const parsedBody = types.autheFormSchemas.userCredentials.safeParse(req.body);
     if (!parsedBody.success) {
@@ -236,6 +244,7 @@ function logout(req: express.Request, res: express.Response) {
 }
 
 const authenController = {
+    validateToken,
     login,
     registerUser,
     verifyEmail,
