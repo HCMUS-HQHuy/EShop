@@ -85,7 +85,7 @@ async function sendMessage(req: types.RequestCustom, res: express.Response) {
             sender: message.sender,
             timestamp: message.timestamp
         }
-        req.io?.to(`room_${message.conversationId}`).emit(SOCKET_EVENTS.MESSAGE, data);
+        req.io?.to(`room_${message.conversationId}`).except(`user_room_${req.user?.user_id}`).emit(SOCKET_EVENTS.MESSAGE, data);
         res.status(201).json(util.response.success('Message sent', { message: data }));
     } catch (error) {
         console.error('Error sending message:', error);
