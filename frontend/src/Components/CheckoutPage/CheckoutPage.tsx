@@ -27,7 +27,6 @@ const CheckoutPage = () => {
   useScrollOnMount(160);
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { isOpen, val } = useSocketIO(SOCKET_NAMESPACE.USER);
   const { saveBillingInfoToLocal, cartProducts } = useSelector(
     (state: RootState) => state.products
   );
@@ -52,10 +51,6 @@ const CheckoutPage = () => {
       path: "/home",
     },
   ];
-
-  useEffect(() => {
-    console.log(`socket status: ${val} isopen: ${isOpen}`)
-  }, [val, isOpen]);
 
   function handleSubmitPayment(event: React.FormEvent<HTMLFormElement>) {
     const activeElement = document.activeElement as HTMLElement | null;

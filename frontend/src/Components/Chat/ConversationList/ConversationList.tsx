@@ -11,6 +11,7 @@ const ConversationList = () => {
   const navigate = useNavigate();
 
   const selectConversationId = (id: number) => {
+    if (id === selectedConversationId) return;
     dispatch(setSelectedConversationId(id));
   };
 

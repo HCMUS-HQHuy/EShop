@@ -59,8 +59,8 @@ export enum PAYMENT_STATUS {
 };
 
 export enum PAYMENT_METHOD {
-    MOMO = 'Momo',
+    MOMO = 'MOMO',
     COD = 'COD',
-    BANK_TRANSFER = 'Bank Transfer',
-    PAYPAL = 'PayPal'
+    BANK_TRANSFER = 'BANK_TRANSFER',
+    PAYPAL = 'PAYPAL'
 };

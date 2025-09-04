@@ -9,20 +9,13 @@ import type { PaymentMethodInforType } from "src/Types/paymentMethodInfor.ts";
 import { setPaymentType } from "src/Features/paymentSlice.tsx";
 
 const PaymentOptionsSelection = () => {
-
-  //   {
-  //   img: url,
-  //   alt: "Momo card",
-  //   link: "https://www.momo.vn/",
-  //   id: 1,
-  // },
-  // const [paymentType, setPaymentType] = useState("momo");
   const { paymentType, paymentMethodList } = useSelector((state: RootState) => state.payment)
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
-  function handleSelection(value: number) {
+  function handleSelection(value: string) {
     dispatch(setPaymentType(value));
   }
+  console.log("payment method list", paymentMethodList, paymentType);
 
   return (
     <div className={s.paymentOptions}>
@@ -36,7 +29,7 @@ const PaymentOptionsSelection = () => {
                 value={method.code}
                 id={`${method.code}-option`}
                 checked={paymentType === method.code}
-                onChange={() => handleSelection(method.id)}
+                onChange={() => handleSelection(method.code)}
               />
               <label id={`${method.code}-label`} htmlFor={`${method.code}-option`}>
                 {t(method.code)}
