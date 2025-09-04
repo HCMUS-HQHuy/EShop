@@ -12,7 +12,6 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   const { loginInfo } = useSelector((state: RootState) => state.user);
   const { appMode } = useSelector((state: RootState) => state.global);
   const { status } = useSelector((state: RootState) => state.seller.shopInfo);
-  const { isOpen, val } = useSocketIO(SOCKET_NAMESPACE.SELLER);
   const { isSignIn } = loginInfo;
   const location = useLocation();
   const dispatch = useDispatch();
@@ -42,6 +41,9 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   }
   if (isPageForSeller(pathName) && appMode !== APP_MODE.SELLER) {
     return <Navigate to='/' />;
+  }
+  if (appMode === APP_MODE.SELLER && !isPageForSeller(pathName)) {
+    return <Navigate to='/seller' />;
   }
 
   function loginFirstAlert() {
