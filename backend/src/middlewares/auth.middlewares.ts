@@ -5,6 +5,7 @@ import { Client } from 'pg';
 import database from 'database/index.database';
 import * as types from "types/index.types";
 import * as utils from "utils/index.utils";
+import SOCKET_EVENTS from "constants/socketEvents";
 
 async function auth(req: types.RequestCustom, res: express.Response, next: express.NextFunction) {
     const authHeader = req.headers["authorization"];
@@ -45,6 +46,7 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
             shop_id: infor.shop_id,
             shop_status: infor.shop_status
         } as types.UserInfor;
+        req.io?.emit(SOCKET_EVENTS.LOGIN, 'logged in successfully');
         next();
     } catch (error) {
         console.error("Database connection error:", error);

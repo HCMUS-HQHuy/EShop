@@ -10,17 +10,15 @@ async function get(req: RequestCustom, res: express.Response) {
     let db: Client | undefined = undefined;
 
     try {
-        const userId = req.user?.user_id;
+        const userId = req.user!.user_id;
         db = await database.getConnection();
         const sql = `
             SELECT username, email, address, phone_number
             FROM users
             WHERE user_id = $1
         `;
-
         const result = await db.query(sql, [userId]);
         const userInfo = result.rows[0];
-
         res.status(200).json(util.response.success('Fetched user info successfully', { userInfor: userInfo }));
     } catch (error) {
         console.error("Error fetching user info:", error);

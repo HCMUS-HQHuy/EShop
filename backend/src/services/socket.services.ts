@@ -68,59 +68,30 @@ async function getUserInfor(userId: number): Promise<types.UserInfor | Error>{
     }
 }
 
-function initializeAdmin(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>): void {
-    const adminNamespace = io.of(SOCKET_NAMESPACE.ADMIN);
-    adminNamespace.use(auth);
-    adminNamespace.use((socket, next) => {
-        if (util.role.isAdmin(socket.data.user)) {
-            return next();
+async function joinRoom(userId: number, socket: Socket) {
+    let db: Client | undefined = undefined;
+    try {
+        db = await database.getConnection();
+        const sql = `
+                SELECT *
+                FROM conversations
+                WHERE participant1_id = $1 OR participant2_id = $1
+            `;
+        const result = await db.query(sql, [userId]);
+        const conversations = result.rows;
+        const length = conversations.length;
+        const BATCH_SIZE = 20;
+        for (let i = 0; i < length; i += BATCH_SIZE) {
+            const batch = conversations.slice(i, i + BATCH_SIZE);
+            await Promise.all(batch.map(async (conv) => { 
+                socket.join(`room_${conv.id}`);
+            }));
         }
-        next(new Error('Unauthorized for admin'));
-    });
-    adminNamespace.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
-        console.log(`🔌 Admin connected: ${socket.id} infor: `, socket.data.user);
-        socket.on(SOCKET_EVENTS.DISCONNECT, () => {
-            console.log(`✖️ Admin disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
-        });
-    });
-}
-
-function initializeSeller(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>): void {
-    const sellerNamespace = io.of(SOCKET_NAMESPACE.SELLER);
-    sellerNamespace.use(auth);
-    sellerNamespace.use((socket, next) => {
-        console.log("check role for seller");
-        if (util.role.isSeller(socket.data.user)) {
-            return next();
-        }
-        next(new Error('Unauthorized for seller'));
-    });
-    sellerNamespace.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
-        console.log(`🔌 Seller connected: ${socket.id} infor: `, socket.data.user);
-        socket.join(`shop_id_${socket.data.user.shop_id}`);
-        socket.on(SOCKET_EVENTS.DISCONNECT, () => {
-            console.log(`✖️ Seller disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
-        });
-    });
-}
-
-function initializeUser(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>): void {
-    const userNamespace = io.of(SOCKET_NAMESPACE.USER);
-    userNamespace.use(auth);
-    userNamespace.use((socket, next) => {
-        console.log("check role for user", socket.data.user);
-        if (util.role.isUser(socket.data.user)) {
-            return next();
-        }
-        next(new Error('Unauthorized for user'));
-    });
-    userNamespace.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
-        console.log(`🔌 User connected: ${socket.id} infor: `, socket.data.user, 'join room: ', `user_room_${socket.data.user.user_id}`);
-        socket.join(`user_room_${socket.data.user.user_id}`);
-        socket.on(SOCKET_EVENTS.DISCONNECT, () => {
-            console.log(`✖️ User disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
-        });
-    });
+    } catch (error) {
+        console.log("Error in main namespace connection:", error);
+    } finally {
+        await database.releaseConnection(db);
+    }
 }
 
 function connect(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>): void {
@@ -129,20 +100,16 @@ function connect(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap
     io.use(auth);
     io.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
         console.log(`🔌 New client connected: ${socket.id} infor: `, socket.data.user);
-        // let db: Client | undefined = undefined;
-        // try {
-
-        // } catch (error) {
-        //     console.log("Error in main namespace connection:", error);
-        // }
-
+        socket.join(`user_room_${socket.data.user.user_id}`);
+        joinRoom(socket.data.user.user_id, socket).then(() => {
+            console.log(`User ${socket.data.user.user_id} joined their rooms`);
+        }).catch((error) => {
+            console.log("Error joining rooms:", error);
+        });
         socket.on(SOCKET_EVENTS.DISCONNECT, () => {
             console.log(`✖️ Client disconnected: ${socket.id} for user ${socket.data.user.user_id}`);
         });
     });
-    initializeUser(io);
-    initializeAdmin(io);
-    initializeSeller(io);
 }
 
 function sendMessageToUser(userId: number, event: string, data: any) {
