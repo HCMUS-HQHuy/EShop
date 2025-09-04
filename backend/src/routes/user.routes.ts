@@ -27,7 +27,7 @@ router.get("/products/:id/related", controller.user.product.getRelatedProducts);
 // router.get("/orders", mid.auth, controller.user.order.list);
 // router.get("/orders/:id", mid.auth, controller.user.order.getDetailById);
 router.post("/orders/create", mid.auth, controller.user.order.create);
-
+router.get("/orders", mid.auth, controller.user.order.getAllOrders);
 // #### CATEGORY ROUTES ####
 router.get("/categories/list", controller.user.category.get);
 // router.get("/categories/toplevel", controller.user.category.getTopLevel);
