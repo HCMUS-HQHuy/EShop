@@ -32,10 +32,36 @@ export const CreatingOrderSchema = z.object({
     paymentMethodCode: z.enum(PAYMENT_METHOD, 'Invalid payment method')
 });
 
+
+type OrderItemType = {
+    productId: number;
+    name: string;
+    image: string;
+    quantity: number;
+    price: number;
+    subtotal: number;
+};
+type OrderType = {
+    orderId: number;
+    shopId: number;
+    totalAmount: number;
+    shippingFee: number;
+    tax: number;
+    discount: number;
+    orderDate: Date;
+    status: string;
+    customerInfo: {
+        name: string;
+        address: string;
+        phone: string;
+    };
+    products: OrderItemType[];
+};
+
 export type CreatingOrderRequest = z.infer<typeof CreatingOrderSchema>;
 export type OrderItemRequest = z.infer<typeof OrderItemSchema>;
 export type ItemInCart = z.infer<typeof ItemInCartSchema>;
-
+export type { OrderType, OrderItemType };
 export const OrderSchema = {
     creating: CreatingOrderSchema,
     itemOrder: OrderItemSchema,

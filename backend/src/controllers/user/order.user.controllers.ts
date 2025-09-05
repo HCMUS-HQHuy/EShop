@@ -2,7 +2,7 @@ import express from "express";
 import { Client } from "pg";
 import services from "services/index.services";
 import database from "database/index.database";
-import { RequestCustom } from "types/index.types";
+import { OrderType, RequestCustom } from "types/index.types";
 import { OrderSchema, CreatingOrderRequest } from "types/index.types";
 import util from "utils/index.utils";
 
@@ -45,33 +45,60 @@ async function getAllOrders(req: RequestCustom, res: express.Response) {
     try {
         db = await database.getConnection();
         const sql = `
-            WITH order_ids AS (
-                SELECT order_id, created_at
-                FROM orders
-                WHERE user_id = $1
-                ORDER BY created_at DESC
-                OFFSET 0 LIMIT 20
-            )
-            SELECT o.order_id, o.shop_id, o.total_amount, o.shipping_fee, o.final_amount, o.status, o.created_at,
-                p.product_id, p.name, p.image_url, oi.quantity, oi.price_at_purchase
-            FROM orders o
-            JOIN order_items oi USING(order_id)
-            JOIN products p USING(product_id)
-            WHERE o.order_id IN (SELECT order_id FROM order_ids)
-            ORDER BY o.created_at DESC;
+            SELECT order_id as "orderId", created_at as "orderAt", shop_id as "shopId",
+                   total_amount as "totalAmount", shipping_fee as "shippingFee",
+                   discount_amount as "discountOrder", status,
+                   receiver_name as "name", street_address as "address", phone_number as "phone"
+            FROM orders
+            WHERE user_id = $1
+            ORDER BY created_at DESC
+            OFFSET 0 LIMIT 20
         `;
         const result = await db.query(sql, [userId]);
-        const orders = result.rows.map(row => ({
-            orderId: row.order_id,
-            shopId: row.shop_id,
-            name: row.name,
-            price: row.price_at_purchase,
-            afterDiscount: row.price_at_purchase,
-            img: `${process.env.PUBLIC_URL}/${row.image_url}`,
-            quantity: row.quantity,
+        if (result.rowCount === 0) {
+            return res
+                .status(404)
+                .json(util.response.error("No orders found for this user."));
+        }
+        const orders: OrderType[] = result.rows.map((row) => ({
+            orderId: row.orderId,
+            shopId: row.shopId,
+            totalAmount: row.totalAmount,
+            shippingFee: row.shippingFee,
+            tax: 0,
+            discount: row.discountOrder,
+            orderDate: row.orderAt,
             status: row.status,
-            orderAt: null
+            customerInfo: {
+                name: row.name,
+                address: row.address,
+                phone: row.phone,
+            },
+            products: []
         }));
+        for (const order of orders) {
+            const itemsSql = `
+                SELECT
+                    oi.product_id as "productId", 
+                    p.name as "name", 
+                    p.image_url as "imageUrl",
+                    oi.quantity, 
+                    oi.price_at_purchase as "unitPrice",
+                    oi.discount_at_purchase as "discountAtPurchase"
+                FROM order_items oi
+                JOIN products p ON oi.product_id = p.product_id
+                WHERE oi.order_id = $1
+            `;
+            const itemsResult = await db.query(itemsSql, [order.orderId]);
+            order.products = itemsResult.rows.map((itemRow) => ({
+                productId: itemRow.productId,
+                name: itemRow.name,
+                image: `${process.env.PUBLIC_URL}/${itemRow.imageUrl}`,
+                quantity: itemRow.quantity,
+                price: itemRow.unitPrice,
+                subtotal: itemRow.unitPrice * itemRow.quantity * (100 - itemRow.discountAtPurchase) / 100,
+            }));
+        }
         return res
             .status(200)
             .json(util.response.success("Orders retrieved successfully", {orders}));

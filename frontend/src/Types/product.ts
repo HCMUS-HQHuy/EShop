@@ -36,16 +36,29 @@ type ProductType = {
   quantity: number;
 }
 
-type ProductOrderType = {
-  orderId: number;
-  shopId: number;
-  name: string;
-  price: string;
-  afterDiscount: string;
-  img: string;
-  quantity: number;
-  status: string;
-  orderAt: null;
+type OrderItemType = {
+    productId: number;
+    name: string;
+    image: string;
+    quantity: number;
+    price: number;
+    subtotal: number;
+};
+type OrderType = {
+    orderId: number;
+    shopId: number;
+    totalAmount: number;
+    shippingFee: number;
+    tax: number;
+    discount: number;
+    orderDate: string;
+    status: string;
+    customerInfo: {
+        name: string;
+        address: string;
+        phone: string;
+    };
+    products: OrderItemType[];
 };
 
 type Color = {
@@ -71,7 +84,7 @@ type ProductDetailType = {
   afterDiscount: string;
 }
 
-export type { ProductType, Color, CreatingProduct, ProductDetailType, ProductOrderType };
+export type { ProductType, Color, CreatingProduct, ProductDetailType, OrderType, OrderItemType };
 const ProductSchema = {
   CreatingRequest: CreatingProductSchema,
   EditingRequest: UpdatingProductSchema

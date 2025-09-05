@@ -5,128 +5,21 @@ import { useState } from "react";
 import s from "./OrderHistory.module.scss";
 import type { RootState } from "src/Types/store.ts";
 import { ORDER_STATUS } from "src/Types/common.ts";
-
-interface Order {
-    orderId: string;
-    orderDate: string;
-    status: ORDER_STATUS;
-    totalAmount: number;
-    customerInfo: {
-        name: string;
-        phone: string;
-        address: string;
-    };
-    products: Array<{
-        productId: string;
-        name: string;
-        image: string;
-        price: number;
-        quantity: number;
-        subtotal: number;
-    }>;
-    shippingFee: number;
-    tax: number;
-    discount?: number;
-}
+import type { OrderItemType, OrderType } from "src/Types/product.ts";
 
 const OrderHistory = () => {
     const { t } = useTranslation();
+    const ordersData = useSelector((state: RootState) => state.products.orderProducts) as OrderType[];
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
-    const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
-
-    // Giả sử bạn có orders trong Redux store
-    const mockOrders: Order[] = [
-        {
-            orderId: "ORD-2024-001234",
-            orderDate: "2024-09-03T14:30:00Z",
-            status: ORDER_STATUS.SHIPPING,
-            totalAmount: 3489.35,
-            customerInfo: {
-                name: "Nguyễn Văn Minh",
-                phone: "+84 901 234 567",
-                address: "123 Đường Lê Lợi, Phường Phú Hội, Thành phố Huế"
-            },
-            products: [
-                {
-                    productId: "IPHONE14PM-128GB-PURPLE",
-                    name: "iPhone 14 Pro Max",
-                    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=300&fit=crop",
-                    price: 1099.00,
-                    quantity: 1,
-                    subtotal: 1099.00
-                },
-                {
-                    productId: "AIRPODS-PRO-2ND-WHITE",
-                    name: "AirPods Pro (2nd generation)",
-                    image: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=300&h=300&fit=crop",
-                    price: 249.00,
-                    quantity: 1,
-                    subtotal: 249.00
-                }
-            ],
-            shippingFee: 25.00,
-            tax: 167.35,
-            discount: 50.00
-        },
-        {
-            orderId: "ORD-2024-001235",
-            orderDate: "2024-09-01T10:15:00Z",
-            status: ORDER_STATUS.DELIVERED,
-            totalAmount: 1299.99,
-            customerInfo: {
-                name: "Trần Thị Lan",
-                phone: "+84 907 654 321",
-                address: "456 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh"
-            },
-            products: [
-                {
-                    productId: "MBP13-M2-256GB-SILVER",
-                    name: "MacBook Air 13\" M2",
-                    image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=300&h=300&fit=crop",
-                    price: 1199.00,
-                    quantity: 1,
-                    subtotal: 1199.00
-                }
-            ],
-            shippingFee: 20.00,
-            tax: 80.99,
-            discount: 0
-        },
-        {
-            orderId: "ORD-2024-001236",
-            orderDate: "2024-08-28T16:45:00Z",
-            status: ORDER_STATUS.PENDING,
-            totalAmount: 599.99,
-            customerInfo: {
-                name: "Lê Văn Hoàng",
-                phone: "+84 912 345 678",
-                address: "789 Đường Trần Hưng Đạo, Quận 5, TP. Hồ Chí Minh"
-            },
-            products: [
-                {
-                    productId: "IPAD-AIR-64GB-BLUE",
-                    name: "iPad Air 5th Gen",
-                    image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=300&h=300&fit=crop",
-                    price: 579.00,
-                    quantity: 1,
-                    subtotal: 579.00
-                }
-            ],
-            shippingFee: 15.00,
-            tax: 29.99,
-            discount: 24.00
-        }
-    ];
-
-    const ordersData = mockOrders;
+    const [expandedOrders, setExpandedOrders] = useState<Set<number>>(new Set());
+    
     const orderStatusLabels = "orderHistory.status";
 
-    // Filter orders based on status
     const filteredOrders = selectedStatus === 'all'
         ? ordersData
-        : ordersData.filter((order: Order) => order.status === selectedStatus);
+        : ordersData.filter((order: OrderType) => order.status === selectedStatus);
 
-    const toggleOrderDetails = (orderId: string) => {
+    const toggleOrderDetails = (orderId: number) => {
         const newExpandedOrders = new Set(expandedOrders);
         if (newExpandedOrders.has(orderId)) {
             newExpandedOrders.delete(orderId);
@@ -148,10 +41,14 @@ const OrderHistory = () => {
     };
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('vi-VN', {
+        // return new Intl.NumberFormat('vi-VN', {
+        //     style: 'currency',
+        //     currency: 'VND'
+        // }).format(amount * 1000);
+        return new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: 'VND'
-        }).format(amount * 1000); // Assuming prices are in thousands
+            currency: 'USD'
+        }).format(amount);
     };
 
     return (
@@ -162,7 +59,7 @@ const OrderHistory = () => {
                 </div>
             ) : (
                 <div className={s.ordersContainer}>
-                    {filteredOrders.map((order: Order) => {
+                    {filteredOrders.map((order: OrderType) => {
                         const isExpanded = expandedOrders.has(order.orderId);
 
                         return (
@@ -171,10 +68,13 @@ const OrderHistory = () => {
                                 <div className={s.orderSummary}>
                                     <div className={s.orderBasicInfo}>
                                         <h3 className={s.orderId}>
-                                            {t('orderHistory.orderNumber', 'Order')}: {order.orderId}
+                                            {t('orderHistory.orderNumber', 'Order')}: #{order.orderId}
                                         </h3>
                                         <p className={s.orderDate}>
-                                            {formatDate(order.orderDate)}
+                                            Order At: {formatDate(order.orderDate)}
+                                        </p>
+                                        <p className={s.orderDate}>
+                                            Payment Method: {t('orderHistory.paymentMethod.creditCard', 'Credit Card')}
                                         </p>
                                     </div>
 
@@ -248,7 +148,7 @@ const OrderHistory = () => {
                                                 {t('orderHistory.products', 'Products')} ({order.products.length})
                                             </h4>
                                             <div className={s.productsList}>
-                                                {order.products.map((product) => (
+                                                {order.products.map((product: OrderItemType) => (
                                                     <div key={product.productId} className={s.productItem}>
                                                         <div className={s.productImageContainer}>
                                                             <img
@@ -275,7 +175,7 @@ const OrderHistory = () => {
                                         <div className={s.totalBreakdown}>
                                             <div className={s.totalRow}>
                                                 <span>{t('orderHistory.subtotal', 'Subtotal')}:</span>
-                                                <span>{formatCurrency(order.products.reduce((sum, p) => sum + p.subtotal, 0))}</span>
+                                                <span>{formatCurrency(order.products.reduce((sum: number, p: OrderItemType) => sum + p.subtotal, 0))}</span>
                                             </div>
                                             <div className={s.totalRow}>
                                                 <span>{t('orderHistory.shipping', 'Shipping')}:</span>
