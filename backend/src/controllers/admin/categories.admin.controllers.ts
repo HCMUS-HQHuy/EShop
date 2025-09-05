@@ -2,9 +2,11 @@ import express from "express";
 
 import { Client } from "pg";
 import database from "database/index.database";
+import util from "utils/index.utils";
+import schemas from "schemas/index.schema";
 
-import * as types from "types/index.types";
-import * as util from "utils/index.utils";
+import { CategoryAddRequest, CategoryParamsRequest, CategoryUpdateRequest } from "types/category.types";
+import { RequestCustom } from "types/common.types";
 
 // #### VALIDATION FUNCTIONS ####
 
@@ -68,7 +70,7 @@ async function addCategory(name: string, description: string | undefined): Promi
     }
 }
 
-async function getCategories(params: types.CategoryParamsRequest): Promise<types.CategoryInformation[]> {
+async function getCategories(params: CategoryParamsRequest) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -94,7 +96,7 @@ async function getCategories(params: types.CategoryParamsRequest): Promise<types
         const queryParams = [`%${params.keywords}%`, limit, offset, createdFrom, createdTo, deleted_from, deletedTo, isDeleted];
         console.log("Executing SQL:", sql, "with params:", queryParams);
         const result = await db.query(sql, queryParams);
-        return result.rows as types.CategoryInformation[];
+        return result.rows;
     } catch (error: any) {
         console.error("Error fetching categories:", error);
         throw error;
@@ -105,7 +107,7 @@ async function getCategories(params: types.CategoryParamsRequest): Promise<types
     }
 }
 
-async function updateCategory(name: string, categoryData: types.CategoryUpdateRequest): Promise<void> {
+async function updateCategory(name: string, categoryData: CategoryUpdateRequest): Promise<void> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -150,135 +152,113 @@ async function deleteCategory(name: string, userId: number): Promise<void> {
 
 // #### CONTROLLER FUNCTIONS ####
 
-async function add(req: types.RequestCustom, res: express.Response) {
-    if (util.isAdmin(req.user) === false) {
-        return res.status(403).json({ message: "Forbidden: Only admins can add categories." });
+async function add(req: RequestCustom, res: express.Response) {
+    if (util.role.isAdmin(req.user) === false) {
+        return res.status(403).json(util.response.authorError('admins'));
     }
 
-    const parsedBody = types.categorySchemas.addRequest.safeParse(req.body);
+    const parsedBody = schemas.category.addRequest.safeParse(req.body);
     if (!parsedBody.success) {
-        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
+        return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
-    const params: types.CategoryAddRequest = parsedBody.data;
+    const params: CategoryAddRequest = parsedBody.data;
     console.log("Listing products with params:", params);
     try {
         // they must be string, so no need to check for undefined
         if (await checkCategoryRecordExist(params.name)) {
-            return res.status(400).json({
-                message: "Validation error",
-                errors: [`Category with name: "${params.name}" already exists`]
-            });
+            return res.status(400).json(util.response.error(
+                "Validation error",
+                {detail: `Category with name: "${params.name}" already exists`}
+            ));
         }
 
         await addCategory(params.name, params.description);
-        res.status(201).json({
-            message: "Category created successfully"
-        });
+        res.status(201).json(util.response.success("Category created successfully"));
     } catch (error: any) {
-        res.status(500).json({
-            message: "Error creating category",
-            errors: error.message
-        });
+        res.status(500).json(util.response.internalServerError());
     }
     console.log("Category added successfully");
 }
 
-async function get(req: types.RequestCustom, res: express.Response) {
+async function get(req: RequestCustom, res: express.Response) {
     console.log("Fetching categories with query parameters:", req.query);
-    const parsedBody = types.categorySchemas.paramsRequest.safeParse(req.query);
+    const parsedBody = schemas.category.paramsRequest.safeParse(req.query);
     if (!parsedBody.success) {
-        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
+        return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
-    const params: types.CategoryParamsRequest = parsedBody.data;
+    const params: CategoryParamsRequest = parsedBody.data;
     console.log("Listing categories with params:", params);
     try {
         const categories = await getCategories(params);
-        res.status(200).json(categories);
+        res.status(200).json(util.response.success("successfull", {categories}));
     } catch (error: any) {
-        res.status(500).json({
-            message: "Error fetching categories",
-            errors: error.message
-        });
+        res.status(500).json(util.response.internalServerError());
     }
 }
 
-async function update(req: types.RequestCustom, res: express.Response) {
-    if (util.isAdmin(req.user) === false) {
-        return res.status(403).json({ message: "Forbidden: Only admins can update categories." });
+async function update(req: RequestCustom, res: express.Response) {
+    if (util.role.isAdmin(req.user) === false) {
+        return res.status(403).json(util.response.authorError('admins'));
     }
     console.log("Updating category with params:", req.params, "and body:", req.body);
-    const parsedParam = types.categorySchemas.updateRequest.safeParse(req.params);
+    const parsedParam = schemas.category.updateRequest.safeParse(req.params);
     if (!parsedParam.success) {
-        return res.status(400).send({ error: 'Invalid category name', details: parsedParam.error.format() });
+        return res.status(400).send(util.response.zodValidationError(parsedParam.error));
     }
-    const parsedBody = types.categorySchemas.updateRequest.safeParse(req.body);
+    const parsedBody = schemas.category.updateRequest.safeParse(req.body);
     if (!parsedBody.success) {
-        return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
+        return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
-
     const categoryName = parsedParam.data.name;
-    const categoryData: types.CategoryUpdateRequest = parsedBody.data;
+    const categoryData: CategoryUpdateRequest = parsedBody.data;
 
     try {
         if (await checkCategoryRecordNotExist(categoryName)) {
-            return res.status(400).json({
-                message: "Validation error",
-                errors: [`Category with name: "${categoryName}" does not exist`]
-            });
+            return res.status(400).json(util.response.error(
+                "Validation error",
+                { details: `Category with name: "${categoryName}" does not exist`}
+            ));
         }
         if (categoryName !== categoryData.name && await checkCategoryRecordExist(categoryData.name)) {
-            return res.status(400).json({
-                message: "Validation error",
-                errors: [`Category with name: "${categoryData.name}" already exists`]
-            });
+            return res.status(400).json(util.response.error(
+                "Validation error",
+                { details: `Category with name: "${categoryData.name}" already exists`}
+            ));
         }
         console.log("Updating category:", categoryName, "with data:", categoryData);
     } catch (error: any) {
         console.error("Error updating category:", error);
-        return res.status(500).json({
-            message: "Error updating category",
-            errors: error.message
-        });
+        return res.status(500).json(util.response.internalServerError());
     }
 
     try {
         await updateCategory(categoryName, categoryData);
-        res.status(200).json({
-            message: "Category updated successfully"
-        });
+        res.status(200).json(util.response.success("Category updated successfully"));
     } catch (error: any) {
-        res.status(500).json({
-            message: "Error updating category",
-            errors: error.message
-        });
+        res.status(500).json(util.response.internalServerError());
     }
 }
 
-async function remove(req: types.RequestCustom, res: express.Response) {
-    if (util.isAdmin(req.user) === false) {
-        return res.status(403).json({ message: "Forbidden: Only admins can delete categories." });
+async function remove(req: RequestCustom, res: express.Response) {
+    if (util.role.isAdmin(req.user) === false) {
+        return res.status(403).json(util.response.authorError('admins'));
     }
-    const parsedParam = types.categorySchemas.updateRequest.safeParse(req.params);
+    const parsedParam = schemas.category.updateRequest.safeParse(req.params);
     if (!parsedParam.success) {
-        return res.status(400).send({ error: 'Invalid category name', details: parsedParam.error.format() });
+        return res.status(400).send(util.response.zodValidationError(parsedParam.error));
     }
     const categoryName = parsedParam.data.name;
     try {
         if (await checkCategoryRecordNotExist(categoryName)) {
-            return res.status(400).json({
-                message: "Validation error",
-                errors: [`Category with name: "${categoryName}" does not exist`]
-            });
+            return res.status(400).json(util.response.error(
+                "Validation error",
+                { details: [`Category with name: "${categoryName}" does not exist`] }
+            ));
         }
         await deleteCategory(categoryName, req.user?.user_id as number);
-        res.status(200).json({
-            message: "Category deleted successfully"
-        });
+        res.status(200).json(util.response.success("Category deleted successfully"));
     } catch (error: any) {
-        res.status(500).json({
-            message: "Server error while deleting category",
-            errors: error.message
-        });
+        res.status(500).json(util.response.internalServerError());
     }
 }
 
