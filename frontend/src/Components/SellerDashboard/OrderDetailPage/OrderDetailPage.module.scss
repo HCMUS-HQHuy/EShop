@@ -171,3 +171,37 @@ h1 {
     color: var(--primary) !important;
   }
 }
+
+.sideContent {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-radius: 8px;
+}
+
+.cardTitle {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.infoContainer {
+    margin-top: 10px;
+}
+
+.infoItem {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.infoItem strong {
+    color: #333;
+}
+
+.shippingAddress {
+    font-size: 1rem;
+    color: #555;
+    word-wrap: break-word;
+}

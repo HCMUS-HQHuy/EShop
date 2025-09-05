@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import s from './OrderDetailPage.module.scss';
 import { useEffect, useState } from 'react';
 import api from 'src/Api/index.api.ts';
+import { ORDER_STATUS } from 'src/Types/common.ts';
 
 type orderDetails = {
     orderId: number;
@@ -126,24 +127,16 @@ const OrderDetailPage = () => {
 
                 <div className={s.sideContent}>
                     <div className={s.card}>
-                        <h3>Customer</h3>
-                        <p>{order.customer.name}</p>
-                        <p>{order.customer.email}</p>
-                        <p>{order.customer.phone}</p>
+                        <h3 className={s.cardTitle}>Customer</h3>
+                        <div className={s.infoContainer}>
+                            <p className={s.infoItem}><strong>Name:</strong> {order.customer.name}</p>
+                            <p className={s.infoItem}><strong>Email:</strong> {order.customer.email}</p>
+                            <p className={s.infoItem}><strong>Phone:</strong> {order.customer.phone}</p>
+                        </div>
                     </div>
                     <div className={s.card}>
-                        <h3>Shipping Address</h3>
-                        <p>{order.shippingAddress}</p>
-                    </div>
-                    <div className={s.card}>
-                        <h3>Change Status</h3>
-                        <select className={s.statusSelector}>
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
-                        <button className={s.updateBtn}>Update Status</button>
+                        <h3 className={s.cardTitle}>Shipping Address</h3>
+                        <p className={s.shippingAddress}>{order.shippingAddress}</p>
                     </div>
                 </div>
             </div>
