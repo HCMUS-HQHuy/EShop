@@ -1,13 +1,14 @@
 import express from 'express';
 import { Client } from 'pg';
 import database from 'database/index.database';
-import util, * as utils from 'utils/index.utils';
-import * as types from 'types/index.types';
-import fs from 'fs';
+import util from 'utils/index.utils';
+import schemas from 'schemas/index.schema';
+import { PRODUCT_STATUS } from 'types/index.types';
+import { ProductInformation, ProductParamsRequest, RequestCustom, SellerProductFilter } from 'types/index.types';
 
 // #### DATABASE FUNCTIONS ####
 
-async function checkProductExists(productId: number, status?: types.ProductStatus): Promise<boolean> {
+async function checkProductExists(productId: number, status?: PRODUCT_STATUS): Promise<boolean> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -49,7 +50,7 @@ async function removeProduct(userId: number, productId: number): Promise<void> {
     }
 }
 
-async function listProducts(shop_id: number, params: types.ProductParamsRequest) {
+async function listProducts(shop_id: number, params: ProductParamsRequest) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -82,7 +83,7 @@ async function listProducts(shop_id: number, params: types.ProductParamsRequest)
         
         const limit         = Number(process.env.PAGINATION_LIMIT);
         const offset        = (params.page - 1) * limit;
-        const filter        = params.filter as types.SellerProductFilter;
+        const filter        = params.filter as SellerProductFilter;
         const queryParams = [
             `%${params.keywords}%`,         // $1
             limit,                          // $2
@@ -110,8 +111,8 @@ async function hideProduct(productId: number): Promise<void> {
         db = await database.getConnection();
         const sql = `
             UPDATE products
-            SET status = '${types.PRODUCT_STATUS.INACTIVE}'
-            WHERE product_id = $1 AND is_deleted = FALSE AND status = '${types.PRODUCT_STATUS.ACTIVE}'
+            SET status = '${PRODUCT_STATUS.INACTIVE}'
+            WHERE product_id = $1 AND is_deleted = FALSE AND status = '${PRODUCT_STATUS.ACTIVE}'
         `;
         await db.query(sql, [productId]);
     } catch (error) {
@@ -130,8 +131,8 @@ async function displayProduct(productId: number): Promise<void> {
         db = await database.getConnection();
         const sql = `
             UPDATE products
-            SET status = '${types.PRODUCT_STATUS.ACTIVE}'
-            WHERE product_id = $1 AND status = '${types.PRODUCT_STATUS.INACTIVE}' AND is_deleted = FALSE
+            SET status = '${PRODUCT_STATUS.ACTIVE}'
+            WHERE product_id = $1 AND status = '${PRODUCT_STATUS.INACTIVE}' AND is_deleted = FALSE
         `;
         await db.query(sql, [productId]);
     } catch (error) {
@@ -145,15 +146,15 @@ async function displayProduct(productId: number): Promise<void> {
 }
 
 // #### CONTROLLER FUNCTIONS ####
-async function list(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req.user) === false) {
+async function list(req: RequestCustom, res: express.Response) {
+    if (util.role.isAcceptedSeller(req.user) === false) {
         return res.status(403).send(util.response.authorError('sellers'));
     }
-    const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
+    const parsedBody = schemas.product.paramsRequest.safeParse(req.query);
     if (!parsedBody.success) {
         return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
-    const params: types.ProductParamsRequest = parsedBody.data;
+    const params: ProductParamsRequest = parsedBody.data;
     console.log("Listing products with params:", params);
     try {
         const products = await listProducts(req.user?.shop_id as number, params);
@@ -164,8 +165,8 @@ async function list(req: types.RequestCustom, res: express.Response) {
     }
 }
 
-async function remove(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req.user) === false) {
+async function remove(req: RequestCustom, res: express.Response) {
+    if (util.role.isAcceptedSeller(req.user) === false) {
         return res.status(403).json(util.response.authorError('sellers'));
     }
     const productId = Number(req.params.id);
@@ -192,8 +193,8 @@ async function remove(req: types.RequestCustom, res: express.Response) {
     }
 }
 
-async function getById(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req.user) === false) {
+async function getById(req: RequestCustom, res: express.Response) {
+    if (util.role.isAcceptedSeller(req.user) === false) {
         return res.status(403).send(util.response.authorError('sellers'));
     }
     const productId = Number(req.params.id);
@@ -244,8 +245,8 @@ async function getById(req: types.RequestCustom, res: express.Response) {
     }
 }
 
-async function update(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req.user) === false) {
+async function update(req: RequestCustom, res: express.Response) {
+    if (util.role.isAcceptedSeller(req.user) === false) {
         return res.status(403).send(util.response.authorError('sellers'));
     }
     const productId = Number(req.params.id);
@@ -261,12 +262,12 @@ async function update(req: types.RequestCustom, res: express.Response) {
         console.error('Error checking product existence:', error);
         return res.status(500).send({ error: 'Internal server error' });
     }
-    const parsedBody = types.productSchemas.information.safeParse(req.body);
+    const parsedBody = schemas.product.information.safeParse(req.body);
     if (!parsedBody.success) {
         console.log('Validation failed', parsedBody.error.issues, req.body);
         return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
-    const product: types.ProductInformation = parsedBody.data;
+    const product: ProductInformation = parsedBody.data;
     console.log("Parsed product data:", product);
 
     let db: Client | undefined = undefined;
@@ -354,8 +355,8 @@ async function update(req: types.RequestCustom, res: express.Response) {
     res.status(200).send(util.response.success('Product updated successfully', []));
 }
 
-async function add(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req.user) === false) {
+async function add(req: RequestCustom, res: express.Response) {
+    if (util.role.isAcceptedSeller(req.user) === false) {
         return res.status(403).send(util.response.authorError('sellers'));
     }
     console.log("Files received:", req.files);
@@ -363,11 +364,11 @@ async function add(req: types.RequestCustom, res: express.Response) {
         return res.status(400).send(util.response.error( 'Main image (mainImage) is required'));
     }
     console.log("Add product request body:", req.body);
-    const parsedBody = types.productSchemas.information.safeParse(req.body);
+    const parsedBody = schemas.product.information.safeParse(req.body);
     if (!parsedBody.success) {
         return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
-    const product: types.ProductInformation = parsedBody.data;
+    const product: ProductInformation = parsedBody.data;
     console.log("Parsed product data:", product);
     let db: Client | undefined = undefined;
     try {
@@ -435,8 +436,8 @@ async function add(req: types.RequestCustom, res: express.Response) {
     }
 };
 
-async function hide(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req.user) === false) {
+async function hide(req: RequestCustom, res: express.Response) {
+    if (util.role.isAcceptedSeller(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can hide products' });
     }
     const productId = Number(req.params.id);
@@ -444,7 +445,7 @@ async function hide(req: types.RequestCustom, res: express.Response) {
         return res.status(400).send({ error: 'Invalid product ID' });
     }
     try {
-        const productExists = await checkProductExists(productId, types.PRODUCT_STATUS.ACTIVE);
+        const productExists = await checkProductExists(productId, PRODUCT_STATUS.ACTIVE);
         if (!productExists) {
             return res.status(404).send({ error: 'Product not found' });
         }
@@ -461,8 +462,8 @@ async function hide(req: types.RequestCustom, res: express.Response) {
     res.status(200).send({ message: 'Product hidden successfully' });
 }
 
-async function display(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAcceptedSeller(req.user) === false) {
+async function display(req: RequestCustom, res: express.Response) {
+    if (util.role.isAcceptedSeller(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only sellers can display products' });
     }
     const productId = Number(req.params.id);
@@ -470,7 +471,7 @@ async function display(req: types.RequestCustom, res: express.Response) {
         return res.status(400).send({ error: 'Invalid product ID' });
     }
     try {
-        const productExists = await checkProductExists(productId, types.PRODUCT_STATUS.INACTIVE);
+        const productExists = await checkProductExists(productId, PRODUCT_STATUS.INACTIVE);
         if (!productExists) {
             return res.status(404).send({ error: 'Product not found' });
         }

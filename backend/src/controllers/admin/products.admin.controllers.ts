@@ -1,13 +1,15 @@
 import express from 'express';
-import * as types from 'types/index.types';
-import * as utils from 'utils/index.utils';
-
 import { Client } from 'pg';
+
+import util from 'utils/index.utils';
 import database from 'database/index.database';
+import schemas from 'schemas/index.schema';
+import { PRODUCT_STATUS } from 'types/index.types';
+import { AdminProductFilter, ProductParamsRequest, RequestCustom } from 'types/index.types';
 
 // #### HELPER FUNCTIONS ####
 
-async function review(req: express.Request, res: express.Response, status: types.ProductStatus) {
+async function review(req: RequestCustom, res: express.Response, status: PRODUCT_STATUS) {
     const productId = parseInt(req.params.id, 10);
     if (isNaN(productId)) {
         return res.status(400).send({ error: 'Invalid product ID' });
@@ -16,7 +18,7 @@ async function review(req: express.Request, res: express.Response, status: types
         return res.status(400).send({ error: 'Product ID must be a positive integer' });
     }
     try {
-        const productExists = await checkProductExists(productId, types.PRODUCT_STATUS.PENDING);
+        const productExists = await checkProductExists(productId, PRODUCT_STATUS.PENDING);
         if (!productExists) {
             return res.status(404).send({ error: 'Product not found' });
         }
@@ -30,7 +32,7 @@ async function review(req: express.Request, res: express.Response, status: types
 
 // #### DATABASE FUNCTIONS ####
 
-async function checkProductExists(productId: number, status?: types.ProductStatus): Promise<boolean> {
+async function checkProductExists(productId: number, status?: PRODUCT_STATUS): Promise<boolean> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -52,7 +54,7 @@ async function checkProductExists(productId: number, status?: types.ProductStatu
     }
 }
 
-async function updateProductStatus(productId: number, status: types.ProductStatus): Promise<void> {
+async function updateProductStatus(productId: number, status: PRODUCT_STATUS): Promise<void> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -72,7 +74,7 @@ async function updateProductStatus(productId: number, status: types.ProductStatu
     }
 }
 
-async function listProducts(params: types.ProductParamsRequest) {
+async function listProducts(params: ProductParamsRequest) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -97,7 +99,7 @@ async function listProducts(params: types.ProductParamsRequest) {
         `;
         const limit         = Number(process.env.PAGINATION_LIMIT);
         const offset        = (params.page - 1) * limit;
-        const filter        = params.filter as types.SellerProductFilter;
+        const filter        = params.filter as AdminProductFilter;
         const queryParams = [
             `%${params.keywords}%`,         // $1
             limit,                          // $2
@@ -123,16 +125,16 @@ async function listProducts(params: types.ProductParamsRequest) {
 
 // #### CONTROLLER FUNCTIONS ####
 
-async function list(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAdmin(req.user) === false) {
+async function list(req: RequestCustom, res: express.Response) {
+    if (util.role.isAdmin(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only admins can access this route' });
     }
-    const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
+    const parsedBody = schemas.product.paramsRequest.safeParse(req.query);
     console.log("Parsed body for listing products:", req.query);
     if (!parsedBody.success) {
         return res.status(400).send({ error: 'Invalid request data', details: parsedBody.error.format() });
     }
-    const params: types.ProductParamsRequest = parsedBody.data;
+    const params: ProductParamsRequest = parsedBody.data;
     console.log("Listing products with params:", params);
 
     try {
@@ -144,25 +146,25 @@ async function list(req: types.RequestCustom, res: express.Response) {
     }
 }
 
-async function reject(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAdmin(req.user) === false) {
+async function reject(req: RequestCustom, res: express.Response) {
+    if (util.role.isAdmin(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only admins can reject products' });
     }
-    return review(req, res, types.PRODUCT_STATUS.REJECTED);
+    return review(req, res, PRODUCT_STATUS.REJECTED);
 }
 
-async function approve(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAdmin(req.user) === false) {
+async function approve(req: RequestCustom, res: express.Response) {
+    if (util.role.isAdmin(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only admins can approve products' });
     }
-    return review(req, res, types.PRODUCT_STATUS.ACTIVE);
+    return review(req, res, PRODUCT_STATUS.ACTIVE);
 }
 
-async function ban(req: types.RequestCustom, res: express.Response) {
-    if (utils.isAdmin(req.user) === false) {
+async function ban(req: RequestCustom, res: express.Response) {
+    if (util.role.isAdmin(req.user) === false) {
         return res.status(403).send({ error: 'Forbidden: Only admins can ban products' });
     }
-    return review(req, res, types.PRODUCT_STATUS.BANNED);
+    return review(req, res, PRODUCT_STATUS.BANNED);
 }
 
 const product = {

@@ -1,14 +1,12 @@
 import express from 'express';
 import { Client } from 'pg';
 import database from '../../database/index.database';
-
-import * as types from '../../types/index.types';
 import util from 'utils/index.utils';
-
-// #### VALIDATION FUNCTIONS ####
+import schemas from 'schemas/index.schema';
+import { PRODUCT_STATUS } from 'types/index.types';
+import { RequestCustom, ProductParamsRequest, UserProductFilter } from 'types/index.types';
 
 // #### HELPER FUNCTIONS ####
-
 async function getAllCategoriesId(categories: number[] | undefined): Promise<number[]> {
     if (!categories || categories.length === 0) {
         return [];
@@ -63,7 +61,7 @@ async function getProductInforById(productId: number): Promise<any | null> {
                     product_images ON products.product_id = product_images.product_id
             WHERE 
                 products.product_id = $1 
-                AND products.status = '${types.PRODUCT_STATUS.ACTIVE}' AND products.is_deleted = FALSE
+                AND products.status = '${PRODUCT_STATUS.ACTIVE}' AND products.is_deleted = FALSE
         `;
         const result = await db.query(sql, [productId]);
         const product = result.rows;
@@ -100,7 +98,7 @@ async function getRelatedProductsById(productId: number): Promise<any[]> {
                         WHERE product_id = $1
                     )
                 )
-                AND status = '${types.PRODUCT_STATUS.ACTIVE}'
+                AND status = '${PRODUCT_STATUS.ACTIVE}'
                 AND is_deleted = FALSE
             LIMIT 10
         `;
@@ -116,12 +114,12 @@ async function getRelatedProductsById(productId: number): Promise<any[]> {
 
 // #### CONTROLLER FUNCTIONS ####
 
-async function list(req: types.RequestCustom, res: express.Response) {
-    const parsedBody = types.productSchemas.productParamsRequest.safeParse(req.query);
+async function list(req: RequestCustom, res: express.Response) {
+    const parsedBody = schemas.product.paramsRequest.safeParse(req.query);
     if (!parsedBody.success) {
         return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
-    const params: types.ProductParamsRequest = parsedBody.data;
+    const params: ProductParamsRequest = parsedBody.data;
     console.log("Listing products with params:", params);
 
     let db: Client | undefined = undefined;
@@ -142,7 +140,7 @@ async function list(req: types.RequestCustom, res: express.Response) {
                 0 as votes
             FROM products
             WHERE name ILIKE $1
-                AND status = '${types.PRODUCT_STATUS.ACTIVE}'
+                AND status = '${PRODUCT_STATUS.ACTIVE}'
                 AND is_deleted = FALSE
                 AND ($4::numeric IS NULL OR price <= $4)
                 AND ($5::numeric IS NULL OR price >= $5)
@@ -159,7 +157,7 @@ async function list(req: types.RequestCustom, res: express.Response) {
         `;
         const limit = Number(process.env.PAGINATION_LIMIT);
         const offset = (params.page - 1) * limit;
-        const filter = params.filter as types.UserProductFilter;
+        const filter = params.filter as UserProductFilter;
         const categoriesId = await getAllCategoriesId(filter?.categories_id);
         const queryParams = [
             `%${params.keywords}%`,                         // $1
@@ -190,7 +188,7 @@ async function list(req: types.RequestCustom, res: express.Response) {
     }
 }
 
-async function getDetailById(req: types.RequestCustom, res: express.Response) {
+async function getDetailById(req: RequestCustom, res: express.Response) {
     const productId = Number(req.params.id);
     if (!productId || isNaN(productId)) {
         return res.status(400).send(util.response.authorError('users'));
@@ -212,7 +210,7 @@ async function getDetailById(req: types.RequestCustom, res: express.Response) {
     }
 }
 
-async function getRelatedProducts(req: types.RequestCustom, res: express.Response) {
+async function getRelatedProducts(req: RequestCustom, res: express.Response) {
     const productId = Number(req.params.id);
     if (!productId || isNaN(productId)) {
         return res.status(400).send(util.response.error('Product ID is required and must be a number'));

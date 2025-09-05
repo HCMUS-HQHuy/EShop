@@ -68,3 +68,11 @@ export enum PAYMENT_METHOD {
     BANK_TRANSFER = 'BANK_TRANSFER',
     PAYPAL = 'PAYPAL'
 };
+
+export enum PRODUCT_STATUS {
+    PENDING = 'PendingApproval',
+    REJECTED = 'Rejected',
+    ACTIVE = 'Active',
+    INACTIVE = 'Inactive',
+    BANNED = 'Banned'
+}
