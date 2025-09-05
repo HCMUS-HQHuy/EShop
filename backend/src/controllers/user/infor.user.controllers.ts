@@ -1,5 +1,5 @@
 import express from "express";
-import { RequestCustom } from "types/user.types";
+import { RequestCustom } from "types/index.types";
 import database from "database/index.database";
 import { Client } from "pg";
 import util from "utils/index.utils";

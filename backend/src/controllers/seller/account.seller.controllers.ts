@@ -2,14 +2,14 @@ import express from "express";
 
 import { Client } from "pg";
 import database from "database/index.database";
-
-import * as types from "types/index.types";
-import * as utils from "utils/index.utils";
 import util from "utils/index.utils";
+import schemas from "schemas/index.schema";
+
+import { ShopCreationRequest, RequestCustom } from "types/index.types";
 
 // #### DATABASE FUNCTIONS ####
 
-async function createSellerAccount(user_id: number, data: types.ShopCreationRequest) {
+async function createSellerAccount(user_id: number, data: ShopCreationRequest) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -32,15 +32,15 @@ async function createSellerAccount(user_id: number, data: types.ShopCreationRequ
 
 
 // #### CONTROLLER FUNCTIONS ####
-async function create(req: types.RequestCustom, res: express.Response) {
-    if (utils.isUser(req.user) === false) {
+async function create(req: RequestCustom, res: express.Response) {
+    if (util.role.isUser(req.user) === false) {
         return res.status(403).json(util.response.authorError('users'));
     }
-    if (utils.isSeller(req.user)) {
+    if (util.role.isSeller(req.user)) {
         return res.status(403).json(util.response.error('Sellers cannot create twice seller account.'));
     }
 
-    const parsedBody = types.shopSchemas.CreationRequest.safeParse({
+    const parsedBody = schemas.shop.creationRequest.safeParse({
         shop_name: req.body.shopName,
         shop_description: req.body.shopDescription,
         address: req.body.address,
@@ -49,10 +49,10 @@ async function create(req: types.RequestCustom, res: express.Response) {
     });
 
     if (!parsedBody.success) {
-        console.error("Invalid request data:", utils.formatError(parsedBody.error));
-        return res.status(400).send(util.response.error("Invalid request data", [utils.formatError(parsedBody.error)]));
+        console.error("Invalid request data:", util.formatError(parsedBody.error));
+        return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
-    const requestData: types.ShopCreationRequest = {
+    const requestData: ShopCreationRequest = {
         shop_name: parsedBody.data.shop_name,
         shop_description: parsedBody.data.shop_description,
         address: parsedBody.data.address,
@@ -69,8 +69,8 @@ async function create(req: types.RequestCustom, res: express.Response) {
     }
 }
 
-async function getInformation(req: types.RequestCustom, res: express.Response) {
-    if (utils.isSeller(req.user) === false) {
+async function getInformation(req: RequestCustom, res: express.Response) {
+    if (util.role.isSeller(req.user) === false) {
         return res.status(403).json(util.response.authorError("sellers"));
     }
 

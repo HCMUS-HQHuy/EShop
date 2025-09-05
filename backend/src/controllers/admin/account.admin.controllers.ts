@@ -1,15 +1,17 @@
 import express from "express";
 import { Client } from "pg";
+
+import util from "utils/index.utils";
+import schemas from "schemas/index.schema";
 import database from "database/index.database";
 
-import * as types from "types/index.types";
 import { SOCKET_EVENTS } from "constants/socketEvents";
-import util from "utils/index.utils";
-// #### VALIDATION FUNCTIONS ####
+import { UpdateUserStatusRequest, UpdateSellerStatusRequest } from "types/index.types";
+import { RequestCustom, SHOP_STATUS, ShopStatus, USER_STATUS, UserStatus } from "types/index.types";
 
 // #### DATABASE FUNCTIONS ####
 
-async function checkShopExist(data: types.AdminVerifySellerRequest): Promise<boolean> {
+async function checkShopExist(data: UpdateSellerStatusRequest): Promise<boolean> {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -29,8 +31,8 @@ async function checkShopExist(data: types.AdminVerifySellerRequest): Promise<boo
     }
 }
 
-async function checkUserCondition(data: types.BlockUnblockUserRequest): Promise<types.ValidationResult> {
-    const errors: Partial<Record<keyof types.BlockUnblockUserRequest, string>> = {};
+async function checkUserCondition(data: UpdateUserStatusRequest) {
+    const errors: Partial<Record<keyof UpdateUserStatusRequest, string>> = {};
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -38,7 +40,7 @@ async function checkUserCondition(data: types.BlockUnblockUserRequest): Promise<
             SELECT COUNT(*) FROM users 
             WHERE user_id = $1 AND status = $2
         `;
-        const status = data.status === types.USER_STATUS.BANNED ? types.USER_STATUS.ACTIVE : types.USER_STATUS.BANNED;
+        const status = data.status === USER_STATUS.BANNED ? USER_STATUS.ACTIVE : USER_STATUS.BANNED;
         const result = await db.query(sql, [data.user_id, status]);
         if (parseInt(result.rows[0].count, 10) === 0) {
             errors.user_id = "User account not found or not banned";
@@ -58,7 +60,7 @@ async function checkUserCondition(data: types.BlockUnblockUserRequest): Promise<
     };
 }
 
-async function updateShopStatus(shop_id: number, status: types.ShopStatus, rejectionReason?: string) {
+async function updateShopStatus(shop_id: number, status: ShopStatus, rejectionReason?: string) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -80,7 +82,7 @@ async function updateShopStatus(shop_id: number, status: types.ShopStatus, rejec
     }
 }
 
-async function updateUserStatus(userId: number, status: types.UserStatus) {
+async function updateUserStatus(userId: number, status: UserStatus) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -102,7 +104,7 @@ async function updateUserStatus(userId: number, status: types.UserStatus) {
 
 // #### CONTROLLER FUNCTIONS ####
 
-async function list(req: types.RequestCustom, res: express.Response) {
+async function list(req: RequestCustom, res: express.Response) {
     if (util.role.isAdmin(req.user) === false) {
         return res.status(403).json(util.response.authorError('Admin'));
     }
@@ -113,7 +115,7 @@ async function list(req: types.RequestCustom, res: express.Response) {
             SELECT u.user_id, u.username, s.shop_id, s.shop_name, s.status
             FROM users AS u
             LEFT JOIN shops AS s ON u.user_id = s.user_id
-            WHERE s.status = '${types.SHOP_STATUS.PENDING_VERIFICATION}'
+            WHERE s.status = '${SHOP_STATUS.PENDING_VERIFICATION}'
         `;
         const result = await db.query(sql);
         return res.status(200).json(result.rows);
@@ -130,7 +132,7 @@ async function list(req: types.RequestCustom, res: express.Response) {
 // This function handles the review of seller accounts by the admin
 // It validates the request data and updates the shop account status in the database
 // It updates the shop account status and optionally the rejection reason
-async function reviewShop(req: types.RequestCustom, res: express.Response) {
+async function reviewShop(req: RequestCustom, res: express.Response) {
     if (util.role.isAdmin(req.user) === false) {
         return res.status(403).json(util.response.authorError('Admin'));
     }
@@ -171,12 +173,11 @@ async function reviewShop(req: types.RequestCustom, res: express.Response) {
 
 // }
     // Validate the request body
-    const parsedBody = types.shopSchemas.AdminVerify.safeParse(req.body);
+    const parsedBody = schemas.shop.updateStatus.safeParse(req.body);
     if (!parsedBody.success) {
         return res.status(400).send(util.response.error('Invalid request data', [util.formatError(parsedBody.error)]));
     }
-    const data: types.AdminVerifySellerRequest = parsedBody.data;
-    // Check the shop status in the database
+    const data: UpdateSellerStatusRequest = parsedBody.data;
     try {
         if (await checkShopExist(data) === false) {
             return res.status(400).json(util.response.error('Invalid request', ['Shop does not exist']));
@@ -208,16 +209,16 @@ async function reviewShop(req: types.RequestCustom, res: express.Response) {
 // This function handles the review of user accounts by the admin
 // It validates the request data and updates the user status in the database
 // It updates the user status to either 'Active' or 'Banned'
-async function reviewUser(req: types.RequestCustom, res: express.Response) {
+async function reviewUser(req: RequestCustom, res: express.Response) {
     if (util.role.isAdmin(req.user) === false) {
         return res.status(403).json(util.response.authorError('Admin'));
     }
     // Validate the request body
-    const parsedBody = types.shopSchemas.BlockUnblock.safeParse(req.body);
+    const parsedBody = schemas.user.updateStatus.safeParse(req.body);
     if (!parsedBody.success) {
         return res.status(400).send(util.response.error('Invalid request data', [util.formatError(parsedBody.error)]));
     }
-    const data: types.BlockUnblockUserRequest = parsedBody.data;
+    const data: UpdateUserStatusRequest = parsedBody.data;
 
     // Check the user condition in the database
     try {

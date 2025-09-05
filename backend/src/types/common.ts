@@ -1,3 +1,7 @@
+import express from 'express';
+import { Server, DefaultEventsMap } from 'socket.io';
+import { UserInfor } from './index.types';
+
 export enum USER_ROLE {
     ADMIN = 'Admin',
     SELLER = 'Seller',
@@ -75,4 +79,9 @@ export enum PRODUCT_STATUS {
     ACTIVE = 'Active',
     INACTIVE = 'Inactive',
     BANNED = 'Banned'
+}
+
+export interface RequestCustom extends express.Request {
+    user?: UserInfor;
+    io?: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
 }

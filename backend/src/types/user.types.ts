@@ -1,5 +1,4 @@
-﻿import express from 'express';
-import { Server, DefaultEventsMap } from 'socket.io';
+﻿import schemas from 'schemas/index.schema';
 import z from 'zod'
 
 import { USER_ROLE, SHOP_STATUS } from "types/index.types"
@@ -13,11 +12,7 @@ const UserInforSchema = z.object({
 });
 
 export type UserInfor = z.infer<typeof UserInforSchema>;
-
-export interface RequestCustom extends express.Request {
-    user?: UserInfor;
-    io?: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
-}
+export type UpdateUserStatusRequest = z.infer<typeof schemas.user.updateStatus>;
 
 export const userSchemas = {
     infor: UserInforSchema
