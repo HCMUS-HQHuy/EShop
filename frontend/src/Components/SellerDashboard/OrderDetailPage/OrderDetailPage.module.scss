@@ -15,15 +15,15 @@
 }
 
 .headerInfo {
-    display: flex;
-    align-items: center;
-    gap: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .backLink {
-    color: var(--blue);
-    text-decoration: none;
-    font-weight: 500;
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 500;
 }
 
 h1 {
@@ -37,27 +37,33 @@ h1 {
   font-weight: 600;
   color: var(--white);
   
+  &.pending { background-color: var(--light-gray); }
   &.processing { background-color: var(--blue); }
   &.shipped { background-color: var(--orange-degree2); }
   &.delivered { background-color: var(--green); }
-  &.cancelled { background-color: var(--light-gray); }
+  &.cancelled { background-color: var(--skeleton-color1); }
 }
 
 .layoutGrid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 25px;
+  display: grid;
+  grid-template-columns: 2.5fr 1fr;
+  gap: 25px;
 }
 
 .card {
-    background-color: var(--white);
-    border-radius: 12px;
-    padding: 25px;
-    margin-bottom: 25px;
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+}
+
+.mainContent {
+  @extend .card;
+  min-height: calc(100vh - 300px);
 }
 
 .sideContent {
-    margin: 5px 0;
+  margin: 0px 0;
 }
 
 .statusSelector {
@@ -86,7 +92,6 @@ h1 {
 .itemsTable {
   width: 100%;
   border-collapse: collapse;
-
   th, td {
     padding: 16px 10px;
     text-align: left;
@@ -107,14 +112,14 @@ h1 {
   }
 
   // Căn chỉnh các cột
-  th:not(:first-child):not(.nameCol),
-  td:not(:first-child):not(.nameCol) {
+  th:not(:first-child),
+  td:not(:first-child) {
     text-align: right;
   }
 
-  .imageCol { width: 60px; }
-  .skuCol { width: 120px; }
-  .nameCol { text-align: left; }
+  .imageCol { width: 40px; }
+  .skuCol { width: 240px; }
+  .nameCol { text-align: right; }
   .totalCol { font-weight: 600; }
   
   img {
