@@ -117,19 +117,21 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
                 receiver_name, 
                 street_address, 
                 city, 
-                phone_number, 
+                phone_number,
                 email, 
                 total_amount, 
                 shipping_fee,
+                discount_amount,
                 final_amount,
                 created_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
             RETURNING order_id
         `;
         const orderCode = generateCode(String(orderData.userId));
         orderData.items = orderItems;
-        orderData.totalAmount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.priceAtPurchase * (100 - cur.discountAtPurchase) / 100), 0);
+        orderData.discountAmount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.priceAtPurchase * (cur.discountAtPurchase) / 100), 0);
+        orderData.totalAmount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number), 0) - orderData.discountAmount;
         const orderParams = [
             orderData.userId,
             orderData.shopId,
@@ -140,6 +142,7 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
             orderData.email,
             orderData.totalAmount,
             orderData.shippingFee,
+            orderData.discountAmount,
             orderData.finalAmount,
             orderData.orderAt
         ];
