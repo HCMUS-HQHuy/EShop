@@ -131,7 +131,7 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
         const orderCode = generateCode(String(orderData.userId));
         orderData.items = orderItems;
         orderData.discountAmount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.priceAtPurchase * (cur.discountAtPurchase) / 100), 0);
-        orderData.totalAmount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number), 0) - orderData.discountAmount;
+        orderData.totalAmount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number) * cur.priceAtPurchase, 0) - orderData.discountAmount;
         const orderParams = [
             orderData.userId,
             orderData.shopId,
@@ -189,7 +189,6 @@ orderWorker.on('completed', (job: Job) => {
     services.socket.sendMessageToUser(job.data.userId, SOCKET_EVENTS.REDIRECT, response);
 });
 
-// đoạn này cần xử lý thêm gì khi nó failed không? vì vẫn có TH nó failed nhưng không biết nó là từ job nào ?
 orderWorker.on('failed', (job: Job | undefined, err: Error) => {
     if (job) {
         services.socket.sendMessageToUser(job.data.userId, "order", err.message);
