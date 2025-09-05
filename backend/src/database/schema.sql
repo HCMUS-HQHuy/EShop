@@ -135,6 +135,7 @@ CREATE TABLE orders (
 
     total_amount DECIMAL(12, 2) NOT NULL,
     shipping_fee DECIMAL(12, 2) NOT NULL DEFAULT 0,
+    discount_amount DECIMAL(12, 2) NOT NULL DEFAULT 0,
     final_amount DECIMAL(12, 2) NOT NULL,
     
     status VARCHAR(20) NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Processing', 'Shipping', 'Delivered', 'Cancelled')),
