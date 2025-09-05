@@ -6,9 +6,15 @@ export enum USER_ROLE {
     USER = 'User'
 };
 
-export const SORT_ATTRIBUTES = ['name', 'created_at'] as const;
+export enum SORT_ATTRIBUTES {
+    NAME = 'name',
+    CREATED_AT = 'created_at',
+};
 
-export const SORT_ORDERS = ['asc', 'desc'] as const;
+export enum SORT_ORDERS {
+    ASC = 'asc',
+    DESC = 'desc',
+}
 
 export const ORDER_STATUSES = {
     PENDING: 'Pending',
@@ -32,8 +38,6 @@ export const USER_STATUS = {
 
 export type ShopStatus = typeof SHOP_STATUS[keyof typeof SHOP_STATUS];
 export type UserStatus = typeof USER_STATUS[keyof typeof USER_STATUS];
-export type SortAttribute = typeof SORT_ATTRIBUTES[number];
-export type SortOrder = typeof SORT_ORDERS[number];
 export type OrderStatus = typeof ORDER_STATUSES[keyof typeof ORDER_STATUSES];
 
 export interface ValidationResult {

@@ -1,5 +1,5 @@
 ﻿import { z } from 'zod';
-import * as types from 'types/common';
+import {SORT_ATTRIBUTES, SORT_ORDERS} from 'types/index.types';
 
 export type CategoryInfor = {
     categoryId: number;
@@ -8,7 +8,6 @@ export type CategoryInfor = {
     description: null | string;
     subCategories: CategoryInfor[];
 };
-
 
 const CategorySchema = z.object({
     name: z.string().min(3, 'Name is required'),
@@ -44,12 +43,12 @@ const CategoryFilterSchema = z.object({
 const CategoryParamsRequestSchema = z.object({
     keywords: z.string().default(process.env.SEARCH_KEYWORDS as string),
     page: z.number().int().positive().default(Number(process.env.PAGINATION_DEFAULT_PAGE)),
-    sortAttribute: z.enum(types.SORT_ATTRIBUTES, {
-        error: `Invalid sort attribute: must be ${types.SORT_ATTRIBUTES.join(' or ')}`,
-    }).default(process.env.SORT_ATTRIBUTE as types.SortAttribute),
-    sortOrder: z.enum(types.SORT_ORDERS, {
-        error: `Invalid sort order: must be ${types.SORT_ORDERS.join(' or ')}`,
-    }).default(process.env.SORT_ORDER as types.SortOrder),
+    sortAttribute: z.enum(SORT_ATTRIBUTES, {
+        error: `Invalid sort attribute: must be ${SORT_ATTRIBUTES}`,
+    }).default(process.env.SORT_ATTRIBUTE as SORT_ATTRIBUTES),
+    sortOrder: z.enum(SORT_ORDERS, {
+        error: `Invalid sort order: must be ${SORT_ORDERS}`,
+    }).default(process.env.SORT_ORDER as SORT_ORDERS),
     filter: CategoryFilterSchema.optional(),
 });
 

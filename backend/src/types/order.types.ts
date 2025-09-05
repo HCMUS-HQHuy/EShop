@@ -1,5 +1,5 @@
 ﻿import { z } from 'zod';
-import { PAYMENT_METHOD } from './common';
+import { PAYMENT_METHOD } from './index.types';
 
 export const OrderItemSchema = z.object({
     orderId: z.coerce.number().int().positive('Order ID must be a positive integer'),

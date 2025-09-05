@@ -1,5 +1,5 @@
 ﻿import { z } from 'zod';
-import * as types from 'types/common';
+import {SORT_ATTRIBUTES, SORT_ORDERS} from 'types/index.types';
 
 export const PRODUCT_STATUS = {
     PENDING: 'PendingApproval',
@@ -67,12 +67,12 @@ const ProductFilterSchema = z.union([
 const ProductParamsRequestSchema = z.object({
     keywords: z.optional(z.string().min(1, "Keywords must not be empty")).default(process.env.SEARCH_KEYWORDS),
     page: z.coerce.number().int().min(1, "Page must be greater than 0").default(Number(process.env.PAGINATION_DEFAULT_PAGE)),
-    sortAttribute: z.enum(types.SORT_ATTRIBUTES, {
+    sortAttribute: z.enum(SORT_ATTRIBUTES, {
         error: "Invalid sort attribute: must be 'name' or 'created_at'"
-    }).default('name'),
-    sortOrder: z.enum(types.SORT_ORDERS, {
+    }).default(SORT_ATTRIBUTES.NAME),
+    sortOrder: z.enum(SORT_ORDERS, {
         error: "Invalid sort order: must be 'asc' or 'desc'"
-    }).default(process.env.SORT_ORDER as types.SortOrder),
+    }).default(process.env.SORT_ORDER as SORT_ORDERS),
     filter: ProductFilterSchema.optional()
 });
 
