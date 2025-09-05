@@ -92,9 +92,10 @@ const CheckoutPage = () => {
       orderAt: new Date().toISOString(),
     };
     console.log("Submitting order data:", data);
-    api.order
-      .create(data)
-      .then(() => {
+    api.user
+      .createOrder(data)
+      .then((response) => {
+        console.log("Order created successfully:", response);
         finalizeOrder(dispatch, t);
       }).catch((error) => {
         console.error("Error creating order:", error);

@@ -12,7 +12,9 @@ const user = {
   resetPassword: (data: ResetPasswordFormValues) => api.post(`/auth/reset-password`, data),
   logout: () => api.post("/auth/logout"),
   getInfor: () => api.get(`/user/getinfor`),
+  createOrder: (orderData: any) => api.post('user/orders/create', orderData),
   getOrders: () => api.get(`/user/orders`),
+  
 };
 
 export default user;

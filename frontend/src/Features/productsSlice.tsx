@@ -76,8 +76,9 @@ const productsSlice = createSlice({
       localStorage.setItem(key, JSON.stringify(state[key]));
     },
     transferCartToOrder: (state) => {
-      state.orderProducts = state.orderProducts.concat(state.cartProducts.map(product => ({ ...product, status: ORDER_STATUS.PENDING })));
+      // state.orderProducts = state.orderProducts.concat(state.cartProducts.map(product => ({ ...product, status: ORDER_STATUS.PENDING })));
       state.cartProducts = [];
+      localStorage.removeItem(STORAGE_KEYS.CART_PRODUCTS);
     }
   },
   extraReducers: (builder) => {
