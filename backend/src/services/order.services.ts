@@ -26,7 +26,8 @@ async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Pr
             SELECT
                 p.product_id,
                 c.quantity,
-                p.price * (100 - p.discount) / 100 AS price_after_discount
+                p.price,
+                p.discount
             FROM
                 cart_data c
             JOIN
@@ -46,7 +47,8 @@ async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Pr
             orderId: 0, // placeholder, will be set when inserting order
             productId: row.product_id,
             quantity: row.quantity,
-            priceAtPurchase: row.price_after_discount
+            priceAtPurchase: row.price,
+            discountAtPurchase: row.discount
         }));
         return order_item;
     } catch(error) {
@@ -57,7 +59,6 @@ async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Pr
 
 async function reduceStockQuantities(orderItems: types.OrderItemRequest[], db: Client): Promise<void> {
     console.log(`Reducing stock for ${orderItems.length} products...`);
-    // Dùng CASE để cập nhật nhiều hàng với các giá trị khác nhau trong một câu lệnh
     const sql = `
         UPDATE products
         SET stock_quantity = stock_quantity - data.quantity
@@ -128,7 +129,7 @@ async function processOrder(job: Job<types.CreatingOrderRequest>) {
         `;
         const orderCode = generateCode(String(orderData.userId));
         orderData.items = orderItems;
-        orderData.totalAmount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.priceAtPurchase), 0);
+        orderData.totalAmount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.priceAtPurchase * (100 - cur.discountAtPurchase) / 100), 0);
         const orderParams = [
             orderData.userId,
             orderData.shopId,
