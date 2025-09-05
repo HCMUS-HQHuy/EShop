@@ -1,19 +1,24 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import s from './ManageOrders.module.scss';
 import { formatDateTime } from 'src/Functions/formatting.ts';
+import api from 'src/Api/index.api.ts';
+import type { ORDER_STATUS } from 'src/Types/common.ts';
 
 // Dữ liệu giả - sau này sẽ lấy từ API
-const mockOrders = [
-  { id: 'ORD-1234', orderId: 1234, customer: 'John Doe', date: '2025-09-05T10:30:00Z', total: 150.00, status: 'Processing' },
-  { id: 'ORD-1235', orderId: 1235, customer: 'Jane Smith', date: '2025-09-05T09:15:00Z', total: 75.50, status: 'Shipped' },
-  { id: 'ORD-1236', orderId: 1236, customer: 'Peter Jones', date: '2025-09-04T15:00:00Z', total: 250.00, status: 'Delivered' },
-  { id: 'ORD-1237', orderId: 1237, customer: 'Alice Williams', date: '2025-09-03T11:00:00Z', total: 35.20, status: 'Cancelled' },
-];
+
+type Order = {
+  id: string;
+  orderId: number;
+  customer: string;
+  date: string;
+  total: number;
+  status: ORDER_STATUS;
+};
 
 const ManageOrders = () => {
   const navigate = useNavigate();
-  const [orders, setOrders] = useState(mockOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [activeTab, setActiveTab] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -26,6 +31,17 @@ const ManageOrders = () => {
       );
   }, [orders, activeTab, searchTerm]);
   
+  useEffect(() => {
+    api.seller.getOrders()
+      .then(orders => {
+        console.log("Fetched orders:", orders);
+        setOrders(orders);
+      })
+      .catch(err => {
+        console.error("Error fetching orders:", err);
+      });
+  }, []);
+
   const handleViewDetails = (orderId: number) => {
     navigate(`/seller/orders/${orderId}`);
   };
@@ -69,7 +85,7 @@ const ManageOrders = () => {
             </thead>
             <tbody>
               {filteredOrders.map(order => (
-                <tr key={order.id}>
+                <tr key={order.orderId}>
                   <td className={s.orderId} onClick={() => handleViewDetails(order.orderId)}>#{order.orderId}</td>
                   <td>{new Date(order.date).toLocaleDateString()}</td>
                   <td>{order.customer}</td>

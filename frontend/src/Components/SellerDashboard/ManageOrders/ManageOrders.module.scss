@@ -73,11 +73,11 @@ table {
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--white);
-  
+  &.pending { background-color: var(--light-gray); }
   &.processing { background-color: var(--blue); }
   &.shipped { background-color: var(--orange-degree2); }
   &.delivered { background-color: var(--green); }
-  &.cancelled { background-color: var(--light-gray); }
+  &.cancelled { background-color: var(--skeleton-color1); }
 }
 
 .actionBtn {

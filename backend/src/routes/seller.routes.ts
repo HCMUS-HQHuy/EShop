@@ -25,5 +25,8 @@ router.put('/products/:id/update',      mid.switchRole, mid.upload.addProduct, c
 router.put('/products/:id/hide',        mid.switchRole, controller.seller.product.hide);
 router.put('/products/:id/display',     mid.switchRole, controller.seller.product.display);
 
+// #### ORDER ROUTES ####
+router.get('/orders', mid.switchRole, controller.seller.order.fetchList);
+
 
 export default router;
