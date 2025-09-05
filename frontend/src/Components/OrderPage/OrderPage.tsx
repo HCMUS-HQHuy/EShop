@@ -9,8 +9,6 @@ import OrderPageButtons from "./OrderPageButtons/OrderPageButtons.tsx";
 const OrderPage = () => {
   const { t } = useTranslation();
 
-  useScrollOnMount(200);
-
   return (
     <div className="container">
       <main className={s.orderPage}>

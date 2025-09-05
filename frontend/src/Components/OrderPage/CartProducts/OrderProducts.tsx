@@ -3,12 +3,15 @@ import { useSelector } from "react-redux";
 import OrderProduct from "./OrderProduct.tsx";
 import s from "./OrderProducts.module.scss";
 import type { RootState } from "src/Types/store.ts";
+import OrderHistory from "./OrderHistory.tsx";
 
 const OrderProducts = () => {
   const { t } = useTranslation();
   const { orderProducts } = useSelector((state: RootState) => state.products);
   console.log("Order Products:", orderProducts);
   const productsTable = "cartPage.productsTable";
+
+  return <OrderHistory />;
 
   return (
     <table className={s.orderProducts}>
@@ -24,7 +27,7 @@ const OrderProducts = () => {
 
       <tbody>
         {orderProducts?.map((product) => (
-          <OrderProduct key={product.id} data={product} />
+          <OrderProduct key={product.orderId} data={product} />
         ))}
       </tbody>
     </table>
