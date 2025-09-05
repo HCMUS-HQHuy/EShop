@@ -10,13 +10,18 @@ import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow.tsx";
 import SvgIcon from "../../Shared/MiniComponents/SvgIcon.tsx";
 import ToolTip from "../../Shared/MiniComponents/ToolTip.tsx";
 import s from "./ConfirmOrderProductBtn.module.scss";
-import type { RootState } from "src/Types/store.ts";
+import type { AppDispatch, RootState } from "src/Types/store.ts";
 
-const ConfirmOrderProductBtn = ({ productName, translatedProduct }) => {
+type Props = {
+  productName: string;
+  translatedProduct: string;
+};
+
+const ConfirmOrderProductBtn = ({ productName, translatedProduct }: Props) => {
   const { isAlertActive, confirmPurpose } = useSelector(
     (state: RootState) => state.alerts
   ).confirm;
-  const { removeOrderProduct } = useSelector((state) => state.products);
+  const { removeOrderProduct } = useSelector((state: RootState) => state.products);
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const { windowWidth } = useGetResizeWindow();
@@ -68,7 +73,7 @@ const ConfirmOrderProductBtn = ({ productName, translatedProduct }) => {
 };
 export default ConfirmOrderProductBtn;
 
-function showConfirmAlert(dispatch, productName, t, translatedProduct) {
+function showConfirmAlert(dispatch: AppDispatch, productName: string, t: any, translatedProduct: string) {
   dispatch(
     showAlert({
       alertText: t("toastAlert.confirmOrderProduct", {
@@ -86,7 +91,6 @@ function showConfirmAlert(dispatch, productName, t, translatedProduct) {
       value: REMOVE_ORDER_PRODUCT,
     })
   );
-
   dispatch(
     updateProductsState({ key: "removeOrderProduct", value: productName })
   );

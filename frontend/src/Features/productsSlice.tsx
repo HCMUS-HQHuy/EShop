@@ -89,6 +89,7 @@ const productsSlice = createSlice({
         console.log("Products fetched successfully.", action.payload);
         state.productsList = [...action.payload.products];
         state.orderProducts = [...action.payload.orders];
+        console.log("Orders fetched successfully.", state.orderProducts, state.productsList);
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         console.error("Failed to fetch products:", action.payload);

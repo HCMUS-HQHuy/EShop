@@ -37,18 +37,16 @@ type ProductType = {
 }
 
 type ProductOrderType = {
-  id: number;
+  orderId: number;
   shopId: number;
-  shortName: string;
   name: string;
   price: string;
-  discount: string;
   afterDiscount: string;
-  orderAt: string;
   img: string;
   quantity: number;
   status: string;
-}
+  orderAt: null;
+};
 
 type Color = {
   name: string;

@@ -1,13 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { CLEAR_ORDER_PRODUCTS, REMOVE_ORDER_PRODUCT } from "src/Data/constants";
-import { updateAlertState } from "src/Features/alertsSlice";
-import { removeByKeyName, setEmptyArrays } from "src/Features/productsSlice";
+import { CLEAR_ORDER_PRODUCTS, REMOVE_ORDER_PRODUCT } from "src/Data/constants.tsx";
+import { updateAlertState } from "src/Features/alertsSlice.tsx";
+import { removeByKeyName, setEmptyArrays } from "src/Features/productsSlice.tsx";
 import s from "./ToastConfirmButtons.module.scss";
+import type { AppDispatch, RootState } from "src/Types/store.ts";
 
 const ToastConfirmButtons = () => {
-  const { confirmPurpose } = useSelector((state) => state.alerts.confirm);
-  const { removeOrderProduct } = useSelector((state) => state.products);
+  const { confirmPurpose } = useSelector((state: RootState) => state.alerts.confirm);
+  const { removeOrderProduct } = useSelector((state: RootState) => state.products);
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -43,7 +44,7 @@ const ToastConfirmButtons = () => {
 };
 export default ToastConfirmButtons;
 
-function removeFromOrder(dispatch, removeOrderProduct) {
+function removeFromOrder(dispatch: AppDispatch, removeOrderProduct: string) {
   dispatch(
     removeByKeyName({
       dataKey: "orderProducts",
@@ -53,6 +54,6 @@ function removeFromOrder(dispatch, removeOrderProduct) {
   );
 }
 
-function removeAllOrder(dispatch) {
+function removeAllOrder(dispatch: AppDispatch) {
   dispatch(setEmptyArrays({ keys: ["orderProducts"] }));
 }

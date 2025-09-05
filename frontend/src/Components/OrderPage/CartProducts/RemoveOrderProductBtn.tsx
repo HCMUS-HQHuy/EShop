@@ -1,19 +1,25 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { REMOVE_ORDER_PRODUCT } from "src/Data/constants";
-import { SCREEN_SIZES } from "src/Data/globalVariables";
-import { showAlert, updateAlertState } from "src/Features/alertsSlice";
-import { updateProductsState } from "src/Features/productsSlice";
-import { cartProductToolTipPos } from "src/Functions/tooltipPositions";
-import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow";
-import SvgIcon from "../../Shared/MiniComponents/SvgIcon";
-import ToolTip from "../../Shared/MiniComponents/ToolTip";
+import { REMOVE_ORDER_PRODUCT } from "src/Data/constants.tsx";
+import { SCREEN_SIZES } from "src/Data/globalVariables.tsx";
+import { showAlert, updateAlertState } from "src/Features/alertsSlice.tsx";
+import { updateProductsState } from "src/Features/productsSlice.tsx";
+import { cartProductToolTipPos } from "src/Functions/tooltipPositions.ts";
+import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow.tsx";
+import SvgIcon from "../../Shared/MiniComponents/SvgIcon.tsx";
+import ToolTip from "../../Shared/MiniComponents/ToolTip.tsx";
 import s from "./RemoveOrderProductBtn.module.scss";
+import type { AppDispatch, RootState } from "src/Types/store.ts";
 
-const RemoveOrderProductBtn = ({ productName, translatedProduct }) => {
-  const { removeOrderProduct } = useSelector((state) => state.products);
-  const { isAlertActive } = useSelector((state) => state.alerts).confirm;
+type Props = {
+  productName: string;
+  translatedProduct: string;
+}
+
+const RemoveOrderProductBtn = ({ productName, translatedProduct }: Props) => {
+  const { removeOrderProduct } = useSelector((state: RootState) => state.products);
+  const { isAlertActive } = useSelector((state : RootState) => state.alerts).confirm;
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const { windowWidth } = useGetResizeWindow();
@@ -63,7 +69,7 @@ const RemoveOrderProductBtn = ({ productName, translatedProduct }) => {
 };
 export default RemoveOrderProductBtn;
 
-function showConfirmAlert(dispatch, productName, t, translatedProduct) {
+function showConfirmAlert(dispatch: AppDispatch, productName: string, t: any, translatedProduct: string) {
   dispatch(
     showAlert({
       alertText: t("toastAlert.removeOrderProduct", {
