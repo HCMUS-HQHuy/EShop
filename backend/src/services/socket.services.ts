@@ -2,11 +2,12 @@ import { Server, Socket, DefaultEventsMap } from 'socket.io';
 import jwt from "jsonwebtoken";
 import { Client } from 'pg';
 
-import { SOCKET_EVENTS } from 'constants/socketEvents';
-import { SOCKET_NAMESPACE } from 'types/index.types';
-import { UserInfor, userSchemas } from 'types/index.types';
-import database from 'database/index.database';
 import * as cookie from 'cookie';
+
+import schemas from 'schemas/index.schema';
+import database from 'database/index.database';
+import { SOCKET_EVENTS } from 'constants/socketEvents';
+import { UserInfor } from 'types/index.types';
 
 export interface SocketCustom extends Socket{
     user?: UserInfor;
@@ -25,7 +26,7 @@ async function auth(socket: SocketCustom, next: (err?: Error) => void) {
             return next(new Error('Authentication error: No token found.'));
         }
         const payload = jwt.verify(token, process.env.JWT_SECRET as string);
-        const parsed = userSchemas.infor.safeParse(payload);
+        const parsed = schemas.user.infor.safeParse(payload);
         if (parsed.success === false) {
             return next(new Error('Authentication error: Invalid token.'));
         }
