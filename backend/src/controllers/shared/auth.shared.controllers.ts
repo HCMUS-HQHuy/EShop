@@ -2,10 +2,14 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { Client } from "pg";
 import crypto from "crypto";
+
 import database from "database/index.database";
-import * as types from "types/index.types";
 import util from "utils/index.utils";
 import services from "services/index.services";
+import schemas from "schemas/index.schema";
+
+import { USER_ROLE } from "types/index.types";
+import { LoginForm, RegisterForm, UserInfor } from "types/index.types";
 
 async function insertIntoTokens(db: Client, userId: number, token: string) {
     const sql = `
@@ -42,11 +46,11 @@ async function validateToken(req: express.Request, res: express.Response) {
 }
 
 async function login(req: express.Request, res: express.Response) {
-    const parsedBody = types.autheFormSchemas.userCredentials.safeParse(req.body);
+    const parsedBody = schemas.form.login.safeParse(req.body);
     if (!parsedBody.success) {
         return res.status(200).json(util.response.zodValidationError(parsedBody.error));
     }
-    const credential: types.UserCredentials = parsedBody.data;
+    const credential: LoginForm = parsedBody.data;
 
     let db: Client | undefined = undefined;
     try {
@@ -63,7 +67,7 @@ async function login(req: express.Request, res: express.Response) {
         if (!util.password.compare(credential.password, password)) {
             return res.status(401).json(util.response.error("Invalid credentials"));
         }
-        const user: types.UserInfor = result.rows[0];
+        const user: UserInfor = result.rows[0];
         const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1y" }); // 1y = 1 year for testing purposes
         res.cookie("auth_jwt", token, {
             path: "/",
@@ -80,12 +84,12 @@ async function login(req: express.Request, res: express.Response) {
 }
 
 async function registerUser(req: express.Request, res: express.Response) {
-    const parsedBody = types.autheFormSchemas.userRegistration.safeParse(req.body);
+    const parsedBody = schemas.form.register.safeParse(req.body);
     if (!parsedBody.success) {
         console.error("Validation error:", req.body, parsedBody.error);
         return res.status(400).json(util.response.zodValidationError(parsedBody.error));
     }
-    const registrationData: types.UserRegistration = parsedBody.data;
+    const registrationData: RegisterForm = parsedBody.data;
 
     let db: Client | undefined = undefined;
     try {
@@ -124,7 +128,7 @@ async function registerUser(req: express.Request, res: express.Response) {
             username,
             hashedPassword,
             email,
-            types.USER_ROLE.USER
+            USER_ROLE.USER
         ]);
         const userId: number = result.rows[0].user_id;
 

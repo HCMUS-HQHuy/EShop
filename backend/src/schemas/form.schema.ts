@@ -37,10 +37,8 @@ export const UserRegistrationSchema = UserCredentialsSchema.extend({
     }),
 });
 
-// Type definitions
-export type UserCredentials = z.infer<typeof UserCredentialsSchema>;
-export type UserRegistration = z.infer<typeof UserRegistrationSchema>;
-export const autheFormSchemas = {
-  userCredentials: UserCredentialsSchema,
-  userRegistration: UserRegistrationSchema,
-};
+const form = {
+    login: UserCredentialsSchema,
+    register: UserRegistrationSchema,
+}
+export default form;
