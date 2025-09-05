@@ -11,8 +11,8 @@ const OrderHistory = () => {
     const { t } = useTranslation();
     const ordersData = useSelector((state: RootState) => state.products.orderProducts) as OrderType[];
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
-    const [expandedOrders, setExpandedOrders] = useState<Set<number>>(new Set());
-    
+    const [expandedOrders, setExpandedOrders] = useState<number | null>(null);
+
     const orderStatusLabels = "orderHistory.status";
 
     const filteredOrders = selectedStatus === 'all'
@@ -20,13 +20,11 @@ const OrderHistory = () => {
         : ordersData.filter((order: OrderType) => order.status === selectedStatus);
 
     const toggleOrderDetails = (orderId: number) => {
-        const newExpandedOrders = new Set(expandedOrders);
-        if (newExpandedOrders.has(orderId)) {
-            newExpandedOrders.delete(orderId);
+        if (expandedOrders === orderId) {
+            setExpandedOrders(null);
         } else {
-            newExpandedOrders.add(orderId);
+            setExpandedOrders(orderId);
         }
-        setExpandedOrders(newExpandedOrders);
     };
 
     const formatDate = (dateString: string) => {
@@ -60,7 +58,7 @@ const OrderHistory = () => {
             ) : (
                 <div className={s.ordersContainer}>
                     {filteredOrders.map((order: OrderType) => {
-                        const isExpanded = expandedOrders.has(order.orderId);
+                        const isExpanded = expandedOrders === order.orderId;
 
                         return (
                             <div key={order.orderId} className={s.orderCard}>
