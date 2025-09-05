@@ -27,6 +27,6 @@ router.put('/products/:id/display',     mid.switchRole, controller.seller.produc
 
 // #### ORDER ROUTES ####
 router.get('/orders', mid.switchRole, controller.seller.order.fetchList);
-
+router.get('/orders/:orderId', mid.switchRole, controller.seller.order.fetchDetails);
 
 export default router;

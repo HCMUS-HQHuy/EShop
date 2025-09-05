@@ -25,6 +25,7 @@ export const CreatingOrderSchema = z.object({
     email: z.string().email('Invalid email format'),
     totalAmount: z.coerce.number().min(0, 'Total amount must be a non-negative number'),
     shippingFee: z.coerce.number().min(0, 'Shipping fee must be a non-negative number'),
+    discountAmount: z.coerce.number().min(0, 'Discount amount must be a non-negative number').optional(),
     finalAmount: z.coerce.number().min(0, 'Final amount must be a non-negative number'),
     items: z.array(ItemInCartSchema).min(1, 'At least one order item is required'),
     orderAt: z.string().datetime({ offset: true }).nonempty(),
