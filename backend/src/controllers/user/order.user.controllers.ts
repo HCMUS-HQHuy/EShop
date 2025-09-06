@@ -2,9 +2,9 @@ import express from "express";
 import { Client } from "pg";
 import services from "services/index.services";
 import database from "database/index.database";
-import { OrderType, RequestCustom } from "types/index.types";
-import { OrderSchema, CreatingOrderRequest } from "types/index.types";
+import { OrderType, RequestCustom, CreatingOrderRequest } from "types/index.types";
 import util from "utils/index.utils";
+import schemas from "schemas/index.schema";
 
 // #### ORDER CONTROLLER ####
 
@@ -13,7 +13,7 @@ async function create(req: RequestCustom, res: express.Response) {
         return res.status(403).json(util.response.authorError('users'));
     }
     console.log(req.body);
-    const parsedBody = OrderSchema.creating.safeParse({
+    const parsedBody = schemas.order.creating.safeParse({
         ...req.body,
         userId: req.user?.user_id
     });

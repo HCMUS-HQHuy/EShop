@@ -3,13 +3,15 @@ import user from "./user.schema";
 import shop from "./shop.schema";
 import form from "./form.schema";
 import category from "./category.schema";
+import order from "./order.schema";
 
 const schemas = {
     product,
     user,
     shop,
     form,
-    category
+    category,
+    order
 };
 
 export default schemas;
