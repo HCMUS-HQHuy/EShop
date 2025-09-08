@@ -1,5 +1,30 @@
+# Node & deps
 node_modules
 npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+
+# TS build output
+dist
+build
+
+# Docker files (chỉ copy khi cần)
+docker-compose*.yml
 Dockerfile
-docker-compose.yml
-bin
+
+# Git
+.git
+.gitignore
+
+# Env files (nên copy thủ công nếu cần)
+.env
+.env.*
+!env.example   # giữ lại file ví dụ để reference
+
+# IDE / system
+.vscode
+.idea
+.DS_Store
+
+# Uploads (nếu muốn mount volume thay vì copy vào image)
+uploads
