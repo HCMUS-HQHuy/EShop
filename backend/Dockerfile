@@ -4,6 +4,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build
+RUN npm run start:build
 EXPOSE 8220
-CMD ["npm", "run", "start:build"]
+CMD ["npm", "run", "start:run"]
