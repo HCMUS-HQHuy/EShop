@@ -6,4 +6,4 @@ RUN npm install
 COPY . .
 RUN npm run start:build
 EXPOSE 8220
-CMD ["npm", "run", "start:run"]
+CMD ["npm", "run", "dev"]
