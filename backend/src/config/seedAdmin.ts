@@ -6,11 +6,10 @@ import * as utils from 'src/utils/index.utils';
 
 export default async function seedAdmin() {
     let db: Client | undefined = undefined;
-
     try {
         db = await database.getConnection();
         const checkQuery = `
-            SELECT * FROM users 
+            SELECT * FROM users
             WHERE username = $1 AND role = 'Admin'
         `;
         const result = await db.query(checkQuery, [env.DB_ADMIN_USERNAME]);
@@ -21,15 +20,14 @@ export default async function seedAdmin() {
         }
 
         const insertQuery = `
-            INSERT INTO users (username, password, email, fullname, role)
-            VALUES ($1, $2, $3, $4, 'Admin')
+            INSERT INTO users (username, password, email, role)
+            VALUES ($1, $2, $3, 'Admin')
         `;
         const password = utils.hashPassword(env.DB_ADMIN_PASSWORD as string);
         await db.query(insertQuery, [
             env.DB_ADMIN_USERNAME,
             password,
-            env.DB_ADMIN_EMAIL,
-            'System Administrator',
+            env.DB_ADMIN_EMAIL
         ]);
         console.log('Admin user created successfully.');
     } catch (error) {

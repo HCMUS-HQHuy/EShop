@@ -1,5 +1,7 @@
+if (process.env.NODE_ENV !== 'production') {
+    require('module-alias/register');
+}
 import 'dotenv/config'
-import 'module-alias/register';
 import express from "express";
 import http from 'http';
 import { Server } from 'socket.io'

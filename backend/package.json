@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "nodemon -L",
     "start:build": "tsc",
-    "start:run": "node bin/index.js"
+    "start:run": "node -r tsconfig-paths/register bin/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -36,7 +36,6 @@
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "module-alias": "^2.2.3",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.5",

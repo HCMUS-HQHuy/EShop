@@ -13,7 +13,6 @@ const dbConfig = {
 };
 
 async function getConnection(): Promise<Client> {
-    console.log("Connecting to database with config:");
     try {
         if (!dbConfig.host || !dbConfig.user || !dbConfig.database) {
             throw new Error("Incomplete database configurations");
