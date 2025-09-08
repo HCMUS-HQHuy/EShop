@@ -1,37 +1,57 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
     container_name: postgres
     restart: always
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
-      POSTGRES_DB: EShop
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/data/db
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@local.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
-    ports:
-      - "8080:80"
-    depends_on:
-      - db
-      
   redis:
     image: redis:7
     container_name: redis
     restart: always
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
+    environment:
+      REDIS_PORT: ${REDIS_PORT}
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: always
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+    environment:
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: ${REDIS_PORT}
+      PORT: ${PORT}
+      API_PREFIX: ${API_PREFIX}
+      JWT_SECRET: ${JWT_SECRET}
+
+      MOMO_ACCESS_KEY: ${MOMO_ACCESS_KEY}
+      MOMO_SECRET_KEY: ${MOMO_SECRET_KEY}
+
+      GMAIL_USER: ${GMAIL_USER}
+      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
+    depends_on:
+      - db
+      - redis
 
 volumes:
   postgres_data:
