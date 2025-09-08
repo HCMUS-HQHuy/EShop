@@ -4,11 +4,10 @@
     "module": "commonjs",
     "outDir": "./bin",
     "rootDir": "./src",
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "uploads/*": ["../uploads/*"]
+      "src/*": ["src/*"]
     },
-    
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

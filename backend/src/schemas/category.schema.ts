@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import {SORT_ATTRIBUTES, SORT_ORDERS} from 'types/index.types';
+import {SORT_ATTRIBUTES, SORT_ORDERS} from 'src/types/index.types';
 
 const CategoryUpdateSchema = z.object({
     name: z.string().min(1, 'Name is required'),

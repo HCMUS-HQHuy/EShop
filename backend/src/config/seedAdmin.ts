@@ -1,8 +1,8 @@
 import { Client } from 'pg';
-import database from '../database/index.database';
+import database from 'src/database/index.database';
 import { env } from 'process';
 
-import * as utils from '../utils/index.utils';
+import * as utils from 'src/utils/index.utils';
 
 export default async function seedAdmin() {
     let db: Client | undefined = undefined;

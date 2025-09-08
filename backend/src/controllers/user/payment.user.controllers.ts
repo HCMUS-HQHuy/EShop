@@ -1,6 +1,6 @@
 import express from 'express';
-import * as types from 'types/index.types';
-import database from 'database/index.database';
+import * as types from 'src/types/index.types';
+import database from 'src/database/index.database';
 import { Client } from 'pg';
 
 async function announce(req: types.RequestCustom, res: express.Response) {

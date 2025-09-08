@@ -1,9 +1,9 @@
 import express from 'express';
-import util from 'utils/index.utils';
+import util from 'src/utils/index.utils';
 import { Client } from 'pg';
-import database from 'database/index.database';
-import SOCKET_EVENTS from 'constants/socketEvents';
-import { USER_ROLE, ConversationMessageType, RequestCustom } from 'types/index.types';
+import database from 'src/database/index.database';
+import SOCKET_EVENTS from 'src/constants/socketEvents';
+import { USER_ROLE, ConversationMessageType, RequestCustom } from 'src/types/index.types';
 
 async function createConversation(req: RequestCustom, res: express.Response) {
     if (util.role.isGuest(req.user)) {

@@ -1,6 +1,6 @@
-import account from "controllers/admin/account.admin.controllers";
-import category from "controllers/admin/categories.admin.controllers";
-import product from "controllers/admin/products.admin.controllers";
+import account from "src/controllers/admin/account.admin.controllers";
+import category from "src/controllers/admin/categories.admin.controllers";
+import product from "src/controllers/admin/products.admin.controllers";
 
 const admin = {
     account,

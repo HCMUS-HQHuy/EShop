@@ -1,13 +1,13 @@
 import express from "express";
 import { Client } from "pg";
 
-import util from "utils/index.utils";
-import schemas from "schemas/index.schema";
-import database from "database/index.database";
+import util from "src/utils/index.utils";
+import schemas from "src/schemas/index.schema";
+import database from "src/database/index.database";
 
-import { SOCKET_EVENTS } from "constants/socketEvents";
-import { UpdateUserStatusRequest, UpdateSellerStatusRequest } from "types/index.types";
-import { RequestCustom, SHOP_STATUS, ShopStatus, USER_STATUS, UserStatus } from "types/index.types";
+import { SOCKET_EVENTS } from "src/constants/socketEvents";
+import { UpdateUserStatusRequest, UpdateSellerStatusRequest } from "src/types/index.types";
+import { RequestCustom, SHOP_STATUS, ShopStatus, USER_STATUS, UserStatus } from "src/types/index.types";
 
 // #### DATABASE FUNCTIONS ####
 

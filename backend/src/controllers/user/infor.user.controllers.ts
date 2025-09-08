@@ -1,8 +1,8 @@
 import express from "express";
-import { RequestCustom } from "types/index.types";
-import database from "database/index.database";
+import { RequestCustom } from "src/types/index.types";
+import database from "src/database/index.database";
 import { Client } from "pg";
-import util from "utils/index.utils";
+import util from "src/utils/index.utils";
 
 // #### CONTROLLER FUNCTIONS ####
 

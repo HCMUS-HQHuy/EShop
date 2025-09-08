@@ -3,13 +3,13 @@ import jwt from "jsonwebtoken";
 import { Client } from "pg";
 import crypto from "crypto";
 
-import database from "database/index.database";
-import util from "utils/index.utils";
-import services from "services/index.services";
-import schemas from "schemas/index.schema";
+import database from "src/database/index.database";
+import util from "src/utils/index.utils";
+import services from "src/services/index.services";
+import schemas from "src/schemas/index.schema";
 
-import { USER_ROLE } from "types/index.types";
-import { LoginForm, RegisterForm, UserInfor } from "types/index.types";
+import { USER_ROLE } from "src/types/index.types";
+import { LoginForm, RegisterForm, UserInfor } from "src/types/index.types";
 
 async function insertIntoTokens(db: Client, userId: number, token: string) {
     const sql = `

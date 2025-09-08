@@ -2,10 +2,10 @@ import express from "express";
 import jwt from "jsonwebtoken";
 
 import { Client } from 'pg';
-import database from 'database/index.database';
-import * as types from "types/index.types";
-import * as utils from "utils/index.utils";
-import SOCKET_EVENTS from "constants/socketEvents";
+import database from 'src/database/index.database';
+import * as types from "src/types/index.types";
+import * as utils from "src/utils/index.utils";
+import SOCKET_EVENTS from "src/constants/socketEvents";
 
 async function auth(req: types.RequestCustom, res: express.Response, next: express.NextFunction) {
     const authHeader = req.headers["authorization"];

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import {SORT_ATTRIBUTES, SORT_ORDERS, PRODUCT_STATUS} from 'types/index.types';
+import {SORT_ATTRIBUTES, SORT_ORDERS, PRODUCT_STATUS} from 'src/types/index.types';
 
 const ProductSchema = z.object({
     name: z.string().min(1, 'Name is required').max(100, 'Name must be <= 100 characters'),

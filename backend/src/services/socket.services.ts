@@ -4,10 +4,10 @@ import { Client } from 'pg';
 
 import * as cookie from 'cookie';
 
-import schemas from 'schemas/index.schema';
-import database from 'database/index.database';
-import { SOCKET_EVENTS } from 'constants/socketEvents';
-import { UserInfor } from 'types/index.types';
+import schemas from 'src/schemas/index.schema';
+import database from 'src/database/index.database';
+import { SOCKET_EVENTS } from 'src/constants/socketEvents';
+import { UserInfor } from 'src/types/index.types';
 
 export interface SocketCustom extends Socket{
     user?: UserInfor;

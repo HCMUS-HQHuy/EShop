@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
-import util from 'utils/index.utils';
-import * as types from 'types/index.types';
+import util from 'src/utils/index.utils';
+import * as types from 'src/types/index.types';
 
 function updateImage(req: types.RequestCustom, res: express.Response) {
   if (!req.file) {

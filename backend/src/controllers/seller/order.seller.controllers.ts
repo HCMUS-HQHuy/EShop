@@ -1,9 +1,9 @@
 import express from "express";
 import { Client } from "pg";
 
-import database from "database/index.database";
-import { RequestCustom } from "types/index.types";
-import util from "utils/index.utils";
+import database from "src/database/index.database";
+import { RequestCustom } from "src/types/index.types";
+import util from "src/utils/index.utils";
 
 // #### DATABASE FUNCTIONS ####
 

@@ -1,10 +1,10 @@
 import express from "express";
 
-import adminRoutes from "routes/admin.routes";
-import userRoutes from "routes/user.routes";
-import sellerRoutes from "routes/seller.routes";
-import authen from "routes/auth.route";
-import chat from "routes/chat.routes";
+import adminRoutes from "src/routes/admin.routes";
+import userRoutes from "src/routes/user.routes";
+import sellerRoutes from "src/routes/seller.routes";
+import authen from "src/routes/auth.route";
+import chat from "src/routes/chat.routes";
 
 const router: express.Router = express.Router();
 

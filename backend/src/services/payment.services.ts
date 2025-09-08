@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import * as types from "types/index.types"
+import * as types from "src/types/index.types"
 
 async function MoMoMethod(order_code: string, orderData: types.CreatingOrderRequest) {
     var partnerCode = process.env.MOMO_PARTNER_CODE as string;

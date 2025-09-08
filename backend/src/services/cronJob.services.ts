@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import database from 'database/index.database'
+import database from 'src/database/index.database'
 import { Client } from "pg";
 
 async function startRemoveTokenJob() {

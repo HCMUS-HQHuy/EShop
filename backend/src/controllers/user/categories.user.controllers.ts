@@ -1,9 +1,9 @@
 import express from "express";
 
 import { Client } from "pg";
-import database from "database/index.database";
-import { CategoryInfor } from "types/category.types";
-import util from "utils/index.utils";
+import database from "src/database/index.database";
+import { CategoryInfor } from "src/types/category.types";
+import util from "src/utils/index.utils";
 
 // #### DATABASE FUNCTIONS ####
 

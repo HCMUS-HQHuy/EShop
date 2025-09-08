@@ -1,6 +1,6 @@
 import express from "express";
-import mid from "middlewares/index.middlewares";
-import upload from "controllers/shared/upload.shared.controllers";
+import mid from "src/middlewares/index.middlewares";
+import upload from "src/controllers/shared/upload.shared.controllers";
 
 const route = express.Router();
 

@@ -1,8 +1,8 @@
 import express from 'express';
-import util from 'utils/index.utils';
-import * as types from 'types/index.types';
+import util from 'src/utils/index.utils';
+import * as types from 'src/types/index.types';
 import { Client } from 'pg';
-import database from 'database/index.database';
+import database from 'src/database/index.database';
 
 async function getAll(req: types.RequestCustom, res: express.Response) {
     if (util.role.isGuest(req.user)) {

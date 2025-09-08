@@ -1,4 +1,4 @@
-import * as types from "../types/index.types";
+import * as types from "src/types/index.types";
 
 export function isSeller(user: types.UserInfor | undefined): boolean {
     if (!user || !user.shop_id) {

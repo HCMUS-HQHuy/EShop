@@ -1,5 +1,5 @@
 import express from "express";
-import authenController from "controllers/shared/auth.shared.controllers";
+import authenController from "src/controllers/shared/auth.shared.controllers";
 
 const route = express.Router();
 

@@ -1,4 +1,4 @@
-import { SHOP_STATUS, regex } from 'types/index.types';
+import { SHOP_STATUS, regex } from 'src/types/index.types';
 import { z } from 'zod';
 
 const ShopInformationSchema = z.object({

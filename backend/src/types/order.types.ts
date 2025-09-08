@@ -1,5 +1,5 @@
 ﻿import { z } from 'zod';
-import schemas from 'schemas/index.schema';
+import schemas from 'src/schemas/index.schema';
 
 type OrderItemType = {
     productId: number;

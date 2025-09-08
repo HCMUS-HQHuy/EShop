@@ -1,11 +1,11 @@
 import express from 'express';
 import { Client } from 'pg';
 
-import util from 'utils/index.utils';
-import database from 'database/index.database';
-import schemas from 'schemas/index.schema';
-import { PRODUCT_STATUS } from 'types/index.types';
-import { AdminProductFilter, ProductParamsRequest, RequestCustom } from 'types/index.types';
+import util from 'src/utils/index.utils';
+import database from 'src/database/index.database';
+import schemas from 'src/schemas/index.schema';
+import { PRODUCT_STATUS } from 'src/types/index.types';
+import { AdminProductFilter, ProductParamsRequest, RequestCustom } from 'src/types/index.types';
 
 // #### HELPER FUNCTIONS ####
 

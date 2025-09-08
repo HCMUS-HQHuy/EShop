@@ -1,4 +1,4 @@
-﻿import schemas from 'schemas/index.schema';
+﻿import schemas from 'src/schemas/index.schema';
 import z from 'zod'
 
 export type UserInfor = z.infer<typeof schemas.user.infor>;

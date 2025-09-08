@@ -1,16 +1,17 @@
 import 'dotenv/config'
+import 'module-alias/register';
 import express from "express";
 import http from 'http';
 import { Server } from 'socket.io'
 import cookieParser from 'cookie-parser';
 
-import seedAdmin from "config/seedAdmin";
-import configQueryParser from 'config/queryparser.config'
-import configUploadsFile from 'config/uploadsFile.config';
-import configCors from 'config/cors.config';
-import routes from "routes/index.routes";
-import services from "services/index.services";
-import mid from "middlewares/index.middlewares";
+import seedAdmin from "src/config/seedAdmin";
+import configQueryParser from "src/config/queryparser.config";
+import configUploadsFile from "src/config/uploadsFile.config";
+import configCors from "src/config/cors.config";
+import routes from "src/routes/index.routes";
+import services from "src/services/index.services";
+import mid from "src/middlewares/index.middlewares";
 
 const app: express.Application = express();
 const httpServer: http.Server = http.createServer(app);

@@ -1,5 +1,5 @@
 ﻿import { z } from 'zod';
-import schemas from 'schemas/index.schema';
+import schemas from 'src/schemas/index.schema';
 
 export type UserProductFilter   = z.infer<typeof schemas.product.userFilter>;
 export type SellerProductFilter = z.infer<typeof schemas.product.sellerFilter>;

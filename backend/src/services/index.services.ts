@@ -1,4 +1,4 @@
-import order from "services/order.services";
+import order from "src/services/order.services";
 import socket from "./socket.services";
 import payment from "./payment.services"
 import email from "./email.services"

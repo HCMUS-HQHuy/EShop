@@ -16,8 +16,8 @@
   "main": "./src/index.js",
   "scripts": {
     "dev": "nodemon -L",
-    "build": "tsc",
-    "start:build": "node bin/index.js"
+    "start:build": "tsc",
+    "start:run": "node bin/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -36,6 +36,7 @@
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.5",
@@ -43,5 +44,8 @@
     "qs": "^6.14.0",
     "socket.io": "^4.8.1",
     "zod": "^4.0.15"
+  },
+  "_moduleAliases": {
+    "src": "bin"
   }
 }

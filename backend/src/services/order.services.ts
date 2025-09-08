@@ -1,13 +1,13 @@
 import { Job, Queue, Worker } from "bullmq";
-import * as types from "types/index.types";
+import * as types from "src/types/index.types";
 import { Client } from "pg";
 
 import services from "./index.services";
-import database from "database/index.database";
-import { generateCode } from "utils/gencode.utils";
-import { PAYMENT_METHOD } from "types/index.types";
-import util from "utils/index.utils";
-import SOCKET_EVENTS from "constants/socketEvents";
+import database from "src/database/index.database";
+import { generateCode } from "src/utils/gencode.utils";
+import { PAYMENT_METHOD } from "src/types/index.types";
+import util from "src/utils/index.utils";
+import SOCKET_EVENTS from "src/constants/socketEvents";
 
 const redis_config = {
     host: process.env.REDIS_HOST || "localhost",

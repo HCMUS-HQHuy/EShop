@@ -1,7 +1,7 @@
-import auth from "middlewares/auth.middlewares";
+import auth from "src/middlewares/auth.middlewares";
 import upload from "./upload.middlewares";
-import switchRole from "middlewares/switchRole.middlewares";
-import addSocketIO from "middlewares/socket.middlewares";
+import switchRole from "src/middlewares/switchRole.middlewares";
+import addSocketIO from "src/middlewares/socket.middlewares";
 const mid = {
     auth,
     switchRole,

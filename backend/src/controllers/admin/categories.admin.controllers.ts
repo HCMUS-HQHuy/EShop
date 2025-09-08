@@ -1,12 +1,12 @@
 import express from "express";
 
 import { Client } from "pg";
-import database from "database/index.database";
-import util from "utils/index.utils";
-import schemas from "schemas/index.schema";
+import database from "src/database/index.database";
+import util from "src/utils/index.utils";
+import schemas from "src/schemas/index.schema";
 
-import { CategoryAddRequest, CategoryParamsRequest, CategoryUpdateRequest } from "types/category.types";
-import { RequestCustom } from "types/common.types";
+import { CategoryAddRequest, CategoryParamsRequest, CategoryUpdateRequest } from "src/types/category.types";
+import { RequestCustom } from "src/types/common.types";
 
 // #### VALIDATION FUNCTIONS ####
 

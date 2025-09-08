@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import schemas from 'schemas/index.schema';
+import schemas from 'src/schemas/index.schema';
 
 
 export type UpdateSellerStatusRequest = z.infer<typeof schemas.shop.updateStatus>;
