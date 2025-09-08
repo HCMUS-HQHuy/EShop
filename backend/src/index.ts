@@ -24,7 +24,7 @@ const io = new Server(httpServer, {
     }
 });
 
-const PORT = process.env.PORT || 8220;
+const PORT = process.env.BACKEND_PORT || 8220;
 
 configQueryParser(app);
 configUploadsFile(app);

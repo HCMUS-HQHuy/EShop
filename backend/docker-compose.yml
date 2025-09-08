@@ -4,13 +4,13 @@ services:
     container_name: postgres
     restart: always
     ports:
-      - "${DB_PORT}:5432"
+      - "${DATABASE_PORT}:5432"
+    networks:
+      - app-network
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - postgres_data:/data/db
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
 
   redis:
     image: redis:7
@@ -18,6 +18,8 @@ services:
     restart: always
     ports:
       - "${REDIS_PORT}:6379"
+    networks:
+      - app-network
     environment:
       REDIS_PORT: ${REDIS_PORT}
   backend:
@@ -27,22 +29,28 @@ services:
     container_name: backend
     restart: always
     ports:
-      - "${PORT}:${PORT}"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     volumes:
-      - type: bind
-        source: .
-        target: /app
+      - .:/app
+      - /app/node_modules
+      - /app/bin
+    networks:
+      - app-network
     environment:
-      DB_HOST: db
-      DB_PORT: ${DB_PORT}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DATABASE_HOST: db
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       REDIS_HOST: redis
       REDIS_PORT: ${REDIS_PORT}
-      PORT: ${PORT}
+      BACKEND_PORT: ${BACKEND_PORT}
       API_PREFIX: ${API_PREFIX}
       JWT_SECRET: ${JWT_SECRET}
+
+      DB_ADMIN_USERNAME: ${DB_ADMIN_USERNAME}
+      DB_ADMIN_PASSWORD: ${DB_ADMIN_PASSWORD}
+      DB_ADMIN_EMAIL: ${DB_ADMIN_EMAIL}
 
       MOMO_ACCESS_KEY: ${MOMO_ACCESS_KEY}
       MOMO_SECRET_KEY: ${MOMO_SECRET_KEY}
@@ -55,3 +63,7 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
