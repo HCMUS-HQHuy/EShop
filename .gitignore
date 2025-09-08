@@ -1,3 +1,5 @@
 node_modules/
 .env
 uploads/
+bin/
+npm-debug.log
