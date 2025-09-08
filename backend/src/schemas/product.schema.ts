@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {SORT_ATTRIBUTES, SORT_ORDERS, PRODUCT_STATUS} from 'src/types/index.types';
+import { PAGINATION_DEFAULT_PAGE } from 'src/constants/globalVariables';
 
 const ProductSchema = z.object({
     name: z.string().min(1, 'Name is required').max(100, 'Name must be <= 100 characters'),
@@ -55,8 +56,8 @@ const ProductFilterSchema = z.union([
 ]);
 
 const ProductParamsRequestSchema = z.object({
-    keywords: z.optional(z.string().min(1, "Keywords must not be empty")).default(process.env.SEARCH_KEYWORDS),
-    page: z.coerce.number().int().min(1, "Page must be greater than 0").default(Number(process.env.PAGINATION_DEFAULT_PAGE)),
+    keywords: z.optional(z.string().min(1, "Keywords must not be empty")).default(''),
+    page: z.coerce.number().int().min(1, "Page must be greater than 0").default(PAGINATION_DEFAULT_PAGE),
     sortAttribute: z.enum(SORT_ATTRIBUTES, {
         error: "Invalid sort attribute: must be 'name' or 'created_at'"
     }).default(SORT_ATTRIBUTES.NAME),

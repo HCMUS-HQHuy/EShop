@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {SORT_ATTRIBUTES, SORT_ORDERS} from 'src/types/index.types';
+import { PAGINATION_DEFAULT_PAGE, SORT_ATTRIBUTE, SORT_ORDER } from 'src/constants/globalVariables';
 
 const CategoryUpdateSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -25,14 +26,14 @@ const CategoryFilterSchema = z.object({
 });
 
 const CategoryParamsRequestSchema = z.object({
-    keywords: z.string().default(process.env.SEARCH_KEYWORDS as string),
-    page: z.number().int().positive().default(Number(process.env.PAGINATION_DEFAULT_PAGE)),
+    keywords: z.string().default(''),
+    page: z.number().int().positive().default(PAGINATION_DEFAULT_PAGE),
     sortAttribute: z.enum(SORT_ATTRIBUTES, {
         error: `Invalid sort attribute: must be ${SORT_ATTRIBUTES}`,
-    }).default(process.env.SORT_ATTRIBUTE as SORT_ATTRIBUTES),
+    }).default(SORT_ATTRIBUTE),
     sortOrder: z.enum(SORT_ORDERS, {
         error: `Invalid sort order: must be ${SORT_ORDERS}`,
-    }).default(process.env.SORT_ORDER as SORT_ORDERS),
+    }).default(SORT_ORDER),
     filter: CategoryFilterSchema.optional(),
 });
 

@@ -1,5 +1,6 @@
 import express from "express";
 import { Client } from "pg";
+import { PAGINATION_LIMIT } from "src/constants/globalVariables";
 
 import database from "src/database/index.database";
 import { RequestCustom } from "src/types/index.types";
@@ -28,7 +29,7 @@ async function getOrders(req: RequestCustom, res: express.Response) {
             FROM orders
             WHERE shop_id = $1
             ORDER BY created_at DESC
-            OFFSET 0 LIMIT ${process.env.PAGINATION_LIMIT || 10}
+            OFFSET 0 LIMIT ${PAGINATION_LIMIT}
         `;
         const result = await db.query(sql, [shopId]);
         return res.status(200).json(util.response.success("Seller information retrieved successfully", { orders: result.rows }));

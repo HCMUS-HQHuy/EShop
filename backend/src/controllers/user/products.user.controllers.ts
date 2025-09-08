@@ -5,6 +5,7 @@ import util from 'src/utils/index.utils';
 import schemas from 'src/schemas/index.schema';
 import { PRODUCT_STATUS } from 'src/types/index.types';
 import { RequestCustom, ProductParamsRequest, UserProductFilter } from 'src/types/index.types';
+import { PAGINATION_LIMIT } from 'src/constants/globalVariables';
 
 // #### HELPER FUNCTIONS ####
 async function getAllCategoriesId(categories: number[] | undefined): Promise<number[]> {
@@ -155,7 +156,7 @@ async function list(req: RequestCustom, res: express.Response) {
             ORDER BY ${params.sortAttribute} ${params.sortOrder}
             LIMIT $2 OFFSET $3
         `;
-        const limit = Number(process.env.PAGINATION_LIMIT);
+        const limit = PAGINATION_LIMIT;
         const offset = (params.page - 1) * limit;
         const filter = params.filter as UserProductFilter;
         const categoriesId = await getAllCategoriesId(filter?.categories_id);

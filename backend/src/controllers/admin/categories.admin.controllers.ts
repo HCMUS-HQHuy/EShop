@@ -7,6 +7,7 @@ import schemas from "src/schemas/index.schema";
 
 import { CategoryAddRequest, CategoryParamsRequest, CategoryUpdateRequest } from "src/types/category.types";
 import { RequestCustom } from "src/types/common.types";
+import { PAGINATION_LIMIT } from "src/constants/globalVariables";
 
 // #### VALIDATION FUNCTIONS ####
 
@@ -85,7 +86,7 @@ async function getCategories(params: CategoryParamsRequest) {
                 ORDER BY ${params.sortAttribute} ${params.sortOrder}
                 LIMIT $2 OFFSET $3
             `;
-        const limit         = Number(process.env.PAGINATION_LIMIT);
+        const limit         = PAGINATION_LIMIT;
         const offset        = (params.page - 1) * limit;
         const createdFrom   = params?.filter?.created_from;
         const createdTo     = params?.filter?.created_to;

@@ -6,6 +6,7 @@ import database from 'src/database/index.database';
 import schemas from 'src/schemas/index.schema';
 import { PRODUCT_STATUS } from 'src/types/index.types';
 import { AdminProductFilter, ProductParamsRequest, RequestCustom } from 'src/types/index.types';
+import { PAGINATION_LIMIT } from 'src/constants/globalVariables';
 
 // #### HELPER FUNCTIONS ####
 
@@ -97,7 +98,7 @@ async function listProducts(params: ProductParamsRequest) {
             ORDER BY ${params.sortAttribute} ${params.sortOrder}
             LIMIT $2 OFFSET $3
         `;
-        const limit         = Number(process.env.PAGINATION_LIMIT);
+        const limit         = PAGINATION_LIMIT;
         const offset        = (params.page - 1) * limit;
         const filter        = params.filter as AdminProductFilter;
         const queryParams = [
