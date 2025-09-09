@@ -20,10 +20,7 @@ export const newSignUp = createAsyncThunk(
       const response = await api.user.signUp(userInfor);
       return response;
     } catch (error: any) {
-      if (error.response?.data) {
-        return rejectWithValue(error.response.data);
-      }
-      return rejectWithValue({ message: "Undefined Error" });
+      return rejectWithValue(error);
     }
   }
 );
