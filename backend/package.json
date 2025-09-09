@@ -25,6 +25,7 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.15.0",
+    "@prisma/extension-accelerate": "^2.0.2",
     "@types/ejs": "^3.1.5",
     "@types/multer": "^2.0.0",
     "@types/nodemailer": "^7.0.1",
