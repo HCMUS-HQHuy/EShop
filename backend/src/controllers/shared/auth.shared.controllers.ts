@@ -131,11 +131,14 @@ async function registerUser(req: express.Request, res: express.Response) {
             USER_ROLE.USER
         ]);
         const userId: number = result.rows[0].user_id;
-
+        console.log("New user registered with ID:", userId);
         const token = jwt.sign({ userId, email, username }, process.env.JWT_SECRET as string, { expiresIn: "10m" });
+        console.log("Email verification token generated:", token);
         await insertIntoTokens(db, userId, token);
+        console.log("Token stored in database for user ID:", userId);
         const url = `${process.env.BASE_API_URL}/auth/verify-email?token=${token}`;
         await services.email.sendVerify(email, username, url);
+        console.log("Sent email verification link to:", email);
         await db.query("COMMIT");
         return res.status(201).json(util.response.success("User registered successfully. Please verify your email."));
     } catch (error: any) {
