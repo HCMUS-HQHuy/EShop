@@ -3,3 +3,4 @@ node_modules/
 uploads/
 bin/
 npm-debug.log
+backend/generated/prisma

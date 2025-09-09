@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model categories {
+  category_id        Int                  @id @default(autoincrement())
+  iconname           String?              @db.VarChar(100)
+  title              String               @unique @db.VarChar(100)
+  description        String?
+  parent_id          Int?
+  created_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  is_deleted         Boolean              @default(false)
+  deleted_at         DateTime?            @db.Timestamptz(6)
+  deleted_by         Int?
+  categories         categories?          @relation("categoriesTocategories", fields: [parent_id], references: [category_id], onUpdate: NoAction)
+  other_categories   categories[]         @relation("categoriesTocategories")
+  users              users?               @relation(fields: [deleted_by], references: [user_id], onUpdate: NoAction, map: "fk_category_deleted_by")
+  product_categories product_categories[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model conversations {
+  id                                         Int        @id @default(autoincrement())
+  participant1_id                            Int
+  participant2_id                            Int
+  participant1_role                          String     @db.Char(10)
+  participant2_role                          String     @db.Char(10)
+  context                                    Json?
+  created_at                                 DateTime   @default(now()) @db.Timestamp(6)
+  users_conversations_participant1_idTousers users      @relation("conversations_participant1_idTousers", fields: [participant1_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  users_conversations_participant2_idTousers users      @relation("conversations_participant2_idTousers", fields: [participant2_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  messages                                   messages[]
+}
+
+model messages {
+  id              Int           @id @default(autoincrement())
+  conversation_id Int
+  sender_id       Int
+  content         String
+  sent_at         DateTime      @default(now()) @db.Timestamp(6)
+  is_read         Boolean?      @default(false)
+  conversations   conversations @relation(fields: [conversation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users           users         @relation(fields: [sender_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model order_items {
+  order_item_id        Int      @id @default(autoincrement())
+  order_id             Int
+  product_id           Int
+  quantity             Int
+  price_at_purchase    Decimal  @db.Decimal(10, 2)
+  discount_at_purchase Decimal  @default(0) @db.Decimal(10, 2)
+  orders               orders   @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_order_item_order")
+  products             products @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_item_product")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model orders {
+  order_id        Int           @id @default(autoincrement())
+  shop_id         Int
+  user_id         Int
+  receiver_name   String        @db.VarChar(100)
+  street_address  String        @db.VarChar(255)
+  city            String        @db.VarChar(255)
+  phone_number    String        @db.VarChar(15)
+  email           String        @db.VarChar(100)
+  total_amount    Decimal       @db.Decimal(12, 2)
+  shipping_fee    Decimal       @default(0) @db.Decimal(12, 2)
+  discount_amount Decimal       @default(0) @db.Decimal(12, 2)
+  final_amount    Decimal       @db.Decimal(12, 2)
+  status          String        @default("Pending") @db.VarChar(20)
+  created_at      DateTime?     @default(now()) @db.Timestamptz(6)
+  order_items     order_items[]
+  shops           shops         @relation(fields: [shop_id], references: [shop_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_shop")
+  users           users         @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_user")
+  payments        payments[]
+}
+
+model payment_methods {
+  payment_method_id Int        @id @default(autoincrement())
+  code              String     @unique @db.VarChar(20)
+  name              String     @db.VarChar(100)
+  img               String?    @db.VarChar(255)
+  link              String?    @db.VarChar(255)
+  is_active         Boolean    @default(true)
+  payments          payments[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model payments {
+  payment_id          Int             @id @default(autoincrement())
+  order_id            Int
+  payment_code        String          @unique @db.VarChar(20)
+  payment_method_code String          @db.VarChar(20)
+  amount              Decimal         @db.Decimal(12, 2)
+  status              String          @default("Pending") @db.VarChar(20)
+  payment_methods     payment_methods @relation(fields: [payment_method_code], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_method")
+  orders              orders          @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_order")
+}
+
+model product_categories {
+  product_id  Int
+  category_id Int
+  categories  categories @relation(fields: [category_id], references: [category_id], onDelete: Cascade, onUpdate: NoAction)
+  products    products   @relation(fields: [product_id], references: [product_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([product_id, category_id])
+}
+
+model product_images {
+  image_id   Int       @id @default(autoincrement())
+  product_id Int
+  image_url  String    @db.VarChar(255)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  is_deleted Boolean   @default(false)
+  deleted_at DateTime? @db.Timestamptz(6)
+  deleted_by Int?
+  users      users?    @relation(fields: [deleted_by], references: [user_id], onUpdate: NoAction, map: "fk_image_deleted_by")
+  products   products  @relation(fields: [product_id], references: [product_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_image_product")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model product_reviews {
+  review_id                               Int       @id @default(autoincrement())
+  user_id                                 Int
+  product_id                              Int
+  rating                                  Int
+  comment                                 String?
+  created_at                              DateTime? @default(now()) @db.Timestamptz(6)
+  is_deleted                              Boolean   @default(false)
+  deleted_at                              DateTime? @db.Timestamptz(6)
+  deleted_by                              Int?
+  users_product_reviews_deleted_byTousers users?    @relation("product_reviews_deleted_byTousers", fields: [deleted_by], references: [user_id], onUpdate: NoAction, map: "fk_review_deleted_by")
+  products                                products  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_product")
+  users_product_reviews_user_idTousers    users     @relation("product_reviews_user_idTousers", fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_user")
+
+  @@unique([user_id, product_id])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model products {
+  product_id         Int                  @id @default(autoincrement())
+  sku                String               @db.VarChar(100)
+  short_name         String               @db.VarChar(255)
+  name               String               @db.VarChar(255)
+  price              Decimal              @db.Decimal(10, 2)
+  discount           Decimal              @default(0) @db.Decimal(5, 2)
+  description        String?
+  stock_quantity     Int
+  image_url          String?              @db.VarChar(255)
+  shop_id            Int
+  status             String               @default("PendingApproval") @db.VarChar(20)
+  created_at         DateTime?            @default(now()) @db.Timestamptz(6)
+  is_deleted         Boolean              @default(false)
+  deleted_at         DateTime?            @db.Timestamptz(6)
+  deleted_by         Int?
+  order_items        order_items[]
+  product_categories product_categories[]
+  product_images     product_images[]
+  product_reviews    product_reviews[]
+  users              users?               @relation(fields: [deleted_by], references: [user_id], onUpdate: NoAction, map: "fk_product_deleted_by")
+  shops              shops                @relation(fields: [shop_id], references: [shop_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_shop")
+
+  @@unique([sku, shop_id], map: "uq_product_sku_shop")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model shops {
+  shop_id          Int        @id @default(autoincrement())
+  user_id          Int        @unique
+  shop_name        String     @db.VarChar(100)
+  email            String     @unique @db.VarChar(100)
+  phone_number     String     @db.VarChar(15)
+  shop_description String?
+  address          String     @db.VarChar(255)
+  status           String     @default("Pending Verification") @db.VarChar(20)
+  admin_note       String?
+  created_at       DateTime?  @default(now()) @db.Timestamptz(6)
+  orders           orders[]
+  products         products[]
+  users            users      @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_shop_user")
+}
+
+model tokens {
+  token_id   Int       @id @default(autoincrement())
+  user_id    Int
+  token      String    @db.VarChar(255)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  expires_at DateTime  @db.Timestamptz(6)
+  users      users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_token_user")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  user_id                                            Int               @id @default(autoincrement())
+  username                                           String            @unique @db.VarChar(50)
+  password                                           String
+  email                                              String            @unique @db.VarChar(100)
+  address                                            String?           @db.VarChar(255)
+  phone_number                                       String?           @db.VarChar(15)
+  role                                               String            @default("User") @db.VarChar(10)
+  status                                             String            @default("Active") @db.VarChar(20)
+  is_verified                                        Boolean           @default(false)
+  created_at                                         DateTime?         @default(now()) @db.Timestamptz(6)
+  is_deleted                                         Boolean           @default(false)
+  deleted_at                                         DateTime?         @db.Timestamptz(6)
+  categories                                         categories[]
+  conversations_conversations_participant1_idTousers conversations[]   @relation("conversations_participant1_idTousers")
+  conversations_conversations_participant2_idTousers conversations[]   @relation("conversations_participant2_idTousers")
+  messages                                           messages[]
+  orders                                             orders[]
+  product_images                                     product_images[]
+  product_reviews_product_reviews_deleted_byTousers  product_reviews[] @relation("product_reviews_deleted_byTousers")
+  product_reviews_product_reviews_user_idTousers     product_reviews[] @relation("product_reviews_user_idTousers")
+  products                                           products[]
+  shops                                              shops?
+  tokens                                             tokens[]
+}
