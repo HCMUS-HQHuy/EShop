@@ -52,7 +52,6 @@ async function login(req: express.Request, res: express.Response) {
                 role: true
             }
         });
-        console.log(userInfo);
         if (userInfo === null) {
             return res.status(401).json(util.response.error("Invalid credentials"));
         }
