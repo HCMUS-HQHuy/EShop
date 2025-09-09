@@ -1,6 +1,7 @@
 import { Job, Queue, Worker } from "bullmq";
 import * as types from "src/types/index.types";
 import { Client } from "pg";
+import IORedis from "ioredis";
 
 import services from "./index.services";
 import database from "src/database/index.database";
@@ -8,12 +9,9 @@ import { generateCode } from "src/utils/gencode.utils";
 import util from "src/utils/index.utils";
 import SOCKET_EVENTS from "src/constants/socketEvents";
 
-const redis_config = {
-    host: process.env.REDIS_HOST || "localhost",
-    port: Number(process.env.REDIS_PORT || 6379),
-    username: process.env.REDIS_USER || undefined,
-    password: process.env.REDIS_PASSWORD || undefined,
-};
+const redis_config = new IORedis(process.env.REDIS_URL!, {
+    maxRetriesPerRequest: null,
+});
 
 console.log("Redis config:", redis_config);
 
