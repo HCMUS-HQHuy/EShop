@@ -7,8 +7,6 @@ services:
       - "${DATABASE_PORT}:5432"
     networks:
       - app-network
-    volumes:
-      - ./src/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USER}
@@ -24,45 +22,45 @@ services:
       - app-network
     environment:
       REDIS_PORT: ${REDIS_PORT}
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: backend
-    restart: always
-    ports:
-      - "${BACKEND_PORT}:${BACKEND_PORT}"
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/bin
-    networks:
-      - app-network
-    environment:
-      NODE_ENV: development
-      DATABASE_HOST: db
-      DATABASE_PORT: ${DATABASE_PORT}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USER: ${DATABASE_USER}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      REDIS_HOST: redis
-      REDIS_PORT: ${REDIS_PORT}
-      BACKEND_PORT: ${BACKEND_PORT}
-      API_PREFIX: ${API_PREFIX}
-      JWT_SECRET: ${JWT_SECRET}
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: backend
+  #   restart: always
+  #   ports:
+  #     - "${BACKEND_PORT}:${BACKEND_PORT}"
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #     - /app/bin
+  #   networks:
+  #     - app-network
+  #   environment:
+  #     NODE_ENV: development
+  #     DATABASE_HOST: db
+  #     DATABASE_PORT: ${DATABASE_PORT}
+  #     DATABASE_NAME: ${DATABASE_NAME}
+  #     DATABASE_USER: ${DATABASE_USER}
+  #     DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: ${REDIS_PORT}
+  #     BACKEND_PORT: ${BACKEND_PORT}
+  #     API_PREFIX: ${API_PREFIX}
+  #     JWT_SECRET: ${JWT_SECRET}
 
-      DB_ADMIN_USERNAME: ${DB_ADMIN_USERNAME}
-      DB_ADMIN_PASSWORD: ${DB_ADMIN_PASSWORD}
-      DB_ADMIN_EMAIL: ${DB_ADMIN_EMAIL}
+  #     DB_ADMIN_USERNAME: ${DB_ADMIN_USERNAME}
+  #     DB_ADMIN_PASSWORD: ${DB_ADMIN_PASSWORD}
+  #     DB_ADMIN_EMAIL: ${DB_ADMIN_EMAIL}
 
-      MOMO_ACCESS_KEY: ${MOMO_ACCESS_KEY}
-      MOMO_SECRET_KEY: ${MOMO_SECRET_KEY}
+  #     MOMO_ACCESS_KEY: ${MOMO_ACCESS_KEY}
+  #     MOMO_SECRET_KEY: ${MOMO_SECRET_KEY}
 
-      GMAIL_USER: ${GMAIL_USER}
-      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
-    depends_on:
-      - db
-      - redis
+  #     GMAIL_USER: ${GMAIL_USER}
+  #     GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
+  #   depends_on:
+  #     - db
+  #     - redis
 
 volumes:
   postgres_data:
