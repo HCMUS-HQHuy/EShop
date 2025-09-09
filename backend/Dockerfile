@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-# RUN npx prisma migrate deploy
+RUN npm run migrate:deploy
 RUN npm run start:build
 
 EXPOSE 8220
