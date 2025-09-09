@@ -14,6 +14,8 @@ const redis_config = {
     password: process.env.REDIS_PASSWORD || undefined,
 };
 
+console.log("Redis config:", redis_config);
+
 async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Promise<types.OrderItemRequest[]> {
     try {
         // Check existing of a cart item and gurantee its record doesn't change
