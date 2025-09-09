@@ -5,13 +5,13 @@ import { Client } from "pg";
 import services from "./index.services";
 import database from "src/database/index.database";
 import { generateCode } from "src/utils/gencode.utils";
-import { PAYMENT_METHOD } from "src/types/index.types";
 import util from "src/utils/index.utils";
 import SOCKET_EVENTS from "src/constants/socketEvents";
 
 const redis_config = {
     host: process.env.REDIS_HOST || "localhost",
-    port: Number(process.env.REDIS_PORT || 6379)
+    port: Number(process.env.REDIS_PORT || 6379),
+    password: process.env.REDIS_PASSWORD || undefined,
 };
 
 async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Promise<types.OrderItemRequest[]> {
