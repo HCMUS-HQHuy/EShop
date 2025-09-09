@@ -13,8 +13,6 @@ const redis_config = new IORedis(process.env.REDIS_URL!, {
     maxRetriesPerRequest: null,
 });
 
-console.log("Redis config:", redis_config);
-
 async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Promise<types.OrderItemRequest[]> {
     try {
         // Check existing of a cart item and gurantee its record doesn't change
