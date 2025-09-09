@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import SectionTitle from "Components/Shared/MiniComponents/SectionTitle/SectionTitle.jsx";
+import SectionTitle from "src/Components/Shared/MiniComponents/SectionTitle/SectionTitle.jsx";
 import s from "./FeaturedSection.module.scss";
 import FeaturedSectionPosters from "./FeaturedSectionPosters.tsx";
 

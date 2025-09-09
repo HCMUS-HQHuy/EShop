@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { productsData } from "Data/productsData.jsx";
+import { productsData } from "src/Data/productsData.jsx";
 import ProductsSlider from "../../Shared/MidComponents/ProductsSlider/ProductsSlider.jsx";
 import SectionTitle from "../../Shared/MiniComponents/SectionTitle/SectionTitle.jsx";
 import s from "./ThisMonthSection.module.scss";

@@ -4,10 +4,10 @@ import {
   ps5,
   speakers,
   womanWithHat,
-} from "Assets/Images/Images.js";
-import HorizontalPoster from "Components/Shared/Posters/HorizontalPoster.jsx";
-import MediumPoster from "Components/Shared/Posters/MediumPoster.jsx";
-import SmallPoster from "Components/Shared/Posters/SmallPoster.jsx";
+} from "src/Assets/Images/Images.js";
+import HorizontalPoster from "src/Components/Shared/Posters/HorizontalPoster.jsx";
+import MediumPoster from "src/Components/Shared/Posters/MediumPoster.jsx";
+import SmallPoster from "src/Components/Shared/Posters/SmallPoster.jsx";
 import s from "./FeaturedSectionPosters.module.scss";
 
 const FeaturedSectionPosters = () => {
