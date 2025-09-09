@@ -19,6 +19,7 @@
   "scripts": {
     "dev": "nodemon -L",
     "start:build": "tsc && tsc-alias",
+    "start:copyTemplate": "cp -r ./src/templates ./bin",
     "start:run": "node bin/index.js",
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
