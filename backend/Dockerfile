@@ -4,8 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run migrate:deploy
 RUN npm run start:build
 
 EXPOSE 8220
-CMD ["npm", "run", "start:run"]
+CMD ["npm", "run", "migrate:deploy", "&&" , "npm", "run", "start:run"]
