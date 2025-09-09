@@ -31,19 +31,19 @@ const BaseProductFilterSchema = z.object({
     path: ["priceRange"],
 });
 
-const AdminProductFilterSchema = BaseProductFilterSchema.extend({
+const AdminProductFilterSchema = BaseProductFilterSchema.safeExtend({
     is_deleted: z.boolean().optional(),
     shop_id: z.string().optional(),
     status: z.enum(PRODUCT_STATUS).optional()
 });
 
-const SellerProductFilterSchema = BaseProductFilterSchema.extend({
+const SellerProductFilterSchema = BaseProductFilterSchema.safeExtend({
     is_deleted: z.never(),
     shop_id: z.never(),
     status: z.enum(PRODUCT_STATUS).optional()
 });
 
-const UserProductFilterSchema = BaseProductFilterSchema.extend({
+const UserProductFilterSchema = BaseProductFilterSchema.safeExtend({
     is_deleted: z.never(),
     shop_id: z.never(),
     status: z.never()

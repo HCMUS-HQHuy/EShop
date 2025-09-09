@@ -9,6 +9,7 @@
     "nodemon": "^3.1.10",
     "prisma": "^6.15.0",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.2"
   },
@@ -17,8 +18,11 @@
   "main": "./src/index.js",
   "scripts": {
     "dev": "nodemon -L",
-    "start:build": "tsc",
-    "start:run": "node -r tsconfig-paths/register bin/index.js"
+    "start:build": "tsc && tsc-alias",
+    "start:run": "node bin/index.js",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "migrate:reset": "prisma migrate reset"
   },
   "author": "",
   "license": "ISC",
@@ -46,8 +50,5 @@
     "qs": "^6.14.0",
     "socket.io": "^4.8.1",
     "zod": "^4.0.15"
-  },
-  "_moduleAliases": {
-    "src": "bin"
   }
 }
