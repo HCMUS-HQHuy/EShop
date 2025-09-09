@@ -52,11 +52,12 @@ async function login(req: express.Request, res: express.Response) {
                 role: true
             }
         });
-
+        console.log(userInfo);
         if (userInfo === null) {
             return res.status(401).json(util.response.error("Invalid credentials"));
         }
         if (!util.password.compare(credential.password, userInfo.password)) {
+            console.log("Invalid password");
             return res.status(401).json(util.response.error("Invalid credentials"));
         }
         const user: UserInfor = { user_id: userInfo.user_id, username: userInfo.username, role: userInfo.role as USER_ROLE };

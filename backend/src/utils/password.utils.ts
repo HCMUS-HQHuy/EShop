@@ -1,4 +1,4 @@
-import { hashSync, compare, compareSync } from "bcrypt-ts";
+import { hashSync, compareSync } from "bcrypt-ts";
 
 export function hashPassword(password: string): string {
     const saltRounds = 10;
