@@ -10,16 +10,6 @@ import prisma from "src/models/prismaClient";
 import { USER_ROLE } from "src/types/index.types";
 import { LoginForm, RegisterForm, UserInfor } from "src/types/index.types";
 
-// async function insertIntoTokens(db: Client, userId: number, token: string) {
-//     const sql = `
-//         INSERT INTO tokens (user_id, token, created_at, expires_at)
-//         VALUES ($1, $2, $3, $4)
-//     `;
-//     const param = [userId, token, new Date(), new Date(Date.now() + 10 * 60 * 1000)];
-//     await db.query(sql, param);
-//     console.log("Token inserted into database", token);
-// }
-
 // async function deleteFromTokens(db: Client, userId: number, token: string): Promise<boolean> {
 //     console.log('delete token:', token);
 //     const tokenInDb = await db.query(`
