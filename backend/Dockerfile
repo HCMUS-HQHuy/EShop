@@ -7,4 +7,4 @@ COPY . .
 RUN npm run start:build
 
 EXPOSE 8220
-CMD ["npm", "run", "migrate:deploy", "&&" , "npm", "run", "start:run"]
+CMD ["sh", "-c", "npm run migrate:deploy && npm run start:run"]
