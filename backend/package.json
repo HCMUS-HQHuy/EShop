@@ -21,9 +21,10 @@
     "start:build": "tsc && tsc-alias",
     "start:copyTemplate": "cp -r ./src/templates ./bin",
     "start:run": "node bin/index.js",
-    "migrate:dev": "prisma migrate dev",
-    "migrate:deploy": "prisma migrate deploy",
-    "migrate:reset": "prisma migrate reset"
+    "prisma:dev": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:reset": "prisma migrate reset",
+    "prisma:generate": "prisma generate"
   },
   "author": "",
   "license": "ISC",
