@@ -34,14 +34,17 @@ async function sendEmail(mailOptions: nodemailer.SendMailOptions) {
 
 async function sendVerifyEmail(to: string, username: string, verifyUrl: string) {
   try {
+    console.log("Preparing to send verification email to:", to);
     const verifyEmail = path.join(templatePath, 'verify-email.ejs');
+    console.log("Preparing template path:", verifyEmail);
     const html = await ejs.renderFile(verifyEmail, { username, verifyUrl });
     const mailOptions = {
-        from: process.env.GMAIL_USER,
-        to,
-        subject: 'Verify your email address',
-        html,
+      from: process.env.GMAIL_USER,
+      to,
+      subject: 'Verify your email address',
+      html,
     };
+    console.log("Sending email with options:", mailOptions);
     await sendEmail(mailOptions);
   } catch (error) {
     console.error("Error preparing or sending verification email:", error);
