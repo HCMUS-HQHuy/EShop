@@ -58,7 +58,7 @@ datasource db {
 
 model Categories {
   categoryId        Int                 @id @default(autoincrement())
-  iconName          String?             @db.VarChar(100)
+  iconName          String              @db.VarChar(100)
   title             String              @unique @db.VarChar(100)
   description       String?
   parentId          Int?
@@ -68,7 +68,7 @@ model Categories {
   deletedBy         Int?
   categories        Categories?         @relation("categoriesTocategories", fields: [parentId], references: [categoryId], onUpdate: NoAction)
   otherCategories   Categories[]        @relation("categoriesTocategories")
-  users             Users?              @relation(fields: [deletedBy], references: [userId], onUpdate: NoAction, map: "fk_category_deletedBy")
+  user              Users?              @relation(fields: [deletedBy], references: [userId], onUpdate: NoAction, map: "fk_category_deletedBy")
   productCategories ProductCategories[]
 }
 
