@@ -33,6 +33,9 @@ const UserMenu = ({ isActive, toggler }: Props) => {
   }
 
   function checkShopCanAccess() {
+    if (!shopInfo.status) {
+      return false;
+    }
     if (shopInfo.status === SHOP_STATUS.BANNED) {
       return false;
     }

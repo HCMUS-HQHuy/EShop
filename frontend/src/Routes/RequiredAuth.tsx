@@ -33,13 +33,14 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
     if (userRole === USER_ROLE.SELLER) {
       return <Navigate to="/seller" />;
     }
+    if (!shopInfo.status) {
+      return (pathName === "/become-seller" ? children : <Navigate to="/become-seller" />);
+    }
     switch (shopInfo.status) {
       case SHOP_STATUS.PENDING_VERIFICATION:
         return (pathName !== "/become-seller/pending" ? <Navigate to="/become-seller/pending" /> : children);
       case SHOP_STATUS.REJECTED:
         return (pathName !== "/become-seller/rejected" ? <Navigate to="/become-seller/rejected" /> : children);
-      case null:
-        return (pathName === "/become-seller" ? children : <Navigate to="/become-seller" />);
       default:
         console.error("Unknown shop status:", shopInfo.status);
         break;
