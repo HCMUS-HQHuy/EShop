@@ -48,7 +48,7 @@ async function joinRoom(socket: SocketCustom) {
                 FROM conversations
                 WHERE participant1_id = $1 OR participant2_id = $1
             `;
-        const result = await db.query(sql, [socket.user?.user_id]);
+        const result = await db.query(sql, [socket.user?.userId]);
         const conversations = result.rows;
         const length = conversations.length;
         const BATCH_SIZE = 20;
@@ -71,14 +71,14 @@ function connect(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap
     io.use(auth);
     io.on(SOCKET_EVENTS.CONNECTION, (socket: SocketCustom) => {
         console.log(`🔌 New client connected: ${socket.id} infor: `, socket.user);
-        socket.join(`user_room_${socket.user?.user_id}`);
+        socket.join(`user_room_${socket.user?.userId}`);
         joinRoom(socket).then(() => {
-            console.log(`User ${socket.user?.user_id} joined their rooms`);
+            console.log(`User ${socket.user?.userId} joined their rooms`);
         }).catch((error) => {
             console.log("Error joining rooms:", error);
         });
         socket.on(SOCKET_EVENTS.DISCONNECT, () => {
-            console.log(`✖️ Client disconnected: ${socket.id} for user ${socket.user?.user_id}`);
+            console.log(`✖️ Client disconnected: ${socket.id} for user ${socket.user?.userId}`);
         });
     });
 }

@@ -4,12 +4,12 @@ import { regex } from 'src/types/index.types';
 
 
 const ShopInformationSchema = z.object({
-    user_id: z.coerce.number().int().positive('User ID must be a positive integer'),
-    shop_name: z.string().min(1, 'Shop name is required'),
-    shop_description: z.string().optional(),
+    userId: z.coerce.number().int().positive('User ID must be a positive integer'),
+    shopName: z.string().min(1, 'Shop name is required'),
+    shopDescription: z.string().optional(),
     status: z.enum(SHOP_STATUS).optional(),
-    admin_note: z.string().optional(),
-    created_at: z.string().datetime('Created at must be a valid date').optional(),
+    adminNote: z.string().optional(),
+    createdAt: z.string().datetime('Created at must be a valid date').optional(),
 });
 
 const CreationRequestSchema = z.object({
@@ -21,9 +21,9 @@ const CreationRequestSchema = z.object({
 });
 
 const AdminVerifySellerRequestSchema = z.object({
-    shop_id: z.coerce.number().int().positive('Seller ID must be a positive integer'),
+    shopId: z.coerce.number().int().positive('Seller ID must be a positive integer'),
     status: z.enum([SHOP_STATUS.REJECTED, SHOP_STATUS.ACTIVE, SHOP_STATUS.BANNED], 'Invalid seller status'),
-    admin_note: z.string().max(500, 'Rejection reason must not exceed 500 characters').optional(),
+    adminNote: z.string().max(500, 'Rejection reason must not exceed 500 characters').optional(),
 });
 
 const shop = {

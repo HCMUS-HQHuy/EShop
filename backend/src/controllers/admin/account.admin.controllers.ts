@@ -18,9 +18,9 @@ async function checkShopExist(data: UpdateSellerStatusRequest): Promise<boolean>
         db = await database.getConnection();
         const sql = `
             SELECT COUNT(*) FROM shops
-            WHERE shop_id = $1
+            WHERE shopId = $1
         `;
-        const result = await db.query(sql, [data.shop_id]);
+        const result = await db.query(sql, [data.shopId]);
         return (parseInt(result.rows[0].count, 10) > 0);
     } catch (error) {
         console.error("Database error:", error);
@@ -39,12 +39,12 @@ async function checkUserCondition(data: UpdateUserStatusRequest) {
         db = await database.getConnection();
         const sql = `
             SELECT COUNT(*) FROM users 
-            WHERE user_id = $1 AND status = $2
+            WHERE userId = $1 AND status = $2
         `;
         const status = data.status === USER_STATUS.BANNED ? USER_STATUS.ACTIVE : USER_STATUS.BANNED;
-        const result = await db.query(sql, [data.user_id, status]);
+        const result = await db.query(sql, [data.userId, status]);
         if (parseInt(result.rows[0].count, 10) === 0) {
-            errors.user_id = "User account not found or not banned";
+            errors.userId = "User account not found or not banned";
         }
     } catch (error) {
         console.error("Database error:", error);
@@ -61,16 +61,16 @@ async function checkUserCondition(data: UpdateUserStatusRequest) {
     };
 }
 
-async function updateShopStatus(shop_id: number, status: SHOP_STATUS, rejectionReason?: string) {
+async function updateShopStatus(shopId: number, status: SHOP_STATUS, rejectionReason?: string) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
         const sql = `
             UPDATE shops SET status = $1, admin_note = $2 
-            WHERE shop_id = $3
-            RETURNING user_id, status, admin_note;
+            WHERE shopId = $3
+            RETURNING userId, status, admin_note;
         `;
-        const values = [status, rejectionReason || null, shop_id];
+        const values = [status, rejectionReason || null, shopId];
         const value = await db.query(sql, values);
         return value.rows[0];
     } catch (error) {
@@ -89,7 +89,7 @@ async function updateUserStatus(userId: number, status: USER_STATUS) {
         db = await database.getConnection();
         const sql = `
             UPDATE users SET status = $1
-            WHERE user_id = $2
+            WHERE userId = $2
         `;
         const values = [status, userId];
         await db.query(sql, values);
@@ -113,9 +113,9 @@ async function list(req: RequestCustom, res: express.Response) {
     try {
         db = await database.getConnection();
         const sql = `
-            SELECT u.user_id, u.username, s.shop_id, s.shop_name, s.status
+            SELECT u.userId, u.username, s.shopId, s.shop_name, s.status
             FROM users AS u
-            LEFT JOIN shops AS s ON u.user_id = s.user_id
+            LEFT JOIN shops AS s ON u.userId = s.userId
             WHERE s.status = '${SHOP_STATUS.PENDING_VERIFICATION}'
         `;
         const result = await db.query(sql);
@@ -140,21 +140,21 @@ async function reviewShop(req: RequestCustom, res: express.Response) {
 
     // const getInfoShop = {}
 
-    // foreign key -> user -> user_id
-    // check user_id -> shop -> ok?
+    // foreign key -> user -> userId
+    // check userId -> shop -> ok?
 
     //--- 
 
     // ok -> 
 
     // const dataConfig = {
-    //     user_id: getInfoShop.user_id,
-    //     shop_id: getInfoShop.shop_id,
+    //     userId: getInfoShop.userId,
+    //     shopId: getInfoShop.shopId,
     //     status: getInfoShop.status,
     //     admin_note: getInfoShop.admin_note
     // }
 
-    // io.emit(to [room, user_id ] -> emmit  eventSOket (access shop / denied shop) -> dataConfig)
+    // io.emit(to [room, userId ] -> emmit  eventSOket (access shop / denied shop) -> dataConfig)
 
     // --- 
 // not ok ->
@@ -167,7 +167,7 @@ async function reviewShop(req: RequestCustom, res: express.Response) {
 // socket -> io.on(accessShop)
 
 // function handleAccessshop(data -> dataConfig của event) { 
-// check condition -> user_id && shop_id
+// check condition -> userId && shopId
 
 // true -> login / reload data -> show access/denied
 
@@ -190,7 +190,7 @@ async function reviewShop(req: RequestCustom, res: express.Response) {
 
     // update the shop account status in the database
     try {
-        const dataConfig = await updateShopStatus(data.shop_id, data.status, data.admin_note);
+        const dataConfig = await updateShopStatus(data.shopId, data.status, data.adminNote);
         const io = req?.io;
         if (io === undefined) 
             throw Error("Socket IO instance is not available");
@@ -199,8 +199,8 @@ async function reviewShop(req: RequestCustom, res: express.Response) {
             adminNote: dataConfig.admin_note,
         }
         console.log('responsedata: ', responseData);
-        io.of('/seller').to(`shop_id_${data.shop_id}`).emit(SOCKET_EVENTS.SET_SHOP_STATUS, responseData);
-        return res.status(200).json(util.response.success("Shop account updated", [`shop :${data.shop_id}`]));
+        io.of('/seller').to(`shop_id_${data.shopId}`).emit(SOCKET_EVENTS.SET_SHOP_STATUS, responseData);
+        return res.status(200).json(util.response.success("Shop account updated", [`shop :${data.shopId}`]));
     } catch (error) {
         console.error("Error updating shop account:", error);
         return res.status(500).json(util.response.error('Internal server error', ['Error updating shop account']));
@@ -233,8 +233,8 @@ async function reviewUser(req: RequestCustom, res: express.Response) {
     }
 
     try {
-        await updateUserStatus(data.user_id, data.status);
-        return res.status(200).json(util.response.success("User account updated", [data.user_id]));
+        await updateUserStatus(data.userId, data.status);
+        return res.status(200).json(util.response.success("User account updated", [data.userId]));
     } catch (error) {
         console.error("Error updating user account:", error);
         return res.status(500).json(util.response.error('Internal server error', ['Error updating user account']));

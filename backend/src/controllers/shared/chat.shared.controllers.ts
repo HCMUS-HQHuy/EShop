@@ -13,7 +13,7 @@ async function createConversation(req: RequestCustom, res: express.Response) {
     let db: Client|undefined = undefined;
     try {
         db = await database.getConnection();
-        const params = [req.user?.user_id, req.body.participant2Id, req.body.participant1Role, req.body.participant2Role, JSON.stringify(req.body.context)];
+        const params = [req.user?.userId, req.body.participant2Id, req.body.participant1Role, req.body.participant2Role, JSON.stringify(req.body.context)];
         const result = await db.query(`
             INSERT INTO conversations (
                 participant1_id,
@@ -75,7 +75,7 @@ async function sendMessage(req: RequestCustom, res: express.Response) {
                 content,
                 sent_at as "timestamp"
         `;
-        const result = await db.query(sql, [conversationId, req.user?.user_id, content]);
+        const result = await db.query(sql, [conversationId, req.user?.userId, content]);
         const message: ConversationMessageType = result.rows[0];
         const data = {
             conversationId: Number(message.conversationId),
@@ -83,7 +83,7 @@ async function sendMessage(req: RequestCustom, res: express.Response) {
             sender: message.sender,
             timestamp: message.timestamp
         }
-        req.io?.to(`room_${message.conversationId}`).except(`user_room_${req.user?.user_id}`).emit(SOCKET_EVENTS.MESSAGE, data);
+        req.io?.to(`room_${message.conversationId}`).except(`user_room_${req.user?.userId}`).emit(SOCKET_EVENTS.MESSAGE, data);
         res.status(201).json(util.response.success('Message sent', { message: data }));
     } catch (error) {
         console.error('Error sending message:', error);
@@ -128,13 +128,13 @@ async function getConversations(req: RequestCustom, res: express.Response) {
                     ELSE c.participant1_role
                 END AS "userRole",
                 c.context AS "context",
-                withUser.user_id AS "withUserId",
+                withUser.userId AS "withUserId",
                 withUser.username AS "username"
             FROM (SELECT * FROM conversations WHERE (participant1_id = $1 AND participant1_role = $2)  OR (participant2_id = $1 AND participant2_role = $2)) c
-            JOIN users withUser ON  withUser.user_id IN (c.participant2_id, c.participant1_id) AND withUser.user_id != $1
+            JOIN users withUser ON  withUser.userId IN (c.participant2_id, c.participant1_id) AND withUser.userId != $1
             OFFSET 0 LIMIT 10
         `;
-        const result = await db.query(sql, [req.user?.user_id, userRole]);
+        const result = await db.query(sql, [req.user?.userId, userRole]);
         const data = result.rows.map(row => ({
             id: row.conversationId,
             withUser: {
@@ -163,7 +163,7 @@ async function getConversations(req: RequestCustom, res: express.Response) {
                 ORDER BY sent_at DESC
                 OFFSET 0 LIMIT 20
             `;
-            const result = await db.query(sql, [conv.id, req.user?.user_id]);
+            const result = await db.query(sql, [conv.id, req.user?.userId]);
             result.rows.reverse();
             conv.messages = result.rows.map(row => ({
                 sender: row.sender,
@@ -192,10 +192,10 @@ async function getConversation(req: RequestCustom, res: express.Response) {
     let db: Client|undefined = undefined;
     try {
         db = await database.getConnection();
-        const params = [req.user?.user_id, req.body.participant2Id, req.body.participant1Role, req.body.participant2Role, JSON.stringify(req.body.context)];
+        const params = [req.user?.userId, req.body.participant2Id, req.body.participant1Role, req.body.participant2Role, JSON.stringify(req.body.context)];
         const result = await db.query(`
             SELECT id, users.username as name
-            FROM conversations JOIN users ON users.user_id = conversations.participant2_id
+            FROM conversations JOIN users ON users.userId = conversations.participant2_id
             WHERE 
                 participant1_id = $1
                 AND participant1_role = $3

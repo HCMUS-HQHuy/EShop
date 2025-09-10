@@ -25,7 +25,7 @@ async function create(req: RequestCustom, res: express.Response) {
     try {
         await prisma.shops.create({
             data: {
-                userId: req.body.user_id,
+                userId: req.body.userId,
                 ...data
             }
         })

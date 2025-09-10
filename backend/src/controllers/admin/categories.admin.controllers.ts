@@ -88,10 +88,10 @@ async function getCategories(params: CategoryParamsRequest) {
             `;
         const limit         = PAGINATION_LIMIT;
         const offset        = (params.page - 1) * limit;
-        const createdFrom   = params?.filter?.created_from;
-        const createdTo     = params?.filter?.created_to;
-        const deleted_from  = params?.filter?.deleted_from;
-        const deletedTo     = params?.filter?.deleted_to;
+        const createdFrom   = params?.filter?.createdFrom;
+        const createdTo     = params?.filter?.createdTo;
+        const deleted_from  = params?.filter?.deletedFrom;
+        const deletedTo     = params?.filter?.deletedTo;
         const isDeleted     = params?.filter?.is_deleted;
 
         const queryParams = [`%${params.keywords}%`, limit, offset, createdFrom, createdTo, deleted_from, deletedTo, isDeleted];
@@ -256,7 +256,7 @@ async function remove(req: RequestCustom, res: express.Response) {
                 { details: [`Category with name: "${categoryName}" does not exist`] }
             ));
         }
-        await deleteCategory(categoryName, req.user?.user_id as number);
+        await deleteCategory(categoryName, req.user?.userId as number);
         res.status(200).json(util.response.success("Category deleted successfully"));
     } catch (error: any) {
         res.status(500).json(util.response.internalServerError());

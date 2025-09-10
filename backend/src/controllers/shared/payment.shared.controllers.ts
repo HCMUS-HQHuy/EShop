@@ -9,11 +9,11 @@ async function getAll(req: RequestCustom, res: express.Response) {
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
     try {
-        const result = await prisma.payment_methods.findMany({
-            where: { is_active: true },
+        const result = await prisma.paymentMethods.findMany({
+            where: { isActive: true },
             orderBy: { code: 'desc' },
             select: {
-                payment_method_id: true,
+                paymentMethodId: true,
                 code: true,
                 name: true,
                 img: true,
@@ -21,7 +21,7 @@ async function getAll(req: RequestCustom, res: express.Response) {
             }
         });
         const data = result.map(row => ({
-            id: row.payment_method_id,
+            id: row.paymentMethodId,
             code: row.code,
             name: row.name,
             img: row.img,

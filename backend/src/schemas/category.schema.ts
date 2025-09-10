@@ -8,17 +8,17 @@ const CategoryUpdateSchema = z.object({
 });
 
 const CategoryFilterSchema = z.object({
-    created_from: z.string().optional(),
-    created_to: z.string().optional(),
-    deleted_from: z.string().optional(),
-    deleted_to: z.string().optional(),
+    createdFrom: z.string().optional(),
+    createdTo: z.string().optional(),
+    deletedFrom: z.string().optional(),
+    deletedTo: z.string().optional(),
     is_deleted: z.boolean().optional(),
 }).refine((data) => {
-    if (data.created_from && data.created_to) {
-        return new Date(data.created_from) <= new Date(data.created_to);
+    if (data.createdFrom && data.createdTo) {
+        return new Date(data.createdFrom) <= new Date(data.createdTo);
     }
-    if (data.deleted_from && data.deleted_to) {
-        return new Date(data.deleted_from) <= new Date(data.deleted_to);
+    if (data.deletedFrom && data.deletedTo) {
+        return new Date(data.deletedFrom) <= new Date(data.deletedTo);
     }
     return true;
 }, {

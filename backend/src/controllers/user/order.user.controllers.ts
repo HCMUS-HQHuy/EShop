@@ -15,7 +15,7 @@ async function create(req: RequestCustom, res: express.Response) {
     console.log(req.body);
     const parsedBody = schemas.order.creating.safeParse({
         ...req.body,
-        userId: req.user?.user_id
+        userId: req.user?.userId
     });
     if (!parsedBody.success) {
         return res
@@ -40,7 +40,7 @@ async function getAllOrders(req: RequestCustom, res: express.Response) {
     if (!util.role.isUser(req.user)) {
         return res.status(403).json(util.response.authorError('users'));
     }
-    const userId = req.user!.user_id;
+    const userId = req.user!.userId;
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -50,7 +50,7 @@ async function getAllOrders(req: RequestCustom, res: express.Response) {
                    discount_amount as "discountOrder", status,
                    receiver_name as "name", street_address as "address", phone_number as "phone"
             FROM orders
-            WHERE user_id = $1
+            WHERE userId = $1
             ORDER BY created_at DESC
             OFFSET 0 LIMIT 20
         `;

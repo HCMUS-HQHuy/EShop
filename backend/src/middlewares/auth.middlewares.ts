@@ -15,9 +15,9 @@ async function auth(req: RequestCustom, res: express.Response, next: express.Nex
     if (!token) token = req.cookies.auth_jwt;
     if (!token) return res.sendStatus(401);
     try {
-        const { user_id, role } = jwt.verify(token, process.env.JWT_SECRET as string) as UserInfor;
-        req.user = { user_id, role } as UserInfor;
-        console.log(`Authenticated user: ${req.user.user_id}, Role: ${req.user.role}`);
+        const { userId, role } = jwt.verify(token, process.env.JWT_SECRET as string) as UserInfor;
+        req.user = { userId, role } as UserInfor;
+        console.log(`Authenticated user: ${req.user.userId}, Role: ${req.user.role}`);
         if (utils.role.isAdmin(req.user)) {
             return next();
         }
@@ -28,19 +28,14 @@ async function auth(req: RequestCustom, res: express.Response, next: express.Nex
 
     try {
         const result = await prisma.users.findFirst({
-            where: { user_id: req.user.user_id, status: USER_STATUS.ACTIVE },
-            select: { user_id: true, username: true, role: true, shops: { select: { shop_id: true, status: true } } }
+            where: { userId: req.user.userId, status: USER_STATUS.ACTIVE },
+            select: { userId: true, username: true, role: true, shops: { select: { shopId: true, status: true } } }
         })
         if (result === null) {
             return res.status(403).json({ errors: 'Forbidden: User not found or inactive.' });
         }
         const infor: UserInfor = result;
-        req.user = {
-            user_id: infor.user_id,
-            role: infor.role,
-            shop_id: infor.shop_id,
-            shop_status: infor.shop_status
-        } as UserInfor;
+        req.user = infor;
         req.io?.emit(SOCKET_EVENTS.LOGIN, 'logged in successfully');
         next();
     } catch (error) {

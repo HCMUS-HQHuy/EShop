@@ -9,16 +9,16 @@ const seedData = async () => {
     }
     await prisma.categories.createMany({
       data: [
-        { iconname: "mobile", title: "Phones" },
-        { iconname: "computer", title: "Computers" },
-        { iconname: "smartWatch", title: "SmartWatch" },
-        { iconname: "camera", title: "Camera"},
-        { iconname: "headphone", title: "HeadPhones" },
-        { iconname: "gamepad", title: "Gaming" },
-        { iconname: "furniture", title: "Furniture" },
-        { iconname: "shirt", title: "Clothes" },
-        { iconname: "dogHand", title: "Animal" },
-        { iconname: "makeup", title: "makeup" }
+        { iconName: "mobile", title: "Phones" },
+        { iconName: "computer", title: "Computers" },
+        { iconName: "smartWatch", title: "SmartWatch" },
+        { iconName: "camera", title: "Camera"},
+        { iconName: "headphone", title: "HeadPhones" },
+        { iconName: "gamepad", title: "Gaming" },
+        { iconName: "furniture", title: "Furniture" },
+        { iconName: "shirt", title: "Clothes" },
+        { iconName: "dogHand", title: "Animal" },
+        { iconName: "makeup", title: "makeup" }
       ],
     });
     console.log("Seeding completed.");

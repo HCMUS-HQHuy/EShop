@@ -109,7 +109,7 @@ async function listProducts(params: ProductParamsRequest) {
             filter?.min_price,              // $5
             filter?.categories_id,          // $6
             filter?.status,                 // $7
-            filter?.shop_id,                // $8
+            filter?.shopId,                // $8
             filter?.is_deleted              // $9
         ];
         const result = await db.query(sql, queryParams);

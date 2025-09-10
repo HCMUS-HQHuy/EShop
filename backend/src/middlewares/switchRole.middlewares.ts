@@ -7,7 +7,7 @@ import { RequestCustom } from 'src/types/common.types';
 function switchRole(req: RequestCustom, res: express.Response, next: express.NextFunction) {
     // Check if the user is an admin
     if (util.role.isUser(req.user)) {
-        if (req.user?.shop_id) {
+        if (req.user?.shopId) {
             req.user.role = USER_ROLE.SELLER;
             return next();
         }

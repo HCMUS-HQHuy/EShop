@@ -2,17 +2,17 @@ import { SHOP_STATUS, USER_ROLE } from "@prisma/client";
 import { UserInfor } from "src/types/user.types";
 
 export function isSeller(user: UserInfor | undefined): boolean {
-    if (!user || !user.shop_id) {
+    if (!user || !user.shopId) {
         return false;
     }
     return true;
 }
 
 export function isAcceptedSeller(user: UserInfor | undefined): boolean {
-    if (!user || !user.shop_status) {
+    if (!user || !user.shopStatus) {
         return false;
     }
-    return user.shop_status === SHOP_STATUS.ACTIVE || user.shop_status === SHOP_STATUS.CLOSED;
+    return user.shopStatus === SHOP_STATUS.ACTIVE || user.shopStatus === SHOP_STATUS.CLOSED;
 }
 
 export function isAdmin(user: UserInfor | undefined): boolean {

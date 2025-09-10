@@ -10,12 +10,12 @@ async function get(req: RequestCustom, res: express.Response) {
     let db: Client | undefined = undefined;
 
     try {
-        const userId = req.user!.user_id;
+        const userId = req.user!.userId;
         db = await database.getConnection();
         const sql = `
             SELECT username, email, address, phone_number
             FROM users
-            WHERE user_id = $1
+            WHERE userId = $1
         `;
         const result = await db.query(sql, [userId]);
         const userInfo = result.rows[0];

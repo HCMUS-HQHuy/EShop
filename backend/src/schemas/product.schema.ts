@@ -10,11 +10,11 @@ const ProductSchema = z.object({
     description: z.string().min(1, 'Description is required').max(1000, 'Description must be <= 1000 characters'),
     price: z.coerce.number().nonnegative('Price must be >= 0'),
     discount: z.coerce.number().min(0, 'Discount must be >= 0').max(100, 'Discount must be <= 100').optional(),
-    stock_quantity: z.coerce.number().nonnegative('Stock quantity must be >= 0'),
+    stockQuantity: z.coerce.number().nonnegative('Stock quantity must be >= 0'),
     mainImage: z.string().url('Image URL must be valid').optional(),
     status: z.enum([PRODUCT_STATUS.ACTIVE, PRODUCT_STATUS.INACTIVE]),
     categories: z.array(z.coerce.number().positive('Category ID must be positive')).max(3, 'Max 3 categories'),
-    shop_id: z.number().int().positive().optional(),
+    shopId: z.number().int().positive().optional(),
     deletedImages: z.array(z.string().url('Image URL must be valid')).max(5, 'Max 5 images can be deleted').optional()
 });
 
@@ -34,19 +34,19 @@ const BaseProductFilterSchema = z.object({
 
 const AdminProductFilterSchema = BaseProductFilterSchema.safeExtend({
     is_deleted: z.boolean().optional(),
-    shop_id: z.string().optional(),
+    shopId: z.string().optional(),
     status: z.enum(PRODUCT_STATUS).optional()
 });
 
 const SellerProductFilterSchema = BaseProductFilterSchema.safeExtend({
     is_deleted: z.never(),
-    shop_id: z.never(),
+    shopId: z.never(),
     status: z.enum(PRODUCT_STATUS).optional()
 });
 
 const UserProductFilterSchema = BaseProductFilterSchema.safeExtend({
     is_deleted: z.never(),
-    shop_id: z.never(),
+    shopId: z.never(),
     status: z.never()
 });
 

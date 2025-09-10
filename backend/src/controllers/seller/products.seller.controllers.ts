@@ -51,7 +51,7 @@ async function removeProduct(userId: number, productId: number): Promise<void> {
     }
 }
 
-async function listProducts(shop_id: number, params: ProductParamsRequest) {
+async function listProducts(shopId: number, params: ProductParamsRequest) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -65,7 +65,7 @@ async function listProducts(shop_id: number, params: ProductParamsRequest) {
                 500 as sold, 4 as rating, status
             FROM products
             WHERE name ILIKE $1
-                AND shop_id = ${shop_id}
+                AND shopId = ${shopId}
                 AND ($4::numeric IS NULL OR price <= $4)
                 AND ($5::numeric IS NULL OR price >= $5)
                 AND (
@@ -158,7 +158,7 @@ async function list(req: RequestCustom, res: express.Response) {
     const params: ProductParamsRequest = parsedBody.data;
     console.log("Listing products with params:", params);
     try {
-        const products = await listProducts(req.user?.shop_id as number, params);
+        const products = await listProducts(req.user?.shopId as number, params);
         res.status(200).send(util.response.success('Products listed successfully', { products: products }));
     } catch (error) {
         console.error('Error listing products:', error);
@@ -186,7 +186,7 @@ async function remove(req: RequestCustom, res: express.Response) {
 
     console.log("Removing product with ID:", productId);
     try {
-        await removeProduct(Number(req.user?.user_id), productId);
+        await removeProduct(Number(req.user?.userId), productId);
         res.status(204).json();
     } catch (error) {
         console.error('Error removing product:', error);
@@ -220,8 +220,8 @@ async function getById(req: RequestCustom, res: express.Response) {
                     product_categories ON products.product_id = product_categories.product_id
                 LEFT JOIN
                     product_images ON products.product_id = product_images.product_id
-            WHERE products.product_id = $1 AND shop_id = $2
-        `, [productId, req.user?.shop_id]);
+            WHERE products.product_id = $1 AND shopId = $2
+        `, [productId, req.user?.shopId]);
         if (!result.rows[0]) {
             return res.status(404).send(util.response.error('Product not found'));
         }
@@ -273,7 +273,7 @@ async function update(req: RequestCustom, res: express.Response) {
 
     let db: Client | undefined = undefined;
     try {
-        product.shop_id = req.user?.shop_id as number;
+        product.shopId = req.user?.shopId as number;
         if (req.files && 'mainImage' in req.files) {
             product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
         } else product.mainImage = product.mainImage?.substring(product.mainImage?.lastIndexOf('/') + 1);
@@ -284,7 +284,7 @@ async function update(req: RequestCustom, res: express.Response) {
         const sql = `
             UPDATE products
             SET name = $1, sku = $2, short_name = $3, price = $4, discount = $5, description = $6, stock_quantity = $7, image_url = $8, status = $9
-            WHERE shop_id = $10 AND product_id = $11
+            WHERE shopId = $10 AND product_id = $11
         `;
         const data = [
             product.name,
@@ -293,10 +293,10 @@ async function update(req: RequestCustom, res: express.Response) {
             product.price,
             product.discount,
             product.description,
-            product.stock_quantity,
+            product.stockQuantity,
             product.mainImage,
             product.status,
-            product.shop_id,
+            product.shopId,
             productId,
         ];
         await db.query(sql, data);
@@ -373,13 +373,13 @@ async function add(req: RequestCustom, res: express.Response) {
     console.log("Parsed product data:", product);
     let db: Client | undefined = undefined;
     try {
-        product.shop_id = req.user?.shop_id as number;
+        product.shopId = req.user?.shopId as number;
         product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
         console.log("Product added:", product);
         db = await database.getConnection();
         await db.query('BEGIN');
         const sql = `
-            INSERT INTO products (name, sku, short_name, price, discount, description, stock_quantity, image_url, shop_id, status)
+            INSERT INTO products (name, sku, short_name, price, discount, description, stock_quantity, image_url, shopId, status)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING product_id
         `;
@@ -390,9 +390,9 @@ async function add(req: RequestCustom, res: express.Response) {
             product.price,
             product.discount,
             product.description,
-            product.stock_quantity,
+            product.stockQuantity,
             product.mainImage,
-            product.shop_id,
+            product.shopId,
             product.status
         ];
         const result = await db.query(sql, data);
