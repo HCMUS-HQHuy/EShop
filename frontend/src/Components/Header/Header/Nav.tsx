@@ -12,10 +12,6 @@ const Nav = () => {
   const { userRole } = useSelector((state: RootState) => state.global);
   const navDirection = i18n.dir() === "ltr" ? "ltr" : "rtl";
 
-  useEffect(()=>{
-    console.log(userRole);
-  }, [userRole])
-
   if (userRole === USER_ROLE.SELLER) {
     return (
       <nav className={s.nav} dir={navDirection}>

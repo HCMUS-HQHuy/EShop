@@ -11,7 +11,6 @@ const NavTools = ({ showHeart = true, showCart = true, showUser = true, showChat
   const { cartProducts, favoritesProducts } = useSelector((state: RootState) => state.products);
   const { conversations } = useSelector((state: RootState) => state.conversation);
   const numberOfUnreadMessages = conversations.reduce((acc, convo) => acc + (convo.unreadCount > 0 ? 1 : 0), 0);
-  console.log('conversations', numberOfUnreadMessages, conversations);
 
   return (
     <div className={s.navTools}>
