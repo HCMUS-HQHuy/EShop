@@ -66,7 +66,7 @@ async function login(req: express.Request, res: express.Response) {
             path: "/",
             httpOnly: true,
             secure: true,
-            sameSite: "strict",
+            sameSite: "none",
             maxAge: 365 * 24 * 60 * 60 * 1000 // 1 year in milliseconds
         });
         console.log("User logged in:", user);
