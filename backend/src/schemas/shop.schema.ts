@@ -13,11 +13,11 @@ const ShopInformationSchema = z.object({
 });
 
 const CreationRequestSchema = z.object({
-    shop_name: z.string().min(3, 'Shop name is required'),
+    shopName: z.string().min(3, 'Shop name is required'),
     email: z.string().email('Invalid email address').max(100, 'Email must not exceed 100 characters'),
-    phone_number: z.string().regex(regex.phone, 'Phone number must be 10-15 digits and may start with +'),
+    phoneNumber: z.string().regex(regex.phone, 'Phone number must be 10-15 digits and may start with +'),
     address: z.string().max(255, 'Address must not exceed 255 characters'),
-    shop_description: z.string().max(1000, 'Shop description must not exceed 1000 characters'),
+    shopDescription: z.string().max(1000, 'Shop description must not exceed 1000 characters'),
 });
 
 const AdminVerifySellerRequestSchema = z.object({

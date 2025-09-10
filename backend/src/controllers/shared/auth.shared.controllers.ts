@@ -46,7 +46,7 @@ async function login(req: express.Request, res: express.Response) {
                 email: credential.email
             },
             select: {
-                user_id: true,
+                userId: true,
                 username: true,
                 password: true,
                 role: true
@@ -59,7 +59,7 @@ async function login(req: express.Request, res: express.Response) {
             return res.status(401).json(util.response.error("Invalid credentials"));
         }
         console.log("User logged in:", userInfo);
-        const user: UserInfor = { user_id: userInfo.user_id, username: userInfo.username, role: userInfo.role };
+        const user: UserInfor = { userId: userInfo.userId, username: userInfo.username, role: userInfo.role };
         const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1y" }); // 1y = 1 year for testing purposes
         res.cookie("auth_jwt", token, {
             path: "/",
@@ -185,10 +185,10 @@ async function registerUser(req: express.Request, res: express.Response) {
                 password: hashedPassword,
                 email: email,
                 role: USER_ROLE.CUSTOMER,
-                is_verified: true // Set to true for testing purposes, change to false in production
+                isVerified: true // Set to true for testing purposes, change to false in production
             }
         });
-        const userId: number = userInfor.user_id;
+        const userId: number = userInfor.userId;
         console.log("New user registered with ID:", userId);
         return res.status(201).json(util.response.success("User registered successfully. Please verify your email."));
     } catch (error: any) {
@@ -205,7 +205,7 @@ async function verifyEmail(req: express.Request, res: express.Response) {
 
         const deletedTokens = await prisma.tokens.deleteMany({
             where: {
-                user_id: Number(payload.userId),
+                userId: Number(payload.userId),
                 token: token
             }
         });
@@ -215,10 +215,10 @@ async function verifyEmail(req: express.Request, res: express.Response) {
 
         await prisma.users.update({
             where: {
-                user_id: Number(payload.userId)
+                userId: Number(payload.userId)
             },
             data: {
-                is_verified: true
+                isVerified: true
             }
         });
         return res.redirect(`${process.env.FRONT_END_URL}/login`);
@@ -232,7 +232,7 @@ async function forgotPassword(req: express.Request, res: express.Response) {
     try {
         const userInfo = await prisma.users.findFirst({
             where: { email: req.body.email },
-            select: { email: true, username: true, user_id: true }
+            select: { email: true, username: true, userId: true }
         })
 
         if (userInfo === null) {
@@ -243,7 +243,7 @@ async function forgotPassword(req: express.Request, res: express.Response) {
         const hashedPassword = util.password.hash(newPassword);
 
         await prisma.users.update({
-            where: { user_id: userInfo.user_id },
+            where: { userId: userInfo.userId },
             data: { password: hashedPassword }
         })
         return res.status(200).json(util.response.success("Password reset email sent", {
@@ -265,7 +265,7 @@ async function resetPassword(req: express.Request, res: express.Response) {
 
         const deletedTokens = await prisma.tokens.deleteMany({
             where: {
-                user_id: Number(payload.userId),
+                userId: Number(payload.userId),
                 token: token
             }
         });
@@ -276,7 +276,7 @@ async function resetPassword(req: express.Request, res: express.Response) {
         const { password } = req.body; // validate later
         const hashedPassword = util.password.hash(password);
         await prisma.users.update({
-            where: { user_id: Number(payload.userId) },
+            where: { userId: Number(payload.userId) },
             data: { password: hashedPassword }
         });
         return res.status(200).json(util.response.success("Password has been reset successfully"));

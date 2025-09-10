@@ -15,13 +15,7 @@ async function create(req: RequestCustom, res: express.Response) {
         return res.status(403).json(util.response.error('Sellers cannot create twice seller account.'));
     }
 
-    const parsedBody = schemas.shop.creationRequest.safeParse({
-        shop_name: req.body.shopName,
-        shop_description: req.body.shopDescription,
-        address: req.body.address,
-        email: req.body.businessEmail,
-        phone_number: req.body.phoneNumber
-    });
+    const parsedBody = schemas.shop.creationRequest.safeParse(req.body);
 
     if (!parsedBody.success) {
         console.error("Invalid request data:", util.formatError(parsedBody.error));
@@ -31,12 +25,8 @@ async function create(req: RequestCustom, res: express.Response) {
     try {
         await prisma.shops.create({
             data: {
-                user_id: req.body.user_id,
-                shop_name: data.shop_name,
-                shop_description: data.shop_description,
-                address: data.address,
-                email: data.email,
-                phone_number: data.phone_number
+                userId: req.body.user_id,
+                ...data
             }
         })
         return res.status(201).json(util.response.success("Seller account created successfully"));
@@ -51,21 +41,13 @@ async function getInformation(req: RequestCustom, res: express.Response) {
         return res.status(403).json(util.response.authorError("sellers"));
     }
 
-    const shopId: number = req.user?.shop_id as number;
+    const shopId: number = req.user?.shopId as number;
     try {
-        const result = await prisma.shops.findUniqueOrThrow({
-            where: { shop_id: shopId },
-            select: { shop_name: true, email: true, phone_number: true, shop_description: true, address: true, status: true }
+        const shopInfo = await prisma.shops.findUniqueOrThrow({
+            where: { shopId: shopId },
+            select: { shopName: true, email: true, phoneNumber: true, shopDescription: true, address: true, status: true }
         });
-        const shopInfo = {
-            name: result.shop_name,
-            email: result.email,
-            phoneNumber: result.phone_number,
-            description: result.shop_description,
-            address: result.address,
-            status: result.status
-        };
-        return res.status(200).json(util.response.success("Seller information retrieved successfully", { shopInfo: shopInfo }));
+        return res.status(200).json(util.response.success("Seller information retrieved successfully", { shopInfo }));
     } catch (error) {
         console.error("Error fetching seller information:", error);
         return res.status(500).json(util.response.internalServerError());

@@ -57,7 +57,7 @@ datasource db {
 }
 
 model Categories {
-  id                Int                 @id @default(autoincrement())
+  categoryId        Int                 @id @default(autoincrement())
   iconName          String?             @db.VarChar(100)
   title             String              @unique @db.VarChar(100)
   description       String?
@@ -66,51 +66,51 @@ model Categories {
   isDeleted         Boolean             @default(false)
   deletedAt         DateTime?           @db.Timestamptz(6)
   deletedBy         Int?
-  categories        Categories?         @relation("categoriesTocategories", fields: [parentId], references: [id], onUpdate: NoAction)
+  categories        Categories?         @relation("categoriesTocategories", fields: [parentId], references: [categoryId], onUpdate: NoAction)
   otherCategories   Categories[]        @relation("categoriesTocategories")
-  users             Users?              @relation(fields: [deletedBy], references: [id], onUpdate: NoAction, map: "fk_category_deletedBy")
+  users             Users?              @relation(fields: [deletedBy], references: [userId], onUpdate: NoAction, map: "fk_category_deletedBy")
   productCategories ProductCategories[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Conversations {
-  id               Int        @id @default(autoincrement())
+  conversationId   Int        @id @default(autoincrement())
   participant1Id   Int
   participant2Id   Int
   participant1Role String     @db.Char(10)
   participant2Role String     @db.Char(10)
   context          Json?
   createdAt        DateTime   @default(now()) @db.Timestamp(6)
-  participant1     Users      @relation("conversations_participant1_idTousers", fields: [participant1Id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  participant2     Users      @relation("conversations_participant2_idTousers", fields: [participant2Id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  participant1     Users      @relation("conversations_participant1_idTousers", fields: [participant1Id], references: [userId], onDelete: Cascade, onUpdate: NoAction)
+  participant2     Users      @relation("conversations_participant2_idTousers", fields: [participant2Id], references: [userId], onDelete: Cascade, onUpdate: NoAction)
   messages         Messages[]
 }
 
 model Messages {
-  id             Int           @id @default(autoincrement())
+  messageId      Int           @id @default(autoincrement())
   conversationId Int
   senderId       Int
   content        String
   sentAt         DateTime      @default(now()) @db.Timestamp(6)
   isRead         Boolean?      @default(false)
-  conversations  Conversations @relation(fields: [conversationId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users          Users         @relation(fields: [senderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  conversations  Conversations @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade, onUpdate: NoAction)
+  users          Users         @relation(fields: [senderId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model OrderItems {
-  id        Int      @id @default(autoincrement())
-  orderId   Int
-  productId Int
-  quantity  Int
-  price     Decimal  @db.Decimal(10, 2)
-  discount  Decimal  @default(0) @db.Decimal(10, 2)
-  orders    Orders   @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_order_item_order")
-  products  Products @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_item_product")
+  orderItemId Int      @id @default(autoincrement())
+  orderId     Int
+  productId   Int
+  quantity    Int
+  price       Decimal  @db.Decimal(10, 2)
+  discount    Decimal  @default(0) @db.Decimal(10, 2)
+  orders      Orders   @relation(fields: [orderId], references: [orderId], onDelete: Cascade, onUpdate: NoAction, map: "fk_order_item_order")
+  products    Products @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_item_product")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Orders {
-  id              Int          @id @default(autoincrement())
+  orderId         Int          @id @default(autoincrement())
   shopId          Int
   userId          Int
   receiverName    String       @db.VarChar(100)
@@ -124,19 +124,19 @@ model Orders {
   status          ORDER_STATUS @default(PENDING)
   createdAt       DateTime?    @default(now()) @db.Timestamptz(6)
   orderItems      OrderItems[]
-  shops           Shops        @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_shop")
-  users           Users        @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_user")
+  shops           Shops        @relation(fields: [shopId], references: [shopId], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_shop")
+  users           Users        @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_order_user")
   payments        Payments[]
 }
 
 model PaymentMethods {
-  id       Int        @id @default(autoincrement())
-  code     String     @unique @db.VarChar(20)
-  name     String     @db.VarChar(100)
-  img      String?    @db.VarChar(255)
-  link     String?    @db.VarChar(255)
-  isActive Boolean    @default(true)
-  payments Payments[]
+  paymentMethodId Int        @id @default(autoincrement())
+  code            String     @unique @db.VarChar(20)
+  name            String     @db.VarChar(100)
+  img             String?    @db.VarChar(255)
+  link            String?    @db.VarChar(255)
+  isActive        Boolean    @default(true)
+  payments        Payments[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -148,33 +148,33 @@ model Payments {
   amount            Decimal        @db.Decimal(12, 2)
   status            ORDER_STATUS   @default(PENDING)
   paymentMethods    PaymentMethods @relation(fields: [paymentMethodCode], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_method")
-  orders            Orders         @relation(fields: [orderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_order")
+  orders            Orders         @relation(fields: [orderId], references: [orderId], onDelete: NoAction, onUpdate: NoAction, map: "fk_payment_order")
 }
 
 model ProductCategories {
   productId  Int
   categoryId Int
-  categories Categories @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  products   Products   @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  categories Categories @relation(fields: [categoryId], references: [categoryId], onDelete: Cascade, onUpdate: NoAction)
+  products   Products   @relation(fields: [productId], references: [productId], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([productId, categoryId])
 }
 
 model ProductImages {
-  id        Int       @id @default(autoincrement())
+  imageId   Int       @id @default(autoincrement())
   productId Int
   imageUrl  String    @db.VarChar(255)
   createdAt DateTime? @default(now()) @db.Timestamptz(6)
   isDeleted Boolean   @default(false)
   deletedAt DateTime? @db.Timestamptz(6)
   deletedBy Int?
-  users     Users?    @relation(fields: [deletedBy], references: [id], onUpdate: NoAction, map: "fk_image_deletedBy")
-  products  Products  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_image_product")
+  users     Users?    @relation(fields: [deletedBy], references: [userId], onUpdate: NoAction, map: "fk_image_deletedBy")
+  products  Products  @relation(fields: [productId], references: [productId], onDelete: Cascade, onUpdate: NoAction, map: "fk_image_product")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Products {
-  id                Int                 @id @default(autoincrement())
+  productId         Int                 @id @default(autoincrement())
   sku               String              @db.VarChar(100)
   shortName         String              @db.VarChar(255)
   name              String              @db.VarChar(255)
@@ -192,15 +192,15 @@ model Products {
   orderItems        OrderItems[]
   productCategories ProductCategories[]
   productImages     ProductImages[]
-  users             Users?              @relation(fields: [deletedBy], references: [id], onUpdate: NoAction, map: "fk_product_deletedBy")
-  shops             Shops               @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_shop")
+  users             Users?              @relation(fields: [deletedBy], references: [userId], onUpdate: NoAction, map: "fk_product_deletedBy")
+  shops             Shops               @relation(fields: [shopId], references: [shopId], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_shop")
 
   @@unique([sku, shopId], map: "uq_product_sku_shop")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Shops {
-  id              Int         @id @default(autoincrement())
+  shopId          Int         @id @default(autoincrement())
   userId          Int         @unique
   shopName        String      @db.VarChar(100)
   email           String      @unique @db.VarChar(100)
@@ -212,21 +212,21 @@ model Shops {
   createdAt       DateTime?   @default(now()) @db.Timestamptz(6)
   orders          Orders[]
   products        Products[]
-  users           Users       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_shop_user")
+  users           Users       @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_shop_user")
 }
 
 model Tokens {
-  id        Int       @id @default(autoincrement())
+  tokenId   Int       @id @default(autoincrement())
   userId    Int
   token     String    @db.VarChar(255)
   createdAt DateTime? @default(now()) @db.Timestamptz(6)
   expiresAt DateTime  @db.Timestamptz(6)
-  users     Users     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_token_user")
+  users     Users     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_token_user")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Users {
-  id                        Int             @id @default(autoincrement())
+  userId                    Int             @id @default(autoincrement())
   username                  String          @unique @db.VarChar(50)
   password                  String
   email                     String          @unique @db.VarChar(100)
