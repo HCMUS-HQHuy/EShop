@@ -13,6 +13,7 @@ import configCors from "src/config/cors.config";
 import routes from "src/routes/index.routes";
 import services from "src/services/index.services";
 import mid from "src/middlewares/index.middlewares";
+import seedData from "./config/seed";
 
 const app: express.Application = express();
 const httpServer: http.Server = http.createServer(app);
@@ -37,6 +38,8 @@ app.get('/', (res: any, req: any)=> {
 
 app.use(cookieParser());
 app.use(mid.addSocketIO(io));
+
+seedData();
 
 seedAdmin().then(() => {
     try {
