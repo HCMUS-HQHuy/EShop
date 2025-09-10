@@ -11,7 +11,7 @@ async function auth(req: types.RequestCustom, res: express.Response, next: expre
     const authHeader = req.headers["authorization"];
     let token = authHeader && authHeader.split(" ")[1];
     if (!token) token = req.cookies.auth_jwt; // Check cookies for token
-    console.log("Auth token:", token);
+    console.log("Auth token:", token, req.cookies);
     if (token == null) return res.sendStatus(401);
     try {
         const { user_id, role } = jwt.verify(token, process.env.JWT_SECRET as string) as types.UserInfor;
