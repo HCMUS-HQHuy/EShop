@@ -22,7 +22,7 @@ const ExploreProducts = ({ numOfProducts = -1, customization } : prop) => {
       {filteredProducts.map((product) => (
         <ProductCard
           product={product}
-          key={product.id}
+          key={product.productId}
           customization={customization}
           removeFrom={undefined}
         />
