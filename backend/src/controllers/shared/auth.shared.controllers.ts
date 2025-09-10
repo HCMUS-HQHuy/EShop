@@ -52,12 +52,10 @@ async function login(req: express.Request, res: express.Response) {
                 role: true
             }
         });
-        console.log("User info from DB:", userInfo);
         if (userInfo === null) {
             return res.status(401).json(util.response.error("Invalid credentials"));
         }
         if (!util.password.compare(credential.password, userInfo.password)) {
-            console.log("Invalid password");
             return res.status(401).json(util.response.error("Invalid credentials"));
         }
         const user: UserInfor = { user_id: userInfo.user_id, username: userInfo.username, role: userInfo.role as USER_ROLE };
@@ -69,7 +67,6 @@ async function login(req: express.Request, res: express.Response) {
             sameSite: "none",
             maxAge: 365 * 24 * 60 * 60 * 1000 // 1 year in milliseconds
         });
-        console.log("User logged in:", user);
         return res.status(201).json(util.response.success("Login successful", {userInfor: user}));
     } catch (error: any) {
         console.error("Authentication error:", error);
