@@ -7,8 +7,9 @@ import s from "./UserMenu.module.scss";
 import UserMenuItemWithCount from "./UserMenuItemWithCount.tsx";
 import type { AppDispatch, RootState } from "src/Types/store.ts";
 import { updateGlobalState } from "src/Features/globalSlice.tsx";
-import { USER_ROLE } from "src/Types/common.ts";
+import { SHOP_STATUS, USER_ROLE } from "src/Types/common.ts";
 import { conversationFetch } from "src/Features/conversationSlice.tsx";
+import { showAlert } from "src/Features/alertsSlice.tsx";
 
 type Props = {
   isActive: boolean;
@@ -17,19 +18,25 @@ type Props = {
 
 const UserMenu = ({ isActive, toggler }: Props) => {
   const { wishList, orderProducts } = useSelector((state: RootState) => state.products);
+  const { shopInfo } = useSelector((state: RootState) => state.seller);
   const wishListLength = wishList.length;
   const orderProductsLength = orderProducts.length;
   const activeClass = isActive ? s.active : "";
-  const navigateTo = useNavigate();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const signOut = useSignOut();
   const dispatch = useDispatch<AppDispatch>();
 
   function handleSignOut() {
     signOut();
-    navigateTo("/", { replace: true });
+    navigate("/", { replace: true });
   }
 
+  // if (!shopInfo.status) {
+  //   console.log("No shop info, redirecting to become-seller");
+  //   navigate("/become-seller");
+  //   return;
+  // }
   function switchModeToSeller() {
     dispatch(updateGlobalState({ key: "userRole", value: USER_ROLE.SELLER }));
     dispatch(conversationFetch(USER_ROLE.SELLER));
@@ -42,10 +49,19 @@ const UserMenu = ({ isActive, toggler }: Props) => {
         <span>{t("userMenuItems.profile")}</span>
       </NavLink>
       
-      <NavLink to="/seller" aria-label="Seller page" onClick={switchModeToSeller}>
-        <SvgIcon name="cart" />
-        <span>{t("userMenuItems.seller")}</span>
-      </NavLink>
+      {shopInfo.status && 
+        <NavLink to="/seller" aria-label="Seller page" onClick={switchModeToSeller}>
+          <SvgIcon name="cart" />
+          <span>{t("userMenuItems.seller")}</span>
+        </NavLink>
+      }
+
+      {!shopInfo.status && 
+        <NavLink to="/become-seller" aria-label="Seller page">
+          <SvgIcon name="cart" />
+          <span>{'Become Seller'}</span>
+        </NavLink>
+      }
 
       <NavLink to="/order" aria-label="Order page">
         <UserMenuItemWithCount

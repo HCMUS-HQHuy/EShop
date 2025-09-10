@@ -21,7 +21,7 @@ const initialState: FormState= {
   },
   sellerRegistrationForm: {
     shopName: "",
-    businessEmail: "",
+    email: "",
     phoneNumber: "",
     shopDescription: "",
     address: "",

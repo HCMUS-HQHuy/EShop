@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Api/index.api.ts";
 import type { SellerRegistrationFormValues } from "src/Types/forms.ts";
-import { log } from "console";
+import { SHOP_STATUS } from "src/Types/common.ts";
 
 type ShopInfo = {
   name: string;
@@ -9,7 +9,7 @@ type ShopInfo = {
   phoneNumber: string;
   description: string;
   address: string;
-  status: string | null;
+  status: SHOP_STATUS | null;
 };
 
 type InitialState = {

@@ -15,7 +15,7 @@ import parseZodError from 'src/utils/parseZodError.ts';
 
 const StartSellingPage = () => {
     const { sellerRegistrationForm } = useSelector((state: RootState) => state.forms);
-    const { shopName, agreeTerms, businessEmail, address, phoneNumber, shopDescription } = sellerRegistrationForm;
+    const { shopName, agreeTerms, email, address, phoneNumber, shopDescription } = sellerRegistrationForm;
     const dispatch = useDispatch<AppDispatch>();
     const isWebsiteOnline = useOnlineStatus();
     const { t } = useTranslation();
@@ -79,12 +79,12 @@ const StartSellingPage = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label htmlFor="businessEmail">Business Email</label>
+                    <label htmlFor="email">Business Email</label>
                     <input
                         type="email"
-                        id="businessEmail"
-                        name="businessEmail"
-                        value={businessEmail}
+                        id="email"
+                        name="email"
+                        value={email}
                         onChange={handleChange}
                         placeholder="email@example.com"
                         required

@@ -50,7 +50,7 @@ export const LoginInforSchema = z.object({
 
 export const SellerRegistrationFormSchema = z.object({
   shopName: z.string().min(2).max(100),
-  businessEmail: z.string().email("Invalid email address."),
+  email: z.string().email("Invalid email address."),
   phoneNumber: z.string().min(10).max(15),
   shopDescription: z.string().min(10).max(500),
   address: z.string().min(10).max(100),

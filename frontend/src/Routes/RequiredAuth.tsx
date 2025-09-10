@@ -10,11 +10,14 @@ import type { RootState } from "src/Types/store.ts";
 const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   const { loginInfo } = useSelector((state: RootState) => state.user);
   const { userRole } = useSelector((state: RootState) => state.global);
+  const { shopInfo } = useSelector((state: RootState) => state.seller);
   const { isSignIn } = loginInfo;
   const location = useLocation();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const pathName = location.pathname;
+
+  console.log("RequiredAuth: ", { loginInfo, isSignIn, userRole, shopInfo });
 
   const isPageRequiringSignIn = (page: string) =>
     !isSignIn && (pagesRequireSignIn.includes(page) || isPageForSeller(page));
