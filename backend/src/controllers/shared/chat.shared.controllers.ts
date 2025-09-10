@@ -97,7 +97,7 @@ async function getConversations(req: RequestCustom, res: express.Response) {
     if (util.role.isGuest(req.user)) {
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
-    return res.status(200);
+    return res.status(200).json(util.response.success('Success', { conversations: [] }));
     // const userRole =  req.query.userRole;
     // switch (userRole) {
     //     case USER_ROLE.ADMIN:
