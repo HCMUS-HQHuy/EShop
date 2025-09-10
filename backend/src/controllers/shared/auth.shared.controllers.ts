@@ -52,6 +52,7 @@ async function login(req: express.Request, res: express.Response) {
                 role: true
             }
         });
+        console.log("User info from DB:", userInfo);
         if (userInfo === null) {
             return res.status(401).json(util.response.error("Invalid credentials"));
         }
@@ -68,6 +69,7 @@ async function login(req: express.Request, res: express.Response) {
             sameSite: "strict",
             maxAge: 365 * 24 * 60 * 60 * 1000 // 1 year in milliseconds
         });
+        console.log("User logged in:", user);
         return res.status(201).json(util.response.success("Login successful", {userInfor: user}));
     } catch (error: any) {
         console.error("Authentication error:", error);
