@@ -3,7 +3,7 @@ import { Client } from 'pg';
 import database from 'src/database/index.database';
 import util from 'src/utils/index.utils';
 import schemas from 'src/schemas/index.schema';
-import { PRODUCT_STATUS } from 'src/types/index.types';
+import { PRODUCT_STATUS } from '@prisma/client';
 import { RequestCustom, ProductParamsRequest, UserProductFilter } from 'src/types/index.types';
 import { PAGINATION_LIMIT } from 'src/constants/globalVariables';
 

@@ -1,5 +1,4 @@
 import { Job, Queue, Worker } from "bullmq";
-import * as types from "src/types/index.types";
 import { Client } from "pg";
 import IORedis from "ioredis";
 
@@ -8,12 +7,14 @@ import database from "src/database/index.database";
 import { generateCode } from "src/utils/gencode.utils";
 import util from "src/utils/index.utils";
 import SOCKET_EVENTS from "src/constants/socketEvents";
+import { PRODUCT_STATUS } from "@prisma/client";
+import { CreatingOrderRequest, ItemInCart, OrderItemRequest } from "src/types/order.types";
 
 const redis_config = new IORedis(process.env.REDIS_URL!, {
     maxRetriesPerRequest: null,
 });
 
-async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Promise<types.OrderItemRequest[]> {
+async function checkAndLockOrderItems(items: ItemInCart[], db: Client): Promise<OrderItemRequest[]> {
     try {
         // Check existing of a cart item and gurantee its record doesn't change
         const sql = `
@@ -32,7 +33,7 @@ async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Pr
             JOIN
                 products p ON p.product_id = c.product_id
             WHERE
-                p.status = '${types.PRODUCT_STATUS.ACTIVE}'
+                p.status = '${PRODUCT_STATUS.ACTIVE}'
                 AND p.stock_quantity >= c.quantity
             FOR UPDATE OF p;
         `;
@@ -42,7 +43,7 @@ async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Pr
         if (result.rows.length !== items.length) {
             throw new Error("Invalid order items: One or more items are out of stock, inactive, or do not exist.");
         }
-        const order_item: types.OrderItemRequest[] = result.rows.map(row => ({
+        const order_item: OrderItemRequest[] = result.rows.map(row => ({
             orderId: 0, // placeholder, will be set when inserting order
             productId: row.product_id,
             quantity: row.quantity,
@@ -56,7 +57,7 @@ async function checkAndLockOrderItems(items: types.ItemInCart[], db: Client): Pr
     }
 }
 
-async function reduceStockQuantities(orderItems: types.OrderItemRequest[], db: Client): Promise<void> {
+async function reduceStockQuantities(orderItems: OrderItemRequest[], db: Client): Promise<void> {
     console.log(`Reducing stock for ${orderItems.length} products...`);
     const sql = `
         UPDATE products
@@ -77,7 +78,7 @@ async function reduceStockQuantities(orderItems: types.OrderItemRequest[], db: C
     console.log("Stock quantities reduced.");
 }
 
-async function insertOrderItems(orderId: number, orderItems: types.OrderItemRequest[], db: Client): Promise<void> {
+async function insertOrderItems(orderId: number, orderItems: OrderItemRequest[], db: Client): Promise<void> {
     console.log(`Inserting ${orderItems.length} items for order ${orderId}...`);
     const sql = `
         INSERT INTO order_items (order_id, product_id, quantity, price_at_purchase)
@@ -97,14 +98,14 @@ async function insertOrderItems(orderId: number, orderItems: types.OrderItemRequ
     console.log("All order items inserted.");
 }
 
-async function processOrder(job: Job<types.CreatingOrderRequest>) {
-    const orderData: types.CreatingOrderRequest = job.data;
+async function processOrder(job: Job<CreatingOrderRequest>) {
+    const orderData: CreatingOrderRequest = job.data;
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
         await db.query('BEGIN');
-        const itemsInCart: types.ItemInCart[] = orderData.items;
-        const orderItems: types.OrderItemRequest[] = await checkAndLockOrderItems(itemsInCart, db);
+        const itemsInCart: ItemInCart[] = orderData.items;
+        const orderItems: OrderItemRequest[] = await checkAndLockOrderItems(itemsInCart, db);
 
         if(!orderItems || !Array.isArray(orderItems)) {
             throw Error;
@@ -197,7 +198,7 @@ orderWorker.on('failed', (job: Job | undefined, err: Error) => {
     }
 });
 
-async function create(orderData: types.CreatingOrderRequest) {
+async function create(orderData: CreatingOrderRequest) {
     try {
         const hoursAgo = Math.floor((Date.now() - new Date(orderData.orderAt).getTime()) / 360000);
         const priority = Math.max(0, Math.min(1000 - hoursAgo, 1000));

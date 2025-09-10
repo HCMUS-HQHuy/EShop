@@ -7,7 +7,8 @@ import database from "src/database/index.database";
 
 import { SOCKET_EVENTS } from "src/constants/socketEvents";
 import { UpdateUserStatusRequest, UpdateSellerStatusRequest } from "src/types/index.types";
-import { RequestCustom, SHOP_STATUS, ShopStatus, USER_STATUS, UserStatus } from "src/types/index.types";
+import { RequestCustom } from "src/types/index.types";
+import {SHOP_STATUS, USER_STATUS} from "@prisma/client";
 
 // #### DATABASE FUNCTIONS ####
 
@@ -60,7 +61,7 @@ async function checkUserCondition(data: UpdateUserStatusRequest) {
     };
 }
 
-async function updateShopStatus(shop_id: number, status: ShopStatus, rejectionReason?: string) {
+async function updateShopStatus(shop_id: number, status: SHOP_STATUS, rejectionReason?: string) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -82,7 +83,7 @@ async function updateShopStatus(shop_id: number, status: ShopStatus, rejectionRe
     }
 }
 
-async function updateUserStatus(userId: number, status: UserStatus) {
+async function updateUserStatus(userId: number, status: USER_STATUS) {
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();

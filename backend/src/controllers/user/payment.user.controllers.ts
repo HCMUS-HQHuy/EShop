@@ -1,16 +1,17 @@
 import express from 'express';
-import * as types from 'src/types/index.types';
 import database from 'src/database/index.database';
 import { Client } from 'pg';
+import { PAYMENT_STATUS } from '@prisma/client';
+import { RequestCustom } from 'src/types/common.types';
 
-async function announce(req: types.RequestCustom, res: express.Response) {
+async function announce(req: RequestCustom, res: express.Response) {
     // console.log('Payment announce:', req.body);
     let db: Client|undefined = undefined;
     try {
         db = await database.getConnection();
         const sql = `
             UPDATE payments
-            SET status = '${types.PAYMENT_STATUS.COMPLETED}'
+            SET status = '${PAYMENT_STATUS.COMPLETED}'
             WHERE payment_code = $1
         `;
         await db.query(sql, [req.body.requestId]);

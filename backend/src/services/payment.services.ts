@@ -1,8 +1,8 @@
+import { PAYMENT_METHOD } from '@prisma/client';
 import axios from 'axios';
+import { CreatingOrderRequest } from 'src/types/order.types';
 
-import * as types from "src/types/index.types"
-
-async function MoMoMethod(order_code: string, orderData: types.CreatingOrderRequest) {
+async function MoMoMethod(order_code: string, orderData: CreatingOrderRequest) {
     var partnerCode = process.env.MOMO_PARTNER_CODE as string;
     var accessKey = process.env.MOMO_ACCESS_KEY as string;
     var secretKey = process.env.MOMO_SECRET_KEY as string;
@@ -52,7 +52,7 @@ async function MoMoMethod(order_code: string, orderData: types.CreatingOrderRequ
             amount: response.data.amount,
             redirect: true,
             url: response.data.shortLink,
-            paymentMethodCode: types.PAYMENT_METHOD.MOMO
+            paymentMethodCode: PAYMENT_METHOD.MOMO
         }
     } catch (error: any) {
         console.error('❌ Lỗi khi gọi MoMo:', error.response?.data || error.message);
@@ -60,9 +60,9 @@ async function MoMoMethod(order_code: string, orderData: types.CreatingOrderRequ
     }
 }
 
-async function create(order_code: string, orderData: types.CreatingOrderRequest) {
+async function create(order_code: string, orderData: CreatingOrderRequest) {
     switch (orderData.paymentMethodCode) {
-        case types.PAYMENT_METHOD.MOMO:
+        case PAYMENT_METHOD.MOMO:
             return await MoMoMethod(order_code, orderData);
         default:
             return {
@@ -70,7 +70,7 @@ async function create(order_code: string, orderData: types.CreatingOrderRequest)
                 amount: orderData.finalAmount,
                 redirect: false,
                 url: `${process.env.HOST_CLIENT}`,
-                paymentMethodCode: types.PAYMENT_METHOD.COD
+                paymentMethodCode: PAYMENT_METHOD.COD
             };
     }
 }

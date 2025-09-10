@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import {SORT_ATTRIBUTES, SORT_ORDERS, PRODUCT_STATUS} from 'src/types/index.types';
+import {SORT_ATTRIBUTES, SORT_ORDERS} from 'src/types/index.types';
+import { PRODUCT_STATUS } from '@prisma/client';
 import { PAGINATION_DEFAULT_PAGE } from 'src/constants/globalVariables';
 
 const ProductSchema = z.object({

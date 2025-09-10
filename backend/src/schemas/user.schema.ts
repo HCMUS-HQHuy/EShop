@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { SHOP_STATUS, USER_ROLE, USER_STATUS } from 'src/types/index.types';
+import { SHOP_STATUS, USER_STATUS } from '@prisma/client';
+import { USER_ROLE } from '@prisma/client';
 
 const BlockUnblockUserRequestSchema = z.object({
     user_id: z.coerce.number().int().positive('User ID must be a positive integer'),

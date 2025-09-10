@@ -3,7 +3,8 @@ import util from 'src/utils/index.utils';
 import { Client } from 'pg';
 import database from 'src/database/index.database';
 import SOCKET_EVENTS from 'src/constants/socketEvents';
-import { USER_ROLE, ConversationMessageType, RequestCustom } from 'src/types/index.types';
+import { ConversationMessageType, RequestCustom } from 'src/types/index.types';
+import { USER_ROLE } from '@prisma/client';
 
 async function createConversation(req: RequestCustom, res: express.Response) {
     if (util.role.isGuest(req.user)) {

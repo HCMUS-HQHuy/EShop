@@ -1,34 +1,35 @@
-import * as types from "src/types/index.types";
+import { SHOP_STATUS, USER_ROLE } from "@prisma/client";
+import { UserInfor } from "src/types/user.types";
 
-export function isSeller(user: types.UserInfor | undefined): boolean {
+export function isSeller(user: UserInfor | undefined): boolean {
     if (!user || !user.shop_id) {
         return false;
     }
     return true;
 }
 
-export function isAcceptedSeller(user: types.UserInfor | undefined): boolean {
+export function isAcceptedSeller(user: UserInfor | undefined): boolean {
     if (!user || !user.shop_status) {
         return false;
     }
-    return user.shop_status === types.SHOP_STATUS.ACTIVE || user.shop_status === types.SHOP_STATUS.CLOSED;
+    return user.shop_status === SHOP_STATUS.ACTIVE || user.shop_status === SHOP_STATUS.CLOSED;
 }
 
-export function isAdmin(user: types.UserInfor | undefined): boolean {
+export function isAdmin(user: UserInfor | undefined): boolean {
     if (!user || !user.role) {
         return false;
     }
-    return user.role === types.USER_ROLE.ADMIN;
+    return user.role === USER_ROLE.ADMIN;
 }
 
-export function isUser(user: types.UserInfor | undefined ): boolean {
+export function isUser(user: UserInfor | undefined ): boolean {
     if (!user || !user.role) {
         return false;
     }
-    return user.role === types.USER_ROLE.USER;
+    return user.role === USER_ROLE.CUSTOMER;
 }
 
-export function isGuest(user: types.UserInfor | undefined): boolean {
+export function isGuest(user: UserInfor | undefined): boolean {
     return !user;
 }
 

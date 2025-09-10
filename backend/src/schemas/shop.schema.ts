@@ -1,5 +1,7 @@
-import { SHOP_STATUS, regex } from 'src/types/index.types';
 import { z } from 'zod';
+import { SHOP_STATUS } from '@prisma/client';
+import { regex } from 'src/types/index.types';
+
 
 const ShopInformationSchema = z.object({
     user_id: z.coerce.number().int().positive('User ID must be a positive integer'),

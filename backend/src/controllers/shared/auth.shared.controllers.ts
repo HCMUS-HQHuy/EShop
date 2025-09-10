@@ -7,7 +7,7 @@ import services from "src/services/index.services";
 import schemas from "src/schemas/index.schema";
 import prisma from "src/models/prismaClient";
 
-import { USER_ROLE } from "src/types/index.types";
+import { USER_ROLE } from "@prisma/client";
 import { LoginForm, RegisterForm, UserInfor } from "src/types/index.types";
 
 // async function deleteFromTokens(db: Client, userId: number, token: string): Promise<boolean> {
@@ -58,7 +58,7 @@ async function login(req: express.Request, res: express.Response) {
         if (!util.password.compare(credential.password, userInfo.password)) {
             return res.status(401).json(util.response.error("Invalid credentials"));
         }
-        const user: UserInfor = { user_id: userInfo.user_id, username: userInfo.username, role: userInfo.role as USER_ROLE };
+        const user: UserInfor = { user_id: userInfo.user_id, username: userInfo.username, role: userInfo.role };
         const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1y" }); // 1y = 1 year for testing purposes
         res.cookie("auth_jwt", token, {
             path: "/",
@@ -183,7 +183,7 @@ async function registerUser(req: express.Request, res: express.Response) {
                 username: username,
                 password: hashedPassword,
                 email: email,
-                role: USER_ROLE.USER,
+                role: USER_ROLE.CUSTOMER,
                 is_verified: true // Set to true for testing purposes, change to false in production
             }
         });

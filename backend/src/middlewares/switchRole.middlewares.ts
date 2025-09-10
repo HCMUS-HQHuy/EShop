@@ -1,12 +1,14 @@
 import express from 'express';
-import * as utils from 'src/utils/index.utils';
-import * as types from 'src/types/index.types';
+import { USER_ROLE } from '@prisma/client';
 
-function switchRole(req: types.RequestCustom, res: express.Response, next: express.NextFunction) {
+import util from 'src/utils/index.utils';
+import { RequestCustom } from 'src/types/common.types';
+
+function switchRole(req: RequestCustom, res: express.Response, next: express.NextFunction) {
     // Check if the user is an admin
-    if (utils.isUser(req.user)) {
+    if (util.role.isUser(req.user)) {
         if (req.user?.shop_id) {
-            req.user.role = types.USER_ROLE.SELLER;
+            req.user.role = USER_ROLE.SELLER;
             return next();
         }
     }
