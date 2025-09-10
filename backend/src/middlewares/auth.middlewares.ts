@@ -29,7 +29,7 @@ async function auth(req: RequestCustom, res: express.Response, next: express.Nex
     try {
         const result = await prisma.users.findFirst({
             where: { userId: req.user.userId, status: USER_STATUS.ACTIVE },
-            select: { userId: true, username: true, role: true, shops: { select: { shopId: true, status: true } } }
+            select: { userId: true, username: true, role: true, shop: { select: { shopId: true, status: true } } }
         })
         if (result === null) {
             return res.status(403).json({ errors: 'Forbidden: User not found or inactive.' });
