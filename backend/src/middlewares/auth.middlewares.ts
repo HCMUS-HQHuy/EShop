@@ -10,7 +10,7 @@ import SOCKET_EVENTS from "src/constants/socketEvents";
 async function auth(req: types.RequestCustom, res: express.Response, next: express.NextFunction) {
     const authHeader = req.headers["authorization"];
     let token = authHeader && authHeader.split(" ")[1];
-    if (token == null) token = req.cookies.auth_jwt; // Check cookies for token
+    if (!token) token = req.cookies.auth_jwt; // Check cookies for token
     console.log("Auth token:", token);
     if (token == null) return res.sendStatus(401);
     try {
