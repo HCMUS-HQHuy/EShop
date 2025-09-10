@@ -21,7 +21,7 @@ export default async function seedAdmin() {
                 password: util.password.hash(env.DB_ADMIN_PASSWORD as string),
                 email: env.DB_ADMIN_EMAIL as string,
                 role: USER_ROLE.ADMIN,
-                is_verified: true
+                isVerified: true
             }
         })
         console.log('Admin user created successfully.');
