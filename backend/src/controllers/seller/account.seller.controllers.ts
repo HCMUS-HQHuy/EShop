@@ -14,9 +14,9 @@ async function create(req: RequestCustom, res: express.Response) {
     if (util.role.isSeller(req.user)) {
         return res.status(403).json(util.response.error('Sellers cannot create twice seller account.'));
     }
-
+    console.log("Request body:", req.user);
     const parsedBody = schemas.shop.creationRequest.safeParse(req.body);
-
+    console.log("Parsed body:", req.body);
     if (!parsedBody.success) {
         console.error("Invalid request data:", util.formatError(parsedBody.error));
         return res.status(400).send(util.response.zodValidationError(parsedBody.error));
@@ -25,7 +25,7 @@ async function create(req: RequestCustom, res: express.Response) {
     try {
         await prisma.shops.create({
             data: {
-                userId: req.body.userId,
+                userId: req.user?.userId as number,
                 ...data
             }
         })
@@ -41,7 +41,7 @@ async function getInformation(req: RequestCustom, res: express.Response) {
         return res.status(403).json(util.response.authorError("sellers"));
     }
 
-    const shopId: number = req.user?.shopId as number;
+    const shopId: number = req.user?.shop?.shopId as number;
     try {
         const shopInfo = await prisma.shops.findUniqueOrThrow({
             where: { shopId: shopId },

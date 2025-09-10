@@ -15,7 +15,7 @@ async function getOrders(req: RequestCustom, res: express.Response) {
         return res.status(403).json(util.response.authorError("sellers"));
     }
 
-    const shopId: number = req.user?.shopId as number;
+    const shopId: number = req.user?.shop?.shopId as number;
     let db: Client | undefined = undefined;
     try {
         db = await database.getConnection();
@@ -48,7 +48,7 @@ async function getOrderDetails(req: RequestCustom, res: express.Response) {
         return res.status(403).json(util.response.authorError("sellers"));
     }
 
-    const shopId: number = req.user?.shopId as number;
+    const shopId: number = req.user?.shop?.shopId as number;
     const orderId: number = parseInt(req.params.orderId);
     if (isNaN(orderId) || orderId <= 0) {
         return res.status(400).json(util.response.error("Invalid order ID"));

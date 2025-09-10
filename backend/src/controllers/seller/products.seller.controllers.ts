@@ -158,7 +158,7 @@ async function list(req: RequestCustom, res: express.Response) {
     const params: ProductParamsRequest = parsedBody.data;
     console.log("Listing products with params:", params);
     try {
-        const products = await listProducts(req.user?.shopId as number, params);
+        const products = await listProducts(req.user?.shop?.shopId as number, params);
         res.status(200).send(util.response.success('Products listed successfully', { products: products }));
     } catch (error) {
         console.error('Error listing products:', error);
@@ -221,7 +221,7 @@ async function getById(req: RequestCustom, res: express.Response) {
                 LEFT JOIN
                     product_images ON products.product_id = product_images.product_id
             WHERE products.product_id = $1 AND shopId = $2
-        `, [productId, req.user?.shopId]);
+        `, [productId, req.user?.shop?.shopId]);
         if (!result.rows[0]) {
             return res.status(404).send(util.response.error('Product not found'));
         }
@@ -273,7 +273,7 @@ async function update(req: RequestCustom, res: express.Response) {
 
     let db: Client | undefined = undefined;
     try {
-        product.shopId = req.user?.shopId as number;
+        product.shopId = req.user?.shop?.shopId as number;
         if (req.files && 'mainImage' in req.files) {
             product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
         } else product.mainImage = product.mainImage?.substring(product.mainImage?.lastIndexOf('/') + 1);
@@ -373,7 +373,7 @@ async function add(req: RequestCustom, res: express.Response) {
     console.log("Parsed product data:", product);
     let db: Client | undefined = undefined;
     try {
-        product.shopId = req.user?.shopId as number;
+        product.shopId = req.user?.shop?.shopId as number;
         product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
         console.log("Product added:", product);
         db = await database.getConnection();

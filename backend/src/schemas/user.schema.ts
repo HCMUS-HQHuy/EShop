@@ -11,8 +11,10 @@ const UserInforSchema = z.object({
   userId: z.coerce.number().int("User ID must be an integer").positive("User ID must be greater than 0"),
   username: z.string().min(1, "Username must not be empty"),
   role: z.enum(USER_ROLE, {error: "Invalid role: must be a valid UserRole",}),
-  shopId: z.coerce.number().int("Shop ID must be an integer").positive("Shop ID must be greater than 0").optional(),
-  shopStatus: z.enum(SHOP_STATUS, {error: "Invalid status: must be a valid ShopStatus",}).optional(),
+  shop: z.object({
+    shopId: z.coerce.number().int("Shop ID must be an integer").positive("Shop ID must be greater than 0"),
+    status: z.enum(SHOP_STATUS, {error: "Invalid status: must be a valid ShopStatus",}),
+  }).nullable()
 });
 
 const user = {
