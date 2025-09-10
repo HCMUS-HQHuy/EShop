@@ -1,13 +1,12 @@
 import { Server, Socket, DefaultEventsMap } from 'socket.io';
 import jwt from "jsonwebtoken";
-import { Client } from 'pg';
 
 import * as cookie from 'cookie';
 
 import schemas from 'src/schemas/index.schema';
-import database from 'src/database/index.database';
 import { SOCKET_EVENTS } from 'src/constants/socketEvents';
 import { UserInfor } from 'src/types/index.types';
+import prisma from 'src/models/prismaClient';
 
 export interface SocketCustom extends Socket{
     user?: UserInfor;
@@ -40,28 +39,25 @@ async function auth(socket: SocketCustom, next: (err?: Error) => void) {
 }
 
 async function joinRoom(socket: SocketCustom) {
-    let db: Client | undefined = undefined;
     try {
-        db = await database.getConnection();
-        const sql = `
-                SELECT *
-                FROM conversations
-                WHERE participant1_id = $1 OR participant2_id = $1
-            `;
-        const result = await db.query(sql, [socket.user?.userId]);
-        const conversations = result.rows;
+        const conversations = await prisma.conversations.findMany({
+            where: {
+                OR: [
+                    { participant1Id: socket.user?.userId },
+                    { participant2Id: socket.user?.userId }
+                ]
+            }
+        });
         const length = conversations.length;
         const BATCH_SIZE = 20;
         for (let i = 0; i < length; i += BATCH_SIZE) {
             const batch = conversations.slice(i, i + BATCH_SIZE);
             await Promise.all(batch.map(async (conv) => { 
-                socket.join(`room_${conv.id}`);
+                socket.join(`room_${conv.conversationId}`);
             }));
         }
     } catch (error) {
         console.log("Error in main namespace connection:", error);
-    } finally {
-        await database.releaseConnection(db);
     }
 }
 

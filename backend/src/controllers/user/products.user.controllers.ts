@@ -130,7 +130,6 @@ async function list(req: RequestCustom, res: express.Response) {
             take: limit,
             orderBy: { [params.sortAttribute]: params.sortOrder }
         })
-        console.log(products);
         res.status(200).send(util.response.success('Products fetched successfully', { products: products }));
     } catch (error) {
         console.error('Error listing products:', error);
