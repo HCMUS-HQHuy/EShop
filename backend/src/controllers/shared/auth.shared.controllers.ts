@@ -58,6 +58,7 @@ async function login(req: express.Request, res: express.Response) {
         if (!util.password.compare(credential.password, userInfo.password)) {
             return res.status(401).json(util.response.error("Invalid credentials"));
         }
+        console.log("User logged in:", userInfo);
         const user: UserInfor = { user_id: userInfo.user_id, username: userInfo.username, role: userInfo.role };
         const token = jwt.sign(user, process.env.JWT_SECRET as string, { expiresIn: "1y" }); // 1y = 1 year for testing purposes
         res.cookie("auth_jwt", token, {
