@@ -1,12 +1,10 @@
-export const SHOP_STATUS = {
-    ACTIVE: 'Active',
-    REJECTED: 'Rejected',
-    PENDING_VERIFICATION: 'Pending Verification',
-    CLOSED: 'Closed',
-    BANNED: 'Banned'
-} as const;
-
-export type ShopStatus = typeof SHOP_STATUS[keyof typeof SHOP_STATUS];
+export enum SHOP_STATUS {
+  ACTIVE = 'ACTIVE',
+  REJECTED = 'REJECTED',
+  PENDING_VERIFICATION = 'PENDING_VERIFICATION',
+  CLOSED = 'CLOSED',
+  BANNED = 'BANNED'
+}
 
 export enum STORAGE_KEYS {
   CART_PRODUCTS = "cartProducts",
@@ -20,11 +18,11 @@ export enum SOCKET_NAMESPACE {
 }
 
 export enum ORDER_STATUS {
-  PENDING = 'Pending',
-  PROCESSING = 'Processing',
-  SHIPPING = 'Shipping',
-  DELIVERED = 'Delivered',
-  CANCELLED = 'Cancelled'
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  SHIPPING = 'SHIPPING',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
 }
 
 export enum PAYMENT_METHOD {
@@ -36,7 +34,7 @@ export enum PAYMENT_METHOD {
 }
 
 export enum USER_ROLE {
-  ADMIN = 'Admin',
-  CUSTOMER = 'Customer',
-  SELLER = 'Seller'
+  ADMIN = 'ADMIN',
+  CUSTOMER = 'CUSTOMER',
+  SELLER = 'SELLER'
 }

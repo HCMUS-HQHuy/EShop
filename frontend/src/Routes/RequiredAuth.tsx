@@ -4,20 +4,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { pagesRequireSignIn, authPaths } from "src/Data/globalVariables.tsx";
 import { showAlert } from "src/Features/alertsSlice.tsx";
-import useSocketIO from "src/Hooks/Socket/useSocketIO.ts";
-import { USER_ROLE, SHOP_STATUS, SOCKET_NAMESPACE } from "src/Types/common.ts";
+import { USER_ROLE } from "src/Types/common.ts";
 import type { RootState } from "src/Types/store.ts";
 
 const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   const { loginInfo } = useSelector((state: RootState) => state.user);
   const { userRole } = useSelector((state: RootState) => state.global);
-  const { status } = useSelector((state: RootState) => state.seller.shopInfo);
   const { isSignIn } = loginInfo;
   const location = useLocation();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const pathName = location.pathname;
-  const navigate = useNavigate();
 
   const isPageRequiringSignIn = (page: string) =>
     !isSignIn && (pagesRequireSignIn.includes(page) || isPageForSeller(page));
