@@ -1,35 +1,10 @@
 import express from "express";
+import prisma from "src/models/prismaClient";
 
-import { Client } from "pg";
-import database from "src/database/index.database";
 import util from "src/utils/index.utils";
 import schemas from "src/schemas/index.schema";
 
 import { ShopCreationRequest, RequestCustom } from "src/types/index.types";
-
-// #### DATABASE FUNCTIONS ####
-
-async function createSellerAccount(user_id: number, data: ShopCreationRequest) {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            INSERT INTO shops (user_id, shop_name, shop_description, address, email, phone_number) 
-            VALUES ($1, $2, $3, $4, $5, $6)
-        `;
-        const values = [user_id, data.shop_name, data.shop_description, data.address, data.email, data.phone_number];
-        await db.query(sql, values);
-
-    } catch (error) {
-        console.error("Error creating seller account:", error);
-        throw new Error("Database error");
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
-    }
-}
-
 
 // #### CONTROLLER FUNCTIONS ####
 async function create(req: RequestCustom, res: express.Response) {
@@ -52,16 +27,18 @@ async function create(req: RequestCustom, res: express.Response) {
         console.error("Invalid request data:", util.formatError(parsedBody.error));
         return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
-    const requestData: ShopCreationRequest = {
-        shop_name: parsedBody.data.shop_name,
-        shop_description: parsedBody.data.shop_description,
-        address: parsedBody.data.address,
-        email: parsedBody.data.email,
-        phone_number: parsedBody.data.phone_number
-    };
-
+    const data: ShopCreationRequest = parsedBody.data;
     try {
-        await createSellerAccount(req.user?.user_id as number, requestData);
+        await prisma.shops.create({
+            data: {
+                user_id: req.body.user_id,
+                shop_name: data.shop_name,
+                shop_description: data.shop_description,
+                address: data.address,
+                email: data.email,
+                phone_number: data.phone_number
+            }
+        })
         return res.status(201).json(util.response.success("Seller account created successfully"));
     } catch (error) {
         console.error("Error creating seller account:", error);
@@ -75,31 +52,23 @@ async function getInformation(req: RequestCustom, res: express.Response) {
     }
 
     const shopId: number = req.user?.shop_id as number;
-    let db: Client | undefined = undefined;
     try {
-        db = await database.getConnection();
-        const sql = `
-            SELECT shop_name, email, phone_number, shop_description, address, status
-            FROM shops
-            WHERE shop_id = $1
-        `;
-        const result = await db.query(sql, [shopId]);
+        const result = await prisma.shops.findUniqueOrThrow({
+            where: { shop_id: shopId },
+            select: { shop_name: true, email: true, phone_number: true, shop_description: true, address: true, status: true }
+        });
         const shopInfo = {
-            name: result.rows[0].shop_name,
-            email: result.rows[0].email,
-            phoneNumber: result.rows[0].phone_number,
-            description: result.rows[0].shop_description,
-            address: result.rows[0].address,
-            status: result.rows[0].status
+            name: result.shop_name,
+            email: result.email,
+            phoneNumber: result.phone_number,
+            description: result.shop_description,
+            address: result.address,
+            status: result.status
         };
         return res.status(200).json(util.response.success("Seller information retrieved successfully", { shopInfo: shopInfo }));
     } catch (error) {
         console.error("Error fetching seller information:", error);
         return res.status(500).json(util.response.internalServerError());
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
     }
 }
 
