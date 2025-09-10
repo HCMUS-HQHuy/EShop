@@ -20,20 +20,19 @@ type CreatingProduct = z.infer<typeof CreatingProductSchema>;
 type UpdatingProduct = z.infer<typeof UpdatingProductSchema>;
 
 type ProductType = {
-  id: number;
-  shopId: number;
-  shortName: string;
+  productId: number;
+  shop: { shopId: number; shopName: string; };
   name: string;
-  categoryIds: number[];
-  price: string;
+  shortName: string;
+  price: number;
   discount: string;
+  stockQuantity: number;
+  imageUrl: string;
   afterDiscount: string;
-  addedDate: string;
-  img: string;
-  colors: Color[];
+  createdAt: string;
   rate: number;
   votes: number;
-  quantity: number;
+  productCategories: { categoryId: number; }[];
 }
 
 type OrderItemType = {

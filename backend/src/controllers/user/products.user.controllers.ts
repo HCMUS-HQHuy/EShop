@@ -112,6 +112,7 @@ async function list(req: RequestCustom, res: express.Response) {
                 productId: true,
                 shop: { select: { shopId: true, shopName: true } },
                 name: true,
+                shortName: true,
                 price: true,
                 discount: true,
                 stockQuantity: true,

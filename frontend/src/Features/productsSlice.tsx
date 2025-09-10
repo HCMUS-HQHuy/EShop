@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "src/Api/index.api.ts";
-import type { ProductType, ProductOrderType } from "src/Types/product.ts";
+import type { OrderType, ProductType } from "src/Types/product.ts";
 import { setAfterDiscountKey, setFormattedPrice } from "src/Functions/formatting.ts";
 import { STORAGE_KEYS, ORDER_STATUS } from "src/Types/common.ts";
 
@@ -9,7 +9,7 @@ type ProductsState = {
   productsList: ProductType[];
   favoritesProducts: ProductType[];
   searchProducts: ProductType[];
-  orderProducts: ProductOrderType[];
+  orderProducts: OrderType[];
   cartProducts: ProductType[];
   wishList: ProductType[];
   productQuantity: number;
@@ -32,15 +32,15 @@ const initialState: ProductsState = {
 
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_, {rejectWithValue}) => {
   try {
-    const response = await Promise.all([api.product.fetchAll(), api.user.getOrders()]);
-    const products: ProductType[] = response[0].data.products;
-    const orders: ProductOrderType[] = response[1].data.orders;
+    const response = await api.user.fetchProducts();
+    const products: ProductType[] = response.data.products;
     products.forEach((product: any) => {
       setAfterDiscountKey(product);
       setFormattedPrice(product);
     });
-    return {products, orders};
+    return {products};
   } catch (error: any) {
+    console.log('Error fetching products:', error);
     return rejectWithValue(error.response.data);
   }
 });
@@ -89,7 +89,6 @@ const productsSlice = createSlice({
       .addCase(fetchProducts.fulfilled, (state, action) => {
         console.log("Products fetched successfully.", action.payload);
         state.productsList = [...action.payload.products];
-        state.orderProducts = [...action.payload.orders];
         console.log("Orders fetched successfully.", state.orderProducts, state.productsList);
       })
       .addCase(fetchProducts.rejected, (state, action) => {

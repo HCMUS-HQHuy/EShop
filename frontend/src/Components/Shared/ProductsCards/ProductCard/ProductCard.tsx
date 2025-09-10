@@ -17,7 +17,7 @@ type Props = {
 };
 
 const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: Props) => {
-  const { shortName, discount, img, id, addedDate } = product;
+  const { shortName, discount, imageUrl, createdAt, productId } = product;
   const {
     stopHover,
     showDiscount,
@@ -41,14 +41,14 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: P
   };
 
   function shouldHideNewWord() {
-    return checkDateBeforeMonthToPresent(new Date(addedDate)) || !showNewText
+    return checkDateBeforeMonthToPresent(new Date(createdAt)) || !showNewText
       ? s.hide
       : "";
   }
 
   function navigateToProductDetails() {
     if (loadingProductDetails) return;
-    navigateTo(`/details?product=${id}`);
+    navigateTo(`/details?product=${productId}`);
   }
 
   return (
@@ -56,7 +56,7 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: P
       <div className={s.productImg}>
         <div className={s.imgHolder}>
           <img
-            src={`${img}`}
+            src={`${import.meta.env.VITE_PUBLIC_URL}/${imageUrl}`}
             alt={shortName}
             aria-label={shortName}
             loading={loading}
@@ -75,7 +75,7 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: P
 
           <ProductCardIcons
             iconsData={iconsData}
-            productId={id}
+            productId={productId}
             navigateToProductDetails={navigateToProductDetails}
             product={product}
             removeFrom={removeFrom}

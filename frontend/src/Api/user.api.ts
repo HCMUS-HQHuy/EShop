@@ -14,7 +14,7 @@ const user = {
   getInfor: () => api.get(`/user/getinfor`),
   createOrder: (orderData: any) => api.post('user/orders/create', orderData),
   getOrders: () => api.get(`/user/orders`),
-  
+  fetchProducts: () => api.get("/user/products/list"),
 };
 
 export default user;
