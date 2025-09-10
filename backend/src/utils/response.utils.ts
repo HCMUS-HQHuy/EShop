@@ -22,7 +22,7 @@ function authorErrorResponse(role: string) {
     message: 'Invalid Request',
     error: true,
     data: {
-      message: `Only ${role} can review seller accounts.`
+      message: `Only ${role} can access this routes.`
     }
   };
 }

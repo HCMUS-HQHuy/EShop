@@ -6,29 +6,7 @@ import schemas from 'src/schemas/index.schema';
 import { PRODUCT_STATUS } from '@prisma/client';
 import { RequestCustom, ProductParamsRequest, UserProductFilter } from 'src/types/index.types';
 import { PAGINATION_LIMIT } from 'src/constants/globalVariables';
-
-// #### HELPER FUNCTIONS ####
-async function getAllCategoriesId(categories: number[] | undefined): Promise<number[]> {
-    if (!categories || categories.length === 0) {
-        return [];
-    }
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            SELECT category_id FROM categories
-            WHERE parent_id = ANY($1::int[])
-        `;
-        const result = await db.query(sql, [categories]);
-        const subCategories_id = result.rows.map(row => row.category_id);
-        return [...categories, ...(await getAllCategoriesId(subCategories_id))];
-    } catch (error) {
-        console.error('Error fetching categories:', error);
-        throw error;
-    } finally {
-        await database.releaseConnection(db);
-    }
-}
+import prisma from 'src/models/prismaClient';
 
 // #### DATABASE FUNCTIONS ####
 
@@ -116,6 +94,7 @@ async function getRelatedProductsById(productId: number): Promise<any[]> {
 // #### CONTROLLER FUNCTIONS ####
 
 async function list(req: RequestCustom, res: express.Response) {
+    console.log("Received product listing request with query:", req.query);
     const parsedBody = schemas.product.paramsRequest.safeParse(req.query);
     if (!parsedBody.success) {
         return res.status(400).send(util.response.zodValidationError(parsedBody.error));
@@ -125,61 +104,32 @@ async function list(req: RequestCustom, res: express.Response) {
 
     let db: Client | undefined = undefined;
     try {
-        db = await database.getConnection();
-        const sql = `
-            SELECT 
-                product_id as id,
-                shop_id as "shopId",
-                short_name as "shortName",
-                name,
-                price,
-                discount,
-                stock_quantity as quantity,
-                image_url as img,
-                TO_CHAR(created_at, 'YYYY-MM-DD') as "addedDate",
-                0 as rate,
-                0 as votes
-            FROM products
-            WHERE name ILIKE $1
-                AND status = '${PRODUCT_STATUS.ACTIVE}'
-                AND is_deleted = FALSE
-                AND ($4::numeric IS NULL OR price <= $4)
-                AND ($5::numeric IS NULL OR price >= $5)
-                AND (
-                    $6::int[] IS NULL 
-                    OR EXISTS (
-                        SELECT 1 FROM product_categories 
-                        WHERE product_categories.product_id = products.product_id
-                        AND product_categories.category_id = ANY($6::int[])
-                    )
-                )
-            ORDER BY ${params.sortAttribute} ${params.sortOrder}
-            LIMIT $2 OFFSET $3
-        `;
         const limit = PAGINATION_LIMIT;
         const offset = (params.page - 1) * limit;
         const filter = params.filter as UserProductFilter;
-        const categoriesId = await getAllCategoriesId(filter?.categories_id);
-        const queryParams = [
-            `%${params.keywords}%`,                         // $1
-            limit,                                          // $2
-            offset,                                         // $3
-            filter?.max_price,                              // $4
-            filter?.min_price,                              // $5
-            categoriesId.length > 0 ? categoriesId : null,  // $6
-        ];
-        const result = await db.query(sql, queryParams);
-        const products = result.rows;
-        for (const product of products) {
-            product.img = `${process.env.PUBLIC_URL}/${product.img}`;
-            const sql = `
-                SELECT category_id
-                FROM product_categories
-                WHERE product_id = $1
-            `;
-            const result = await db.query(sql, [product.id]);
-            product.categoryIds = result.rows.map(row => row.category_id);
-        }
+        const products = await prisma.products.findMany({
+            select: {
+                productId: true,
+                shop: { select: { shopId: true, shopName: true } },
+                name: true,
+                price: true,
+                discount: true,
+                stockQuantity: true,
+                imageUrl: true,
+                createdAt: true,
+                productCategories: { select: { categoryId: true } }
+            },
+            where: { 
+                isDeleted: false, 
+                status: PRODUCT_STATUS.ACTIVE, 
+                price: { lte: filter?.max_price ?? undefined, gte: filter?.min_price ?? undefined }, 
+                name: { contains: params.keywords }
+            },
+            skip: offset,
+            take: limit,
+            orderBy: { [params.sortAttribute]: params.sortOrder }
+        })
+        console.log(products);
         res.status(200).send(util.response.success('Products fetched successfully', { products: products }));
     } catch (error) {
         console.error('Error listing products:', error);
