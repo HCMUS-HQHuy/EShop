@@ -17,15 +17,15 @@ import WishList from "src/Components/WishList/WishList.tsx";
 import ResetPassword from "src/Components/ResetPassword/ResetPassword.tsx";
 import ForgotPassword from "src/Components/ForgotPassword/ForgotPassword.tsx";
 
-import StartSellingPage from "src/Components/SellerDashboard/StartSelling/StartSelling.tsx"
 import ChatPageLayout from "src/Components/Chat/ChatPageLayout.tsx";
 import DashboardOverview from "src/Components/SellerDashboard/DashboardOverview/DashboardOverview.tsx";
 import ManageOrders from "src/Components/SellerDashboard/ManageOrders/ManageOrders.tsx";
-import StartSelling from "src/Components/SellerDashboard/StartSelling/StartSelling.tsx";
 import AddProductPage from "src/Components/SellerDashboard/AddProductPage/AddProductPage.tsx";
 import ManageProducts from "src/Components/SellerDashboard/ManageProducts/ManageProducts.tsx";
-import { USER_ROLE } from "src/Types/common.ts";
 import OrderDetailPage from "src/Components/SellerDashboard/OrderDetailPage/OrderDetailPage.tsx";
+import PendingPage from "src/Components/SellerDashboard/StartSelling/PendingPage.tsx";
+import BecomeSellerPage from "src/Components/SellerDashboard/StartSelling/BecomeSellerPage.tsx";
+import RejectedPage from "src/Components/SellerDashboard/StartSelling/RejectedPage.tsx";
 
 export const ROUTES_CONFIG = [
   { path: "/", element: <Home /> },
@@ -46,7 +46,9 @@ export const ROUTES_CONFIG = [
   { path: "/profile/*", element: <AccountPage /> },
   { path: "/search", element: <SearchPage /> },
   { path: "/seller", element: <DashboardOverview /> },
-  { path: "/become-seller", element: <StartSelling /> },
+  { path: "/become-seller", element: <BecomeSellerPage /> },
+  { path: "/become-seller/pending", element: <PendingPage /> },
+  { path: "/become-seller/rejected", element: <RejectedPage /> },
   { path: "/chats", element: <ChatPageLayout /> },
   { path: "/seller/products", element: <ManageProducts /> },
   { path: "/seller/products/new", element: <AddProductPage /> },

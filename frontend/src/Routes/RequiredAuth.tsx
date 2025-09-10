@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { pagesRequireSignIn, authPaths } from "src/Data/globalVariables.tsx";
 import { showAlert } from "src/Features/alertsSlice.tsx";
-import { USER_ROLE } from "src/Types/common.ts";
+import { SHOP_STATUS, USER_ROLE } from "src/Types/common.ts";
 import type { RootState } from "src/Types/store.ts";
 
 const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
@@ -28,6 +28,21 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
     loginFirstAlert();
     return <Navigate to="/login" />;
   }
+
+  if (pathName.startsWith("/become-seller") && isSignIn) {
+    if (userRole === USER_ROLE.SELLER) {
+      return <Navigate to="/seller" />;
+    }
+    switch (shopInfo.status) {
+      case SHOP_STATUS.PENDING_VERIFICATION:
+        return (pathName !== "/become-seller/pending" ? <Navigate to="/become-seller/pending" /> : children);
+      case SHOP_STATUS.REJECTED:
+        return (pathName !== "/become-seller/rejected" ? <Navigate to="/become-seller/rejected" /> : children);
+      default:
+        break;
+    }
+  }
+
   switch (userRole) {
     case USER_ROLE.CUSTOMER:
       if (isPageForSeller(pathName)) {

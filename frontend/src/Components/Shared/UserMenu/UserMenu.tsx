@@ -32,11 +32,19 @@ const UserMenu = ({ isActive, toggler }: Props) => {
     navigate("/", { replace: true });
   }
 
-  // if (!shopInfo.status) {
-  //   console.log("No shop info, redirecting to become-seller");
-  //   navigate("/become-seller");
-  //   return;
-  // }
+  function checkShopCanAccess() {
+    if (shopInfo.status === SHOP_STATUS.BANNED) {
+      return false;
+    }
+    if (shopInfo.status === SHOP_STATUS.PENDING_VERIFICATION) {
+      return false;
+    }
+    if (shopInfo.status === SHOP_STATUS.REJECTED) {
+      return false;
+    }
+    return true;
+  }
+
   function switchModeToSeller() {
     dispatch(updateGlobalState({ key: "userRole", value: USER_ROLE.SELLER }));
     dispatch(conversationFetch(USER_ROLE.SELLER));
@@ -49,14 +57,12 @@ const UserMenu = ({ isActive, toggler }: Props) => {
         <span>{t("userMenuItems.profile")}</span>
       </NavLink>
       
-      {shopInfo.status && 
+      {checkShopCanAccess() ?  
         <NavLink to="/seller" aria-label="Seller page" onClick={switchModeToSeller}>
           <SvgIcon name="cart" />
           <span>{t("userMenuItems.seller")}</span>
         </NavLink>
-      }
-
-      {!shopInfo.status && 
+        :  
         <NavLink to="/become-seller" aria-label="Seller page">
           <SvgIcon name="cart" />
           <span>{'Become Seller'}</span>

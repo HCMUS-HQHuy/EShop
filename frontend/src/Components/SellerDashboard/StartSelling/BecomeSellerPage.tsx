@@ -13,7 +13,7 @@ import { updateInput } from 'src/Features/formsSlice.tsx'
 import { newShop, setShopData } from 'src/Features/sellerSlice.tsx';
 import parseZodError from 'src/utils/parseZodError.ts';
 
-const StartSellingPage = () => {
+const BecomeSellerPage = () => {
     const { sellerRegistrationForm } = useSelector((state: RootState) => state.forms);
     const { shopName, agreeTerms, email, address, phoneNumber, shopDescription } = sellerRegistrationForm;
     const dispatch = useDispatch<AppDispatch>();
@@ -151,7 +151,7 @@ const StartSellingPage = () => {
     );
 };
 
-export default StartSellingPage;
+export default BecomeSellerPage;
 
 function internetConnectionAlert(dispatch: AppDispatch, t: TFunction) {
   const alertText = t("toastAlert.signInFailed");
