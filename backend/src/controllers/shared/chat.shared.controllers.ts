@@ -97,92 +97,93 @@ async function getConversations(req: RequestCustom, res: express.Response) {
     if (util.role.isGuest(req.user)) {
         return res.status(403).json(util.response.authorError('admin, sellers, users'));
     }
-    const userRole =  req.query.userRole;
-    switch (userRole) {
-        case USER_ROLE.ADMIN:
-            if (!util.role.isAdmin(req.user)) {
-                return res.status(403).json(util.response.authorError('admin'));
-            }
-            break;
-        case USER_ROLE.SELLER:
-            if (!util.role.isSeller(req.user)) {
-                return res.status(403).json(util.response.authorError('sellers'));
-            }
-            break;
-        case USER_ROLE.CUSTOMER:
-            if (!util.role.isUser(req.user)) {
-                return res.status(403).json(util.response.authorError('customers'));
-            }
-            break;
-        default:
-            return res.status(400).json(util.response.error('Invalid user role'));
-    }
-    let db: Client|undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            SELECT
-                c.id AS "conversationId",
-                CASE
-                    WHEN c.participant1_id = $1 THEN c.participant2_role
-                    ELSE c.participant1_role
-                END AS "userRole",
-                c.context AS "context",
-                withUser.userId AS "withUserId",
-                withUser.username AS "username"
-            FROM (SELECT * FROM conversations WHERE (participant1_id = $1 AND participant1_role = $2)  OR (participant2_id = $1 AND participant2_role = $2)) c
-            JOIN users withUser ON  withUser.userId IN (c.participant2_id, c.participant1_id) AND withUser.userId != $1
-            OFFSET 0 LIMIT 10
-        `;
-        const result = await db.query(sql, [req.user?.userId, userRole]);
-        const data = result.rows.map(row => ({
-            id: row.conversationId,
-            withUser: {
-                userId: row.withUserId,
-                name: row.username,
-                role: row.userRole,
-                avatar: `${process.env.STATIC_URL}/defaultavt.png`
-            },
-            lastMessage: {},
-            messages: [] as any[],
-            unreadCount: 0,
-            context: row.context
-        }));
-        for (const conv of data) {
-            const sql = `
-                SELECT 
-                    content,
-                    sent_at as "sentAt",
-                    is_read as "isRead",
-                    CASE
-                        WHEN sender_id = $2 THEN 'me'
-                        ELSE 'other'
-                    END AS "sender"
-                FROM messages
-                WHERE conversation_id = $1
-                ORDER BY sent_at DESC
-                OFFSET 0 LIMIT 20
-            `;
-            const result = await db.query(sql, [conv.id, req.user?.userId]);
-            result.rows.reverse();
-            conv.messages = result.rows.map(row => ({
-                sender: row.sender,
-                content: row.content,
-                timestamp: row.sentAt,
-                isRead: row.isRead
-            }));
-            conv.lastMessage = conv.messages[conv.messages.length - 1] || {};
-            conv.unreadCount = conv.messages.filter(msg => !msg.isRead && msg.sender === 'other').length;
-        }
-        res.status(200).json(util.response.success('Success', { conversations: data }));
-    } catch (error) {
-        console.error('Error fetching conversations:', error);
-        res.status(500).json(util.response.internalServerError());
-    } finally {
-        if (db) {
-            database.releaseConnection(db);
-        }
-    }
+    return res.status(200);
+    // const userRole =  req.query.userRole;
+    // switch (userRole) {
+    //     case USER_ROLE.ADMIN:
+    //         if (!util.role.isAdmin(req.user)) {
+    //             return res.status(403).json(util.response.authorError('admin'));
+    //         }
+    //         break;
+    //     case USER_ROLE.SELLER:
+    //         if (!util.role.isSeller(req.user)) {
+    //             return res.status(403).json(util.response.authorError('sellers'));
+    //         }
+    //         break;
+    //     case USER_ROLE.CUSTOMER:
+    //         if (!util.role.isUser(req.user)) {
+    //             return res.status(403).json(util.response.authorError('customers'));
+    //         }
+    //         break;
+    //     default:
+    //         return res.status(400).json(util.response.error('Invalid user role'));
+    // }
+    // let db: Client|undefined = undefined;
+    // try {
+    //     db = await database.getConnection();
+    //     const sql = `
+    //         SELECT
+    //             c.id AS "conversationId",
+    //             CASE
+    //                 WHEN c.participant1_id = $1 THEN c.participant2_role
+    //                 ELSE c.participant1_role
+    //             END AS "userRole",
+    //             c.context AS "context",
+    //             withUser.userId AS "withUserId",
+    //             withUser.username AS "username"
+    //         FROM (SELECT * FROM conversations WHERE (participant1_id = $1 AND participant1_role = $2)  OR (participant2_id = $1 AND participant2_role = $2)) c
+    //         JOIN users withUser ON  withUser.userId IN (c.participant2_id, c.participant1_id) AND withUser.userId != $1
+    //         OFFSET 0 LIMIT 10
+    //     `;
+    //     const result = await db.query(sql, [req.user?.userId, userRole]);
+    //     const data = result.rows.map(row => ({
+    //         id: row.conversationId,
+    //         withUser: {
+    //             userId: row.withUserId,
+    //             name: row.username,
+    //             role: row.userRole,
+    //             avatar: `${process.env.STATIC_URL}/defaultavt.png`
+    //         },
+    //         lastMessage: {},
+    //         messages: [] as any[],
+    //         unreadCount: 0,
+    //         context: row.context
+    //     }));
+    //     for (const conv of data) {
+    //         const sql = `
+    //             SELECT 
+    //                 content,
+    //                 sent_at as "sentAt",
+    //                 is_read as "isRead",
+    //                 CASE
+    //                     WHEN sender_id = $2 THEN 'me'
+    //                     ELSE 'other'
+    //                 END AS "sender"
+    //             FROM messages
+    //             WHERE conversation_id = $1
+    //             ORDER BY sent_at DESC
+    //             OFFSET 0 LIMIT 20
+    //         `;
+    //         const result = await db.query(sql, [conv.id, req.user?.userId]);
+    //         result.rows.reverse();
+    //         conv.messages = result.rows.map(row => ({
+    //             sender: row.sender,
+    //             content: row.content,
+    //             timestamp: row.sentAt,
+    //             isRead: row.isRead
+    //         }));
+    //         conv.lastMessage = conv.messages[conv.messages.length - 1] || {};
+    //         conv.unreadCount = conv.messages.filter(msg => !msg.isRead && msg.sender === 'other').length;
+    //     }
+    //     res.status(200).json(util.response.success('Success', { conversations: data }));
+    // } catch (error) {
+    //     console.error('Error fetching conversations:', error);
+    //     res.status(500).json(util.response.internalServerError());
+    // } finally {
+    //     if (db) {
+    //         database.releaseConnection(db);
+    //     }
+    // }
 };
 
 async function getConversation(req: RequestCustom, res: express.Response) {
