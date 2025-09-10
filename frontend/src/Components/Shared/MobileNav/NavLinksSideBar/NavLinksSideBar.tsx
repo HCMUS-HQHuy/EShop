@@ -1,11 +1,12 @@
 import { useSelector } from "react-redux";
-import { mobileNavData } from "src/Data/staticData";
+import { mobileNavData } from "src/Data/staticData.tsx";
 import s from "./NavLinksSideBar.module.scss";
-import RestNavLinks from "./RestNavLinks";
-import SideBarLink from "./SideBarLink/SideBarLink";
+import RestNavLinks from "./RestNavLinks.tsx";
+import SideBarLink from "./SideBarLink/SideBarLink.tsx";
+import type { RootState } from "src/Types/store.ts";
 
 const NavLinksSideBar = () => {
-  const { loginInfo } = useSelector((state) => state.user);
+  const { loginInfo } = useSelector((state: RootState) => state.user);
 
   return (
     <nav className={s.navLinks}>

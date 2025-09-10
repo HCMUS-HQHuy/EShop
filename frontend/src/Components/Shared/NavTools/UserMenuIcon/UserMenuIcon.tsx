@@ -10,13 +10,13 @@ import s from "./UserMenuIcon.module.scss";
 const UserMenuIcon = ({ visibility }: { visibility: boolean }) => {
   const { t } = useTranslation();
   const [isMenuUserActive, toggleMenuUserActive] = useToggle(false);
-  const userContainerRef = useRef();
+  const userContainerRef = useRef<HTMLDivElement>(null);
   const activeClass = isMenuUserActive ? s.active : "";
 
-  useEventListener(document, "click", (event) => {
-    const isUserIconClicked = userContainerRef?.current?.contains(event.target);
+  useEventListener(document, "click", (event: MouseEvent) => {
+    const target = event.target as Node;
+    const isUserIconClicked = userContainerRef.current?.contains(target);
     if (isUserIconClicked) return;
-
     toggleMenuUserActive(false);
   });
 
@@ -29,7 +29,7 @@ const UserMenuIcon = ({ visibility }: { visibility: boolean }) => {
   return (
     <div
       className={`${s.userContainer} ${activeClass}`}
-      onClick={toggleMenuUserActive}
+      onClick={() => toggleMenuUserActive()}
       onFocus={openMenu}
       aria-label={t("navTools.userMenu")}
       aria-haspopup="true"
