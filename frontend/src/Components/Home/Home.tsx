@@ -22,19 +22,10 @@ const Home = () => {
       <main className={s.home}>
         <div className={s.container}>
           <div className={s.introductionContainer}>
-            {/* <SectionsMenu />
-
-            <div className={s.line} /> */}
-
             <MainSlider />
           </div>
-
-          {/* <TodaySection /> */}
           <CategoriesSection />
-          {/* <ThisMonthSection /> */}
-          {/* <ProductPoster /> */}
           <OurProductsSection />
-          {/* <FeaturedSection /> */}
           <FeaturedSectionFeatures />
         </div>
       </main>

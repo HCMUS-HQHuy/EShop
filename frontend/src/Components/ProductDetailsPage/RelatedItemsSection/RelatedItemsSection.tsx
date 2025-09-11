@@ -3,7 +3,12 @@ import ProductsSlider from "../../Shared/MidComponents/ProductsSlider/ProductsSl
 import SectionTitle from "../../Shared/MiniComponents/SectionTitle/SectionTitle.tsx";
 import s from "./RelatedItemsSection.module.scss";
 
-const RelatedItemsSection = ({ productType, currentProduct }) => {
+type Props = {
+  productType: string;
+  currentProduct: { [key: string]: any };
+}
+
+const RelatedItemsSection = ({ productType, currentProduct }: Props) => {
   const hasRelatedProducts = getProductsByRelatedType().length > 0;
   const { t } = useTranslation();
 
