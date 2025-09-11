@@ -51,6 +51,8 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
     } else {
       return <Navigate to="/" />;
     }
+  } else if (userRole === USER_ROLE.SELLER) {
+    return <Navigate to="/seller" />;
   }
 
   function loginFirstAlert() {

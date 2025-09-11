@@ -238,7 +238,7 @@ async function update(req: RequestCustom, res: express.Response) {
                 status: product.status,
                 productCategories: { deleteMany: {}, create: product.categories.map(categoryId => ({ categoryId }))  },
                 productImages: {
-                    deleteMany: product?.deletedImages ? { imageUrl: { in: product.deletedImages } } : {},
+                    deleteMany: { imageUrl: { in: product.deletedImages ?? [] } },
                     createMany: (req.files && 'additionalImages' in req.files
                         ? { data: (req.files['additionalImages'] as Express.Multer.File[]).map(file => ({ imageUrl: file.filename })) }
                         : undefined)
