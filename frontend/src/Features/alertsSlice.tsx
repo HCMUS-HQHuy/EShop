@@ -1,30 +1,63 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { ALERT_STATE } from "src/Types/common.ts";
 
-const initialState = {
+type AlertStateType = {
+  alert: {
+    isAlertActive: boolean;
+    alertText: string;
+    alertState: ALERT_STATE;
+  };
+
+  confirm: {
+    isAlertActive: boolean;
+    alertText: string;
+    alertState: ALERT_STATE;
+    confirmPurpose: string;
+  };
+};
+
+type ActionType = {
+  alertText: string;
+  alertState: ALERT_STATE;
+  alertType: keyof AlertStateType;
+};
+
+type UpdateActionPayload<T extends keyof AlertStateType> = {
+  type: T;
+  key: keyof AlertStateType[T];
+  value: AlertStateType[T][keyof AlertStateType[T]];
+};
+
+const initialState: AlertStateType = {
   alert: {
     isAlertActive: false,
     alertText: "",
-    alertState: "error",
+    alertState: ALERT_STATE.ERROR,
   },
 
   confirm: {
     isAlertActive: false,
     alertText: "",
-    alertState: "warning",
+    alertState: ALERT_STATE.WARNING,
     confirmPurpose: "",
   },
 };
 
 const alertsSlice = createSlice({
-  initialState,
   name: "alertsSlice",
+  initialState,
   reducers: {
-    showAlert: (state, { payload: { alertText, alertState, alertType } }) => {
+    showAlert: (state, action: PayloadAction<ActionType>) => {
+      const { alertText, alertState, alertType } = action.payload;
       state[alertType].alertText = alertText;
       state[alertType].alertState = alertState;
       state[alertType].isAlertActive = true;
     },
-    updateAlertState: (state, { payload: { type, key, value } }) => {
+    updateAlertState: <T extends keyof AlertStateType>(
+      state: AlertStateType,
+      action: PayloadAction<UpdateActionPayload<T>>
+    ) => {
+      const { type, key, value } = action.payload;
       state[type][key] = value;
     },
   },

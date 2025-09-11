@@ -1,17 +1,19 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { TOAST_ALERT_DURATION_MS } from "src/Data/globalVariables";
-import { updateAlertState } from "src/Features/alertsSlice";
-import SvgIcon from "../../MiniComponents/SvgIcon";
+import { TOAST_ALERT_DURATION_MS } from "src/Data/globalVariables.tsx";
+import { updateAlertState } from "src/Features/alertsSlice.tsx";
+import SvgIcon from "../../MiniComponents/SvgIcon.tsx";
 import s from "./ToastAlert.module.scss";
+import type { RootState } from "src/Types/store.ts";
+import { ALERT_STATE } from "src/Types/common.ts";
 
 const ToastAlert = () => {
-  const { alert } = useSelector((state) => state.alerts);
+  const { alert } = useSelector((state: RootState) => state.alerts);
   const { isAlertActive, alertText, alertState } = alert;
   const dispatch = useDispatch();
   const { iconName, className } = toastState[alertState];
   const showClass = isAlertActive ? s.show : "";
-  const debounceId = useRef();
+  const debounceId = useRef<NodeJS.Timeout>(undefined);
 
   function setToastAlertTimeout() {
     if (!showClass) return;
@@ -42,8 +44,11 @@ const ToastAlert = () => {
 
 export default ToastAlert;
 
-const toastState = {
-  success: { iconName: "checked", className: s.success },
-  warning: { iconName: "exclamation", className: s.warning },
-  error: { iconName: "xMark", className: s.error },
+const toastState: Record<
+  ALERT_STATE,
+  { iconName: string; className: string }
+> = {
+  [ALERT_STATE.SUCCESS]: { iconName: "checked", className: s.success },
+  [ALERT_STATE.WARNING]: { iconName: "exclamation", className: s.warning },
+  [ALERT_STATE.ERROR]: { iconName: "xMark", className: s.error },
 };

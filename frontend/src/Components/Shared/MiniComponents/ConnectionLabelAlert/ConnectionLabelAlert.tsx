@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import s from "./ConnectionLabelAlert.module.scss";
 
-const ConnectionLabelAlert = ({ isOnline }) => {
+type Props = {
+  isOnline: boolean;
+};
+
+const ConnectionLabelAlert = ({ isOnline }: Props) => {
   const [isOfflineState, setIsOfflineState] = useState(false);
   const { t } = useTranslation();
   const activeClass = isOnline ? s.active : "";

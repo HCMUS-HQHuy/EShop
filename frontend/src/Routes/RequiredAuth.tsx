@@ -1,11 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
-import { authPaths } from "src/Data/globalVariables.tsx";
 import { showAlert } from "src/Features/alertsSlice.tsx";
 import { updateGlobalState } from "src/Features/globalSlice.tsx";
-import { SHOP_STATUS, USER_ROLE } from "src/Types/common.ts";
+import { ALERT_STATE, SHOP_STATUS, USER_ROLE } from "src/Types/common.ts";
 import type { RootState } from "src/Types/store.ts";
+
+const authPaths = ["/login", "/signup", "/forgot-password", "/reset-password"];
 
 const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   const { loginInfo } = useSelector((state: RootState) => state.user);
@@ -17,15 +18,17 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation();
   const pathName = location.pathname;
 
-  console.log("RequiredAuth: ", { loginInfo, isSignIn, userRole, shopInfo });
-
-  const isPageForGuest = (page: string) => authPaths.includes(page) && page === '/';
+  const isPageForGuest = (page: string) => authPaths.includes(page) || page === '/';
   const isPageForSeller = (page: string) => page.startsWith("/seller");
 
-  if (authPaths.includes(pathName) && isSignIn) return <Navigate to="/" />;
+  if (authPaths.includes(pathName)) {
+    if (isSignIn)
+      return <Navigate to="/" />;
+    else return children;
+  }
   if (!isPageForGuest(pathName) && !isSignIn) {
     loginFirstAlert();
-    return (authPaths.includes(pathName) ? children : <Navigate to="/login" />);
+    return <Navigate to="/login" />;
   }
 
   if (isPageForSeller(pathName)) {
@@ -57,7 +60,7 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
 
   function loginFirstAlert() {
     const alertText = t("toastAlert.pageRequiringSignIn");
-    const alertState = "warning";
+    const alertState = ALERT_STATE.WARNING;
     setTimeout(
       () => dispatch(showAlert({ alertText, alertState, alertType: "alert" })),
       300

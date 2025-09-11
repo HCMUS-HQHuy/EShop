@@ -1,19 +1,20 @@
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { SCROLL_REQUIRED } from "src/Data/globalVariables";
-import { scrollToTop } from "src/Functions/componentsFunctions";
-import { scrollToTopToolTipLeftPos } from "src/Functions/tooltipPositions";
-import useEventListener from "src/Hooks/Helper/useEventListener";
-import SvgIcon from "../SvgIcon";
-import ToolTip from "../ToolTip";
+import { SCROLL_REQUIRED } from "src/Data/globalVariables.tsx";
+import { scrollToTop } from "src/Functions/componentsFunctions.ts";
+import { scrollToTopToolTipLeftPos } from "src/Functions/tooltipPositions.ts";
+import useEventListener from "src/Hooks/Helper/useEventListener.tsx";
+import SvgIcon from "../SvgIcon.tsx";
+import ToolTip from "../ToolTip.tsx";
 import s from "./ScrollToTop.module.scss";
 
 const ScrollToTop = () => {
-  const scrollTopButtonRef = useRef();
+  const scrollTopButtonRef = useRef<HTMLButtonElement>(null);
   const { t, i18n } = useTranslation();
   const leftToolTipPos = scrollToTopToolTipLeftPos(i18n.language);
 
   function handleScrollTopVisibility() {
+    if (!scrollTopButtonRef.current) return;
     const classListMethod = window.scrollY < SCROLL_REQUIRED ? "add" : "remove";
     scrollTopButtonRef.current.classList[classListMethod](s.hide);
   }

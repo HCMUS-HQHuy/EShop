@@ -3,17 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   multiUpdateGlobalState,
   updateGlobalState,
-} from "src/Features/globalSlice";
+} from "src/Features/globalSlice.tsx";
 import s from "./GlobalOverlay.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const GlobalOverlay = () => {
   const dispatch = useDispatch();
   const { isOverlayActive, isMobileMenuActive, isProfileMenuActive } =
-    useSelector((state) => state.global);
+    useSelector((state: RootState) => state.global);
   const activeClass = isOverlayActive ? s.active : "";
 
-  function handleOverlayClick(e) {
-    if (e.key === "Enter") return;
+  function handleOverlayClick(e: React.MouseEvent | React.KeyboardEvent) {
+    if ("key" in e && e.key === "Enter") return;
 
     const closeMenuAndOverlayAction = multiUpdateGlobalState({
       isSectionsMenuActive: false,

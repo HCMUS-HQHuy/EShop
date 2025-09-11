@@ -6,8 +6,6 @@ import s from "./LogIn.module.scss";
 import LogInForm from "./LogInForm/LogInForm.tsx";
 
 const LogIn = () => {
-  useScrollOnMount(100);
-
   return (
     <>
       <Helmet>

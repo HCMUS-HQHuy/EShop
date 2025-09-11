@@ -1,7 +1,4 @@
-import { useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
-import Footer from "src/Components/Footer/Footer.tsx";
-import FirstHeader from "src/Components/Header/FirstHeader/FirstHeader.tsx";
 import Header from "src/Components/Header/Header/Header.tsx";
 import UpdateNotification from "src/Components/PWA/UpdateNotification/UpdateNotification.tsx";
 import ConnectionLabelAlert from "src/Components/Shared/MiniComponents/ConnectionLabelAlert/ConnectionLabelAlert.tsx";
@@ -13,7 +10,6 @@ import ToastAlert from "src/Components/Shared/PopUps/ToastAlert/ToastAlert.tsx";
 import ToastConfirm from "src/Components/Shared/PopUps/ToastConfirm/ToastConfirm.tsx";
 import useCurrentSkipLinkId from "src/Hooks/App/useCurrentSkipLinkId.tsx";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
-import type { RootState } from "src/Types/store.ts";
 
 const RoutesLayout = () => {
   const skipLinkSectionId = useCurrentSkipLinkId();
@@ -29,7 +25,7 @@ const RoutesLayout = () => {
       <GlobalOverlay />
       <ScrollToTop />
       <Outlet />
-      {/* { appMode === APP_MODE.USER && <Footer />} */}
+      {/*<Footer /> */}
       <ConnectionLabelAlert isOnline={isWebsiteOnline} />
       <ToastAlert />
       <ToastConfirm />

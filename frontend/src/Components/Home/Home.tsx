@@ -2,15 +2,10 @@ import { Helmet } from "react-helmet-async";
 import { productImg1 } from "src/Assets/Images/Images.ts";
 import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
 import CategoriesSection from "./CategoriesSection/CategoriesSection.tsx";
-import FeaturedSection from "./FeaturedSection/FeaturedSection.tsx";
 import FeaturedSectionFeatures from "./FeaturedSection/FeaturedSectionFeatures.tsx";
 import s from "./Home.module.scss";
 import MainSlider from "./Introduction/MainSlider/MainSlider.tsx";
-import SectionsMenu from "./Introduction/SectionsMenu/SectionsMenu.tsx";
 import OurProductsSection from "./OurProductsSection/OurProductsSection.tsx";
-import ProductPoster from "./ProductPoster/ProductPoster.tsx";
-import ThisMonthSection from "./ThisMonthSection/ThisMonthSection.tsx";
-import TodaySection from "./TodaySection/TodaySection.tsx";
 
 const Home = () => {
   useScrollOnMount();

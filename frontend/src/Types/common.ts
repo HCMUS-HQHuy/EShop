@@ -6,6 +6,12 @@ export enum SHOP_STATUS {
   BANNED = 'BANNED'
 }
 
+export enum ALERT_STATE {
+  SUCCESS = 'success',
+  ERROR = 'error',
+  WARNING = 'warning'
+}
+
 export enum STORAGE_KEYS {
   CART_PRODUCTS = "cartProducts",
   WISH_LIST = "wishList",
