@@ -27,13 +27,11 @@ const categoriesSlice = createSlice({
     builder.addCase(getCategories.fulfilled, (state, action) => {
       state.categoryList = action.payload;
       state.status = 'idle';
-      console.log("Categories fetched:", action);
     })
-    builder.addCase(getCategories.pending, (state) => {
+    .addCase(getCategories.pending, (state) => {
       state.status = 'pending';
-      console.log("Fetching categories...");
     })
-    builder.addCase(getCategories.rejected, (state, action) => {
+    .addCase(getCategories.rejected, (state, action) => {
       state.status = 'idle';
       console.error("Fetching categories failed:", action.error);
     })

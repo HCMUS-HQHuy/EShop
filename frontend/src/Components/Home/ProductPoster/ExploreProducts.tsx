@@ -11,10 +11,8 @@ type prop = {
 };
 
 const ExploreProducts = ({ numOfProducts = -1, customization } : prop) => {
-  // const filteredProducts = productsData.filter((_, i) => !(i < numOfProducts));
-  const filteredProducts: ProductType[] = useSelector((state: RootState) => state.products.productsList);
-
-  console.log("Filtered Products:", filteredProducts);
+  const productsData: ProductType[] = useSelector((state: RootState) => state.products.productsList);
+  const filteredProducts = productsData.filter((_, i) => (i < numOfProducts));
   customization.showColors = false;
 
   return (

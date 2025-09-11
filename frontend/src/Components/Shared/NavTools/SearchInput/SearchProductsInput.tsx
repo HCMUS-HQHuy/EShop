@@ -2,12 +2,12 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { productsData } from "src/Data/productsData";
-import { updateLoadingState } from "src/Features/loadingSlice";
-import { updateProductsState } from "src/Features/productsSlice";
-import { searchByObjectKey } from "src/Functions/search";
-import SvgIcon from "../../MiniComponents/SvgIcon";
-import SearchInput from "./SearchInput";
+import { productsData } from "src/Data/productsData.tsx";
+import { updateLoadingState } from "src/ReduxSlice/loadingSlice.tsx";
+import { updateProductsState } from "src/ReduxSlice/productsSlice.tsx";
+import { searchByObjectKey } from "src/Functions/search.ts";
+import SvgIcon from "../../MiniComponents/SvgIcon.tsx";
+import SearchInput from "./SearchInput.tsx";
 import s from "./SearchProductsInput.module.scss";
 
 const SearchProductsInput = () => {

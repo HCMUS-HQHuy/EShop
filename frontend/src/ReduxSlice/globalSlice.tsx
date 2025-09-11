@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { USER_ROLE } from "src/Types/common.ts";
 
 type GlobalState = {
@@ -9,6 +9,11 @@ type GlobalState = {
   isZoomInPreviewActive: boolean;
   previewImg: string | null;
   userRole: USER_ROLE;
+};
+
+type UpdateActionPayload<T extends keyof GlobalState> = {
+  key: T;
+  value: GlobalState[T];
 };
 
 const globalStateStr = localStorage.getItem("globalState");
@@ -31,7 +36,11 @@ const globalSlice = createSlice({
     multiUpdateGlobalState: (state, { payload }) => {
       Object.assign(state, payload);
     },
-    updateGlobalState: (state, { payload: { key, value } }) => {
+    updateGlobalState: <T extends keyof GlobalState>(
+      state: GlobalState,
+      action: PayloadAction<UpdateActionPayload<T>>
+    )  => {
+      const { key, value } = action.payload;
       state[key] = value;
       localStorage.setItem("globalState", JSON.stringify(state));
     },

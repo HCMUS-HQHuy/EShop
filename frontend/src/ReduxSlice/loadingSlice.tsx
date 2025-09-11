@@ -1,17 +1,33 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction, type Update } from "@reduxjs/toolkit";
 
-const initialState = {
+type LoadingState = {
+  loadingCategoryPage: boolean;
+  loadingProductDetails: boolean;
+  loadingSearchProducts: boolean;
+  loadingProductsPage: boolean;
+};
+
+const initialState: LoadingState = {
   loadingCategoryPage: false,
   loadingProductDetails: false,
   loadingSearchProducts: true,
   loadingProductsPage: true,
 };
 
+type UpdateActionPayload<T extends keyof LoadingState> = {
+  key: T;
+  value: LoadingState[T];
+};
+
 const loadingSlice = createSlice({
   initialState,
   name: "loadingSlice",
   reducers: {
-    updateLoadingState: (state, { payload: { key, value } }) => {
+    updateLoadingState: <T extends keyof LoadingState>(
+      state: LoadingState, 
+      action: PayloadAction<UpdateActionPayload<T>>
+    ) => {
+      const { key, value } = action.payload;
       state[key] = value;
     },
   },

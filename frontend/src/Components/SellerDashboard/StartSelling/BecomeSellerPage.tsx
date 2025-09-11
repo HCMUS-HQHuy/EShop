@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react';
+import React from 'react';
 import styles from './StartSellingPage.module.scss';
 import useScrollOnMount from 'src/Hooks/App/useScrollOnMount.tsx';
 import { useSelector, useDispatch } from 'react-redux';
@@ -10,8 +10,10 @@ import type { AppDispatch, RootState } from 'src/Types/store.ts';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { updateInput } from 'src/ReduxSlice/formsSlice.tsx'
-import { newShop, setShopData } from 'src/ReduxSlice/sellerSlice.tsx';
+import { setShopData } from 'src/ReduxSlice/sellerSlice.tsx';
 import parseZodError from 'src/utils/parseZodError.ts';
+import api from 'src/Api/index.api.ts';
+import { ALERT_STATE } from 'src/Types/common.ts';
 
 const BecomeSellerPage = () => {
     const { sellerRegistrationForm } = useSelector((state: RootState) => state.forms);
@@ -49,7 +51,7 @@ const BecomeSellerPage = () => {
         }
         const formData: SellerRegistrationFormValues = result.data;
         try {
-            await dispatch(newShop(formData)).unwrap();
+            await api.seller.createShop(formData);
             await dispatch(setShopData()).unwrap();
             sentFormAlert(t, dispatch);
         } catch (error: any) {
@@ -155,19 +157,19 @@ export default BecomeSellerPage;
 
 function internetConnectionAlert(dispatch: AppDispatch, t: TFunction) {
   const alertText = t("toastAlert.signInFailed");
-  const alertState = "error";
+  const alertState = ALERT_STATE.ERROR;
   dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
 }
 
 function sentFormAlert(t: TFunction, dispatch: AppDispatch) {
   const alertText = t("toastAlert.formSubmitted");
-  const alertState = "success";
+  const alertState = ALERT_STATE.SUCCESS;
   setTimeout(() => {
     dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
   }, 1500);
 }
 
 function errorAlert(dispatch: AppDispatch, alertText: string) {
-  const alertState = "error";
+  const alertState = ALERT_STATE.ERROR;
   dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
 }

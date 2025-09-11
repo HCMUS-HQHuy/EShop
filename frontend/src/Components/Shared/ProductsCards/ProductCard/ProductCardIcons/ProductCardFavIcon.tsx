@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { showAlert } from "src/Features/alertsSlice";
-import { addToArray, removeById } from "src/Features/productsSlice";
-import { isItemFound } from "src/Functions/helper";
-import { favIconToolTipLeftPos } from "src/Functions/tooltipPositions";
-import SvgIcon from "../../../MiniComponents/SvgIcon";
-import ToolTip from "../../../MiniComponents/ToolTip";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
+import { addToArray, removeById } from "src/ReduxSlice/productsSlice.tsx";
+import { isItemFound } from "src/Functions/helper.ts";
+import { favIconToolTipLeftPos } from "src/Functions/tooltipPositions.ts";
+import SvgIcon from "../../../MiniComponents/SvgIcon.tsx";
+import ToolTip from "../../../MiniComponents/ToolTip.tsx";
 import s from "./ProductCardFavIcon.module.scss";
 
 const ProductCardFavIcon = ({ product, productId }) => {

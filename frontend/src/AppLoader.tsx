@@ -23,7 +23,6 @@ const AppLoader = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         if (hasFetchedUserData.current) return;
-        console.log("Fetching initial data...");
         hasFetchedUserData.current = true;
         const fetchAll = async () => {
             const isTokenValid = await api.user.validToken();

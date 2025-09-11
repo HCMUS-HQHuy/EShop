@@ -8,7 +8,7 @@ type UseUpdateLoadingProps = {
   cleanFunction?: () => void;
   delays: number[];
   dependencies?: any[];
-  actionMethod: (payload: { key: string; value: boolean }) => any;
+  actionMethod: (payload: { key: any; value: any }) => any;
 };
 
 const useUpdateLoadingState = ({

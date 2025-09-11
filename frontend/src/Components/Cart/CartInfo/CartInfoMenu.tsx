@@ -1,12 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { showAlert } from "src/Features/alertsSlice";
-import { getSubTotal, formatePrice } from "src/Functions/formatting";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
+import { getSubTotal, formatePrice } from "src/Functions/formatting.ts";
 import s from "./CartInfoMenu.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const CartInfoMenu = () => {
-  const { cartProducts } = useSelector((state) => state.products);
+  const { cartProducts } = useSelector((state: RootState) => state.products);
   const subTotal = formatePrice(getSubTotal(cartProducts));
   const { t } = useTranslation();
   const cartInfo = "cartPage.cartInfoMenu";

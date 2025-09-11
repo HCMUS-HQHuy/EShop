@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import { updateGlobalState } from "src/Features/globalSlice";
-import SvgIcon from "../../MiniComponents/SvgIcon";
+import { updateGlobalState } from "src/ReduxSlice/globalSlice.tsx";
+import SvgIcon from "../../MiniComponents/SvgIcon.tsx";
 import s from "./MobileNavCloseBtn.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const MobileNavCloseBtn = () => {
-  const { isMobileMenuActive } = useSelector((state) => state.global);
+  const { isMobileMenuActive } = useSelector((state: RootState) => state.global);
   const dispatch = useDispatch();
 
   function closeMenu() {

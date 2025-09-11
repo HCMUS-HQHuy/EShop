@@ -45,7 +45,7 @@ const LogInForm = () => {
       if (error.response) {
         dispatch(showAlert({alertState: ALERT_STATE.ERROR, alertText: error.response.data.message, alertType: "alert"}));
       }
-      console.error("Failed to set login data:", error);
+      console.error("Login Failed:", error);
     }
   }
 

@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import { MAXIMUM_QUANTITY, MINIMUM_QUANTITY } from "src/Data/globalVariables";
-import { updateProductsState } from "src/Features/productsSlice";
+import { MAXIMUM_QUANTITY, MINIMUM_QUANTITY } from "src/Data/globalVariables.tsx";
+import { updateProductsState } from "src/ReduxSlice/productsSlice.tsx";
 import s from "./CustomNumberInput.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const CustomNumberInput = () => {
-  const { productQuantity } = useSelector((state) => state.products);
+  const { productQuantity } = useSelector((state: RootState) => state.products);
   const dispatch = useDispatch();
 
   function increaseQuantity() {

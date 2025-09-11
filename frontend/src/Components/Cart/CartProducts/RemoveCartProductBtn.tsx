@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { SCREEN_SIZES } from "src/Data/globalVariables";
-import { removeById } from "src/Features/productsSlice";
-import { cartProductToolTipPos } from "src/Functions/tooltipPositions";
-import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow";
-import SvgIcon from "../../Shared/MiniComponents/SvgIcon";
-import ToolTip from "../../Shared/MiniComponents/ToolTip";
+import { SCREEN_SIZES } from "src/Data/globalVariables.tsx";
+import { removeById } from "src/ReduxSlice/productsSlice.tsx";
+import { cartProductToolTipPos } from "src/Functions/tooltipPositions.ts";
+import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow.tsx";
+import SvgIcon from "../../Shared/MiniComponents/SvgIcon.tsx";
+import ToolTip from "../../Shared/MiniComponents/ToolTip.tsx";
 import s from "./RemoveCartProductBtn.module.scss";
 
 const RemoveCartProductBtn = ({ productId }) => {

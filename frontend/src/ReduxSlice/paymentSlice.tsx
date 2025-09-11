@@ -36,11 +36,7 @@ const paymentSlice = createSlice({
       state.status = 'idle';
       console.log("Payment methods fetched:", action);
     })
-    builder.addCase(getPaymentMethods.pending, (state) => {
-      state.status = 'pending';
-      console.log("Fetching payment methods...");
-    })
-    builder.addCase(getPaymentMethods.rejected, (state, action) => {
+    .addCase(getPaymentMethods.rejected, (state, action) => {
       state.status = 'idle';
       console.error("Fetching payment methods failed:", action.error);
     })

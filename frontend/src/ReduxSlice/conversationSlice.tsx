@@ -97,10 +97,6 @@ const conversationSlice = createSlice({
       state.conversations = action.payload;
       state.selectedConversation = null;
       state.selectedConversationId = null;
-      console.log("Conversations fetched:", action);
-    });
-    builder.addCase(conversationFetch.pending, (state) => {
-      console.log("Fetching conversations...");
     });
     builder.addCase(conversationFetch.rejected, (state, action) => {
       console.error("Fetching conversations failed:", action.error);

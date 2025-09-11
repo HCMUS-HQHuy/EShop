@@ -1,11 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { updateProductsState } from "src/Features/productsSlice";
-import { getUniqueArrayByObjectKey } from "src/Functions/helper";
+import { updateProductsState } from "src/ReduxSlice/productsSlice.tsx";
+import { getUniqueArrayByObjectKey } from "src/Functions/helper.ts";
 import s from "./WishlistPageHeader.module.scss";
+import type { RootState } from "src/Types/store.ts";
 
 const WishlistPageHeader = () => {
-  const { wishList, cartProducts } = useSelector((state) => state.products);
+  const { wishList, cartProducts } = useSelector((state: RootState) => state.products);
   const numberOfWishlist = wishList.length;
   const dispatch = useDispatch();
   const { t } = useTranslation();

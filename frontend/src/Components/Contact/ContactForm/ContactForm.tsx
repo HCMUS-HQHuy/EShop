@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { showAlert } from "src/Features/alertsSlice";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
 import s from "./ContactForm.module.scss";
 
 const ContactForm = () => {

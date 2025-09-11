@@ -1,8 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../Api/index.api.ts";
-import type { LoginFormValues, RegisterFormValues, LoginInforValues } from "src/Types/forms.ts";
+import type { RegisterFormValues, LoginInforValues } from "src/Types/forms.ts";
 
-const initialState = {
+type LoginInfo = LoginInforValues & { isSignIn: boolean };
+
+type userState = {
+  loginInfo: LoginInfo;
+  status: 'idle' | 'pending';
+}
+
+const initialState: userState = {
   loginInfo: {
     username: "",
     email: "",
@@ -25,14 +32,6 @@ export const newSignUp = createAsyncThunk(
   }
 );
 
-export const signOut = createAsyncThunk (
-  "user/signOut",
-  async () => {
-    const response = await api.user.logout();
-    return response;
-  }
-);
-
 export const setLoginData = createAsyncThunk(
   "user/getLoginData",
   async () => {
@@ -45,8 +44,8 @@ const userSlice = createSlice({
   name: "userSlice",
   initialState,
   reducers: {
-    updateUserData: (state, { payload }) => {
-      Object.assign(state.loginInfo, payload.updatedUserData);
+    updateUserData: (state, { payload } : { payload: LoginInfo }) => {
+      Object.assign(state.loginInfo, payload);
     },
   },
   extraReducers: (builder) => {    
@@ -74,25 +73,6 @@ const userSlice = createSlice({
     builder.addCase(setLoginData.rejected, (state, action) => {
       state.status = 'idle';
       console.error("Fetching user login data failed:", action.error);
-    });
-
-    builder.addCase(signOut.fulfilled, (state) => {
-      const guestData: LoginInforValues = {
-        username: "",
-        email: "",
-        address: "",
-        phoneNumber: "",
-        isSignIn: false,
-      };
-      state.loginInfo = guestData;
-    });
-    builder.addCase(signOut.pending, (state) => {
-      state.status = 'pending';
-      console.log("Signing out user...");
-    });
-    builder.addCase(signOut.rejected, (state, action) => {
-      state.status = 'idle';
-      console.error("User sign out failed:", action.error);
     });
   }
 });

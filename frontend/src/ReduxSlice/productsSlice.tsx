@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "src/Api/index.api.ts";
 import type { OrderType, ProductType } from "src/Types/product.ts";
 import { setAfterDiscountKey, setFormattedPrice } from "src/Functions/formatting.ts";
-import { STORAGE_KEYS, ORDER_STATUS } from "src/Types/common.ts";
+import { STORAGE_KEYS } from "src/Types/common.ts";
 
 type ProductsState = {
   saveBillingInfoToLocal: boolean;
