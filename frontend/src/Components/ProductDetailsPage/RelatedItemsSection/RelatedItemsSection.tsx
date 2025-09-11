@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { productsData } from "src/Data/productsData";
-import ProductsSlider from "../../Shared/MidComponents/ProductsSlider/ProductsSlider";
-import SectionTitle from "../../Shared/MiniComponents/SectionTitle/SectionTitle";
+import ProductsSlider from "../../Shared/MidComponents/ProductsSlider/ProductsSlider.tsx";
+import SectionTitle from "../../Shared/MiniComponents/SectionTitle/SectionTitle.tsx";
 import s from "./RelatedItemsSection.module.scss";
 
 const RelatedItemsSection = ({ productType, currentProduct }) => {
