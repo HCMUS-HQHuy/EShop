@@ -176,7 +176,7 @@ async function getById(req: RequestCustom, res: express.Response) {
     }
     console.log("Fetching product with ID:", productId);
     try {
-        const product = await prisma.products.findUnique({
+        const data = await prisma.products.findUnique({
             where: { productId: productId },
             select: {
                 name: true, sku: true, price: true, discount: true, stockQuantity: true, status: true,
@@ -185,8 +185,13 @@ async function getById(req: RequestCustom, res: express.Response) {
                 productImages: { select: { imageUrl: true } },
             }
         });
-        if (product === null) {
+        if (data === null) {
             return res.status(404).send(util.response.error('Product not found'));
+        }
+        const product = {
+            ...data,
+            categories: data.productCategories.map(pc => pc.categoryId),
+            additionalImages: data.productImages.map(pi => (pi.imageUrl)),
         }
         res.status(200).send(util.response.success('Product fetched successfully', { product }));
     } catch (error) {

@@ -19,7 +19,7 @@ const AddProductPage = () => {
   const additionalImagesInputRef = useRef<HTMLInputElement>(null);
   const [productData, setProductData] = useState({
     name: '', shortName: '', sku: '', description: '', price: '', discount: '', stock_quantity: '',
-    mainImage: undefined as File | undefined,
+    imageUrl: undefined as File | undefined,
     additionalImages: [] as File[],
     deletedImages: [] as string[],
     categories: [] as number[],
@@ -111,8 +111,8 @@ const AddProductPage = () => {
     productData.categories.forEach(category => {
       formData.append('categories[]', String(category));
     });
-    if (productData.mainImage) {
-      formData.append('mainImage', productData.mainImage);
+    if (productData.imageUrl) {
+      formData.append('mainImage', productData.imageUrl);
     }
     productData.additionalImages.forEach(file => {
       formData.append('additionalImages', file);
@@ -149,9 +149,9 @@ const AddProductPage = () => {
           <div className={s.card}>
             <h3>Main Image</h3>
             <div className={s.mainImageContainer}>
-              {productData.mainImage ? (
+              {productData.imageUrl ? (
                 <>
-                  <img src={typeof productData.mainImage === 'string' ? productData.mainImage : URL.createObjectURL(productData.mainImage)} alt="Main Preview" />
+                  <img src={typeof productData.imageUrl === 'string' ? `${import.meta.env.VITE_PUBLIC_URL}/${productData.imageUrl}` : URL.createObjectURL(productData.imageUrl)} alt="Main Preview" />
                   <button type="button" className={s.deleteButton} onClick={() => setProductData(p => ({ ...p, mainImage: undefined }))}>&times;</button>
                 </>
               ) : (
@@ -167,7 +167,7 @@ const AddProductPage = () => {
               </div>
               {productData.additionalImages.map((file, index) => (
                 <div key={index} className={s.imagePreviewTile}>
-                  <img src={typeof file === 'string' ? file : URL.createObjectURL(file)} alt={`Preview ${index}`} />
+                  <img src={typeof file === 'string' ? `${import.meta.env.VITE_PUBLIC_URL}/${file}` : URL.createObjectURL(file)} alt={`Preview ${index}`} />
                   <button type="button" className={s.deleteButton} onClick={() => removeAdditionalImage(index)}>&times;</button>
                 </div>
               ))}
