@@ -12,7 +12,7 @@ import type { RootState, AppDispatch } from "src/Types/store.ts";
 import type { LoginFormValues } from "src/Types/forms.ts";
 import type { TFunction } from "i18next";
 import api from "src/Api/index.api.ts";
-import { updateInput } from "src/Features/formsSlice.tsx";
+import { ALERT_STATE } from "src/Types/common.ts";
 
 const LogInForm = () => {
   const { email, password } = useSelector((state: RootState) => state.forms.login);
@@ -33,7 +33,7 @@ const LogInForm = () => {
       password: password
     });
     if (!result.success) {
-      console.log("Invalid login credentials");
+      dispatch(showAlert({alertState: ALERT_STATE.ERROR, alertText: result.error.issues.toString(), alertType: "alert"}));
       return;
     }
     const credentials: LoginFormValues = result.data;
@@ -41,7 +41,10 @@ const LogInForm = () => {
       await api.user.login(credentials);
       await dispatch(setLoginData());
       logInAlert(dispatch, t);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response) {
+        dispatch(showAlert({alertState: ALERT_STATE.ERROR, alertText: error.response.data.message, alertType: "alert"}));
+      }
       console.error("Failed to set login data:", error);
     }
   }
@@ -71,7 +74,7 @@ export default LogInForm;
 
 function logInAlert(dispatch: AppDispatch, t: TFunction) {
   const alertText = t("toastAlert.loginSuccess");
-  const alertState = "success";
+  const alertState = ALERT_STATE.SUCCESS;
 
   setTimeout(
     () => dispatch(showAlert({ alertText, alertState, alertType: "alert" })),
@@ -81,7 +84,7 @@ function logInAlert(dispatch: AppDispatch, t: TFunction) {
 
 function internetConnectionAlert(dispatch: AppDispatch, t: TFunction) {
   const alertText = t("toastAlert.loginFailed");
-  const alertState = "error";
+  const alertState = ALERT_STATE.ERROR;
 
   dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
 }

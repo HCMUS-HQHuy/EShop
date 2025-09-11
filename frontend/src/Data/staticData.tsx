@@ -1,30 +1,15 @@
 import {
   appleLogo,
   bkashCard,
+  headphone,
   canonLogo,
-  mastercard,
-  member1Img,
-  member2Img,
-  member3Img,
-  nagadCard,
   productImg1,
   productImg2,
   productImg3,
-  russiaFlag,
-  saudiFlag,
-  usaFlag,
-  visaCard,
-  momoLogo
-} from "src/Assets/Images/Images.ts";
-import {
+  momoLogo,
   car,
   correctSign,
-  franceFlag,
-  headphone,
-  hungaryFlag,
-  indiaFlag,
-  japanFlag,
-} from "../Assets/Images/Images.ts";
+} from "src/Assets/Images/Images.ts";
 import { regexPatterns } from "./globalVariables.tsx";
 
 export const introductionSliderData = [
@@ -135,71 +120,6 @@ export const aboutCardsInfo = [
   },
 ];
 
-export const ourMembersData = [
-  {
-    name: "Tom Cruise",
-    jobTitle: "Founder & Chairman",
-    img: member1Img,
-    socialMedia: {
-      twitter: "https://twitter.com/",
-      instagram: "https://www.instagram.com/",
-      linkedin: "https://www.linkedin.com/",
-    },
-    id: 1,
-  },
-
-  {
-    name: "Emma Watson",
-    jobTitle: "Managing Director",
-    img: member2Img,
-    socialMedia: {
-      twitter: "https://twitter.com/",
-      instagram: "https://www.instagram.com/",
-      linkedin: "https://www.linkedin.com/",
-    },
-    id: 2,
-  },
-
-  {
-    name: "Will Smith",
-    jobTitle: "Product Designer",
-    img: member3Img,
-    socialMedia: {
-      twitter: "https://twitter.com/",
-      instagram: "https://www.instagram.com/",
-      linkedin: "https://www.linkedin.com/",
-    },
-    id: 3,
-  },
-];
-
-export const paymentCards = [
-  {
-    img: bkashCard,
-    alt: "Bkash card",
-    link: "https://www.bkash.com/en/products-services/visa-card-to-bkash",
-    id: 1,
-  },
-  {
-    img: visaCard,
-    alt: "Visa card",
-    link: "https://usa.visa.com/pay-with-visa/find-card/apply-credit-card",
-    id: 2,
-  },
-  {
-    img: mastercard,
-    alt: "Mastercard",
-    link: "https://www.mastercard.us/en-us.html",
-    id: 3,
-  },
-  {
-    img: nagadCard,
-    alt: "Nagad card",
-    link: "https://www.nagad.com.bd/services/?service=add-money-from-card",
-    id: 4,
-  },
-];
-
 export const MomoPayment = [
   {
     img: momoLogo,
@@ -209,57 +129,57 @@ export const MomoPayment = [
   },
 ]
 
-export const LANGUAGES = [
-  {
-    lang: "English",
-    flag: usaFlag,
-    flagName: "USA",
-    code: "en",
-    id: 1,
-  },
-  {
-    lang: "Russian",
-    flag: russiaFlag,
-    flagName: "Russia",
-    code: "ru",
-    id: 2,
-  },
-  {
-    lang: "Arabic",
-    flag: saudiFlag,
-    flagName: "Saudi Arabia",
-    code: "ar",
-    id: 3,
-  },
-  {
-    lang: "French",
-    flag: franceFlag,
-    flagName: "France",
-    code: "fr",
-    id: 4,
-  },
-  {
-    lang: "hungarian",
-    flag: hungaryFlag,
-    flagName: "Hungary",
-    code: "hu",
-    id: 5,
-  },
-  {
-    lang: "Japanese",
-    flag: japanFlag,
-    flagName: "Japan",
-    code: "ja",
-    id: 6,
-  },
-  {
-    lang: "Hindi",
-    flag: indiaFlag,
-    flagName: "India",
-    code: "hi",
-    id: 7,
-  },
-];
+// export const LANGUAGES = [
+//   {
+//     lang: "English",
+//     flag: usaFlag,
+//     flagName: "USA",
+//     code: "en",
+//     id: 1,
+//   },
+//   {
+//     lang: "Russian",
+//     flag: russiaFlag,
+//     flagName: "Russia",
+//     code: "ru",
+//     id: 2,
+//   },
+//   {
+//     lang: "Arabic",
+//     flag: saudiFlag,
+//     flagName: "Saudi Arabia",
+//     code: "ar",
+//     id: 3,
+//   },
+//   {
+//     lang: "French",
+//     flag: franceFlag,
+//     flagName: "France",
+//     code: "fr",
+//     id: 4,
+//   },
+//   {
+//     lang: "hungarian",
+//     flag: hungaryFlag,
+//     flagName: "Hungary",
+//     code: "hu",
+//     id: 5,
+//   },
+//   {
+//     lang: "Japanese",
+//     flag: japanFlag,
+//     flagName: "Japan",
+//     code: "ja",
+//     id: 6,
+//   },
+//   {
+//     lang: "Hindi",
+//     flag: indiaFlag,
+//     flagName: "India",
+//     code: "hi",
+//     id: 7,
+//   },
+// ];
 
 export const productCardCustomizations = {
   categoryProducts: {

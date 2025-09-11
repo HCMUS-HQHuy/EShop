@@ -1,4 +1,3 @@
-import About from "src/Components/About/About.tsx";
 import AccountPage from "src/Components/AccountPage/AccountPage.tsx";
 import Cart from "src/Components/Cart/Cart.tsx";
 import CheckoutPage from "src/Components/CheckoutPage/CheckoutPage.tsx";
@@ -30,7 +29,6 @@ import RejectedPage from "src/Components/SellerDashboard/StartSelling/RejectedPa
 export const ROUTES_CONFIG = [
   { path: "/", element: <Home /> },
   { path: "/contact", element: <Contact /> },
-  { path: "/about", element: <About /> },
   { path: "/details", element: <ProductDetailsPage /> },
   { path: "/category", element: <ProductsCategoryPage /> },
   { path: "/products", element: <ProductsPage /> },

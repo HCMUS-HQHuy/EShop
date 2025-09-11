@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-const SkipContentLink = ({ scrollTo }) => {
+const SkipContentLink = ({ scrollTo } : { scrollTo: string | undefined}) => {
   const { t } = useTranslation();
 
   return (

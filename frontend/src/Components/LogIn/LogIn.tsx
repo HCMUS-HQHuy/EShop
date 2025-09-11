@@ -1,7 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { signUpImg } from "src/Assets/Images/Images.ts";
 import { WEBSITE_NAME } from "src/Data/constants.tsx";
-import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
 import s from "./LogIn.module.scss";
 import LogInForm from "./LogInForm/LogInForm.tsx";
 
