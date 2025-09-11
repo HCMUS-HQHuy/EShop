@@ -41,7 +41,7 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
         case SHOP_STATUS.ACTIVE:
         case SHOP_STATUS.CLOSED:
           dispatch(updateGlobalState({ key: "userRole", value: USER_ROLE.SELLER }));
-          return (pathName === "seller/pending" || pathName === "seller/rejected" || pathName === "seller/pending" ? <Navigate to="/seller" /> : children);
+          return (pathName === "seller/pending" || pathName === "seller/rejected" || pathName === "seller/pending" || pathName === "seller/banned" ? <Navigate to="/seller" /> : children);
         case SHOP_STATUS.BANNED:
           return (pathName !== "/seller/banned" ? <Navigate to="/seller/banned" /> : children);
         default:
