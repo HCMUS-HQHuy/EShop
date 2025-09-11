@@ -48,20 +48,7 @@ const userSlice = createSlice({
       Object.assign(state.loginInfo, payload);
     },
   },
-  extraReducers: (builder) => {    
-    builder.addCase(newSignUp.fulfilled, (state, action) => {
-      state.status = 'idle';
-      console.log("User signed up:", action.payload);
-    });
-    builder.addCase(newSignUp.pending, (state) => {
-      state.status = 'pending';
-      console.log("Signing up user...");
-    });
-    builder.addCase(newSignUp.rejected, (state, action) => {
-      state.status = 'idle';
-      console.error("User sign up failed:", action.payload);
-    });
-
+  extraReducers: (builder) => {
     builder.addCase(setLoginData.fulfilled, (state, action) => {
       state.loginInfo = { ...action.payload };
       state.loginInfo.isSignIn = true;

@@ -53,7 +53,6 @@ const sellerSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(setShopData.fulfilled, (state, action) => {
       state.shopInfo = { ...action.payload };
-      console.log("Shop info updated:", state.shopInfo);
     })
     .addCase(setShopData.rejected, (state, action) => {
       state.status = 'idle';

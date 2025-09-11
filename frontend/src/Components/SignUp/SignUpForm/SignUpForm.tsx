@@ -11,6 +11,8 @@ import SignUpFormInputs from "./SignUpFormInputs/SignUpFormInputs.tsx";
 import type { TFunction } from "i18next";
 import AuthSchemas, { type RegisterFormValues } from 'src/Types/forms.ts';
 import type { AppDispatch, RootState } from 'src/Types/store.ts'
+import api from "src/Api/index.api.ts";
+import { ALERT_STATE } from "src/Types/common.ts";
 
 const SignUpForm = () => {
   const { username, email, password, confirmPassword } 
@@ -37,7 +39,7 @@ const SignUpForm = () => {
     }
     const formData: RegisterFormValues = result.data;
     try {
-      const response = await dispatch(newSignUp(formData)).unwrap();
+      const response = await api.user.signUp(formData);
       console.log("Registration successful:", response);
       signInAlert(t, dispatch);
     } catch (error) {
@@ -65,21 +67,16 @@ export default SignUpForm;
 
 export function signInAlert(t: TFunction, dispatch: AppDispatch) {
   const alertText = t("toastAlert.signInSuccess");
-  const alertState = "success";
-
   setTimeout(() => {
-    dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
+    dispatch(showAlert({ alertText, alertState: ALERT_STATE.SUCCESS, alertType: "alert" }));
   }, 1500);
 }
 
 function internetConnectionAlert(dispatch: AppDispatch, t: TFunction) {
   const alertText = t("toastAlert.signInFailed");
-  const alertState = "error";
-
-  dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
+  dispatch(showAlert({ alertText, alertState: ALERT_STATE.ERROR, alertType: "alert" }));
 }
 
 function errorAlert(dispatch: AppDispatch, alertText: string) {
-  const alertState = "error";
-  dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
+  dispatch(showAlert({ alertText, alertState: ALERT_STATE.ERROR, alertType: "alert" }));
 }
