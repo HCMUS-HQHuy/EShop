@@ -1,9 +1,9 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import z, { date, set } from 'zod';
+import z from 'zod';
 import s from './ManageProducts.module.scss';
 import api from 'src/Api/index.api.ts';
-import * as types from 'src/Types/product.ts';
+import { PRODUCT_STATUS } from 'src/Types/common.ts';
 
 
 const rate = z.object({
@@ -12,16 +12,16 @@ const rate = z.object({
 })
 
 const productViewSchema = z.object({
-  productId: z.string(),
+  productId: z.number().min(1),
   imageUrl: z.string().min(10).max(1000),
   shortName: z.string(),
   sku: z.string(),
   price: z.coerce.number().min(0),
   discount: z.coerce.number().min(0).max(100).default(0),
   stockQuantity: z.coerce.number().min(0),
-  sold: z.coerce.number().min(0),
-  rating: rate,
-  status: z.enum(['Active', 'Inactive', 'Banned']),
+  sold: z.coerce.number().min(0).default(0),
+  rating: rate.default({ count: 0, score: 0 }),
+  status: z.enum(PRODUCT_STATUS),
 });
 
 type Rating = z.infer<typeof rate>;
@@ -45,7 +45,7 @@ const ManageProducts = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState<ProductView[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState('All');
   
   const [isReady, setIsReady] = useState(false);
@@ -55,21 +55,7 @@ const ManageProducts = () => {
       try {
         const response = await api.product.shopFetch();
         const products = response.data.products as ProductView[];
-        const parsed = z.array(productViewSchema).safeParse(products.map((product: ProductView) => ({
-          productId: String(product.productId),
-          imageUrl: String(product.imageUrl),
-          shortName: String(product.shortName),
-          sku: String(product.sku),
-          price: Number(product.price),
-          discount: Number(product.discount),
-          stockQuantity: Number(product.stockQuantity),
-          sold: Number(product.sold),
-          rating: {
-            count: Number(product.rating),
-            score: Number(product.rating),
-          },
-          status: String(product.status),
-        })));
+        const parsed = z.array(productViewSchema).safeParse(products.map((product: ProductView) => ({...product, rating: product.rating || { count: 0, score: 0 }})));
         if (parsed.success) {
           setProducts(parsed.data);
           console.log("Fetched products:", parsed.data);
@@ -98,11 +84,11 @@ const ManageProducts = () => {
       );
   }, [products, searchTerm, activeTab]);
 
-  const handleEditProduct = (productId: string) => {
+  const handleEditProduct = (productId: number) => {
     navigate(`edit/${productId}`);
   };
   // Logic xử lý chọn/bỏ chọn sản phẩm
-  const handleSelectProduct = (productId: string) => {
+  const handleSelectProduct = (productId: number) => {
     setSelectedProductIds(prev =>
       prev.includes(productId)
         ? prev.filter(id => id !== productId)

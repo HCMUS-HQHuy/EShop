@@ -1,0 +1,139 @@
+.addProductPage {
+  background-color: var(--skeleton-color1);
+  padding: 30px;
+  padding-left: 8%;
+  padding-right: 8%;
+  height: calc(100vh - 100px);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 30px;
+  @media (max-width: 1024px) { grid-template-columns: 1fr; }
+}
+
+.mediaColumn, .detailsColumn {
+  display: flex;
+  flex-direction: column;
+  // gap: 3px;
+  background-color: var(--white);
+  border-radius: 12px;
+}
+
+.card {
+  padding: 25px;
+  h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px}
+}
+
+.formGroup {
+  flex: 1;
+  margin-bottom: 20px;
+  &:last-child { margin-bottom: 0; }
+  label { font-weight: 500; font-size: 0.9rem; margin-bottom: 8px; display: block; }
+  input, textarea {
+    padding: 12px 15px;
+    border: 1px solid var(--very-light-gray);
+    border-radius: 8px;
+    width: 100%;
+    &:focus { outline: none; border-color: var(--tomato); }
+  }
+}
+
+.formRow {
+  width: 100%;
+  display: flex;
+  gap: 30px;
+}
+
+// --- Styles cho Cột Trái (Media) ---
+
+.mainImageContainer {
+  position: relative;
+  margin-bottom: 25px;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 8px;
+  overflow: hidden;
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.imageUploader {
+  width: 100%; height: 100%;
+  border: 2px dashed var(--very-light-gray);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  p { color: var(--light-gray); span { color: var(--tomato); font-weight: 500; } }
+}
+
+.othersImagesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.uploadTile, .placeholderTile, .imagePreviewTile {
+  aspect-ratio: 3 / 2;
+  border-radius: 8px;
+}
+
+.uploadTile {
+  border: 2px dashed var(--very-light-gray);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  span { font-size: 0.9rem; color: var(--light-gray); font-weight: 500; }
+}
+
+.placeholderTile {
+  background-color: var(--skeleton-color1);
+}
+
+.imagePreviewTile {
+  position: relative;
+  overflow: hidden;
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.deleteButton {
+    position: absolute; top: 5px; right: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: var(--dark-red);
+    border: none; border-radius: 50%; width: 24px; height: 24px;
+    cursor: pointer; font-size: 1.2rem; line-height: 24px;
+    display: flex; justify-content: center; align-items: center;
+}
+
+.hiddenInput { display: none; }
+
+// --- Styles cho Cột Phải (Details) ---
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.toggleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  label { font-weight: 500; }
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 15px;
+  button { padding: 12px 30px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  .saveButton { background-color: var(--primary); color: var(--white); }
+  .cancelButton { background-color: var(--very-light-gray); color: var(--dark-gray); }
+}

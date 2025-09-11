@@ -38,3 +38,10 @@ export enum USER_ROLE {
   CUSTOMER = 'CUSTOMER',
   SELLER = 'SELLER'
 }
+
+export enum PRODUCT_STATUS {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  BANNED = 'BANNED',
+  OUT_OF_STOCK = 'OUT OF STOCK',
+}

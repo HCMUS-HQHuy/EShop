@@ -10,6 +10,6 @@ const product = {
     shopUpdateById: (id: string, productData: any) => api.put(`/seller/products/${id}/update`, productData, {
       headers: { "Content-Type": "multipart/form-data" },
     }),
-    shopDeleteById: (id: string) => api.delete(`/seller/products/${id}/delete`),
+    shopDeleteById: (id: number) => api.delete(`/seller/products/${id}/delete`),
 };
 export default product;

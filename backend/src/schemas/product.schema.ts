@@ -19,7 +19,7 @@ const ProductSchema = z.object({
 });
 
 const BaseProductFilterSchema = z.object({
-    categories_id: z.optional(z.array(z.coerce.number().positive('Category ID must be positive')).max(3, 'Max 3 categories')),
+    categoriesId: z.optional(z.array(z.coerce.number().positive('Category ID must be positive')).max(3, 'Max 3 categories')),
     min_price: z.coerce.number().min(0).optional(),
     max_price: z.coerce.number().min(0).optional(),
 }).refine((data) => {
@@ -33,19 +33,19 @@ const BaseProductFilterSchema = z.object({
 });
 
 const AdminProductFilterSchema = BaseProductFilterSchema.safeExtend({
-    is_deleted: z.boolean().optional(),
+    isDeleted: z.boolean().optional(),
     shopId: z.string().optional(),
     status: z.enum(PRODUCT_STATUS).optional()
 });
 
 const SellerProductFilterSchema = BaseProductFilterSchema.safeExtend({
-    is_deleted: z.never(),
+    isDeleted: z.never(),
     shopId: z.never(),
     status: z.enum(PRODUCT_STATUS).optional()
 });
 
 const UserProductFilterSchema = BaseProductFilterSchema.safeExtend({
-    is_deleted: z.never(),
+    isDeleted: z.never(),
     shopId: z.never(),
     status: z.never()
 });

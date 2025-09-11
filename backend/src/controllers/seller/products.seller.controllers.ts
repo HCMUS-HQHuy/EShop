@@ -6,6 +6,7 @@ import schemas from 'src/schemas/index.schema';
 import { PRODUCT_STATUS } from '@prisma/client';
 import { ProductInformation, ProductParamsRequest, RequestCustom, SellerProductFilter } from 'src/types/index.types';
 import { PAGINATION_LIMIT } from 'src/constants/globalVariables';
+import prisma from 'src/models/prismaClient';
 
 // #### DATABASE FUNCTIONS ####
 
@@ -52,57 +53,28 @@ async function removeProduct(userId: number, productId: number): Promise<void> {
 }
 
 async function listProducts(shopId: number, params: ProductParamsRequest) {
-    let db: Client | undefined = undefined;
     try {
-        db = await database.getConnection();
-        const sql = `
-            SELECT
-                product_id as "productId",
-                image_url as "imageUrl",
-                short_name as "shortName", 
-                sku, price, discount, 
-                stock_quantity as "stockQuantity", 
-                500 as sold, 4 as rating, status
-            FROM products
-            WHERE name ILIKE $1
-                AND shopId = ${shopId}
-                AND ($4::numeric IS NULL OR price <= $4)
-                AND ($5::numeric IS NULL OR price >= $5)
-                AND (
-                    $6::int[] IS NULL
-                    OR EXISTS (
-                        SELECT 1 FROM product_categories 
-                        WHERE product_categories.product_id = products.product_id
-                        AND product_categories.category_id = ANY($6::int[])
-                    )
-                )
-                AND ($7::text IS NULL OR 'status' = $7)
-                AND is_deleted = FALSE
-            ORDER BY ${params.sortAttribute} ${params.sortOrder}
-            LIMIT $2 OFFSET $3
-        `;
-        
         const limit         = PAGINATION_LIMIT;
         const offset        = (params.page - 1) * limit;
         const filter        = params.filter as SellerProductFilter;
-        const queryParams = [
-            `%${params.keywords}%`,         // $1
-            limit,                          // $2
-            offset,                         // $3
-            filter?.max_price,              // $4
-            filter?.min_price,              // $5
-            filter?.categories_id,          // $6
-            filter?.status,                 // $7
-        ];
-        const result = await db.query(sql, queryParams);
-        return result.rows;
+        const products = prisma.products.findMany({
+            where: { 
+                shopId: shopId, 
+                isDeleted: false, 
+                price: { lte: filter?.max_price ?? undefined, gte: filter?.min_price ?? undefined }, 
+                status: filter?.status ?? undefined,
+                name: { contains: params.keywords, mode: 'insensitive' },
+                productCategories: filter?.categoriesId ? { some: { categoryId: { in: filter.categoriesId } } } : undefined
+            },
+            skip: offset,
+            take: limit,
+            orderBy: { [params.sortAttribute]: params.sortOrder },
+            select: { productId: true, imageUrl: true, shortName: true, sku: true, price: true, discount: true, stockQuantity: true, status: true }
+        })
+        return products;
     } catch (error) {
         console.error('Error listing products:', error);
         throw error;
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
     }
 }
 
@@ -203,46 +175,23 @@ async function getById(req: RequestCustom, res: express.Response) {
         return res.status(400).send(util.response.error('Invalid product ID'));
     }
     console.log("Fetching product with ID:", productId);
-    let db: Client | undefined = undefined;
     try {
-        db = await database.getConnection();
-        const result = await db.query(`
-            SELECT
-                name, sku, price, discount, stock_quantity, status,
-                short_name as "shortName",
-                product_categories.category_id as "category",
-                products.description,
-                products.image_url as "mainImage", 
-                product_images.image_url as "additionalImage"
-            FROM 
-                products
-                LEFT JOIN 
-                    product_categories ON products.product_id = product_categories.product_id
-                LEFT JOIN
-                    product_images ON products.product_id = product_images.product_id
-            WHERE products.product_id = $1 AND shopId = $2
-        `, [productId, req.user?.shop?.shopId]);
-        if (!result.rows[0]) {
+        const product = await prisma.products.findUnique({
+            where: { productId: productId },
+            select: {
+                name: true, sku: true, price: true, discount: true, stockQuantity: true, status: true,
+                shortName: true, description: true, imageUrl: true,
+                productCategories: { select: { categoryId: true } },
+                productImages: { select: { imageUrl: true } },
+            }
+        });
+        if (product === null) {
             return res.status(404).send(util.response.error('Product not found'));
         }
-        const product = result.rows[0];
-        const data = {
-            ...product,
-            mainImage: `${process.env.PUBLIC_URL}/${product.mainImage}`,
-            categories: result.rows.map(row => row.category).reduce((acc: number[], curr: number) => {
-                if (!acc.includes(curr)) acc.push(curr);
-                return acc;
-            }, []),
-            additionalImages: result.rows.map(row => `${process.env.PUBLIC_URL}/${row.additionalImage}`)
-        }
-        res.status(200).send(util.response.success('Product fetched successfully', { product: data }));
+        res.status(200).send(util.response.success('Product fetched successfully', { product }));
     } catch (error) {
         console.log('error fetch product with id', error);
         return res.status(500).send(util.response.internalServerError());
-    } finally {
-        if (db) {
-            database.releaseConnection(db);
-        }
     }
 }
 
@@ -371,69 +320,33 @@ async function add(req: RequestCustom, res: express.Response) {
     }
     const product: ProductInformation = parsedBody.data;
     console.log("Parsed product data:", product);
-    let db: Client | undefined = undefined;
     try {
         product.shopId = req.user?.shop?.shopId as number;
         product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
         console.log("Product added:", product);
-        db = await database.getConnection();
-        await db.query('BEGIN');
-        const sql = `
-            INSERT INTO products (name, sku, short_name, price, discount, description, stock_quantity, image_url, shopId, status)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-            RETURNING product_id
-        `;
-        const data = [
-            product.name,
-            product.sku,
-            product.shortName,
-            product.price,
-            product.discount,
-            product.description,
-            product.stockQuantity,
-            product.mainImage,
-            product.shopId,
-            product.status
-        ];
-        const result = await db.query(sql, data);
-        const productId = result.rows[0].product_id;
-
-        console.log("Inserted product ID:", productId);
-        const valuesSQL = product.categories
-            .map((_, index) => `($1, $${index + 2})`)
-            .join(', ');
-        if (valuesSQL) {
-            const sql2 = `
-                INSERT INTO product_categories (product_id, category_id)
-                VALUES ${valuesSQL}
-            `;
-            const params = [productId, ...product.categories];
-            await db.query(sql2, params);
-        }
-
-        const valuesImageSQL = (req.files['additionalImages'] as Express.Multer.File[] | undefined)?.map((_, index) => `($1, $${index + 2})`).join(', ');
-        if (valuesImageSQL) {
-            const sql3 = `
-                INSERT INTO product_images (product_id, image_url)
-                VALUES ${valuesImageSQL}
-            `;
-            const imageUrls = (req.files['additionalImages'] as Express.Multer.File[]).map(file => file.filename);
-            const paramsImage = [productId, ...imageUrls];
-            await db.query(sql3, paramsImage);
-        }
-        await db.query('COMMIT');
+        await prisma.products.create({
+            data: {
+                name: product.name,
+                sku: product.sku,
+                shortName: product.shortName,
+                price: product.price,
+                discount: product.discount,
+                description: product.description,
+                stockQuantity: product.stockQuantity,
+                imageUrl: product.mainImage,
+                shopId: product.shopId,
+                status: product.status,
+                productCategories: { create: product.categories.map(categoryId => ({ categoryId })) },
+                productImages: {
+                    create: (req.files['additionalImages'] as Express.Multer.File[] | undefined)?.map(file => ({ imageUrl: file.filename })) || []
+                }
+            },
+        })
         res.status(201).send(util.response.success('Product added successfully'));
     }
     catch (error) {
-        if (db) {
-            await db.query('ROLLBACK');
-        }
         console.error('Error adding product:', error);
         return res.status(500).send(util.response.internalServerError());
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
     }
 };
 

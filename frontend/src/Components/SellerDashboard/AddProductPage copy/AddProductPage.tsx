@@ -1,12 +1,29 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import ProductSchema from 'src/Types/product.ts';
+import type { ProductDetails } from './ProductDetails.ts';
 import CategoryInput from 'src/Components/Shared/CategoryInput/CategoryInput.tsx';
 import ToggleSwitch from 'src/Components/Shared/ToggleSwitch/ToggleSwitch.tsx';
 import s from './AddProductPage.module.scss';
 import api from 'src/Api/index.api.ts';
 import LoadingPage from 'src/Components/LoadingPage/LoadingPage.tsx';
 import { PRODUCT_STATUS } from 'src/Types/common.ts';
+import ProductSchema from 'src/Types/product.ts';
+
+const defaultProductDetails: ProductDetails = {
+  name: '',
+  sku: '',
+  price: '0',
+  discount: '0',
+  stockQuantity: 0,
+  status: '',
+  shortName: '',
+  description: '',
+  imageUrl: '',
+  productCategories: [],
+  productImages: [],
+  isActive: false,
+  deletedImages: []
+};
 
 // Component Icon nhỏ để tái sử dụng
 const IconPlus = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5V19" stroke="#848d97" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M5 12H19" stroke="#848d97" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
@@ -17,14 +34,7 @@ const AddProductPage = () => {
   const isEditMode = Boolean(productId);
 
   const additionalImagesInputRef = useRef<HTMLInputElement>(null);
-  const [productData, setProductData] = useState({
-    name: '', shortName: '', sku: '', description: '', price: '', discount: '', stock_quantity: '',
-    mainImage: undefined as File | undefined,
-    additionalImages: [] as File[],
-    deletedImages: [] as string[],
-    categories: [] as number[],
-    isActive: true,
-  });
+  const [productData, setProductData] = useState<ProductDetails>(defaultProductDetails);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -50,7 +60,10 @@ const AddProductPage = () => {
   }, [productId, isEditMode]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setProductData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setProductData(prev => {
+      if (!prev) return prev;
+      return { ...prev, [e.target.name]: e.target.value } as ProductDetails;
+    });
   };
 
   const handleMainImageChange = (files: File[]) => {
@@ -62,20 +75,20 @@ const AddProductPage = () => {
   const handleAdditionalImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
-      const spaceLeft = 5 - productData.additionalImages.length;
+      const spaceLeft = 5 - productData.productImages.length;
       const filesToUpload = files.slice(0, spaceLeft);
-      setProductData(prev => ({ ...prev, additionalImages: [...prev.additionalImages, ...filesToUpload] }));
+      setProductData(prev => ({ ...prev, additionalImages: [...prev.productImages, ...filesToUpload] }));
     }
   };
 
   const removeAdditionalImage = (indexToRemove: number) => {
     setProductData(prev => {
-      const updatedAdditionalImages = prev.additionalImages.filter((_, index) => index !== indexToRemove);
-      const removedImage = prev.additionalImages[indexToRemove];
+      const updatedAdditionalImages = prev.productImages.filter((_, index) => index !== indexToRemove);
+      const removedImage = prev.productImages[indexToRemove];
       const shouldAddToDeleted = removedImage && !(removedImage instanceof File);
 
       const updatedDeletedImages = shouldAddToDeleted
-        ? [...prev.deletedImages, removedImage as string]
+        ? [...prev.deletedImages, removedImage as unknown as string]
         : prev.deletedImages;
 
       return {
@@ -105,17 +118,17 @@ const AddProductPage = () => {
     formData.append('description', productData.description);
     formData.append('price', productData.price);
     formData.append('discount', productData.discount);
-    formData.append('stockQuantity', productData.stock_quantity);
-    formData.append('status', productData.isActive ? PRODUCT_STATUS.ACTIVE : PRODUCT_STATUS.INACTIVE);
+    formData.append('stockQuantity', productData.stockQuantity.toString());
+    formData.append('status', productData.status);
 
-    productData.categories.forEach(category => {
-      formData.append('categories[]', String(category));
+    productData.productCategories.forEach(category => {
+      formData.append('productCategories[]', String(category));
     });
-    if (productData.mainImage) {
-      formData.append('mainImage', productData.mainImage);
+    if (productData.imageUrl) {
+      formData.append('imageUrl', productData.imageUrl);
     }
-    productData.additionalImages.forEach(file => {
-      formData.append('additionalImages', file);
+    productData.productImages.forEach(file => {
+      formData.append('productImages', file.imageUrl);
     });
 
     try {
@@ -141,6 +154,7 @@ const AddProductPage = () => {
   if (isLoading) {
     return <LoadingPage />;
   }
+  console.log('Current productData state:', productData);
 
   return (
     <div className={s.addProductPage}>
@@ -149,9 +163,9 @@ const AddProductPage = () => {
           <div className={s.card}>
             <h3>Main Image</h3>
             <div className={s.mainImageContainer}>
-              {productData.mainImage ? (
+              {productData.imageUrl ? (
                 <>
-                  <img src={typeof productData.mainImage === 'string' ? productData.mainImage : URL.createObjectURL(productData.mainImage)} alt="Main Preview" />
+                  <img src={typeof productData.imageUrl === 'string' ? `${import.meta.env.VITE_PUBLIC_URL}/${productData.imageUrl}` : URL.createObjectURL(productData.imageUrl)} alt="Main Preview" />
                   <button type="button" className={s.deleteButton} onClick={() => setProductData(p => ({ ...p, mainImage: undefined }))}>&times;</button>
                 </>
               ) : (
@@ -165,13 +179,13 @@ const AddProductPage = () => {
                 <span>Upload</span>
                 <input ref={additionalImagesInputRef} type="file" multiple accept="image/*" className={s.hiddenInput} onChange={handleAdditionalImagesChange} />
               </div>
-              {productData.additionalImages.map((file, index) => (
+              {productData.productImages.map((file, index) => (
                 <div key={index} className={s.imagePreviewTile}>
-                  <img src={typeof file === 'string' ? file : URL.createObjectURL(file)} alt={`Preview ${index}`} />
+                  <img src={typeof file.imageUrl === 'string' ? `${import.meta.env.VITE_PUBLIC_URL}/${file.imageUrl}` : URL.createObjectURL(file.imageUrl)} alt={`Preview ${index}`} />
                   <button type="button" className={s.deleteButton} onClick={() => removeAdditionalImage(index)}>&times;</button>
                 </div>
               ))}
-              {Array.from({ length: 5 - productData.additionalImages.length }).map((_, index) => (
+              {Array.from({ length: 5 - productData.productImages.length }).map((_, index) => (
                 <div key={index} className={s.placeholderTile}></div>
               ))}
             </div>
@@ -204,12 +218,12 @@ const AddProductPage = () => {
               </div>
               <div className={s.formGroup}>
                 <label htmlFor="stock_quantity">Stock Quantity</label>
-                <input type="number" id="stock_quantity" name="stock_quantity" value={productData.stock_quantity} required min="0" onChange={handleChange} />
+                <input type="number" id="stock_quantity" name="stock_quantity" value={productData.stockQuantity} required min="0" onChange={handleChange} />
               </div>
             </div>
             <div className={s.formGroup}>
               <label>Categories</label>
-              <CategoryInput categoryIds={productData.categories} onCategoriesChange={(cats) => setProductData(p => ({ ...p, categories: cats }))} />
+              <CategoryInput categoryIds={productData.productCategories} onCategoriesChange={(cats) => setProductData(p => ({ ...p, categories: cats }))} />
             </div>
             <div className={s.formGroup}>
               <label htmlFor="description">Description</label>
@@ -217,7 +231,7 @@ const AddProductPage = () => {
             </div>
             <div className={s.actions}>
               <div className={s.toggleGroup}>
-                <ToggleSwitch checked={productData.isActive} onChange={(c) => setProductData(p => ({ ...p, isActive: c }))} />
+                <ToggleSwitch checked={productData.status === PRODUCT_STATUS.ACTIVE} onChange={(c) => setProductData(p => ({ ...p, status: c ? PRODUCT_STATUS.ACTIVE : PRODUCT_STATUS.INACTIVE }))} />
                 <label>Product active</label>
               </div>
               <div className={s.buttonGroup}>

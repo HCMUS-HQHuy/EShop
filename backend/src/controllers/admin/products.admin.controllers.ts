@@ -107,10 +107,10 @@ async function listProducts(params: ProductParamsRequest) {
             offset,                         // $3
             filter?.max_price,              // $4
             filter?.min_price,              // $5
-            filter?.categories_id,          // $6
+            filter?.categoriesId,          // $6
             filter?.status,                 // $7
             filter?.shopId,                // $8
-            filter?.is_deleted              // $9
+            filter?.isDeleted              // $9
         ];
         const result = await db.query(sql, queryParams);
         return result.rows;
