@@ -21,7 +21,7 @@ const SignUp = () => {
       <main className={s.signUpPage} id="signup-page">
         <div className={s.container}>
           <div className={s.imgHolder}>
-            <img src={signUpImg} alt="Shopping cart and phone" />
+            <img src={signUpImg} alt="Shopping cart and phone" loading="lazy"/>
           </div>
 
           <SignUpForm />

@@ -1,11 +1,11 @@
-import { googleIcon } from "src/Assets/Images/Images";
-import SvgIcon from "../../Shared/MiniComponents/SvgIcon";
+import { googleIcon } from "src/Assets/Images/Images.ts";
+import SvgIcon from "../../Shared/MiniComponents/SvgIcon.tsx";
 
 const SignUpWithGoogle = () => {
   return (
     <div className="signUp">
       <header>
-        <img src={googleIcon} alt="Google icon" width="14px" height="14px" />
+        <img src={googleIcon} alt="Google icon" width="14px" height="14px" loading="lazy" />
         <p>Sign up with Google</p>
       </header>
 

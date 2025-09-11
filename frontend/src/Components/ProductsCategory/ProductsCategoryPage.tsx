@@ -2,11 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { WEBSITE_NAME } from "src/Data/constants.tsx";
-import { SIMPLE_DELAYS } from "src/Data/globalVariables.tsx";
 import { productCardCustomizations } from "src/Data/staticData.tsx";
-import { updateLoadingState } from "src/ReduxSlice/loadingSlice.tsx";
-import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
-import useUpdateLoadingOnSamePage from "src/Hooks/App/useUpdateLoadingOnSamePage.tsx";
 import useGetSearchParam from "src/Hooks/Helper/useGetSearchParam.tsx";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 import CategoriesSection from "../Home/CategoriesSection/CategoriesSection.tsx";
@@ -22,15 +18,6 @@ const ProductsCategoryPage = () => {
   const categoryType = useGetSearchParam("type");
   const categoryTypeTrans = t(`categoriesData.${categoryType}`);
   const isWebsiteOnline = useOnlineStatus();
-
-  useUpdateLoadingOnSamePage({
-    loadingState: null,
-    loadingKey: "loadingCategoryPage",
-    actionMethod: updateLoadingState,
-    delays: SIMPLE_DELAYS,
-    dependencies: [categoryType],
-  });
-  useScrollOnMount(200);
 
   return (
     <>

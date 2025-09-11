@@ -88,7 +88,7 @@ const OrderDetailPage = () => {
                                     const totalAfterDiscount = totalBeforeDiscount * (1 - item.discount / 100);
                                     return (
                                         <tr key={item.id}>
-                                            <td><img src={item.imageUrl} alt={item.name} /></td>
+                                            <td><img src={item.imageUrl} alt={item.name}  loading="lazy" /></td>
                                             <td>{item.sku}</td>
                                             <td>{item.name}</td>
                                             <td>${item.price.toFixed(2)}</td>

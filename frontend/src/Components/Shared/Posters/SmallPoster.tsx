@@ -2,7 +2,13 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import s from "./SmallPoster.module.scss";
 
-const SmallPoster = ({ title, description, posterUrl }) => {
+type Props = {
+  title: string;
+  description: string;
+  posterUrl: string;
+}
+
+const SmallPoster = ({ title, description, posterUrl }: Props) => {
   const { t } = useTranslation();
 
   return (

@@ -43,7 +43,7 @@ const SignUpButtons = () => {
         className={s.signUpBtn}
         onClick={handleSignUpWithGoogle}
       >
-        <img src={googleIcon} alt="Colored Google icon" />
+        <img src={googleIcon} alt="Colored Google icon"  loading="lazy" />
         <span>{t("buttons.signUpWithGoogle")}</span>
       </button>
 

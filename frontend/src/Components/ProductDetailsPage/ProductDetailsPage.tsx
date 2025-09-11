@@ -1,19 +1,13 @@
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { WEBSITE_NAME } from "src/Data/constants.tsx";
-import { SIMPLE_DELAYS } from "src/Data/globalVariables.tsx";
-import { updateLoadingState } from "src/ReduxSlice/loadingSlice.tsx";
-import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
-import useUpdateLoadingOnSamePage from "src/Hooks/App/useUpdateLoadingOnSamePage.tsx";
 import useGetSearchParam from "src/Hooks/Helper/useGetSearchParam.tsx";
 import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory.tsx";
 import ProductDetails from "./ProductDetails/ProductDetails.tsx";
 import s from "./ProductDetailsPage.module.scss";
-import RelatedItemsSection from "./RelatedItemsSection/RelatedItemsSection.tsx";
 import api from "src/Api/index.api.ts";
 import { useEffect, useState } from "react";
 import type { ProductDetailType } from "src/Types/product.ts";
-import LoadingPage from "../LoadingPage/LoadingPage.tsx";
 import { setAfterDiscountKey, setFormattedPrice } from "src/Functions/formatting.ts";
 
 const ProductDetailsPage = () => {
@@ -51,18 +45,8 @@ const ProductDetailsPage = () => {
       path: `/category?type=${PRODUCT_DATA?.categoryIds[0]}`,
     },
   ];
-
-  useUpdateLoadingOnSamePage({
-    loadingState: null,
-    loadingKey: "loadingProductDetails",
-    actionMethod: updateLoadingState,
-    delays: SIMPLE_DELAYS,
-    dependencies: [productName],
-  });
-  useScrollOnMount(200);
-
-  if (PRODUCT_DATA === undefined) {
-    return <LoadingPage />;
+  if (!PRODUCT_DATA) {
+    return <></>;
   }
 
   return (
@@ -79,10 +63,10 @@ const ProductDetailsPage = () => {
         <main className={s.detailsPage}>
           <PagesHistory history={history} historyPaths={historyPaths} />
           <ProductDetails productData={PRODUCT_DATA} />
-          <RelatedItemsSection
+          {/* <RelatedItemsSection
             productType={PRODUCT_DATA.categoryIds[0]}
             currentProduct={PRODUCT_DATA}
-          />
+          /> */}
         </main>
       </div>
     </>

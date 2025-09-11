@@ -11,6 +11,7 @@ import LoadingPage from "./Components/LoadingPage/LoadingPage.tsx";
 import { getPaymentMethods } from "./ReduxSlice/paymentSlice.tsx";
 import api from "./Api/index.api.ts";
 import { conversationFetch } from "./ReduxSlice/conversationSlice.tsx";
+import { updateLoadingState } from "./ReduxSlice/loadingSlice.tsx";
 
 const AppLoader = ({ children }: { children: ReactNode }) => {
     useStoreWebsiteDataToLocalStorage();
@@ -44,7 +45,7 @@ const AppLoader = ({ children }: { children: ReactNode }) => {
     }, []);
 
     if (!isReady) {
-        return <LoadingPage />;
+        return;
     }
 
     return <>{children}</>;
