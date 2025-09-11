@@ -57,7 +57,7 @@ const sellerSlice = createSlice({
   name: "sellerSlice",
   initialState,
   reducers: {
-    setShopStatus: (state, action) => {
+    setShopStatus: (state, action: { payload: SHOP_STATUS }) => {
       state.shopInfo.status = action.payload;
       state.status = 'idle';
     }

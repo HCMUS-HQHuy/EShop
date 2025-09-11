@@ -21,6 +21,7 @@ const CreationRequestSchema = z.object({
 });
 
 const AdminVerifySellerRequestSchema = z.object({
+    userId: z.coerce.number().int().positive('User ID must be a positive integer'),
     shopId: z.coerce.number().int().positive('Seller ID must be a positive integer'),
     status: z.enum([SHOP_STATUS.REJECTED, SHOP_STATUS.ACTIVE, SHOP_STATUS.BANNED], 'Invalid seller status'),
     adminNote: z.string().max(500, 'Rejection reason must not exceed 500 characters').optional(),

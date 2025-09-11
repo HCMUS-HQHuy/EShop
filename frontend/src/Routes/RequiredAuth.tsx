@@ -1,9 +1,9 @@
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { pagesRequireSignIn, authPaths } from "src/Data/globalVariables.tsx";
+import { Navigate, useLocation } from "react-router-dom";
+import { authPaths } from "src/Data/globalVariables.tsx";
 import { showAlert } from "src/Features/alertsSlice.tsx";
+import { updateGlobalState } from "src/Features/globalSlice.tsx";
 import { SHOP_STATUS, USER_ROLE } from "src/Types/common.ts";
 import type { RootState } from "src/Types/store.ts";
 
@@ -19,48 +19,38 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
 
   console.log("RequiredAuth: ", { loginInfo, isSignIn, userRole, shopInfo });
 
-  const isPageRequiringSignIn = (page: string) =>
-    !isSignIn && (pagesRequireSignIn.includes(page) || isPageForSeller(page));
+  const isPageForGuest = (page: string) => authPaths.includes(page) && page === '/';
   const isPageForSeller = (page: string) => page.startsWith("/seller");
 
   if (authPaths.includes(pathName) && isSignIn) return <Navigate to="/" />;
-  if (isPageRequiringSignIn(pathName)) {
+  if (!isPageForGuest(pathName) && !isSignIn) {
     loginFirstAlert();
     return <Navigate to="/login" />;
   }
 
-  if (pathName.startsWith("/become-seller") && isSignIn) {
-    if (userRole === USER_ROLE.SELLER) {
-      return <Navigate to="/seller" />;
-    }
+  if (isPageForSeller(pathName)) {
     if (!shopInfo.status) {
-      return (pathName === "/become-seller" ? children : <Navigate to="/become-seller" />);
+      return <Navigate to="/become-seller" />;
     }
-    switch (shopInfo.status) {
-      case SHOP_STATUS.PENDING_VERIFICATION:
-        return (pathName !== "/become-seller/pending" ? <Navigate to="/become-seller/pending" /> : children);
-      case SHOP_STATUS.REJECTED:
-        return (pathName !== "/become-seller/rejected" ? <Navigate to="/become-seller/rejected" /> : children);
-      default:
+    if (userRole === USER_ROLE.SELLER) {
+      switch (shopInfo.status) {
+        case SHOP_STATUS.PENDING_VERIFICATION:
+          return (pathName !== "/seller/pending" ? <Navigate to="/seller/pending" /> : children);
+        case SHOP_STATUS.REJECTED:
+          return (pathName !== "/seller/rejected" ? <Navigate to="/seller/rejected" /> : children);
+        case SHOP_STATUS.ACTIVE:
+        case SHOP_STATUS.CLOSED:
+          dispatch(updateGlobalState({ key: "userRole", value: USER_ROLE.SELLER }));
+          return (pathName !== "/seller" ? <Navigate to="/seller" /> : children);
+        case SHOP_STATUS.BANNED:
+          return (pathName !== "/seller/banned" ? <Navigate to="/seller/banned" /> : children);
+        default:
         console.error("Unknown shop status:", shopInfo.status);
         break;
-    }
-  }
-
-  switch (userRole) {
-    case USER_ROLE.CUSTOMER:
-      if (isPageForSeller(pathName)) {
-        loginFirstAlert();
-        return <Navigate to="/" />;
       }
-      break;
-    case USER_ROLE.SELLER:
-      if (!isPageForSeller(pathName))
-        return <Navigate to="/seller" />;
-      break;
-    default:
-      console.error("Unknown user role:", userRole);
-      break;
+    } else {
+      return <Navigate to="/" />;
+    }
   }
 
   function loginFirstAlert() {

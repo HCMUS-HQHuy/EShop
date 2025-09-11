@@ -7,9 +7,8 @@ import s from "./UserMenu.module.scss";
 import UserMenuItemWithCount from "./UserMenuItemWithCount.tsx";
 import type { AppDispatch, RootState } from "src/Types/store.ts";
 import { updateGlobalState } from "src/Features/globalSlice.tsx";
-import { SHOP_STATUS, USER_ROLE } from "src/Types/common.ts";
+import { USER_ROLE } from "src/Types/common.ts";
 import { conversationFetch } from "src/Features/conversationSlice.tsx";
-import { showAlert } from "src/Features/alertsSlice.tsx";
 
 type Props = {
   isActive: boolean;
@@ -34,15 +33,6 @@ const UserMenu = ({ isActive, toggler }: Props) => {
 
   function checkShopCanAccess() {
     if (!shopInfo.status) {
-      return false;
-    }
-    if (shopInfo.status === SHOP_STATUS.BANNED) {
-      return false;
-    }
-    if (shopInfo.status === SHOP_STATUS.PENDING_VERIFICATION) {
-      return false;
-    }
-    if (shopInfo.status === SHOP_STATUS.REJECTED) {
       return false;
     }
     return true;

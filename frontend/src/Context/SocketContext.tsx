@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useEffect, type FC } from 'react';
+import React, { createContext, useEffect, type FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { io, type Socket } from 'socket.io-client';
 import { addMessageToConversation } from 'src/Features/conversationSlice.tsx';
+import { setShopStatus } from 'src/Features/sellerSlice.tsx';
 import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
 import type { ConversationMessageType } from 'src/Types/conversation.ts';
 import type { AppDispatch, RootState } from 'src/Types/store.ts';
@@ -22,7 +23,7 @@ const SocketProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
         });
 
         const onConnect = () => {
-            console.log('Socket connected');
+            console.log('Socket connected', newSocket.id);
         };
         const onDisconnect = () => {
             console.log('Socket disconnected');
@@ -46,7 +47,14 @@ const SocketProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
             window.open(url, '_blank', features);
         }
 
+        const setShopStatusHandle = (data: any) => {
+            const { status } = data;
+            console.log("Shop status updated:", status);
+            dispatch(setShopStatus(status));
+        }
+
         newSocket.on(SOCKET_EVENTS.CONNECT, onConnect);
+        newSocket.on(SOCKET_EVENTS.SET_SHOP_STATUS, setShopStatusHandle);
         newSocket.on(SOCKET_EVENTS.DISCONNECT, onDisconnect);
         newSocket.on(SOCKET_EVENTS.CONNECT_ERROR, onError);
         newSocket.on(SOCKET_EVENTS.MESSAGE, newMessageHandler);
@@ -59,6 +67,7 @@ const SocketProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
             newSocket.off(SOCKET_EVENTS.CONNECT_ERROR, onError);
             newSocket.off(SOCKET_EVENTS.MESSAGE, newMessageHandler);
             newSocket.off(SOCKET_EVENTS.REDIRECT, redirectHandle);
+            newSocket.off(SOCKET_EVENTS.SET_SHOP_STATUS, setShopStatusHandle);
             newSocket.disconnect();
         };
     }, [isSignIn]);

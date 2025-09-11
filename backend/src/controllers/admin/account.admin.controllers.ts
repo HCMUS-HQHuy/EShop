@@ -9,28 +9,9 @@ import { SOCKET_EVENTS } from "src/constants/socketEvents";
 import { UpdateUserStatusRequest, UpdateSellerStatusRequest } from "src/types/index.types";
 import { RequestCustom } from "src/types/index.types";
 import {SHOP_STATUS, USER_STATUS} from "@prisma/client";
+import prisma from "src/models/prismaClient";
 
 // #### DATABASE FUNCTIONS ####
-
-async function checkShopExist(data: UpdateSellerStatusRequest): Promise<boolean> {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            SELECT COUNT(*) FROM shops
-            WHERE shopId = $1
-        `;
-        const result = await db.query(sql, [data.shopId]);
-        return (parseInt(result.rows[0].count, 10) > 0);
-    } catch (error) {
-        console.error("Database error:", error);
-        throw new Error("Database validation failed");
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
-    }
-}
 
 async function checkUserCondition(data: UpdateUserStatusRequest) {
     const errors: Partial<Record<keyof UpdateUserStatusRequest, string>> = {};
@@ -59,28 +40,6 @@ async function checkUserCondition(data: UpdateUserStatusRequest) {
         valid: Object.keys(errors).length === 0,
         errors
     };
-}
-
-async function updateShopStatus(shopId: number, status: SHOP_STATUS, rejectionReason?: string) {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            UPDATE shops SET status = $1, admin_note = $2 
-            WHERE shopId = $3
-            RETURNING userId, status, admin_note;
-        `;
-        const values = [status, rejectionReason || null, shopId];
-        const value = await db.query(sql, values);
-        return value.rows[0];
-    } catch (error) {
-        console.error("Error updating shop account:", error);
-        throw new Error("Database error");
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
-    }
 }
 
 async function updateUserStatus(userId: number, status: USER_STATUS) {
@@ -179,27 +138,28 @@ async function reviewShop(req: RequestCustom, res: express.Response) {
         return res.status(400).send(util.response.error('Invalid request data', [util.formatError(parsedBody.error)]));
     }
     const data: UpdateSellerStatusRequest = parsedBody.data;
-    try {
-        if (await checkShopExist(data) === false) {
-            return res.status(400).json(util.response.error('Invalid request', ['Shop does not exist']));
-        }
-    } catch (error) {
-        console.error("Error checking seller status:", error);
-        return res.status(500).json(util.response.error('Internal server error', ['Error checking seller status']));
-    }
 
     // update the shop account status in the database
     try {
-        const dataConfig = await updateShopStatus(data.shopId, data.status, data.adminNote);
+        const isShopExist = await prisma.shops.findUnique({
+            where: { shopId: data.shopId },
+            select: { shopId: true }
+        });
+        if (!isShopExist) {
+            return res.status(400).json(util.response.error('Invalid request', ['Shop does not exist']));
+        }
+
+        const responseData = await prisma.shops.update({
+            where: { shopId: data.shopId },
+            data: { status: data.status, adminNote: data.adminNote },
+            select: { status: true, adminNote: true }
+        })
+        console.log('responsedata: ', responseData,);
+
         const io = req?.io;
         if (io === undefined) 
             throw Error("Socket IO instance is not available");
-        const responseData = {
-            shopStatus: dataConfig.status,
-            adminNote: dataConfig.admin_note,
-        }
-        console.log('responsedata: ', responseData);
-        io.of('/seller').to(`shop_id_${data.shopId}`).emit(SOCKET_EVENTS.SET_SHOP_STATUS, responseData);
+        io.to(`user_room_${data.userId}`).emit(SOCKET_EVENTS.SET_SHOP_STATUS, responseData);
         return res.status(200).json(util.response.success("Shop account updated", [`shop :${data.shopId}`]));
     } catch (error) {
         console.error("Error updating shop account:", error);

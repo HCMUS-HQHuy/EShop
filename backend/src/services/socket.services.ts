@@ -30,7 +30,6 @@ async function auth(socket: SocketCustom, next: (err?: Error) => void) {
             return next(new Error('Authentication error: Invalid token.'));
         }
         socket.user = parsed.data;
-        console.log("socket.data.user: ", socket.data.user);
         next();
     } catch (error: any) {
         console.error('Socket authentication failed:', error.message);
