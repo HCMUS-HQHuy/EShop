@@ -25,7 +25,7 @@ const RequiredAuth = ({ children }: { children: React.ReactNode }) => {
   if (authPaths.includes(pathName) && isSignIn) return <Navigate to="/" />;
   if (!isPageForGuest(pathName) && !isSignIn) {
     loginFirstAlert();
-    return <Navigate to="/login" />;
+    return (authPaths.includes(pathName) ? children : <Navigate to="/login" />);
   }
 
   if (isPageForSeller(pathName)) {
