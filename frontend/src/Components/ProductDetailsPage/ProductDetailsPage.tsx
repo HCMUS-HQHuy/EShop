@@ -2,7 +2,6 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { WEBSITE_NAME } from "src/Data/constants.tsx";
 import { SIMPLE_DELAYS } from "src/Data/globalVariables.tsx";
-import { productsData } from "src/Data/productsData.tsx";
 import { updateLoadingState } from "src/Features/loadingSlice.tsx";
 import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
 import useUpdateLoadingOnSamePage from "src/Hooks/App/useUpdateLoadingOnSamePage.tsx";
@@ -14,8 +13,6 @@ import RelatedItemsSection from "./RelatedItemsSection/RelatedItemsSection.tsx";
 import api from "src/Api/index.api.ts";
 import { useEffect, useState } from "react";
 import type { ProductDetailType } from "src/Types/product.ts";
-import { useSelector } from "react-redux";
-import type { RootState } from "src/Types/store.ts";
 import LoadingPage from "../LoadingPage/LoadingPage.tsx";
 import { setAfterDiscountKey, setFormattedPrice } from "src/Functions/formatting.ts";
 

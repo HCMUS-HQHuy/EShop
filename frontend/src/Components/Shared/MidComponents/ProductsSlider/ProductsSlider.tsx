@@ -1,11 +1,11 @@
 import { useRef } from "react";
-import { productsData } from "src/Data/productsData";
-import { shouldDisplaySliderButtons } from "src/Functions/conditions";
-import useSlider from "src/Hooks/App/useSlider";
-import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow";
-import ProductCard from "../../ProductsCards/ProductCard/ProductCard";
+import { productsData } from "src/Data/productsData.tsx";
+import { shouldDisplaySliderButtons } from "src/Functions/conditions.ts";
+import useSlider from "src/Hooks/App/useSlider.tsx";
+import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow.tsx";
+import ProductCard from "../../ProductsCards/ProductCard/ProductCard.tsx";
 import s from "./ProductsSlider.module.scss";
-import SliderButtons from "./SliderButtons/SliderButtons";
+import SliderButtons from "./SliderButtons/SliderButtons.tsx";
 
 const ProductsSlider = ({
   filterFun = () => productsData,

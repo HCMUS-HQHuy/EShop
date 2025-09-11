@@ -12,10 +12,10 @@ const IntroductionSlides = () => {
     ({ productName, productImg, logoImg, id }) => {
       return (
         <SwiperSlide dir="ltr" className={s.slide} key={id}>
-          <img src={productImg} alt="product preview" />
+          <img src={productImg} alt="product preview" loading="lazy" />
           <div className={s.content}>
             <div className={s.nameProduct}>
-              <img src={logoImg} alt="market logo" />
+              <img src={logoImg} alt="market logo" loading="lazy" />
               <strong>{productName}</strong>
             </div>
 

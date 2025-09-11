@@ -20,8 +20,8 @@ function MainSlider() {
   const swiperModules = [Navigation, Pagination, Scrollbar, A11y, Autoplay];
   const [swiperSpeed, setSwiperSpeed] = useState(DEFAULT_SWIPER_SPEED);
 
-  function handleTouchMove() {
-    setSwiperSpeed(400);
+  function handleTouchMove() {  
+    setSwiperSpeed((prev) => (prev !== 400 ? 400 : prev));
   }
 
   function setDefaultSpeedOnTouchEnd() {

@@ -25,6 +25,7 @@ const ExploreProducts = ({ numOfProducts = -1, customization } : prop) => {
           key={product.productId}
           customization={customization}
           removeFrom={undefined}
+          loading="lazy"
         />
       ))}
     </div>
