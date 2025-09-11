@@ -208,15 +208,6 @@ async function update(req: RequestCustom, res: express.Response) {
     if (isNaN(productId) || productId <= 0) {
         return res.status(400).send({ error: 'Invalid product ID' });
     }
-    try {
-        const productExists = await checkProductExists(productId);
-        if (!productExists) {
-            return res.status(404).send({ error: 'Product not found' });
-        }
-    } catch (error) {
-        console.error('Error checking product existence:', error);
-        return res.status(500).send({ error: 'Internal server error' });
-    }
     const parsedBody = schemas.product.information.safeParse(req.body);
     if (!parsedBody.success) {
         console.log('Validation failed', parsedBody.error.issues, req.body);
@@ -224,90 +215,45 @@ async function update(req: RequestCustom, res: express.Response) {
     }
     const product: ProductInformation = parsedBody.data;
     console.log("Parsed product data:", product);
-
-    let db: Client | undefined = undefined;
     try {
         product.shopId = req.user?.shop?.shopId as number;
-        if (req.files && 'mainImage' in req.files) {
-            product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
-        } else product.mainImage = product.mainImage?.substring(product.mainImage?.lastIndexOf('/') + 1);
+        if (req.files && 'imageUrl' in req.files) {
+            product.imageUrl = (req.files['imageUrl'] as Express.Multer.File[])[0].filename;
+        } else product.imageUrl = product.imageUrl?.substring(product.imageUrl?.lastIndexOf('/') + 1);
+
+        console.log(product);
 
         console.log("Product added:", product);
-        db = await database.getConnection();
-        await db.query('BEGIN');
-        const sql = `
-            UPDATE products
-            SET name = $1, sku = $2, short_name = $3, price = $4, discount = $5, description = $6, stock_quantity = $7, image_url = $8, status = $9
-            WHERE shopId = $10 AND product_id = $11
-        `;
-        const data = [
-            product.name,
-            product.sku,
-            product.shortName,
-            product.price,
-            product.discount,
-            product.description,
-            product.stockQuantity,
-            product.mainImage,
-            product.status,
-            product.shopId,
-            productId,
-        ];
-        await db.query(sql, data);
-        await db.query('DELETE FROM product_categories WHERE product_id = $1', [productId]);
-        const valuesSQL = product.categories
-            .map((_, index) => `($1, $${index + 2})`)
-            .join(', ');
-        if (valuesSQL) {
-            const sql2 = `
-                INSERT INTO product_categories (product_id, category_id)
-                VALUES ${valuesSQL}
-            `;
-            const params = [productId, ...product.categories];
-            await db.query(sql2, params);
+        const updatedProduct = await prisma.products.update({
+            where: { productId: productId, shopId: product.shopId },
+            data: {
+                name: product.name,
+                sku: product.sku,
+                shortName: product.shortName,
+                price: product.price,
+                discount: product.discount,
+                description: product.description,
+                stockQuantity: product.stockQuantity,
+                imageUrl: product.imageUrl,
+                status: product.status,
+                productCategories: { deleteMany: {}, create: product.categories.map(categoryId => ({ categoryId }))  },
+                productImages: {
+                    deleteMany: product?.deletedImages ? { imageUrl: { in: product.deletedImages } } : {},
+                    createMany: (req.files && 'additionalImages' in req.files
+                        ? { data: (req.files['additionalImages'] as Express.Multer.File[]).map(file => ({ imageUrl: file.filename })) }
+                        : undefined)
+                }
+            },
+            select: { productId: true }
+        });
+        if (updatedProduct === null) {
+            return res.status(404).send(util.response.error('Product not found', []));
         }
-
-        if (req.files && 'additionalImages' in req.files) {
-            const valuesImageSQL = (req.files['additionalImages'] as Express.Multer.File[] | undefined)?.map((_, index) => `($1, $${index + 2})`).join(', ');
-            if (valuesImageSQL) {
-                const sql3 = `
-                    INSERT INTO product_images (product_id, image_url)
-                    VALUES ${valuesImageSQL}
-                `;
-                const imageUrls = (req.files['additionalImages'] as Express.Multer.File[]).map(file => file.filename);
-                const paramsImage = [productId, ...imageUrls];
-                await db.query(sql3, paramsImage);
-            }
-        }
-        const deletedImages = product.deletedImages || [];
-        if (deletedImages.length > 0) {
-            console.log('Deleting images:', deletedImages);
-            deletedImages.forEach(url=>{
-                // fs.unlink(`/home/huy/EShop/backend/uploads/${url}`, (err) => {
-                //     if (err) {
-                //         console.error(`Failed to delete image file: ${url}`, err);
-                //     }
-                // });
-            });
-            const deleteSQL = `
-                DELETE FROM product_images
-                WHERE product_id = $1 AND image_url = ANY($2::text[])
-            `;
-            await db.query(deleteSQL, [productId, deletedImages]);
-        }
-        await db.query('COMMIT');
+        return res.status(200).send(util.response.success('Product updated successfully', { productId: updatedProduct.productId }));
     } catch (error) {
-        if (db) {
-            await db.query('ROLLBACK');
-        }
         console.error('Error adding product:', error);
         return res.status(500).send(util.response.internalServerError());
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
     }
-    res.status(200).send(util.response.success('Product updated successfully', []));
 }
 
 async function add(req: RequestCustom, res: express.Response) {
@@ -327,7 +273,7 @@ async function add(req: RequestCustom, res: express.Response) {
     console.log("Parsed product data:", product);
     try {
         product.shopId = req.user?.shop?.shopId as number;
-        product.mainImage = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
+        product.imageUrl = (req.files['imageUrl'] as Express.Multer.File[])[0].filename;
         console.log("Product added:", product);
         await prisma.products.create({
             data: {
@@ -338,7 +284,7 @@ async function add(req: RequestCustom, res: express.Response) {
                 discount: product.discount,
                 description: product.description,
                 stockQuantity: product.stockQuantity,
-                imageUrl: product.mainImage,
+                imageUrl: product.imageUrl,
                 shopId: product.shopId,
                 status: product.status,
                 productCategories: { create: product.categories.map(categoryId => ({ categoryId })) },

@@ -18,7 +18,7 @@ const AddProductPage = () => {
 
   const additionalImagesInputRef = useRef<HTMLInputElement>(null);
   const [productData, setProductData] = useState({
-    name: '', shortName: '', sku: '', description: '', price: '', discount: '', stock_quantity: '',
+    name: '', shortName: '', sku: '', description: '', price: '', discount: '', stockQuantity: '',
     imageUrl: undefined as File | undefined,
     additionalImages: [] as File[],
     deletedImages: [] as string[],
@@ -105,7 +105,7 @@ const AddProductPage = () => {
     formData.append('description', productData.description);
     formData.append('price', productData.price);
     formData.append('discount', productData.discount);
-    formData.append('stockQuantity', productData.stock_quantity);
+    formData.append('stockQuantity', productData.stockQuantity);
     formData.append('status', productData.isActive ? PRODUCT_STATUS.ACTIVE : PRODUCT_STATUS.INACTIVE);
 
     productData.categories.forEach(category => {
@@ -204,7 +204,7 @@ const AddProductPage = () => {
               </div>
               <div className={s.formGroup}>
                 <label htmlFor="stock_quantity">Stock Quantity</label>
-                <input type="number" id="stock_quantity" name="stock_quantity" value={productData.stock_quantity} required min="0" onChange={handleChange} />
+                <input type="number" id="stock_quantity" name="stock_quantity" value={productData.stockQuantity} required min="0" onChange={handleChange} />
               </div>
             </div>
             <div className={s.formGroup}>

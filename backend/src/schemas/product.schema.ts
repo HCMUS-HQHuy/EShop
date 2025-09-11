@@ -11,11 +11,11 @@ const ProductSchema = z.object({
     price: z.coerce.number().nonnegative('Price must be >= 0'),
     discount: z.coerce.number().min(0, 'Discount must be >= 0').max(100, 'Discount must be <= 100').optional(),
     stockQuantity: z.coerce.number().nonnegative('Stock quantity must be >= 0'),
-    mainImage: z.string().url('Image URL must be valid').optional(),
+    imageUrl: z.string().optional(),
     status: z.enum([PRODUCT_STATUS.ACTIVE, PRODUCT_STATUS.INACTIVE]),
     categories: z.array(z.coerce.number().positive('Category ID must be positive')).max(3, 'Max 3 categories'),
     shopId: z.number().int().positive().optional(),
-    deletedImages: z.array(z.string().url('Image URL must be valid')).max(5, 'Max 5 images can be deleted').optional()
+    deletedImages: z.array(z.string()).max(5, 'Max 5 images can be deleted').optional()
 });
 
 const BaseProductFilterSchema = z.object({
