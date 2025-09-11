@@ -150,11 +150,32 @@ async function getDetailById(req: RequestCustom, res: express.Response) {
     }
 
     try {
-        const data = await getProductInforById(productId);
+        const data = await prisma.products.findUnique({
+            where: { productId: productId, isDeleted: false, status: PRODUCT_STATUS.ACTIVE },
+            select: {
+                productId: true,
+                name: true,
+                shortName: true,
+                description: true,
+                price: true,
+                discount: true,
+                stockQuantity: true,
+                imageUrl: true,
+                shop: { select: { shopId: true, shopName: true, userId: true } },
+                productCategories: { select: { categoryId: true } },
+                productImages: { select: { imageUrl: true } }
+            }
+        });
         if (!data) {
             return res.status(404).send(util.response.error('Product not found'));
         }
-        res.status(200).send(util.response.success('Product details fetched successfully', { product: data }));
+        const product = {
+            ...data,
+            img: `${data.imageUrl}`,
+            categoryIds: data.productCategories.map((pc) => pc.categoryId),
+            additionalImages: data.productImages.map((pi) => `${pi.imageUrl}`)
+        };
+        res.status(200).send(util.response.success('Product details fetched successfully', { product }));
     } catch (error) {
         console.error('Error fetching product details:', error);
         return res.status(500).send(util.response.internalServerError());
