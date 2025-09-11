@@ -8,60 +8,6 @@ import { RequestCustom, ProductParamsRequest, UserProductFilter } from 'src/type
 import { PAGINATION_LIMIT } from 'src/constants/globalVariables';
 import prisma from 'src/models/prismaClient';
 
-// #### DATABASE FUNCTIONS ####
-
-async function getProductInforById(productId: number): Promise<any | null> {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            SELECT
-                products.product_id as "id",
-                products.shop_id as "shopId",
-                products.name as "name",
-                products.short_name as "shortName",
-                products.description as "description",
-                price as "price",
-                discount,
-                stock_quantity as "stockQuantity",
-                shop.user_id as "sellerId",
-                shop.shop_name AS "shopName",
-                shop.shop_id AS "shopId",
-                products.image_url as "img",
-                product_images.image_url as "additionalImg",
-                product_categories.category_id as "categoryId"
-            FROM
-                products
-                JOIN 
-                    shops as shop ON products.shop_id = shop.shop_id
-                LEFT JOIN 
-                    product_categories ON products.product_id = product_categories.product_id
-                LEFT JOIN
-                    product_images ON products.product_id = product_images.product_id
-            WHERE 
-                products.product_id = $1 
-                AND products.status = '${PRODUCT_STATUS.ACTIVE}' AND products.is_deleted = FALSE
-        `;
-        const result = await db.query(sql, [productId]);
-        const product = result.rows;
-        if (product.length === 0) {
-            return null;
-        }
-        const data = {
-            ...product[0],
-            img: `${process.env.PUBLIC_URL}/${product[0].img}`,
-            categoryIds: product.map((p) => p.categoryId),
-            additionalImages: product.map((p) => `${process.env.PUBLIC_URL}/${p.additionalImg}`)
-        };
-        return data;
-    } catch (error) {
-        console.error('Error fetching product by ID:', error);
-        throw error;
-    } finally {
-        await database.releaseConnection(db);
-    }
-}
-
 async function getRelatedProductsById(productId: number): Promise<any[]> {
     let db: Client | undefined = undefined;
     try {
