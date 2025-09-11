@@ -7,7 +7,7 @@ import api from 'src/Api/index.api.ts';
 import useSocketIO from 'src/Hooks/Socket/useSocketIO.ts';
 import type { AppDispatch, RootState } from 'src/Types/store.ts';
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessageToConversation, conversationFetch } from 'src/Features/conversationSlice.tsx';
+import { addMessageToConversation, conversationFetch } from 'src/ReduxSlice/conversationSlice.tsx';
 import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
 
 const ChatPageLayout = () => {

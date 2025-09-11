@@ -5,7 +5,7 @@ import s from "./PaymentOptionsSelection.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "src/Types/store.ts";
 import type { PaymentMethodInforType } from "src/Types/paymentMethodInfor.ts";
-import { setPaymentType } from "src/Features/paymentSlice.tsx";
+import { setPaymentType } from "src/ReduxSlice/paymentSlice.tsx";
 
 const PaymentOptionsSelection = () => {
   const { paymentType, paymentMethodList } = useSelector((state: RootState) => state.payment)

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { updateGlobalState } from "src/Features/globalSlice.tsx";
+import { updateGlobalState } from "src/ReduxSlice/globalSlice.tsx";
 import s from "./PreviewImages.module.scss";
 import ProductImages from "./ProductImages.tsx";
 import type { AppDispatch } from "src/Types/store.ts";

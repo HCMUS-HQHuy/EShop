@@ -2,15 +2,15 @@ import React, { use, useState } from 'react';
 import styles from './StartSellingPage.module.scss';
 import useScrollOnMount from 'src/Hooks/App/useScrollOnMount.tsx';
 import { useSelector, useDispatch } from 'react-redux';
-import { showAlert } from 'src/Features/alertsSlice.tsx';
+import { showAlert } from 'src/ReduxSlice/alertsSlice.tsx';
 import useOnlineStatus from 'src/Hooks/Helper/useOnlineStatus.tsx';
 import formSchemas from 'src/Types/forms.ts';
 import type { SellerRegistrationFormValues } from 'src/Types/forms.ts';
 import type { AppDispatch, RootState } from 'src/Types/store.ts';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { updateInput } from 'src/Features/formsSlice.tsx'
-import { newShop, setShopData } from 'src/Features/sellerSlice.tsx';
+import { updateInput } from 'src/ReduxSlice/formsSlice.tsx'
+import { newShop, setShopData } from 'src/ReduxSlice/sellerSlice.tsx';
 import parseZodError from 'src/utils/parseZodError.ts';
 
 const BecomeSellerPage = () => {

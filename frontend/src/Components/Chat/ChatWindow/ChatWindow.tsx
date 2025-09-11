@@ -4,7 +4,7 @@ import api from 'src/Api/index.api.ts';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'src/Types/store.ts';
 import type { ConversationType, MessageType } from 'src/Types/conversation.ts';
-import { addConversation, addMessageToConversation, setSelectedConversationId } from 'src/Features/conversationSlice.tsx';
+import { addConversation, addMessageToConversation, setSelectedConversationId } from 'src/ReduxSlice/conversationSlice.tsx';
 import { formatDateTime } from 'src/Functions/formatting.ts';
 import { useNavigate } from 'react-router-dom';
 

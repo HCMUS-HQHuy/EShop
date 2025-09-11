@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { updateGlobalState } from "src/Features/globalSlice.tsx";
+import { updateGlobalState } from "src/ReduxSlice/globalSlice.tsx";
 import AuthSideBarButtons from "./AuthSideBarButtons/AuthSideBarButtons.tsx";
 import s from "./MobileNav.module.scss";
 import MobileNavCloseBtn from "./MobileNavCloseBtn/MobileNavCloseBtn.tsx";

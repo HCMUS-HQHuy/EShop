@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { showAlert } from "src/Features/alertsSlice.tsx";
-import { addToArray, storeToStorage } from "src/Features/productsSlice.tsx";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
+import { addToArray, storeToStorage } from "src/ReduxSlice/productsSlice.tsx";
 import { compareDataByObjValue } from "src/Functions/conditions.ts";
 import s from "./BuyButton.module.scss";
 import type { RootState } from "src/Types/store.ts";

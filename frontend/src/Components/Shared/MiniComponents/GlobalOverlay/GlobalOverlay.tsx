@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   multiUpdateGlobalState,
   updateGlobalState,
-} from "src/Features/globalSlice.tsx";
+} from "src/ReduxSlice/globalSlice.tsx";
 import s from "./GlobalOverlay.module.scss";
 import type { RootState } from "src/Types/store.ts";
 

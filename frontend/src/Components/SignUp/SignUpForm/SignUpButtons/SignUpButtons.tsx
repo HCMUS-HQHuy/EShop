@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { googleIcon } from "src/Assets/Images/Images.ts";
 import { DEFAULT_LOGIN_DATA } from "src/Data/globalVariables.tsx";
-import { setLoginData } from "src/Features/userSlice.tsx";
+import { setLoginData } from "src/ReduxSlice/userSlice.tsx";
 import { openSignWithGooglePopUp } from "../../SignUpWithGoogle/SignUpWithGooglePopup.jsx";
 import { signInAlert } from "../SignUpForm.tsx";
 import s from "./SignUpButtons.module.scss";

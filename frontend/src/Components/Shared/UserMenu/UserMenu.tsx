@@ -6,9 +6,9 @@ import SvgIcon from "../MiniComponents/SvgIcon.tsx";
 import s from "./UserMenu.module.scss";
 import UserMenuItemWithCount from "./UserMenuItemWithCount.tsx";
 import type { AppDispatch, RootState } from "src/Types/store.ts";
-import { updateGlobalState } from "src/Features/globalSlice.tsx";
+import { updateGlobalState } from "src/ReduxSlice/globalSlice.tsx";
 import { USER_ROLE } from "src/Types/common.ts";
-import { conversationFetch } from "src/Features/conversationSlice.tsx";
+import { conversationFetch } from "src/ReduxSlice/conversationSlice.tsx";
 
 type Props = {
   isActive: boolean;

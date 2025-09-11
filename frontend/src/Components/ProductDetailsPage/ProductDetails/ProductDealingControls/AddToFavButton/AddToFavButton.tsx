@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import SvgIcon from "src/Components/Shared/MiniComponents/SvgIcon.tsx";
 import ToolTip from "src/Components/Shared/MiniComponents/ToolTip.tsx";
-import { addToArray, removeByKeyName } from "src/Features/productsSlice.tsx";
+import { addToArray, removeByKeyName } from "src/ReduxSlice/productsSlice.tsx";
 import { isItemFound } from "src/Functions/helper.ts";
 import s from "./AddToFavButton.module.scss";
 import type { ProductDetailType } from "src/Types/product.ts";

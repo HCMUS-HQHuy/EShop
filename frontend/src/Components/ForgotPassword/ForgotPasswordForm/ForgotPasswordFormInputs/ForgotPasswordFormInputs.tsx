@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { updateInput } from "src/Features/formsSlice.tsx";
+import { updateInput } from "src/ReduxSlice/formsSlice.tsx";
 import s from "./ForgotPasswordFormInputs.module.scss";
 import type { RootState } from "src/Types/store.ts";
 import type { FormState } from "src/Types/forms.ts";

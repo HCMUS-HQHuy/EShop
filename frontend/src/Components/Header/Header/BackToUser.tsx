@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { USER_ROLE } from 'src/Types/common.ts';
 import s from './BackToUser.module.scss';
-import { updateGlobalState } from 'src/Features/globalSlice.tsx';
-import { conversationFetch } from 'src/Features/conversationSlice.tsx';
+import { updateGlobalState } from 'src/ReduxSlice/globalSlice.tsx';
+import { conversationFetch } from 'src/ReduxSlice/conversationSlice.tsx';
 import type { AppDispatch } from 'src/Types/store.ts';
 
 const BackToUser = () => {

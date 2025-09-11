@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import SvgIcon from "src/Components/Shared/MiniComponents/SvgIcon.tsx";
 import ToolTip from "src/Components/Shared/MiniComponents/ToolTip.tsx";
-import { addToArray, removeByKeyName } from "src/Features/productsSlice.tsx";
+import { addToArray, removeByKeyName } from "src/ReduxSlice/productsSlice.tsx";
 import { isItemFound } from "src/Functions/helper.ts";
 import s from "./ContactToShopButton.module.scss";
 import type { ProductDetailType } from "src/Types/product.ts";
 import type { RootState } from "src/Types/store.ts";
 import { USER_ROLE } from "src/Types/common.ts";
 import type { ConversationType } from "src/Types/conversation.ts";
-import { addConversation, findConversation, setSelectedConversationId, setTemporaryConversation } from "src/Features/conversationSlice.tsx";
+import { addConversation, findConversation, setSelectedConversationId, setTemporaryConversation } from "src/ReduxSlice/conversationSlice.tsx";
 import api from "src/Api/index.api.ts";
 
 type Props = {

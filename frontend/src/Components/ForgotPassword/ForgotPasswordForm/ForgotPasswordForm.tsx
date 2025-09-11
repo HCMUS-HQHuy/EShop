@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { showAlert } from "src/Features/alertsSlice.tsx";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 
 import s from "./ForgotPasswordForm.module.scss";
@@ -12,7 +12,7 @@ import type { ForgotPasswordFormValues, LoginFormValues } from "src/Types/forms.
 import type { TFunction } from "i18next";
 import api from "src/Api/index.api.ts";
 import { useRef } from "react";
-import { updateInput } from "src/Features/formsSlice.tsx";
+import { updateInput } from "src/ReduxSlice/formsSlice.tsx";
 
 const ResetPasswordForm = () => {
   const { email } = useSelector((state: RootState) => state.forms.forgotPassword);

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { removeById } from "src/Features/productsSlice.tsx";
+import { removeById } from "src/ReduxSlice/productsSlice.tsx";
 import { trashcanIconToolTipLeftPos } from "src/Functions/tooltipPositions.ts";
 import SvgIcon from "../../../MiniComponents/SvgIcon.tsx";
 import ToolTip from "../../../MiniComponents/ToolTip.tsx";

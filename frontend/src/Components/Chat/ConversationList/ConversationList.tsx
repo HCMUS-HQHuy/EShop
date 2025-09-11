@@ -2,7 +2,7 @@ import type { ConversationType } from 'src/Types/conversation.ts';
 import s from './ConversationList.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'src/Types/store.ts';
-import { setSelectedConversationId } from 'src/Features/conversationSlice.tsx';
+import { setSelectedConversationId } from 'src/ReduxSlice/conversationSlice.tsx';
 import { useNavigate } from 'react-router-dom';
 
 const ConversationList = () => {

@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { showAlert } from "src/Features/alertsSlice.tsx";
-import { updateUserData } from "src/Features/userSlice.tsx";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
+import { updateUserData } from "src/ReduxSlice/userSlice.tsx";
 import {
   checkAreInputsValid,
   checkEmailValidation,

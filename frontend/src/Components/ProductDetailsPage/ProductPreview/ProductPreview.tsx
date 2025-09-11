@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { updateGlobalState } from "src/Features/globalSlice.tsx";
+import { updateGlobalState } from "src/ReduxSlice/globalSlice.tsx";
 import PreviewImages from "./ProductImages/PreviewImages.tsx";
 import s from "./ProductPreview.module.scss";
 import type { ProductDetailType } from "src/Types/product.ts";

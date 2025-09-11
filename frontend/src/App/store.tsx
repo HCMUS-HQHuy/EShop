@@ -1,14 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
-import alertsSlice from "src/Features/alertsSlice.tsx";
-import formsSlice from "src/Features/formsSlice.tsx";
-import globalSlice from "src/Features/globalSlice.tsx";
-import loadingSlice from "src/Features/loadingSlice.tsx";
-import productsSlice from "src/Features/productsSlice.tsx";
-import userSlice from "src/Features/userSlice.tsx";
-import categoriesSlice from "src/Features/categoriesSlice.tsx";
-import sellerSlice from "src/Features/sellerSlice.tsx";
-import paymentSlice from "src/Features/paymentSlice.tsx";
-import conversationSlice from "src/Features/conversationSlice.tsx";
+import alertsSlice from "src/ReduxSlice/alertsSlice.tsx";
+import formsSlice from "src/ReduxSlice/formsSlice.tsx";
+import globalSlice from "src/ReduxSlice/globalSlice.tsx";
+import loadingSlice from "src/ReduxSlice/loadingSlice.tsx";
+import productsSlice from "src/ReduxSlice/productsSlice.tsx";
+import userSlice from "src/ReduxSlice/userSlice.tsx";
+import categoriesSlice from "src/ReduxSlice/categoriesSlice.tsx";
+import sellerSlice from "src/ReduxSlice/sellerSlice.tsx";
+import paymentSlice from "src/ReduxSlice/paymentSlice.tsx";
+import conversationSlice from "src/ReduxSlice/conversationSlice.tsx";
 
 export const store = configureStore({
   reducer: {

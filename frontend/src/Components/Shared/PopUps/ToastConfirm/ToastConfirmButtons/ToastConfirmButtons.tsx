@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { CLEAR_ORDER_PRODUCTS, REMOVE_ORDER_PRODUCT } from "src/Data/constants.tsx";
-import { updateAlertState } from "src/Features/alertsSlice.tsx";
-import { removeByKeyName, setEmptyArrays } from "src/Features/productsSlice.tsx";
+import { updateAlertState } from "src/ReduxSlice/alertsSlice.tsx";
+import { removeByKeyName, setEmptyArrays } from "src/ReduxSlice/productsSlice.tsx";
 import s from "./ToastConfirmButtons.module.scss";
 import type { AppDispatch, RootState } from "src/Types/store.ts";
 

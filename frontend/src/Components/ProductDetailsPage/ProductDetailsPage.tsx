@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { WEBSITE_NAME } from "src/Data/constants.tsx";
 import { SIMPLE_DELAYS } from "src/Data/globalVariables.tsx";
-import { updateLoadingState } from "src/Features/loadingSlice.tsx";
+import { updateLoadingState } from "src/ReduxSlice/loadingSlice.tsx";
 import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
 import useUpdateLoadingOnSamePage from "src/Hooks/App/useUpdateLoadingOnSamePage.tsx";
 import useGetSearchParam from "src/Hooks/Helper/useGetSearchParam.tsx";

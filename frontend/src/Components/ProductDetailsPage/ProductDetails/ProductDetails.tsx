@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { updateProductsState } from "src/Features/productsSlice.tsx";
+import { updateProductsState } from "src/ReduxSlice/productsSlice.tsx";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 import SkeletonProductDetails from "../../Shared/SkeletonLoaders/DetailsPage/SkeletonProductDetails.tsx";
 import ProductPreview from "../ProductPreview/ProductPreview.tsx";

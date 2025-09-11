@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { showAlert } from "src/Features/alertsSlice.tsx";
-import { setLoginData } from "src/Features/userSlice.tsx";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
+import { setLoginData } from "src/ReduxSlice/userSlice.tsx";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 
 import s from "./LogInForm.module.scss";

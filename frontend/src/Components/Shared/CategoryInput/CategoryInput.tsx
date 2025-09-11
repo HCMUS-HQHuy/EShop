@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import s from './CategoryInput.module.scss';
 import type { RootState } from 'src/Types/store.ts';
 import type { CategoryInfor } from 'src/Types/category.ts';
-import { showAlert } from 'src/Features/alertsSlice.tsx';
+import { showAlert } from 'src/ReduxSlice/alertsSlice.tsx';
 
 interface CategoryInputProps {
   categoryIds: number[];

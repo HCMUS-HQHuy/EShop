@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { WEBSITE_NAME } from "src/Data/constants.tsx";
 import { SIMPLE_DELAYS } from "src/Data/globalVariables.tsx";
 import { productCardCustomizations } from "src/Data/staticData.tsx";
-import { updateLoadingState } from "src/Features/loadingSlice.tsx";
+import { updateLoadingState } from "src/ReduxSlice/loadingSlice.tsx";
 import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
 import useUpdateLoadingOnSamePage from "src/Hooks/App/useUpdateLoadingOnSamePage.tsx";
 import useGetSearchParam from "src/Hooks/Helper/useGetSearchParam.tsx";

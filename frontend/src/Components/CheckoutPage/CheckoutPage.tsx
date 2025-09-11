@@ -2,8 +2,8 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { WEBSITE_NAME } from "src/Data/constants.tsx";
-import { showAlert } from "src/Features/alertsSlice.tsx";
-import { transferCartToOrder, transferProducts } from "src/Features/productsSlice.tsx";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
+import { transferCartToOrder, transferProducts } from "src/ReduxSlice/productsSlice.tsx";
 import { blurInputs } from "src/Functions/componentsFunctions.ts";
 import {
   isCheckoutFormValid,

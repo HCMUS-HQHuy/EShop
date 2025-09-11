@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { multiUpdateGlobalState } from "src/Features/globalSlice.tsx";
+import { multiUpdateGlobalState } from "src/ReduxSlice/globalSlice.tsx";
 import SvgIcon from "src/Components/Shared/MiniComponents/SvgIcon.tsx";
 import s from "./SectionsMenuButton.module.scss";
 import type { AppDispatch } from "src/Types/store.ts";

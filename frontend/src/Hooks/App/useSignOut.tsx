@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { arraysToEmpty } from "src/Data/globalVariables.tsx";
-import { showAlert } from "src/Features/alertsSlice.tsx";
-import { setEmptyArrays } from "src/Features/productsSlice.tsx";
-import { signOut } from "src/Features/userSlice.tsx";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
+import { setEmptyArrays } from "src/ReduxSlice/productsSlice.tsx";
+import { signOut } from "src/ReduxSlice/userSlice.tsx";
 import type { AppDispatch } from "src/Types/store.ts";
 import type { TFunction } from "i18next";
 

@@ -1,8 +1,8 @@
 import React, { createContext, useEffect, type FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { io, type Socket } from 'socket.io-client';
-import { addMessageToConversation } from 'src/Features/conversationSlice.tsx';
-import { setShopStatus } from 'src/Features/sellerSlice.tsx';
+import { addMessageToConversation } from 'src/ReduxSlice/conversationSlice.tsx';
+import { setShopStatus } from 'src/ReduxSlice/sellerSlice.tsx';
 import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
 import type { ConversationMessageType } from 'src/Types/conversation.ts';
 import type { AppDispatch, RootState } from 'src/Types/store.ts';

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import s from "./CartButtons.module.scss";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "src/Types/store.ts";
-import { storeToStorage } from "src/Features/productsSlice.tsx";
+import { storeToStorage } from "src/ReduxSlice/productsSlice.tsx";
 import { STORAGE_KEYS } from "src/Types/common.ts";
 
 const CartButtons = () => {

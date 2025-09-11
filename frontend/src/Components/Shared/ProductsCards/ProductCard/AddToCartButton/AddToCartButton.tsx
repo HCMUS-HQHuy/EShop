@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { showAlert } from "src/Features/alertsSlice.tsx";
-import { addToArray, removeByKeyName, storeToStorage } from "src/Features/productsSlice.tsx";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
+import { addToArray, removeByKeyName, storeToStorage } from "src/ReduxSlice/productsSlice.tsx";
 import { compareDataByObjValue } from "src/Functions/conditions.ts";
 import { isItemFound } from "src/Functions/helper.ts";
 import SvgIcon from "../../../MiniComponents/SvgIcon.tsx";

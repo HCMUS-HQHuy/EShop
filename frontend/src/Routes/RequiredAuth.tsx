@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
-import { showAlert } from "src/Features/alertsSlice.tsx";
-import { updateGlobalState } from "src/Features/globalSlice.tsx";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
+import { updateGlobalState } from "src/ReduxSlice/globalSlice.tsx";
 import { ALERT_STATE, SHOP_STATUS, USER_ROLE } from "src/Types/common.ts";
 import type { RootState } from "src/Types/store.ts";
 
