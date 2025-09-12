@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "src/Api/index.api.ts";
 import type { OrderType, ProductType } from "src/Types/product.ts";
-import { setAfterDiscountKey, setFormattedPrice } from "src/Functions/formatting.ts";
 import { STORAGE_KEYS } from "src/Types/common.ts";
 
 type ProductsState = {
@@ -35,12 +34,7 @@ const initialState: ProductsState = {
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_, {rejectWithValue}) => {
   try {
     const response = await api.user.fetchProducts();
-    const products: ProductType[] = response.data.products;
-    products.forEach((product: any) => {
-      setAfterDiscountKey(product);
-      setFormattedPrice(product);
-    });
-    return { numberOfProducts: response.data.numberOfProducts ,products};
+    return { numberOfProducts: response.data.numberOfProducts ,products: response.data.products};
   } catch (error: any) {
     console.log('Error fetching products:', error);
     return rejectWithValue(error.response.data);

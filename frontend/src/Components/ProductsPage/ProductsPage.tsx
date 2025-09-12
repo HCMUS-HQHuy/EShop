@@ -35,6 +35,8 @@ const ProductsPage = () => {
         api.user.fetchProducts({ offset: indexOfFirstItem, limit: PAGE_SIZE }).then((res) => {
           dispatch(updateLoadingState({ key: "loadingProductsPage", value: false }));
           setSelectedProducts(res.data.products);
+          
+          console.log(res.data.products);
         });
       } catch (err) {
         console.error(err);
