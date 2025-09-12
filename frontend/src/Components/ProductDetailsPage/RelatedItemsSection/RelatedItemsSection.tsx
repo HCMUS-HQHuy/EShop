@@ -13,7 +13,7 @@ type Props = {
 
 const RelatedItemsSection = ({ currentProductId }: Props) => {
   const { t } = useTranslation();
-  const hasRelatedProducts = false;
+  const [hasRelatedProducts, setHasRelatedProducts] = useState(false);
   const [products, setProducts] = useState<ProductType[]>([]);
   const customization = productCardCustomizations.categoryProducts;
   customization.showColors = false;
@@ -22,7 +22,7 @@ const RelatedItemsSection = ({ currentProductId }: Props) => {
     if (!currentProductId) return;
     api.user.getRelatedProducts(currentProductId).then((response) => {
       const { products } = response.data;
-      console.log(products);
+      setHasRelatedProducts(products.length > 0);
       setProducts(products);
     }).catch((error) => {
       console.error("Error fetching related products:", error);
