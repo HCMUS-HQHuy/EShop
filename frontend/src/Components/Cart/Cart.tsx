@@ -12,7 +12,7 @@ import CartProducts from "./CartProducts/CartProducts.tsx";
 const Cart = () => {
   const { t } = useTranslation();
 
-  useScrollOnMount(200);
+  useScrollOnMount(110);
 
   return (
     <>
