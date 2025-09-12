@@ -27,6 +27,8 @@ const AddProductPage = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
+  console.log(productData);
+
   useEffect(() => {
     if (isEditMode) {
       setIsLoading(true);
@@ -55,7 +57,7 @@ const AddProductPage = () => {
 
   const handleMainImageChange = (files: File[]) => {
     if (files.length > 0) {
-      setProductData(prev => ({ ...prev, mainImage: files[0] }));
+      setProductData(prev => ({ ...prev, imageUrl: files[0] }));
     }
   };
 
@@ -129,7 +131,7 @@ const AddProductPage = () => {
         console.log('Editing product with ID:', productId, formData);
         await api.product.shopUpdateById(productId, formData);
       } else {
-        await api.product.create(formData);
+        await api.seller.createProduct(formData);
       }
       navigate('/seller/products');
     } catch (err) {
@@ -152,7 +154,7 @@ const AddProductPage = () => {
               {productData.imageUrl ? (
                 <>
                   <img src={typeof productData.imageUrl === 'string' ? `${import.meta.env.VITE_PUBLIC_URL}/${productData.imageUrl}` : URL.createObjectURL(productData.imageUrl)} alt="Main Preview" />
-                  <button type="button" className={s.deleteButton} onClick={() => setProductData(p => ({ ...p, mainImage: undefined }))}>&times;</button>
+                  <button type="button" className={s.deleteButton} onClick={() => setProductData(p => ({ ...p, imageUrl: undefined }))}>&times;</button>
                 </>
               ) : (
                 <ImageUploader onFilesAccepted={handleMainImageChange} />
@@ -204,7 +206,7 @@ const AddProductPage = () => {
               </div>
               <div className={s.formGroup}>
                 <label htmlFor="stock_quantity">Stock Quantity</label>
-                <input type="number" id="stock_quantity" name="stock_quantity" value={productData.stockQuantity} required min="0" onChange={handleChange} />
+                <input type="number" id="stock_quantity" name="stockQuantity" value={productData.stockQuantity} required min="0" onChange={handleChange} />
               </div>
             </div>
             <div className={s.formGroup}>

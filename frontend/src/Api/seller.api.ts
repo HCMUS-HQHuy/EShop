@@ -6,6 +6,9 @@ const seller = {
   getShopInfo: () => api.get(`/seller/shop/getinformation`),
   getOrders: () => api.get(`/seller/orders`).then(res => res.data.orders).then(data => data.map((order: any) => ({ ...order, total: Number(order.total) }))),
   getOrderDetails: (orderId: number) => api.get(`/seller/orders/${orderId}`).then(res => res.data.order),
+  createProduct: (productData: any) => api.post("/seller/product", productData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  }),
 };
 
 export default seller;

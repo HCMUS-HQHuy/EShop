@@ -217,8 +217,8 @@ async function update(req: RequestCustom, res: express.Response) {
     console.log("Parsed product data:", product);
     try {
         product.shopId = req.user?.shop?.shopId as number;
-        if (req.files && 'imageUrl' in req.files) {
-            product.imageUrl = (req.files['imageUrl'] as Express.Multer.File[])[0].filename;
+        if (req.files && 'mainImage' in req.files) {
+            product.imageUrl = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
         } else product.imageUrl = product.imageUrl?.substring(product.imageUrl?.lastIndexOf('/') + 1);
 
         console.log(product);
@@ -273,7 +273,7 @@ async function add(req: RequestCustom, res: express.Response) {
     console.log("Parsed product data:", product);
     try {
         product.shopId = req.user?.shop?.shopId as number;
-        product.imageUrl = (req.files['imageUrl'] as Express.Multer.File[])[0].filename;
+        product.imageUrl = (req.files['mainImage'] as Express.Multer.File[])[0].filename;
         console.log("Product added:", product);
         await prisma.products.create({
             data: {

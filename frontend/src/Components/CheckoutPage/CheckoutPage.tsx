@@ -16,12 +16,9 @@ import BillingDetails from "./BillingDetails/BillingDetails.tsx";
 import s from "./CheckoutPage.module.scss";
 import PaymentSection from "./PaymentSection/PaymentSection.tsx";
 import type { AppDispatch, RootState } from "src/Types/store.ts";
-import { useNavigate } from "react-router-dom";
 import api from "src/Api/index.api.ts";
-import { formatePrice, getSubTotal } from "src/Functions/formatting.ts";
-import useSocketIO from "src/Hooks/Socket/useSocketIO.ts";
-import { useEffect } from "react";
-import { SOCKET_NAMESPACE } from "src/Types/common.ts";
+import { getSubTotal } from "src/Functions/formatting.ts";
+import { ALERT_STATE } from "src/Types/common.ts";
 
 const CheckoutPage = () => {
   useScrollOnMount(160);
@@ -79,14 +76,14 @@ const CheckoutPage = () => {
     };
     console.log(fees);
     const data = {
-      shopId: (cartProducts[0]!).shopId,
+      shopId: (cartProducts[0]!).shop.shopId,
       ...billingValues,
       totalAmount: fees.totalAmount,
       shippingFee: fees.shippingFee,
       finalAmount: fees.totalAmount + fees.shippingFee,
       items: cartProducts.map((product) => ({
-        productId: product.id,
-        quantity: product.quantity,
+        productId: product.productId,
+        quantity: product.stockQuantity,
       })),
       paymentMethodCode: paymentType,
       orderAt: new Date().toISOString(),
@@ -135,7 +132,7 @@ export default CheckoutPage;
 function showAlertText(dispatch: AppDispatch, text: string) {
   dispatch(
     showAlert({
-      alertState: "error",
+      alertState: ALERT_STATE.ERROR,
       alertText: text,
       alertType: "alert",
     })
@@ -145,7 +142,7 @@ function showAlertText(dispatch: AppDispatch, text: string) {
 function showEmptyCartAlert(dispatch: AppDispatch, t: any) {
   dispatch(
     showAlert({
-      alertState: "warning",
+      alertState: ALERT_STATE.WARNING,
       alertText: t("toastAlert.cartEmpty"),
       alertType: "alert",
     })
@@ -158,7 +155,7 @@ function finalizeOrder(dispatch: AppDispatch, t: any) {
   setTimeout(() => {
     dispatch(
       showAlert({
-        alertState: "success",
+        alertState: ALERT_STATE.SUCCESS,
         alertText: t("toastAlert.checkoutSuccess"),
         alertType: "alert",
       })
