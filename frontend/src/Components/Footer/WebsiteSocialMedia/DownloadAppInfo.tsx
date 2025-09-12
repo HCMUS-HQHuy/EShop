@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { appStore, googlePlay, qrCode } from "src/Assets/Images/Images";
-import { mySocialMedia } from "src/Data/staticData";
-import SvgIcon from "../../Shared/MiniComponents/SvgIcon";
-import ToolTip from "../../Shared/MiniComponents/ToolTip";
+import { appStore, googlePlay, qrCode } from "src/Assets/Images/Images.ts";
+import { mySocialMedia } from "src/Data/staticData.tsx";
+import SvgIcon from "../../Shared/MiniComponents/SvgIcon.tsx";
+import ToolTip from "../../Shared/MiniComponents/ToolTip.tsx";
 import s from "./DownloadAppInfo.module.scss";
 
 const DownloadAppInfo = () => {

@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import Footer from "src/Components/Footer/Footer.tsx";
 import Header from "src/Components/Header/Header/Header.tsx";
 import UpdateNotification from "src/Components/PWA/UpdateNotification/UpdateNotification.tsx";
 import ConnectionLabelAlert from "src/Components/Shared/MiniComponents/ConnectionLabelAlert/ConnectionLabelAlert.tsx";
@@ -25,7 +26,7 @@ const RoutesLayout = () => {
       <GlobalOverlay />
       <ScrollToTop />
       <Outlet />
-      {/*<Footer /> */}
+      <Footer />
       <ConnectionLabelAlert isOnline={isWebsiteOnline} />
       <ToastAlert />
       <ToastConfirm />

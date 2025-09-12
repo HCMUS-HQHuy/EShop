@@ -1,19 +1,20 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { SCREEN_SIZES } from "src/Data/globalVariables";
-import { showAlert } from "src/Features/alertsSlice";
+import { SCREEN_SIZES } from "src/Data/globalVariables.tsx";
+import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
 import {
   sendToolTipLeftPos,
   sendingToolTipLeftPos,
-} from "src/Functions/tooltipPositions";
-import { isEmailValid } from "src/Functions/validation";
-import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow";
-import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus";
-import SpinnerLoading from "../../Shared/Loaders/SpinnerLoading";
-import SvgIcon from "../../Shared/MiniComponents/SvgIcon";
-import ToolTip from "../../Shared/MiniComponents/ToolTip";
+} from "src/Functions/tooltipPositions.ts";
+import { isEmailValid } from "src/Functions/validation.ts";
+import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow.tsx";
+import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
+import SpinnerLoading from "../../Shared/Loaders/SpinnerLoading.tsx";
+import SvgIcon from "../../Shared/MiniComponents/SvgIcon.tsx";
+import ToolTip from "../../Shared/MiniComponents/ToolTip.tsx";
 import s from "./CustomEmailInput.module.scss";
+import { ALERT_STATE } from "src/Types/common.ts";
 
 const CustomEmailInput = () => {
   const dispatch = useDispatch();
@@ -65,7 +66,7 @@ const CustomEmailInput = () => {
     const alertText = isWebsiteOnline
       ? t("toastAlert.subscriptionSuccess")
       : t("toastAlert.subscriptionFailed");
-    const alertState = isWebsiteOnline ? "success" : "error";
+    const alertState = isWebsiteOnline ? ALERT_STATE.SUCCESS: ALERT_STATE.ERROR;
 
     if (isWebsiteOnline) {
       setLoading(true);

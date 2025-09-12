@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { MY_REPOS_URL, WEBSITE_REPO_ID } from "src/Data/globalVariables";
-import { repoStarsForksToolTipLeftPos } from "src/Functions/tooltipPositions";
-import { getDataById } from "src/Functions/helper";
-import useAsync from "src/Hooks/Helper/useAsync";
-import SvgIcon from "../../Shared/MiniComponents/SvgIcon";
-import ToolTip from "../../Shared/MiniComponents/ToolTip";
+import { MY_REPOS_URL, WEBSITE_REPO_ID } from "src/Data/globalVariables.tsx";
+import { repoStarsForksToolTipLeftPos } from "src/Functions/tooltipPositions.ts";
+import { getDataById } from "src/Functions/helper.ts";
+import useAsync from "src/Hooks/Helper/useAsync.tsx";
+import SvgIcon from "../../Shared/MiniComponents/SvgIcon.tsx";
+import ToolTip from "../../Shared/MiniComponents/ToolTip.tsx";
 import s from "./RepoStarsForks.module.scss";
 
 const RepoStarsForks = () => {

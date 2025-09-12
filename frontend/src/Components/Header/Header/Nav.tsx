@@ -47,9 +47,9 @@ const Nav = () => {
           <NavLink to="/contact">{t("nav.contact")}</NavLink>
         </li>
 
-        <li>
+        {/* <li>
           <NavLink to="/about">{t("nav.about")}</NavLink>
-        </li>
+        </li> */}
 
         <li>
           {loginInfo.isSignIn ? (
