@@ -22,6 +22,11 @@ const user = {
     formatProducts(res.data.products);
     return res;
   }),
+  getProductsByCategory: (categoryId: number, offset?:number, limit?:number) => api.get(`/user/products/category/${categoryId}?offset=${offset || 0}&limit=${limit || 10}`).then(res => {
+    formatProducts(res.data.products);
+    return res;
+  }),
+  getProductById: (productId: number) => api.get(`/user/products/${productId}`),
 };
 
 export default user;

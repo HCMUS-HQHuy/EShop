@@ -190,7 +190,8 @@ export const productCardCustomizations = {
     showRemoveIcon: false,
     showNewText: true,
     showWishList: true,
-    showColors: true,
+    // showColors: true,
+    showColors: false,
   },
   allProducts: {
     showDiscount: true,
@@ -200,7 +201,8 @@ export const productCardCustomizations = {
     showWishList: true,
     stopHover: false,
     showRemoveIcon: false,
-    showColors: true,
+    // showColors: true,
+    showColors: false,
   },
   wishListProducts: {
     showDiscount: true,
@@ -210,7 +212,8 @@ export const productCardCustomizations = {
     showRemoveIcon: true,
     showNewText: true,
     showWishList: true,
-    showColors: true,
+    // showColors: true,
+    showColors: false,
   },
   ourProducts: {
     showDiscount: true,
@@ -220,7 +223,8 @@ export const productCardCustomizations = {
     showRemoveIcon: false,
     showNewText: true,
     showWishList: true,
-    showColors: true,
+    // showColors: true,
+    showColors: false,
   },
 };
 

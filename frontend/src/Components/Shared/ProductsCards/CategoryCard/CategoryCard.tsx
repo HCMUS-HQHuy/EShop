@@ -7,9 +7,7 @@ import s from "./CategoryCard.module.scss";
 import type { CategoryInfor } from "src/Types/category.ts";
 
 const CategoryCard = ({ categoryData }: { categoryData: CategoryInfor }) => {
-  const { iconName, title } = categoryData;
-  const categoryType = title.toLowerCase();
-  const navigateTo = useNavigate();
+  const { iconName, title, categoryId } = categoryData;
   const { t } = useTranslation();
   const categoryTitleTrans = t(`categoriesData.${camelCase(title)}`);
 
@@ -19,7 +17,7 @@ const CategoryCard = ({ categoryData }: { categoryData: CategoryInfor }) => {
 
   return (
     <Link
-      to={`/category?type=${categoryType}`}
+      to={`/category?title=${title}&id=${categoryId}`}
       className={s.card}
       title={categoryTitleTrans}
       // onClick={navigateToCategory}

@@ -1,27 +1,35 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { productsData } from "src/Data/productsData.tsx";
 import ProductCard from "../Shared/ProductsCards/ProductCard/ProductCard.tsx";
 import s from "./ProductsCategory.module.scss";
 import type { productCardCustomizations } from "src/Data/staticData.tsx";
 import { useSelector } from "react-redux";
 import type { RootState } from "src/Types/store.ts";
+import { useEffect, useState } from "react";
+import type { ProductType } from "src/Types/product.ts";
+import api from "src/Api/index.api.ts";
 
 type Props = {
-  categoryName: string;
+  categoryId: number;
   customization: typeof productCardCustomizations[keyof typeof productCardCustomizations];
 }
 
-const ProductsCategory = ({ categoryName, customization }: Props) => {
+const ProductsCategory = ({ categoryId, customization }: Props) => {
   const { t } = useTranslation();
-  const categoryProducts = useSelector((state: RootState)=>state.products.productsList)
-                          .filter((product) => product.categoryIds.some(id => categoryIds.includes(id)));
-  // console.log(categoryIds, categoryProducts);
-  // const categoryProducts = productsData.filter(
-  //   (product) => product.category === categoryName
-  // );
-
+  const [categoryProducts, setCategoryProducts] = useState<ProductType[]>([]);
   const hasProducts = categoryProducts.length > 0;
+  const { loadingCategoryPage } = useSelector((state: RootState) => state.loading);
+
+  useEffect(() => {
+    if (!categoryId) return;
+    if (loadingCategoryPage) return;
+    api.user.getProductsByCategory(categoryId, 0, 8).then((response) => {
+      const { products } = response.data;
+      setCategoryProducts(products);
+    }).catch((error) => {
+      console.error("Error fetching products by category:", error);
+    });
+  }, [categoryId]);
 
   if (!hasProducts)
     return (
@@ -38,8 +46,9 @@ const ProductsCategory = ({ categoryName, customization }: Props) => {
       {categoryProducts?.map((product) => (
         <ProductCard
           product={product}
-          key={product.id}
+          key={product.productId}
           customization={customization}
+          removeFrom={undefined}
         />
       ))}
     </div>

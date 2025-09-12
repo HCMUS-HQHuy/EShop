@@ -11,13 +11,22 @@ import SkeletonCards from "../Shared/SkeletonLoaders/ProductCard/SkeletonCards.t
 import ProductsCategory from "./ProductsCategory.tsx";
 import s from "./ProductsCategoryPage.module.scss";
 import type { RootState } from "src/Types/store.ts";
+import { useEffect } from "react";
 
 const ProductsCategoryPage = () => {
   const { loadingCategoryPage } = useSelector((state: RootState) => state.loading);
   const { t } = useTranslation();
-  const categoryType = useGetSearchParam("type");
-  const categoryTypeTrans = t(`categoriesData.${categoryType}`);
+  const categoryType = useGetSearchParam("title");
+  const categoryId = Number(useGetSearchParam("id"));
   const isWebsiteOnline = useOnlineStatus();
+
+  useEffect(() => {
+    if (!categoryId) return;
+    if (isNaN(categoryId) || categoryId <= 0) {
+      console.error("Invalid category ID:", categoryId);
+    }
+    window.scrollTo(0, 0);
+  }, [categoryId]);
 
   return (
     <>
@@ -31,12 +40,12 @@ const ProductsCategoryPage = () => {
 
       <div className="container">
         <main className={s.categoryPage}>
-          <PagesHistory history={["/", categoryTypeTrans]} historyPaths={undefined} />
+          <PagesHistory history={["/", categoryType?.toLowerCase()]} historyPaths={undefined} />
 
           <section className={s.categoryContent} id="category-page">
             {!loadingCategoryPage && isWebsiteOnline && (
               <ProductsCategory
-                categoryName={categoryType}
+                categoryId={categoryId}
                 customization={productCardCustomizations.categoryProducts}
               />
             )}

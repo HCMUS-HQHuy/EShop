@@ -1,11 +1,11 @@
 import express from 'express';
-import { Client } from 'pg';
-import database from 'src/database/index.database';
 import util from 'src/utils/index.utils';
 import schemas from 'src/schemas/index.schema';
 import { PRODUCT_STATUS } from '@prisma/client';
 import { RequestCustom, UserProductParamsRequest } from 'src/types/index.types';
 import prisma from 'src/models/prismaClient';
+
+// #### CONTROLLERS ####
 
 async function list(req: RequestCustom, res: express.Response) {
     console.log("Received product listing request with query:", req.query);
@@ -16,7 +16,6 @@ async function list(req: RequestCustom, res: express.Response) {
     const params: UserProductParamsRequest = parsedBody.data;
     console.log("Listing products with params:", params);
 
-    let db: Client | undefined = undefined;
     try {
         const limit = params.limit;
         const offset = params.offset;
@@ -31,9 +30,10 @@ async function list(req: RequestCustom, res: express.Response) {
                 stockQuantity: true,
                 imageUrl: true,
                 createdAt: true,
+                productCategories: { select: { categoryId: true } }
             },
-            where: { 
-                isDeleted: false, 
+            where: {
+                isDeleted: false,
                 status: PRODUCT_STATUS.ACTIVE,
                 OR: [
                     { name: { contains: params.keywords, mode: 'insensitive' } },
@@ -51,13 +51,11 @@ async function list(req: RequestCustom, res: express.Response) {
         });
         res.status(200).send(util.response.success('Products fetched successfully', {
             numberOfProducts,
-            products 
+            products
         }));
     } catch (error) {
         console.error('Error listing products:', error);
         return res.status(500).send(util.response.internalServerError());
-    } finally {
-        await database.releaseConnection(db);
     }
 }
 
@@ -68,7 +66,7 @@ async function getDetailById(req: RequestCustom, res: express.Response) {
     }
     console.log("Fetching product details for ID:", productId);
     if (productId <= 0) {
-        return res.status(400).send(util.response.error('ProductId must be a positive number', ));
+        return res.status(400).send(util.response.error('ProductId must be a positive number',));
     }
 
     try {
@@ -114,10 +112,10 @@ async function getRelatedProducts(req: RequestCustom, res: express.Response) {
     try {
         const product = await prisma.products.findUnique({
             where: { productId: productId },
-            select: { 
+            select: {
                 name: true,
                 shortName: true,
-                productCategories: { select: { categoryId: true } } 
+                productCategories: { select: { categoryId: true } }
             }
         });
 
@@ -158,10 +156,58 @@ async function getRelatedProducts(req: RequestCustom, res: express.Response) {
     }
 }
 
+
+async function getProductsByCategory(req: RequestCustom, res: express.Response) {
+    const categoryId = Number(req.params.id);
+    const limit = req.query.limit ? Number(req.query.limit) : 10;
+    const offset = req.query.offset ? Number(req.query.offset) : 0;
+    if (!categoryId || isNaN(categoryId) || categoryId <= 0 || limit > 100 || limit <= 0 || offset < 0) {
+        return res.status(400).send(util.response.error('Category ID is required and must be a number greater than 0'));
+    }
+    console.log("Fetching related categories for ID:", categoryId);
+
+    try {
+        const numberOfProducts = await prisma.products.count({
+            where: {
+                productCategories: { some: { categoryId: categoryId } },
+                isDeleted: false,
+                status: PRODUCT_STATUS.ACTIVE,
+            },
+        });
+        const products = await prisma.products.findMany({
+            where: {
+                productCategories: { some: { categoryId: categoryId } },
+                isDeleted: false,
+                status: PRODUCT_STATUS.ACTIVE,
+            },
+            select: {
+                productId: true,
+                shop: { select: { shopId: true, shopName: true } },
+                name: true,
+                shortName: true,
+                price: true,
+                discount: true,
+                stockQuantity: true,
+                imageUrl: true,
+                createdAt: true,
+                productCategories: { select: { categoryId: true } }
+            },
+            skip: offset,
+            take: limit,
+        });
+        return res.status(200).send(util.response.success('Related products fetched successfully', { numberOfProducts, products }));
+    } catch (error) {
+        console.error('Error fetching related products:', error);
+        return res.status(500).send(util.response.internalServerError());
+    }
+}
+
+
 // #### EXPORTS ####
 const product = {
     list,
     getDetailById,
-    getRelatedProducts
+    getRelatedProducts,
+    getProductsByCategory
 };
 export default product;

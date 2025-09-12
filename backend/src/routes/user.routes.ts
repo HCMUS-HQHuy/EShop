@@ -16,6 +16,7 @@ router.get("/getinfor", mid.auth, controller.user.infor.get);
 router.get("/products",                   controller.user.product.list);
 router.get("/products/:id",               controller.user.product.getDetailById);
 router.get("/products/:id/related-items", controller.user.product.getRelatedProducts);
+router.get("/products/category/:id", controller.user.product.getProductsByCategory);
 
 // #### CART ROUTES ####
 // router.get("/cart",                 mid.auth, controller.user.cart.get);
