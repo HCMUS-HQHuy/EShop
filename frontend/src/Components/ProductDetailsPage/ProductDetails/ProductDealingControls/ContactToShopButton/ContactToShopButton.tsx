@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import SvgIcon from "src/Components/Shared/MiniComponents/SvgIcon.tsx";
 import ToolTip from "src/Components/Shared/MiniComponents/ToolTip.tsx";
-import { addToArray, removeByKeyName } from "src/ReduxSlice/productsSlice.tsx";
-import { isItemFound } from "src/Functions/helper.ts";
 import s from "./ContactToShopButton.module.scss";
 import type { ProductDetailType } from "src/Types/product.ts";
 import type { RootState } from "src/Types/store.ts";
@@ -26,16 +24,15 @@ const ContactToShopButton = ({ productData }: Props) => {
 
   async function contactToShop() {
     if (!loginInfo.isSignIn) navigateTo("/signup");
-
+    console.log("Contact to shop", productData);
     const temporaryConversation: ConversationType = {
-      id: undefined,
+      conversationId: undefined,
       withUser: {
-        userId: productData.sellerId,
-        name: productData.shopName,
+        userId: productData.shop.userId,
+        username: productData.shop.shopName,
         role: USER_ROLE.SELLER,
-        avatar: 'https://i.pravatar.cc/40?u=tempuser'
       },
-      context: { type: "product", productId: productData.id, name: productData.name },
+      context: { type: "product", productId: productData.productId, name: productData.name },
       lastMessage: { sender: 'other', content: '', timestamp: '' },
       unreadCount: 0,
       messages: []
@@ -44,13 +41,12 @@ const ContactToShopButton = ({ productData }: Props) => {
     try {
       dispatch(findConversation(temporaryConversation));
       if (selectedConversation) {
-        navigateTo(`/chats?conversationId=${selectedConversation.id}`);
+        navigateTo(`/chats?conversationId=${selectedConversation.conversationId}`);
         return;
       }
       const response = await api.chat.getConversation({
         context: temporaryConversation.context,
-
-        participant2Id: productData.sellerId,
+        participant2Id: productData.shop.userId,
         participant2Role: USER_ROLE.SELLER,
         participant1Role: USER_ROLE.CUSTOMER,
       });

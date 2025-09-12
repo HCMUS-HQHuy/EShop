@@ -2,7 +2,8 @@
 type MessageType = {
   sender: string;
   content: string;
-  timestamp?: string;
+  timestamp: Date;
+  isRead: boolean;
 }
 
 type ConversationMessageType = MessageType & {
@@ -10,7 +11,7 @@ type ConversationMessageType = MessageType & {
 }
 
 type ConversationType = {
-    id: number | undefined;
+    conversationId: number | undefined;
     withUser: {
         userId: number;
         name: string;

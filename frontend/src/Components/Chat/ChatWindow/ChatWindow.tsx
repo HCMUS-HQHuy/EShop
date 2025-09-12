@@ -7,6 +7,7 @@ import type { ConversationType, MessageType } from 'src/Types/conversation.ts';
 import { addConversation, addMessageToConversation, setSelectedConversationId } from 'src/ReduxSlice/conversationSlice.tsx';
 import { formatDateTime } from 'src/Functions/formatting.ts';
 import { useNavigate } from 'react-router-dom';
+import { userImg } from 'src/Assets/Images/Images.ts';
 
 interface ChatWindowProps {
   conversation: ConversationType | null;
@@ -57,7 +58,7 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
   const handleSendMessage = async () => {
     if (newMessage.trim() === '' || conversation === null) return;
     console.log(newMessage);
-    if (conversation.id === undefined) {
+    if (conversation.conversationId === undefined) {
       const conversationData = await api.chat.createConversation({
         participant2Id: conversation.withUser.userId,
         participant1Role: userRole,
@@ -66,17 +67,17 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
       });
       conversation = conversationData.data.conversation as ConversationType;
       dispatch(addConversation(conversation));
-      dispatch(setSelectedConversationId(conversation.id!));
-      navigate(`/chats?conversationId=${conversation.id}`, { replace: true });
+      dispatch(setSelectedConversationId(conversation.conversationId!));
+      navigate(`/chats?conversationId=${conversation.conversationId}`, { replace: true });
     }
     const data = {
       content: newMessage,
-      conversationId: conversation.id,
+      conversationId: conversation.conversationId,
       receiverId: conversation.withUser.userId
     }
     api.chat.sendMessage(data);
     dispatch(addMessageToConversation({
-      conversationId: conversation.id!,
+      conversationId: conversation.conversationId!,
       sender: 'me',
       content: newMessage
     }));
@@ -86,9 +87,9 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
   return (
     <div className={s.chatWindow}>
       <header className={s.header}>
-        <img src={conversation.withUser.avatar} alt={conversation.withUser.name} className={s.avatar} />
+        <img src={userImg} alt={conversation.withUser.username} className={s.avatar} />
         <div className={s.userInfo}>
-          <span className={s.name}>{conversation.withUser.name}</span>
+          <span className={s.name}>{conversation.withUser.username}</span>
           <div className={s.context}>
             <span>Regarding:</span>
             <a href="#">{conversation.context.name}</a>
@@ -102,7 +103,6 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
           const showTimestamp = shouldShowTimestamp(msg, previousMsg);
 
           return (
-            // 2. Sử dụng React.Fragment để nhóm timestamp và tin nhắn
             <React.Fragment key={`${msg.timestamp}-${index}`}>
               {showTimestamp && (
                 <div className={s.timestampGroup}>
@@ -110,7 +110,7 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
                 </div>
               )}
                 <div className={`${s.messageWrapper} ${msg.sender === 'me' ? s.sent : s.received}`}>
-                  {msg.sender !== 'me' && <img src={conversation?.withUser.avatar} alt="avatar" className={s.messageAvatar} />}
+                  {msg.sender !== 'me' && <img src={userImg} alt="avatar" className={s.messageAvatar} />}
                   <div className={s.bubble}>{msg.content}</div>
                 </div>
             </React.Fragment>

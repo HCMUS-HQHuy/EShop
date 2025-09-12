@@ -11,12 +11,11 @@ type ConversationMessageType = MessageType & {
 }
 
 type ConversationType = {
-    id: number | undefined;
+    conversationId: number | undefined;
     withUser: {
         userId: number;
-        name: string;
+        username: string;
         role: USER_ROLE;
-        avatar: string;
     };
     context: {
         productId: number;

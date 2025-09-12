@@ -14,6 +14,7 @@ export const conversationFetch = createAsyncThunk(
   async (userRole: USER_ROLE, { rejectWithValue }) => {
       try {
         const response = await api.chat.getConversations(userRole);
+        console.log("Fetched conversations:", response.data.conversations);
         return response.data.conversations;
       } catch(error) {
         console.warn("Error fetching conversations:", error);
@@ -32,7 +33,7 @@ const conversationSlice = createSlice({
       if (action.payload === null) {
         state.selectedConversation = null;
       } else {
-        const conversation = state.conversations.find(conv => conv.id === action.payload);
+        const conversation = state.conversations.find(conv => conv.conversationId === action.payload);
         if (conversation) {
           conversation.unreadCount = 0;
           state.selectedConversation =  conversation;
@@ -43,8 +44,8 @@ const conversationSlice = createSlice({
       state.selectedConversation = action.payload;
     },
     addConversation: (state, action: {payload: ConversationType}) => {
-      if (state.conversations.find(conv => conv.id === action.payload.id)) {
-        console.warn("Conversation already exists:", action.payload.id);
+      if (state.conversations.find(conv => conv.conversationId === action.payload.conversationId)) {
+        console.warn("Conversation already exists:", action.payload.conversationId);
         return;
       }
       state.conversations.push(action.payload);
@@ -57,7 +58,7 @@ const conversationSlice = createSlice({
     addMessageToConversation: (state, action: {payload: ConversationMessageType}) => {
         const { conversationId, content, sender } = action.payload;
         console.log("Adding message to conversation:", action.payload);
-        const conversationIndex = state.conversations.findIndex(conv => conv.id === conversationId);
+        const conversationIndex = state.conversations.findIndex(conv => conv.conversationId === conversationId);
         const conversation = conversationIndex !== -1 ? state.conversations[conversationIndex] : null;
         if (conversation) {
           conversation.messages.push({
@@ -84,7 +85,7 @@ const conversationSlice = createSlice({
         conv.withUser.role === withUser.role
       );
       if (conversation) {
-        state.selectedConversationId = conversation.id;
+        state.selectedConversationId = conversation.conversationId;
         state.selectedConversation = conversation;
       } else {
         state.selectedConversationId = null;

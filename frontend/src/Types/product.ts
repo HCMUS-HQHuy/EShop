@@ -68,15 +68,17 @@ type Color = {
 
 type ProductDetailType = {
   productId: number;
-  shopId: number;
   name: string;
   shortName: string;
   description: string;
   price: string;
   discount: string;
   stockQuantity: number;
-  sellerId: number;
-  shopName: string;
+  shop: {
+    shopId: number;
+    shopName: string;
+    userId: number;
+  }
   img: string;
   additionalImg: string;
   categoryIds: number[];

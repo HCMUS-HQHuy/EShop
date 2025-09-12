@@ -13,6 +13,7 @@ import AuthSchemas, { type RegisterFormValues } from 'src/Types/forms.ts';
 import type { AppDispatch, RootState } from 'src/Types/store.ts'
 import api from "src/Api/index.api.ts";
 import { ALERT_STATE } from "src/Types/common.ts";
+import { useNavigate } from "react-router-dom";
 
 const SignUpForm = () => {
   const { username, email, password, confirmPassword } 
@@ -20,6 +21,7 @@ const SignUpForm = () => {
   const isWebsiteOnline = useOnlineStatus();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   async function signUp(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -40,8 +42,8 @@ const SignUpForm = () => {
     const formData: RegisterFormValues = result.data;
     try {
       const response = await api.user.signUp(formData);
-      console.log("Registration successful:", response);
       signInAlert(t, dispatch);
+      navigate("/login");
     } catch (error) {
       const errorResponse = (error as any)?.data;
       if (errorResponse?.username) {

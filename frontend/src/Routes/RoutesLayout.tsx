@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Footer from "src/Components/Footer/Footer.tsx";
 import Header from "src/Components/Header/Header/Header.tsx";
 import UpdateNotification from "src/Components/PWA/UpdateNotification/UpdateNotification.tsx";
@@ -19,6 +19,7 @@ const RoutesLayout = () => {
   const skipLinkSectionId = useCurrentSkipLinkId();
   const isWebsiteOnline = useOnlineStatus();
   const userRole = useSelector((state: RootState) => state.global.userRole);
+  const pathname: string = useLocation().pathname;
   return (
     <div className="App" tabIndex={-1}>
       <SkipContentLink scrollTo={skipLinkSectionId} />
@@ -29,7 +30,7 @@ const RoutesLayout = () => {
       <GlobalOverlay />
       <ScrollToTop />
       <Outlet />
-      { userRole === USER_ROLE.CUSTOMER && <Footer /> }
+      { userRole === USER_ROLE.CUSTOMER && !pathname.startsWith('/chat') && <Footer /> }
       <ConnectionLabelAlert isOnline={isWebsiteOnline} />
       <ToastAlert />
       <ToastConfirm />

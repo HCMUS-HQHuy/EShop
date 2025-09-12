@@ -1,14 +1,12 @@
-import type { ConversationType } from 'src/Types/conversation.ts';
 import s from './ConversationList.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'src/Types/store.ts';
 import { setSelectedConversationId } from 'src/ReduxSlice/conversationSlice.tsx';
-import { useNavigate } from 'react-router-dom';
+import { userImg } from 'src/Assets/Images/Images.ts';
 
 const ConversationList = () => {
   const { conversations, selectedConversationId } = useSelector((state: RootState) => state.conversation);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const selectConversationId = (id: number) => {
     if (id === selectedConversationId) return;
@@ -24,14 +22,14 @@ const ConversationList = () => {
       <div className={s.list}>
         {conversations.map(convo => (
           <div 
-            key={convo.id} 
-            className={`${s.conversationItem} ${selectedConversationId === convo.id ? s.selected : ''}`}
-            onClick={() => selectConversationId(convo.id!)}
+            key={convo.conversationId} 
+            className={`${s.conversationItem} ${selectedConversationId === convo.conversationId ? s.selected : ''}`}
+            onClick={() => selectConversationId(convo.conversationId!)}
           >
-            <img src={convo.withUser.avatar} alt={convo.withUser.name} className={s.avatar} />
+            <img src={userImg} alt={convo.withUser.username} className={s.avatar} />
             <div className={s.details}>
               <div className={s.nameTimestamp}>
-                <span className={s.name}>{convo.withUser.name}</span>
+                <span className={s.name}>{convo.withUser.username}</span>
                 <span className={s.timestamp}>{convo.lastMessage.timestamp}</span>
               </div>
               <div className={s.messageUnread}>
