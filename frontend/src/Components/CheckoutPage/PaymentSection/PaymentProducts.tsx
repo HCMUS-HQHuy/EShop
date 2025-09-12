@@ -13,18 +13,11 @@ const PaymentProducts = ({ products }: Props) => {
 
   return (
     <div className={s.products}>
-      {products.map(({ img, name, shortName, afterDiscount, id }) => (
-        <Link to={`/details?product=${id}`} key={id} className={s.product}>
+      {products.map(({ imageUrl, name, shortName, afterDiscount, productId }) => (
+        <Link to={`/details?product=${productId}`} key={productId} className={s.product}>
           <div className={s.wrapper}>
-            <img src={img} alt={shortName} />
-
-            <span>
-              {/* {translateProduct({
-                productName: shortName,
-                translateMethod: t,
-                translateKey: "shortName",
-              })} */ name}
-            </span>
+            <img src={`${import.meta.env.VITE_PUBLIC_URL}/${imageUrl}`} alt={shortName} />
+            <span> {name} </span>
           </div>
 
           <span className={s.price}>{afterDiscount}</span>

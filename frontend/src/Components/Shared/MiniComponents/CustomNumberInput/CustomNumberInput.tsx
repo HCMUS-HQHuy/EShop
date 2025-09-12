@@ -4,12 +4,19 @@ import s from "./CustomNumberInput.module.scss";
 import CustomNumberInputButtons, {
   updateProductQuantity,
 } from "./CustomNumberInputButtons/CustomNumberInputButtons.tsx";
+import type { ProductType } from "src/Types/product.ts";
+import type { RootState } from "src/Types/store.ts";
 
-const CustomNumberInput = ({ product, quantity }) => {
-  const { cartProducts } = useSelector((state) => state.products);
+type Props = {
+  product: ProductType;
+  quantity: number;
+};
+
+const CustomNumberInput = ({ product, quantity }: Props) => {
+  const { cartProducts } = useSelector((state: RootState) => state.products);
   const dispatch = useDispatch();
 
-  function handleChangeQuantityInput(e) {
+  function handleChangeQuantityInput(e: React.ChangeEvent<HTMLInputElement>) {
     const inputValue = parseInt(e.target.value);
     const updatedProduct = { ...product };
 
@@ -19,15 +26,15 @@ const CustomNumberInput = ({ product, quantity }) => {
     const isAboveMaximum = inputValue > MAXIMUM_QUANTITY;
 
     if (isBelowMinimum) {
-      updatedProduct.quantity = MINIMUM_QUANTITY;
+      updatedProduct.stockQuantity = MINIMUM_QUANTITY;
     } else if (isAboveMaximum) {
-      updatedProduct.quantity = MAXIMUM_QUANTITY;
+      updatedProduct.stockQuantity = MAXIMUM_QUANTITY;
     } else {
-      updatedProduct.quantity = inputValue;
+      updatedProduct.stockQuantity = inputValue;
     }
 
     updateProductQuantity(updatedProduct, cartProducts, dispatch);
-    return updatedProduct.quantity;
+    return updatedProduct.stockQuantity;
   }
 
   return (

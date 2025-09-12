@@ -1,42 +1,34 @@
-import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { formatePrice, getNumericPrice } from "src/Functions/formatting.ts";
 import CustomNumberInput from "../../Shared/MiniComponents/CustomNumberInput/CustomNumberInput.tsx";
 import s from "./CartProduct.module.scss";
 import RemoveCartProductBtn from "./RemoveCartProductBtn.tsx";
-import type { Product } from "src/Types/product.ts";
+import type { ProductType } from "src/Types/product.ts";
 
 type Props = {
-  data: Product
+  data: ProductType;
 }
 
 const CartProduct = ({ data }: Props) => {
-  const { img, name, shortName, afterDiscount, quantity, id } = data;
+  const { imageUrl, name, shortName, afterDiscount, stockQuantity, productId } = data;
   const priceAfterDiscount = getNumericPrice(afterDiscount);
-  const subTotal = formatePrice((quantity * priceAfterDiscount).toFixed(2));
-  const { t } = useTranslation();
-
-  // const translatedProductName = translateProduct({
-  //   productName: shortName,
-  //   translateMethod: t,
-  //   translateKey: "shortName",
-  // });
+  const subTotal = formatePrice((stockQuantity * priceAfterDiscount).toFixed(2));
 
   return (
     <tr className={s.productContainer}>
       <td className={s.product}>
         <div className={s.imgHolder}>
-          <img src={img} alt={`${shortName} product`} />
-          <RemoveCartProductBtn productId={id} />
+          <img src={`${import.meta.env.VITE_PUBLIC_URL}/${imageUrl}`} alt={`${shortName} product`} />
+          <RemoveCartProductBtn productId={productId} />
         </div>
 
-        <Link to={`/details?product=${id}`}>{name}</Link>
+        <Link to={`/details?product=${productId}`}>{name}</Link>
       </td>
 
       <td className={s.price}>{afterDiscount}</td>
 
       <td>
-        <CustomNumberInput product={data} quantity={quantity} />
+        <CustomNumberInput product={data} quantity={stockQuantity} />
       </td>
 
       <td>{subTotal}</td>
@@ -51,7 +43,14 @@ export function translateProduct({
   translateKey,
   uppercase = false,
   dynamicData = {},
+}: {
+  productName: string | undefined;
+  translateMethod: (key: string, options?: any) => string;
+  translateKey: string;
+  uppercase?: boolean;
+  dynamicData?: Record<string, any>;
 }) {
+  if (!productName) return "";
   const shortNameKey = productName?.replaceAll(" ", "");
   const productTrans = `products.${shortNameKey}`;
   const translateText = translateMethod(

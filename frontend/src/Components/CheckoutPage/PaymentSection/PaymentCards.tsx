@@ -27,11 +27,13 @@ const PaymentCards = ({ paymentCards }: Props) => {
     }, 100);
   });
 
+  console.log("payment cards", paymentCards);
+
   return (
     <div className={s.images}>
       {paymentCards.map(({ img, alt, link, id }) => (
         <a key={id} href={link} target="_blank">
-          {img && <img src={img} alt={alt + " image"} /> }
+          {/* {img && img.length > 1 && <img src={img} alt={alt + " image"} /> } */}
           {isLaptopScreen && <ToolTip left="50%" top="46px" content={alt} />}
         </a>
       ))}

@@ -317,15 +317,47 @@ async function seedProductData() {
       console.log(`Created product: ${product.name}`);
     }
   } catch (error) {
-  console.error("Error during seeding:", error);
+    console.error("Error during seeding:", error);
+  }
 }
+
+async function seedPaymentData() {
+  try {
+    const cnt = await prisma.paymentMethods.count();
+    if (cnt > 0) {
+      console.log("Seeding skipped: PaymentMethods table is not empty.");
+      return;
+    }
+    await prisma.paymentMethods.createMany({
+      data: [
+        {
+          code: "COD",
+          name: "Cash on Delivery",
+          img: '',
+          link: "",
+          isActive: true,
+        },
+        {
+          code: "MOMO",
+          name: "MoMo E-Wallet",
+          img: "MOMO-Logo-App.png",
+          link: "https://momo.vn/",
+          isActive: true,
+        }
+      ],
+    });
+    console.log("Seeding completed: Payment methods added.");
+  } catch (error) {
+    console.error("Error during seeding:", error);
+  }
 }
 
 async function seedData() {
   Promise.all([
     seedCategoryData(),
     seedShopData(),
-    seedProductData()
+    seedProductData(),
+    seedPaymentData()
   ]);
 }
 

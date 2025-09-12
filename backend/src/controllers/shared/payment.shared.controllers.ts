@@ -27,6 +27,7 @@ async function getAll(req: RequestCustom, res: express.Response) {
             img: row.img,
             link: row.link
         }));
+        console.log('Payment methods retrieved:', data);
         res.status(200).json(util.response.success('Success', { paymentMethods: data }));
     } catch (error) {
         console.error('Error fetching payment methods:', error);
