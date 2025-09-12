@@ -12,6 +12,7 @@ import { setAfterDiscountKey, setFormattedPrice } from "src/Functions/formatting
 import { updateLoadingState } from "src/ReduxSlice/loadingSlice.tsx";
 import { Navigate } from "react-router-dom";
 import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
+import RelatedItemsSection from "./RelatedItemsSection/RelatedItemsSection.tsx";
 
 const ProductDetailsPage = () => {
   const { t } = useTranslation();
@@ -45,19 +46,8 @@ const ProductDetailsPage = () => {
     t("history.products"),
     productName,
   ];
-  const historyPaths = [
-    {
-      index: 0,
-      path: "/products",
-    },
-    {
-      index: 1,
-      path: `/category?type=${PRODUCT_DATA?.categoryIds[0]}`,
-    },
-  ];
+  const historyPaths = [ { index: 0, path: "/products" }, { index: 1, path: `/category?type=${PRODUCT_DATA?.categoryIds[0]}` } ];
 
-  if (ERROR) {
-  }
   return (
     ERROR ? <Navigate to="product-not-found" /> : 
     <>
@@ -73,10 +63,9 @@ const ProductDetailsPage = () => {
         <main className={s.detailsPage}>
           <PagesHistory history={history} historyPaths={historyPaths} />
           <ProductDetails productData={PRODUCT_DATA} />
-          {/* <RelatedItemsSection
-            productType={PRODUCT_DATA.categoryIds[0]}
-            currentProduct={PRODUCT_DATA}
-          /> */}
+          <RelatedItemsSection
+            currentProductId={PRODUCT_DATA?.productId}
+          />
         </main>
       </div>
     </>

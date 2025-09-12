@@ -7,37 +7,6 @@ import { PRODUCT_STATUS } from '@prisma/client';
 import { RequestCustom, UserProductParamsRequest } from 'src/types/index.types';
 import prisma from 'src/models/prismaClient';
 
-async function getRelatedProductsById(productId: number): Promise<any[]> {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            SELECT product_id, name, price, stock_quantity, shop_id, image_url
-            FROM products
-            WHERE product_id != $1
-                AND product_id IN (
-                    SELECT product_id FROM product_categories
-                    WHERE category_id IN (
-                        SELECT category_id FROM product_categories 
-                        WHERE product_id = $1
-                    )
-                )
-                AND status = '${PRODUCT_STATUS.ACTIVE}'
-                AND is_deleted = FALSE
-            LIMIT 10
-        `;
-        const result = await db.query(sql, [productId]);
-        return result.rows;
-    } catch (error) {
-        console.error('Error fetching related products:', error);
-        throw error;
-    } finally {
-        await database.releaseConnection(db);
-    }
-}
-
-// #### CONTROLLER FUNCTIONS ####
-
 async function list(req: RequestCustom, res: express.Response) {
     console.log("Received product listing request with query:", req.query);
     const parsedBody = schemas.product.userParams.safeParse(req.query);
@@ -62,7 +31,6 @@ async function list(req: RequestCustom, res: express.Response) {
                 stockQuantity: true,
                 imageUrl: true,
                 createdAt: true,
-                productCategories: { select: { categoryId: true } }
             },
             where: { 
                 isDeleted: false, 
@@ -138,17 +106,52 @@ async function getDetailById(req: RequestCustom, res: express.Response) {
 
 async function getRelatedProducts(req: RequestCustom, res: express.Response) {
     const productId = Number(req.params.id);
-    if (!productId || isNaN(productId)) {
-        return res.status(400).send(util.response.error('Product ID is required and must be a number'));
+    if (!productId || isNaN(productId) || productId <= 0) {
+        return res.status(400).send(util.response.error('Product ID is required and must be a number greater than 0'));
     }
     console.log("Fetching related products for ID:", productId);
-    if (productId <= 0) {
-        return res.status(400).send(util.response.error('Product ID must be a positive number'));
-    }
 
     try {
-        const relatedProducts = await getRelatedProductsById(productId);
-        res.send(relatedProducts);
+        const product = await prisma.products.findUnique({
+            where: { productId: productId },
+            select: { 
+                name: true,
+                shortName: true,
+                productCategories: { select: { categoryId: true } } 
+            }
+        });
+
+        const numberOfProducts = await prisma.products.count({
+            where: {
+                productId: { not: productId },
+                productCategories: { some: { categoryId: { in: product?.productCategories.map(pc => pc.categoryId) || [] } } },
+                isDeleted: false,
+                status: PRODUCT_STATUS.ACTIVE,
+            },
+        });
+
+        const products = await prisma.products.findMany({
+            where: {
+                productId: { not: productId },
+                productCategories: { some: { categoryId: { in: product?.productCategories.map(pc => pc.categoryId) || [] } } },
+                isDeleted: false,
+                status: PRODUCT_STATUS.ACTIVE,
+            },
+            select: {
+                productId: true,
+                shop: { select: { shopId: true, shopName: true } },
+                name: true,
+                shortName: true,
+                price: true,
+                discount: true,
+                stockQuantity: true,
+                imageUrl: true,
+                createdAt: true,
+            },
+            take: 10,
+            orderBy: { createdAt: 'desc' }
+        })
+        return res.status(200).send(util.response.success('Related products fetched successfully', { numberOfProducts, products }));
     } catch (error) {
         console.error('Error fetching related products:', error);
         return res.status(500).send(util.response.internalServerError());

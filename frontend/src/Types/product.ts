@@ -25,7 +25,7 @@ type ProductType = {
   shop: { shopId: number; shopName: string; };
   name: string;
   shortName: string;
-  price: number;
+  price: string;
   discount: string;
   stockQuantity: number;
   imageUrl: string;
@@ -67,7 +67,7 @@ type Color = {
 }
 
 type ProductDetailType = {
-  id: number;
+  productId: number;
   shopId: number;
   name: string;
   shortName: string;

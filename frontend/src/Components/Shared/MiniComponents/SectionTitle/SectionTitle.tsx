@@ -1,6 +1,12 @@
 import s from "./SectionTitle.module.scss";
 
-const SectionTitle = ({ eventName, sectionName, type = 1 }) => {
+type Props = {
+  eventName: string;
+  sectionName?: string;
+  type?: 1 | 2;
+}
+
+const SectionTitle = ({ eventName, sectionName, type = 1 }: Props) => {
   const type2Class = type === 2 ? s.type2 : "";
 
   return (

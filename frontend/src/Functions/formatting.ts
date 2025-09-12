@@ -1,4 +1,4 @@
-import type { Product, ProductDetailType } from "src/Types/product.ts";
+import type { ProductType, ProductDetailType } from "src/Types/product.ts";
 import { regexPatterns } from "../Data/globalVariables.tsx";
 
 export function getDiscountedPrice(originalPrice: string, discountPercentage: string): string {
@@ -50,18 +50,25 @@ export function camelCase(str: string) {
   return camelCased.join("");
 }
 
-export function setAfterDiscountKey(product: Product | ProductDetailType) {
+export function setAfterDiscountKey(product: ProductType | ProductDetailType) {
   const discountedPrice = getDiscountedPrice(product.price, product.discount);
   const formattedDiscountedPrice = formatePrice(discountedPrice);
   product.afterDiscount = formattedDiscountedPrice;
 }
 
-export function setFormattedPrice(product: Product | ProductDetailType) {
+export function setFormattedPrice(product: ProductType | ProductDetailType) {
   const formattedPrice = formatePrice(product.price);
   product.price = formattedPrice;
 }
 
-export function getSubTotal(cartProducts: Product[], key: keyof Product = "quantity") {
+export function formatProducts(products: ProductType[] | ProductDetailType[]) {
+  products.forEach((product) => {
+    setAfterDiscountKey(product);
+    setFormattedPrice(product);
+  });
+}
+
+export function getSubTotal(cartProducts: ProductType[], key: keyof ProductType = "stockQuantity") {
   const total = cartProducts?.reduce((acc, product) => {
     const priceAfterDiscount = getNumericPrice(product?.afterDiscount);
     const quantity = +product?.[key];

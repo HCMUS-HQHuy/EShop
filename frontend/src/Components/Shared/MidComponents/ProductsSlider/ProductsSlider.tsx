@@ -6,15 +6,22 @@ import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow.tsx";
 import ProductCard from "../../ProductsCards/ProductCard/ProductCard.tsx";
 import s from "./ProductsSlider.module.scss";
 import SliderButtons from "./SliderButtons/SliderButtons.tsx";
+import type { ProductType } from "src/Types/product.ts";
+import type { productCardCustomizations } from "src/Data/staticData.tsx";
+
+type Props = {
+  filteredProducts: ProductType[];
+  customization: typeof productCardCustomizations[keyof typeof productCardCustomizations];
+  loading: "lazy" | "eager";
+}
 
 const ProductsSlider = ({
-  filterFun = () => productsData,
+  filteredProducts,
   customization,
   loading,
-}) => {
-  const filteredProducts = filterFun();
-  const sliderRef = useRef();
-  const { handleNextBtn, handlePrevBtn } = useSlider(sliderRef);
+}: Props) => {
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const { handleNextBtn, handlePrevBtn } = useSlider(sliderRef as React.RefObject<HTMLDivElement>);
   const { windowWidth } = useGetResizeWindow();
 
   const shouldDisplayButtons = shouldDisplaySliderButtons(
@@ -32,11 +39,12 @@ const ProductsSlider = ({
       )}
 
       <div className={s.productsSlider} ref={sliderRef} dir="ltr">
-        {filteredProducts.map((product) => (
+        {filteredProducts.map((product: ProductType) => (
           <ProductCard
             product={product}
-            key={product.id}
+            key={product.productId}
             customization={customization}
+            removeFrom={undefined}
             loading={loading}
           />
         ))}
