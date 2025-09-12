@@ -68,7 +68,12 @@ async function list(req: RequestCustom, res: express.Response) {
             where: { 
                 isDeleted: false, 
                 status: PRODUCT_STATUS.ACTIVE,
-                name: { contains: params.keywords }
+                OR: [
+                    { name: { contains: params.keywords, mode: 'insensitive' } },
+                    { shortName: { contains: params.keywords, mode: 'insensitive' } },
+                    { productCategories: { some: { category: { title: { contains: params.keywords, mode: 'insensitive' } } } } }
+                ]
+
             },
             skip: offset,
             take: limit,

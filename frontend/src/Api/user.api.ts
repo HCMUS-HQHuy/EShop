@@ -14,7 +14,7 @@ const user = {
   getInfor: () => api.get(`/user/getinfor`),
   createOrder: (orderData: any) => api.post('user/orders/create', orderData),
   getOrders: () => api.get(`/user/orders`),
-  fetchProducts: (data?: { offset?: number, limit?:number, order?:string }) => api.get(`/user/products?offset=${data?.offset || 0}&limit=${data?.limit || 10}&order=${data?.order}`).then(res => {
+  fetchProducts: (data?: { offset?: number, limit?:number, order?:string, search?:string }) => api.get(`/user/products?offset=${data?.offset || 0}&limit=${data?.limit || 10}&order=${data?.order}&keywords=${data?.search || ''}`).then(res => {
     res.data.products.forEach((product: any) => {
       setAfterDiscountKey(product);
       setFormattedPrice(product);

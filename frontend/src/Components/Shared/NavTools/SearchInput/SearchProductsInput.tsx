@@ -9,6 +9,7 @@ import { searchByObjectKey } from "src/Functions/search.ts";
 import SvgIcon from "../../MiniComponents/SvgIcon.tsx";
 import SearchInput from "./SearchInput.tsx";
 import s from "./SearchProductsInput.module.scss";
+import api from "src/Api/index.api.ts";
 
 const SearchProductsInput = () => {
   const { t } = useTranslation();
@@ -19,10 +20,9 @@ const SearchProductsInput = () => {
   const pathName = location.pathname;
   const [searchParams, setSearchParams] = useSearchParams();
 
-  function handleSearchProducts(e) {
+  function handleSearchProducts(e: React.FormEvent) {
     setSearchParams({ query: searchRef.current });
     e.preventDefault();
-
     const isEmptyQuery = searchRef.current?.trim()?.length === 0;
     if (isEmptyQuery) return;
 
@@ -40,11 +40,9 @@ const SearchProductsInput = () => {
       return;
     }
 
-    const productsFound = getProducts(queryValue);
-
-    dispatch(
-      updateProductsState({ key: "searchProducts", value: productsFound })
-    );
+    getProducts(queryValue)
+      .then((productsFound) => dispatch(updateProductsState({ key: "searchProducts", value: productsFound })))
+      .then(() => dispatch(updateLoadingState({ key: "loadingSearchProducts", value: false })));
     navigateTo("/search?query=" + queryValue);
   }
 
@@ -53,9 +51,7 @@ const SearchProductsInput = () => {
     if (isSearchPage) updateSearchProducts();
 
     return () => {
-      dispatch(
-        updateLoadingState({ key: "loadingSearchProducts", value: true })
-      );
+      dispatch(updateLoadingState({ key: "loadingSearchProducts", value: true }));
     };
   }, []);
 
@@ -77,25 +73,35 @@ const SearchProductsInput = () => {
 
 export default SearchProductsInput;
 
-function focusInput(e) {
-  const searchInput = e.currentTarget.querySelector("#search-input");
-  searchInput.focus();
+function focusInput(e: React.FormEvent) {
+  const searchInput = e.currentTarget.querySelector("#search-input") as HTMLInputElement | null;
+  if (searchInput) {
+    searchInput.focus();
+  }
 }
 
-function getProducts(query) {
-  let productsFound = searchByObjectKey({
-    data: productsData,
-    key: "shortName",
-    query,
-  });
-
-  if (productsFound.length === 0) {
-    productsFound = searchByObjectKey({
-      data: productsData,
-      key: "category",
-      query,
-    });
+async function getProducts(query: string | null) {
+  console.log("Searching products with query:", query);
+  if (!query) return [];
+  try {
+    const response = await api.user.fetchProducts({ limit: 10, search: query });
+    return response.data.products;
+  } catch (error) {
+    console.error("Error searching products:", error);
+    return [];
   }
+  // let productsFound = searchByObjectKey({
+  //   data: productsData,
+  //   key: "shortName",
+  //   query,
+  // });
 
-  return productsFound;
+  // if (productsFound.length === 0) {
+  //   productsFound = searchByObjectKey({
+  //     data: productsData,
+  //     key: "category",
+  //     query,
+  //   });
+  // }
+  return [];
 }

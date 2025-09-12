@@ -70,7 +70,7 @@ const ProductParamsRequestSchema = z.object({
 
 
 const ProductParamsRequest = z.object({
-    keywords: z.string().min(1, "Keywords must not be empty").optional().default(''),
+    keywords: z.string().optional(),
     offset: z.coerce.number().int().min(0, "offset must be greater than or equal 0").default(0),
     limit: z.coerce.number().int().min(1, "Limit must be greater than 0").max(50, "Limit must be less than or equal to 100").default(10),
     sortAttribute: z.enum(SORT_ATTRIBUTES, {
