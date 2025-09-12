@@ -1,7 +1,7 @@
 import express from 'express';
 import util from 'src/utils/index.utils';
 import SOCKET_EVENTS from 'src/constants/socketEvents';
-import { ConversationMessageType, ConversationType, RequestCustom } from 'src/types/index.types';
+import { RequestCustom } from 'src/types/index.types';
 import { USER_ROLE } from '@prisma/client';
 import prisma from 'src/models/prismaClient';
 
@@ -153,6 +153,7 @@ async function getConversations(req: RequestCustom, res: express.Response) {
                 timestamp: mess.sentAt,
                 isRead: mess.isRead!,
             }));
+            conv.messages.reverse();
             conv.lastMessage = conv.messages[conv.messages.length - 1] || {};
             conv.unreadCount = conv.messages.filter((msg: any) => !msg.isRead && msg.sender === 'other').length;
         }
