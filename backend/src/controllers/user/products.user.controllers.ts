@@ -4,8 +4,7 @@ import database from 'src/database/index.database';
 import util from 'src/utils/index.utils';
 import schemas from 'src/schemas/index.schema';
 import { PRODUCT_STATUS } from '@prisma/client';
-import { RequestCustom, ProductParamsRequest, UserProductFilter, UserProductParamsRequest } from 'src/types/index.types';
-import { PAGINATION_LIMIT } from 'src/constants/globalVariables';
+import { RequestCustom, UserProductParamsRequest } from 'src/types/index.types';
 import prisma from 'src/models/prismaClient';
 
 async function getRelatedProductsById(productId: number): Promise<any[]> {

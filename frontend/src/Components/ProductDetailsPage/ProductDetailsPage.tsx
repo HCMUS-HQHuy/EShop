@@ -9,13 +9,20 @@ import api from "src/Api/index.api.ts";
 import { useEffect, useState } from "react";
 import type { ProductDetailType } from "src/Types/product.ts";
 import { setAfterDiscountKey, setFormattedPrice } from "src/Functions/formatting.ts";
+import { updateLoadingState } from "src/ReduxSlice/loadingSlice.tsx";
+import { Navigate } from "react-router-dom";
+import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
 
 const ProductDetailsPage = () => {
   const { t } = useTranslation();
   const PRODUCT_ID = Number(useGetSearchParam("product"));
   const [PRODUCT_DATA, setProductData] = useState<ProductDetailType | undefined>(undefined);
+  const [ERROR, setError] = useState<string | null>(null);
+  useScrollOnMount(0);
+
   useEffect(() => {
     if (PRODUCT_DATA != undefined) return;
+    updateLoadingState({ key: "loadingProductDetails", value: true });
     api.product.getById(PRODUCT_ID).then((response) => {
       const { product } = response.data;
       console.log(product);
@@ -24,9 +31,12 @@ const ProductDetailsPage = () => {
         setAfterDiscountKey(productDetails);
         setFormattedPrice(productDetails);
         setProductData(productDetails);
+        updateLoadingState({ key: "loadingProductDetails", value: false});
       }
     }).catch((error) => {
       console.error("Error fetching product details:", error);
+      setError("Failed to load product details. Please try again later.");
+      updateLoadingState({ key: "loadingProductDetails", value: false});
     });
   }, [PRODUCT_DATA]);
 
@@ -45,14 +55,14 @@ const ProductDetailsPage = () => {
       path: `/category?type=${PRODUCT_DATA?.categoryIds[0]}`,
     },
   ];
-  if (!PRODUCT_DATA) {
-    return <></>;
-  }
 
+  if (ERROR) {
+  }
   return (
+    ERROR ? <Navigate to="product-not-found" /> : 
     <>
       <Helmet>
-        <title>{PRODUCT_DATA.shortName}</title>
+        <title>{PRODUCT_DATA?.shortName}</title>
         <meta
           name="description"
           content={`Explore the details and specifications of your favorite products on ${WEBSITE_NAME}. Find everything you need to know, from features to customer reviews, before making your purchase.`}

@@ -15,12 +15,10 @@ import type { RootState } from "src/Types/store.ts";
 import type { ProductDetailType } from "src/Types/product.ts";
 
 type Props = {
-  productData: ProductDetailType;
+  productData: ProductDetailType | undefined;
 }
 
 const ProductDetails = ({ productData }: Props) => {
-  if (!productData) return <Navigate to="product-not-found" />;
-
   const { loadingProductDetails } = useSelector((state: RootState) => state.loading);
   const { previewImg, isZoomInPreviewActive } = useSelector(
     (state: RootState) => state.global
@@ -47,7 +45,7 @@ const ProductDetails = ({ productData }: Props) => {
 
   return (
     <>
-      {!loadingProductDetails && isWebsiteOnline && (
+      {!loadingProductDetails && isWebsiteOnline && productData && (
         <section className={s.detailsSection} id="details-section">
           <ProductPreview
             productData={productData}
