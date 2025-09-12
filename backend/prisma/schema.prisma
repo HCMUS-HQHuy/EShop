@@ -92,7 +92,7 @@ model Messages {
   senderId       Int
   content        String
   sentAt         DateTime      @default(now()) @db.Timestamp(6)
-  isRead         Boolean?      @default(false)
+  isRead         Boolean       @default(false)
   conversation   Conversations @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade, onUpdate: NoAction)
   user           Users         @relation(fields: [senderId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
 }
