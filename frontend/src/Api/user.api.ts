@@ -1,7 +1,6 @@
-import axios from "axios";
+import api from "./config.api.ts";
 import type { ForgotPasswordFormValues, LoginFormValues, ResetPasswordFormValues } from "src/Types/forms.ts";
 import type { RegisterFormValues } from "src/Types/forms.ts";
-import api from "./config.api.ts";
 
 const user = {
   validToken: () => api.get("/auth/validate-token"),
@@ -14,7 +13,7 @@ const user = {
   getInfor: () => api.get(`/user/getinfor`),
   createOrder: (orderData: any) => api.post('user/orders/create', orderData),
   getOrders: () => api.get(`/user/orders`),
-  fetchProducts: () => api.get("/user/products/list"),
+  fetchProducts: (data?: { offset?: number, limit?:number, order?:string }) => api.get(`/user/products?offset=${data?.offset || 0}&limit=${data?.limit || 10}&order=${data?.order}`),
 };
 
 export default user;

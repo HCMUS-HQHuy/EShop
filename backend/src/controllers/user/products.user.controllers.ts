@@ -4,7 +4,7 @@ import database from 'src/database/index.database';
 import util from 'src/utils/index.utils';
 import schemas from 'src/schemas/index.schema';
 import { PRODUCT_STATUS } from '@prisma/client';
-import { RequestCustom, ProductParamsRequest, UserProductFilter } from 'src/types/index.types';
+import { RequestCustom, ProductParamsRequest, UserProductFilter, UserProductParamsRequest } from 'src/types/index.types';
 import { PAGINATION_LIMIT } from 'src/constants/globalVariables';
 import prisma from 'src/models/prismaClient';
 
@@ -41,18 +41,17 @@ async function getRelatedProductsById(productId: number): Promise<any[]> {
 
 async function list(req: RequestCustom, res: express.Response) {
     console.log("Received product listing request with query:", req.query);
-    const parsedBody = schemas.product.paramsRequest.safeParse(req.query);
+    const parsedBody = schemas.product.userParams.safeParse(req.query);
     if (!parsedBody.success) {
         return res.status(400).send(util.response.zodValidationError(parsedBody.error));
     }
-    const params: ProductParamsRequest = parsedBody.data;
+    const params: UserProductParamsRequest = parsedBody.data;
     console.log("Listing products with params:", params);
 
     let db: Client | undefined = undefined;
     try {
-        const limit = PAGINATION_LIMIT;
-        const offset = (params.page - 1) * limit;
-        const filter = params.filter as UserProductFilter;
+        const limit = params.limit;
+        const offset = params.offset;
         const products = await prisma.products.findMany({
             select: {
                 productId: true,
@@ -68,15 +67,20 @@ async function list(req: RequestCustom, res: express.Response) {
             },
             where: { 
                 isDeleted: false, 
-                status: PRODUCT_STATUS.ACTIVE, 
-                price: { lte: filter?.max_price ?? undefined, gte: filter?.min_price ?? undefined }, 
+                status: PRODUCT_STATUS.ACTIVE,
                 name: { contains: params.keywords }
             },
             skip: offset,
             take: limit,
             orderBy: { [params.sortAttribute]: params.sortOrder }
         })
-        res.status(200).send(util.response.success('Products fetched successfully', { products: products }));
+        const numberOfProducts = await prisma.products.count({
+            where: { isDeleted: false, status: PRODUCT_STATUS.ACTIVE, name: { contains: params.keywords } }
+        });
+        res.status(200).send(util.response.success('Products fetched successfully', {
+            numberOfProducts,
+            products 
+        }));
     } catch (error) {
         console.error('Error listing products:', error);
         return res.status(500).send(util.response.internalServerError());

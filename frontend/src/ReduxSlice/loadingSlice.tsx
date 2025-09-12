@@ -10,8 +10,8 @@ type LoadingState = {
 const initialState: LoadingState = {
   loadingCategoryPage: false,
   loadingProductDetails: false,
-  loadingSearchProducts: true,
-  loadingProductsPage: true,
+  loadingSearchProducts: false,
+  loadingProductsPage: false,
 };
 
 type UpdateActionPayload<T extends keyof LoadingState> = {

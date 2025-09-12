@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
 router.get("/getinfor", mid.auth, controller.user.infor.get);
 
 // #### PRODUCT ROUTES ####
-router.get("/products/list",        controller.user.product.list);
+router.get("/products",             controller.user.product.list);
 router.get("/products/:id",         controller.user.product.getDetailById);
 router.get("/products/:id/related", controller.user.product.getRelatedProducts);
 

@@ -41,7 +41,7 @@ export const ROUTES_CONFIG = [
   { path: "/login", element: <LogIn /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
-  { path: "/profile/*", element: <AccountPage /> },
+  { path: "/profile", element: <AccountPage /> },
   { path: "/search", element: <SearchPage /> },
   { path: "/seller", element: <DashboardOverview /> },
   { path: "/become-seller", element: <BecomeSellerPage /> },

@@ -15,6 +15,7 @@ type ProductsState = {
   productQuantity: number;
   selectedProduct: ProductType | null;
   removeOrderProduct: string;
+  numberOfProducts: number;
 };
 
 const initialState: ProductsState = {
@@ -25,6 +26,7 @@ const initialState: ProductsState = {
   orderProducts: [],
   cartProducts: localStorage.getItem(STORAGE_KEYS.CART_PRODUCTS) ? JSON.parse(localStorage.getItem(STORAGE_KEYS.CART_PRODUCTS)!) : [],
   wishList: [],
+  numberOfProducts: 0,
   productQuantity: 1,
   selectedProduct: null,
   removeOrderProduct: "",
@@ -38,7 +40,7 @@ export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_
       setAfterDiscountKey(product);
       setFormattedPrice(product);
     });
-    return {products};
+    return { numberOfProducts: response.data.numberOfProducts ,products};
   } catch (error: any) {
     console.log('Error fetching products:', error);
     return rejectWithValue(error.response.data);
@@ -84,6 +86,7 @@ const productsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.numberOfProducts = action.payload.numberOfProducts;
         state.productsList = [...action.payload.products];
       })
       .addCase(fetchProducts.rejected, (state, action) => {

@@ -4,11 +4,17 @@ import { productCardCustomizations } from "src/Data/staticData.tsx";
 import SectionTitle from "../../Shared/MiniComponents/SectionTitle/SectionTitle.tsx";
 import ExploreProducts from "../ProductPoster/ExploreProducts.tsx";
 import s from "./OurProductsSection.module.scss";
+import type { ProductType } from "src/Types/product.ts";
+import { useSelector } from "react-redux";
+import type { RootState } from "src/Types/store.ts";
 
 const OurProductsSection = () => {
   const { t } = useTranslation();
   const ourProducts = "sectionTitles.ourProducts";
 
+  const productsData: ProductType[] = useSelector((state: RootState) => state.products.productsList);
+  const filteredProducts = productsData.filter((_, i) => (i < 8));
+  
   return (
     <section className={s.ourProductsSection}>
       <div className={s.wrapper}>
@@ -19,7 +25,7 @@ const OurProductsSection = () => {
       </div>
 
       <ExploreProducts
-        numOfProducts={8}
+        filteredProducts={filteredProducts}
         customization={productCardCustomizations.ourProducts}
       />
 

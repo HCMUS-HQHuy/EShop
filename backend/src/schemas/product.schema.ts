@@ -68,8 +68,22 @@ const ProductParamsRequestSchema = z.object({
     filter: ProductFilterSchema.optional()
 });
 
+
+const ProductParamsRequest = z.object({
+    keywords: z.string().min(1, "Keywords must not be empty").optional().default(''),
+    offset: z.coerce.number().int().min(0, "offset must be greater than or equal 0").default(0),
+    limit: z.coerce.number().int().min(1, "Limit must be greater than 0").max(50, "Limit must be less than or equal to 100").default(10),
+    sortAttribute: z.enum(SORT_ATTRIBUTES, {
+        error: "Invalid sort attribute: must be 'name' or 'created_at'"
+    }).default(SORT_ATTRIBUTES.NAME),
+    sortOrder: z.enum(SORT_ORDERS, {
+        error: "Invalid sort order: must be 'asc' or 'desc'"
+    }).default(process.env.SORT_ORDER as SORT_ORDERS),
+});
+
 const productSchemas = {
     information: ProductSchema,
+    userParams: ProductParamsRequest,
     paramsRequest: ProductParamsRequestSchema,
     userFilter: UserProductFilterSchema,
     sellerFilter: SellerProductFilterSchema,
