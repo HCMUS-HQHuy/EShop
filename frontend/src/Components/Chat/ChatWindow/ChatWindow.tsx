@@ -57,7 +57,6 @@ const ChatWindow = ({ conversation }: ChatWindowProps) => {
 
   const handleSendMessage = async () => {
     if (newMessage.trim() === '' || conversation === null) return;
-    console.log(newMessage);
     if (conversation.conversationId === undefined) {
       const conversationData = await api.chat.createConversation({
         participant2Id: conversation.withUser.userId,

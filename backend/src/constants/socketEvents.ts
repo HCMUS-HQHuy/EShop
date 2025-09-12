@@ -7,6 +7,7 @@ export const SOCKET_EVENTS = Object.freeze({
     REDIRECT: "redirect",
     SET_SHOP_STATUS: "set_shop_status",
     JOIN_A_CONVERSATION: "join_a_conversation",
+    NEW_CONVERSATION: "new_conversation",
 });
 
 export default SOCKET_EVENTS;

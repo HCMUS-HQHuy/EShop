@@ -34,6 +34,7 @@ async function createConversation(req: RequestCustom, res: express.Response) {
             unreadCount: 0,
             context: conversation.context ? JSON.parse(String(conversation.context)) : {}
         }
+        req.io?.to(`user_room_${req.body.participant2Id}`).emit(SOCKET_EVENTS.NEW_CONVERSATION, { newConversation: data });
         return res.status(201).json(util.response.success('Conversation created', { conversation: data }));
     } catch (error) {
         console.error('Error creating conversation:', error);

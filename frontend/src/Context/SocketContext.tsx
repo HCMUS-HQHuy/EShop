@@ -1,10 +1,10 @@
 import React, { createContext, useEffect, type FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { io, type Socket } from 'socket.io-client';
-import { addMessageToConversation } from 'src/ReduxSlice/conversationSlice.tsx';
+import { addConversation, addMessageToConversation } from 'src/ReduxSlice/conversationSlice.tsx';
 import { setShopStatus } from 'src/ReduxSlice/sellerSlice.tsx';
 import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
-import type { ConversationMessageType } from 'src/Types/conversation.ts';
+import type { ConversationMessageType, ConversationType } from 'src/Types/conversation.ts';
 import type { AppDispatch, RootState } from 'src/Types/store.ts';
 
 const SocketContext = createContext<Socket | null>(null);
@@ -31,6 +31,14 @@ const SocketProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
         const onError = (error: Error) => {
             console.error('Socket error:', error);
         };
+        const newConversationHandler = (data: ConversationType) => {
+            console.log("New conversation received:", data);
+            if (data) {
+                dispatch(addConversation(data));
+            } else {
+                console.warn("Received new conversation event without newConversation data:", data);
+            }
+        }
         const newMessageHandler = (message: ConversationMessageType) => {
             console.log('New message received:', message);
             dispatch(addMessageToConversation(message));
@@ -59,6 +67,7 @@ const SocketProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
         newSocket.on(SOCKET_EVENTS.CONNECT_ERROR, onError);
         newSocket.on(SOCKET_EVENTS.MESSAGE, newMessageHandler);
         newSocket.on(SOCKET_EVENTS.REDIRECT, redirectHandle);
+        newSocket.on(SOCKET_EVENTS.NEW_CONVERSATION, newConversationHandler);
         newSocket.connect();
         setSocket(newSocket);
         return () => {
@@ -68,6 +77,7 @@ const SocketProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
             newSocket.off(SOCKET_EVENTS.MESSAGE, newMessageHandler);
             newSocket.off(SOCKET_EVENTS.REDIRECT, redirectHandle);
             newSocket.off(SOCKET_EVENTS.SET_SHOP_STATUS, setShopStatusHandle);
+            newSocket.off(SOCKET_EVENTS.NEW_CONVERSATION, newConversationHandler);
             newSocket.disconnect();
         };
     }, [isSignIn]);
