@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
 });
 
 // #### USER ROUTES ####
-router.get("/getinfor", mid.auth, controller.user.infor.get);
+router.get("/infor", mid.auth, controller.user.infor.get);
 
 // #### PRODUCT ROUTES ####
 router.get("/products",                   controller.user.product.list);
@@ -18,20 +18,12 @@ router.get("/products/:id",               controller.user.product.getDetailById)
 router.get("/products/:id/related-items", controller.user.product.getRelatedProducts);
 router.get("/products/category/:id", controller.user.product.getProductsByCategory);
 
-// #### CART ROUTES ####
-// router.get("/cart",                 mid.auth, controller.user.cart.get);
-// router.post("/cart/add",            mid.auth, controller.user.cart.addProduct);
-// router.put("/cart/:id/update",      mid.auth, controller.user.cart.updateProduct);
-// router.delete("/cart/:id/remove",   mid.auth, controller.user.cart.removeProduct);
-
 // #### ORDER ROUTES ####
-// router.get("/orders", mid.auth, controller.user.order.list);
-// router.get("/orders/:id", mid.auth, controller.user.order.getDetailById);
-router.post("/orders/create", mid.auth, controller.user.order.create);
+router.post("/orders", mid.auth, controller.user.order.create);
 router.get("/orders", mid.auth, controller.user.order.getAllOrders);
+
 // #### CATEGORY ROUTES ####
 router.get("/categories/list", controller.user.category.get);
-// router.get("/categories/toplevel", controller.user.category.getTopLevel);
 
 // #### PAYMENT ROUTES ####
 router.post("/payment/announce", controller.user.payment.announce);

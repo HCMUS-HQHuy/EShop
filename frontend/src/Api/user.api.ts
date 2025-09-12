@@ -11,8 +11,8 @@ const user = {
   loginWithTemporaryPassword: (data: LoginFormValues) => api.post("/auth/login-by-temporary-password", data),
   resetPassword: (data: ResetPasswordFormValues) => api.post(`/auth/reset-password`, data),
   logout: () => api.post("/auth/logout"),
-  getInfor: () => api.get(`/user/getinfor`),
-  createOrder: (orderData: any) => api.post('user/orders/create', orderData),
+  getInfor: () => api.get(`/user/infor`),
+  createOrder: (orderData: any) => api.post('user/orders', orderData),
   getOrders: () => api.get(`/user/orders`),
   fetchProducts: (data?: { offset?: number, limit?:number, order?:string, search?:string }) => api.get(`/user/products?offset=${data?.offset || 0}&limit=${data?.limit || 10}&order=${data?.order}&keywords=${data?.search || ''}`).then(res => {
     formatProducts(res.data.products);
