@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 import Footer from "src/Components/Footer/Footer.tsx";
 import Header from "src/Components/Header/Header/Header.tsx";
@@ -11,11 +12,13 @@ import ToastAlert from "src/Components/Shared/PopUps/ToastAlert/ToastAlert.tsx";
 import ToastConfirm from "src/Components/Shared/PopUps/ToastConfirm/ToastConfirm.tsx";
 import useCurrentSkipLinkId from "src/Hooks/App/useCurrentSkipLinkId.tsx";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
+import { USER_ROLE } from "src/Types/common.ts";
+import type { RootState } from "src/Types/store.ts";
 
 const RoutesLayout = () => {
   const skipLinkSectionId = useCurrentSkipLinkId();
   const isWebsiteOnline = useOnlineStatus();
-
+  const userRole = useSelector((state: RootState) => state.global.userRole);
   return (
     <div className="App" tabIndex={-1}>
       <SkipContentLink scrollTo={skipLinkSectionId} />
@@ -26,7 +29,7 @@ const RoutesLayout = () => {
       <GlobalOverlay />
       <ScrollToTop />
       <Outlet />
-      <Footer />
+      { userRole === USER_ROLE.CUSTOMER && <Footer /> }
       <ConnectionLabelAlert isOnline={isWebsiteOnline} />
       <ToastAlert />
       <ToastConfirm />
