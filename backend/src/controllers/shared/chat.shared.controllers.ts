@@ -34,7 +34,13 @@ async function createConversation(req: RequestCustom, res: express.Response) {
             unreadCount: 0,
             context: conversation.context ? JSON.parse(String(conversation.context)) : {}
         }
-        req.io?.to(`user_room_${req.body.participant2Id}`).emit(SOCKET_EVENTS.NEW_CONVERSATION, { newConversation: data });
+        req.io?.to(`user_room_${req.body.participant2Id}`).emit(SOCKET_EVENTS.NEW_CONVERSATION, data);
+        req.io?.to(`user_room_${req.user?.userId}`).to(`user_room_${req.body.participant2Id}`).fetchSockets().then(sockets => {
+            sockets.forEach(socket => {
+                socket.join(`room_${conversation.conversationId}`);
+            });
+        });
+        console.log("Created conversation:", data);
         return res.status(201).json(util.response.success('Conversation created', { conversation: data }));
     } catch (error) {
         console.error('Error creating conversation:', error);
