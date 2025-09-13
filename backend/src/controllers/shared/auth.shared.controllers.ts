@@ -75,73 +75,6 @@ async function login(req: express.Request, res: express.Response) {
     }
 }
 
-// async function registerUser(req: express.Request, res: express.Response) {
-//     const parsedBody = schemas.form.register.safeParse(req.body);
-//     if (!parsedBody.success) {
-//         console.error("Validation error:", req.body, parsedBody.error);
-//         return res.status(400).json(util.response.zodValidationError(parsedBody.error));
-//     }
-//     const registrationData: RegisterForm = parsedBody.data;
-
-//     let db: Client | undefined = undefined;
-//     try {
-//         db = await database.getConnection();
-//         const { email, username, password } = registrationData;
-//         const hashedPassword = util.password.hash(password);
-//         {
-//             const query = `
-//                 SELECT username, email
-//                 FROM users
-//                 WHERE username = $1 OR email = $2
-//             `;
-//             const values = [username, email];
-//             const dbResult = await db.query(query, values);
-//             const result = { username: '', email: '' };
-//             for (const row of dbResult.rows) {
-//                 if (row.username === username) {
-//                     result.username = 'Username is already taken';
-//                 }
-//                 if (row.email === email) {
-//                     result.email = 'Email is already exists';
-//                 }
-//             }
-//             if (result.username !== '' || result.email !== '') {
-//                 return res.status(400).json(util.response.error("Validation error", [result]));
-//             }
-//         }
-//         await db.query("BEGIN");
-
-//         const query = `
-//             INSERT INTO users (username, password, email, role) 
-//             VALUES ($1, $2, $3, $4)
-//             RETURNING user_id
-//         `;
-//         const result = await db.query(query, [
-//             username,
-//             hashedPassword,
-//             email,
-//             USER_ROLE.USER
-//         ]);
-//         const userId: number = result.rows[0].user_id;
-//         console.log("New user registered with ID:", userId);
-//         const token = jwt.sign({ userId, email, username }, process.env.JWT_SECRET as string, { expiresIn: "10m" });
-//         console.log("Email verification token generated:", token);
-//         await insertIntoTokens(db, userId, token);
-//         console.log("Token stored in database for user ID:", userId);
-//         const url = `${process.env.BASE_API_URL}/auth/verify-email?token=${token}`;
-//         await services.email.sendVerify(email, username, url);
-//         console.log("Sent email verification link to:", email);
-//         await db.query("COMMIT");
-//         return res.status(201).json(util.response.success("User registered successfully. Please verify your email."));
-//     } catch (error: any) {
-//         console.error("Registration error:", error);
-//         return res.status(500).json(util.response.internalServerError());
-//     } finally {
-//         if (db)
-//             database.releaseConnection(db);
-//     }
-// }
-
 async function registerUser(req: express.Request, res: express.Response) {
     const parsedBody = schemas.form.register.safeParse(req.body);
     if (!parsedBody.success) {
@@ -185,11 +118,26 @@ async function registerUser(req: express.Request, res: express.Response) {
                 password: hashedPassword,
                 email: email,
                 role: USER_ROLE.CUSTOMER,
-                isVerified: true // Set to true for testing purposes, change to false in production
+                isVerified: false
             }
         });
         const userId: number = userInfor.userId;
+        const token = jwt.sign(
+            { userId: userId, email: email, username: username },
+            process.env.JWT_SECRET as string,
+            { expiresIn: '10m' }
+        );
+
+        await prisma.tokens.create({
+            data: {
+                userId: userId,
+                token: token,
+                expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes from now
+            }
+        });
+        const url = `${process.env.BACK_END_URL}${process.env.API_PREFIX}/auth/verify-email?token=` + token;
         console.log("New user registered with ID:", userId);
+        await services.email.sendVerify(email, username, url);
         return res.status(201).json(util.response.success("User registered successfully. Please verify your email."));
     } catch (error: any) {
         console.error("Registration error:", error);
