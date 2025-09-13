@@ -36,12 +36,13 @@ const SignUpForm = () => {
       confirmPassword: confirmPassword
     });
     if (!result.success) {
-      console.log("Invalid registration credentials");
+      dispatch(showAlert({ alertText: "Invalid registration credentials", alertState: ALERT_STATE.ERROR, alertType: "alert" }));
       return;
     }
     const formData: RegisterFormValues = result.data;
     try {
-      const response = await api.user.signUp(formData);
+      formSubmitted(t, dispatch);
+      await api.user.signUp(formData);
       signInAlert(t, dispatch);
       navigate("/login");
     } catch (error) {
@@ -69,6 +70,13 @@ export default SignUpForm;
 
 export function signInAlert(t: TFunction, dispatch: AppDispatch) {
   const alertText = t("toastAlert.signInSuccess");
+  setTimeout(() => {
+    dispatch(showAlert({ alertText, alertState: ALERT_STATE.SUCCESS, alertType: "alert" }));
+  }, 1500);
+}
+
+export function formSubmitted(t: TFunction, dispatch: AppDispatch) {
+  const alertText = t("toastAlert.formSubmitted");
   setTimeout(() => {
     dispatch(showAlert({ alertText, alertState: ALERT_STATE.SUCCESS, alertType: "alert" }));
   }, 1500);
