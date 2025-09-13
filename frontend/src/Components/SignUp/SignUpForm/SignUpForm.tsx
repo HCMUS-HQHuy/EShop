@@ -2,8 +2,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
-import { newSignUp, setLoginData } from "src/ReduxSlice/userSlice.tsx";
-import { registerValidationCheck } from "src/Functions/validation.ts";
 import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 import SignUpButtons from "./SignUpButtons/SignUpButtons.tsx";
 import s from "./SignUpForm.module.scss";
