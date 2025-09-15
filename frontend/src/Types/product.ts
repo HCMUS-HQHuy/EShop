@@ -22,7 +22,7 @@ type UpdatingProduct = z.infer<typeof UpdatingProductSchema>;
 
 type ProductType = {
   productId: number;
-  shop: { shopId: number; shopName: string; };
+  shop: { userId: number; shopId: number; shopName: string; };
   name: string;
   shortName: string;
   price: string;
@@ -31,9 +31,9 @@ type ProductType = {
   imageUrl: string;
   afterDiscount: string;
   createdAt: string;
-  rate: number;
-  votes: number;
-  productCategories: { categoryId: number; }[];
+  // rate: number;
+  // votes: number;
+  categoryIds: number[];
 }
 
 type OrderItemType = {
@@ -66,24 +66,15 @@ type Color = {
   color: string;
 }
 
-type ProductDetailType = {
-  productId: number;
-  name: string;
-  shortName: string;
+type ProductDetailType = ProductType & {
   description: string;
-  price: string;
-  discount: string;
-  stockQuantity: number;
   shop: {
     shopId: number;
     shopName: string;
     userId: number;
   }
-  img: string;
   additionalImg: string;
-  categoryIds: number[];
   additionalImages: string[];
-  afterDiscount: string;
 }
 
 export type { ProductType, Color, CreatingProduct, ProductDetailType, OrderType, OrderItemType };

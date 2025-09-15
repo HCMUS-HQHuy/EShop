@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import api from "src/Api/index.api.ts";
-import type { OrderType, ProductType } from "src/Types/product.ts";
+import type { OrderType, ProductDetailType, ProductType } from "src/Types/product.ts";
 import { STORAGE_KEYS } from "src/Types/common.ts";
 
 type ProductsState = {
@@ -12,7 +12,7 @@ type ProductsState = {
   cartProducts: ProductType[];
   wishList: ProductType[];
   productQuantity: number;
-  selectedProduct: ProductType | null;
+  selectedProduct: ProductDetailType | null;
   removeOrderProduct: string;
   numberOfProducts: number;
 };
@@ -30,6 +30,37 @@ const initialState: ProductsState = {
   selectedProduct: null,
   removeOrderProduct: "",
 };
+type ArrayKeys = "productsList" | "favoritesProducts" | "searchProducts" | "orderProducts" | "cartProducts" | "wishList";
+
+type UpdateProductsState<T extends keyof ProductsState>  = {
+  key: T;
+  value: ProductsState[T];
+}
+
+type AddToArray<T extends ArrayKeys>  = {
+  key: T;
+  value: ProductType | OrderType;
+}
+
+type SetEmptyArrays<T extends ArrayKeys>  = {
+  keys: T[];
+}
+
+type RemoveById<T extends ArrayKeys>  = {
+  key: T;
+  id: number;
+}
+
+type RemoveByKeyName<T extends ArrayKeys> = {
+  dataKey: ArrayKeys;
+  itemKey: string;
+  keyValue: string | number;
+}
+
+type TransferProducts<T extends ArrayKeys> = {
+  from: ArrayKeys;
+  to: ArrayKeys;
+}
 
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_, {rejectWithValue}) => {
   try {
@@ -45,28 +76,39 @@ const productsSlice = createSlice({
   initialState,
   name: "productsSlice",
   reducers: {
-    updateProductsState: (state, { payload: { key, value } }) => {
+    updateProductsState: <T extends keyof ProductsState>(state: ProductsState, action: PayloadAction<UpdateProductsState<T>>) => {
+      const { key, value } = action.payload;
       state[key] = value;
     },
-    addToArray: (state, { payload: { key, value } }) => {
-      state[key].push(value);
+    addToArray: <T extends ArrayKeys>(state: ProductsState, action: PayloadAction<AddToArray<T>>) => {
+      const { key, value } = action.payload;
+      if (key === "orderProducts") {
+        (state[key] as OrderType[]).push(value as OrderType);
+      } else {
+        (state[key] as ProductType[]).push(value as ProductType);
+      }
     },
-    removeById: (state, { payload: { key, id } }) => {
-      const updatedState = state[key].filter((item: any) => item.productId !== id);
-      state[key] = updatedState;
+    removeById: <T extends ArrayKeys>(state: ProductsState, action: PayloadAction<RemoveById<T>>) => {
+      const { key, id } = action.payload;
+      (state[key] as any) = state[key].filter((item: any) => item.productId !== id);
     },
-    removeByKeyName: (state, { payload: { dataKey, itemKey, keyValue } }) => {
+    removeByKeyName: <T extends ArrayKeys>(state: ProductsState, action: PayloadAction<RemoveByKeyName<T>>) => {
+      const { dataKey, itemKey, keyValue } = action.payload;
       const updatedState = state[dataKey].filter(
         (item: any) => item[itemKey] !== keyValue
       );
-      state[dataKey] = updatedState;
+      (state[dataKey] as any) = updatedState;
     },
-    setEmptyArrays: (state, { payload: { keys } }) => {
-      for (let i = 0; i < keys.length; i++) state[keys[i]] = [];
+    setEmptyArrays: <T extends ArrayKeys>(state: ProductsState, action: PayloadAction<SetEmptyArrays<T>>) => {
+      const { keys } = action.payload;
+      for (const key of keys) {
+        state[key] = [];
+      }
     },
-    transferProducts: (state, { payload: { from, to } }) => {
-      state[to] = state[to].concat(state[from]);
-      state[from] = [];
+    transferProducts: <T extends ArrayKeys>(state: ProductsState, action: PayloadAction<TransferProducts<T>>) => {
+      const { from, to } = action.payload;
+      (state[to] as any) = state[to].concat(state[from]);
+      (state[from] as ProductType[] | OrderType[]) = [];
     },
     storeToStorage: (state, { payload: {key} } : {payload: {key: keyof ProductsState}}) => {
       localStorage.setItem(key, JSON.stringify(state[key]));

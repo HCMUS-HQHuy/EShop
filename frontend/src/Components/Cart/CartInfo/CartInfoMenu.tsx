@@ -4,7 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
 import { getSubTotal, formatePrice } from "src/Functions/formatting.ts";
 import s from "./CartInfoMenu.module.scss";
-import type { RootState } from "src/Types/store.ts";
+import type { AppDispatch, RootState } from "src/Types/store.ts";
+import type { ProductType } from "src/Types/product.ts";
+import type { TFunction } from "i18next";
+import { ALERT_STATE } from "src/Types/common.ts";
 
 const CartInfoMenu = () => {
   const { cartProducts } = useSelector((state: RootState) => state.products);
@@ -48,15 +51,14 @@ const CartInfoMenu = () => {
 };
 export default CartInfoMenu;
 
-function handleCheckoutBtn(cartProducts, navigateTo, dispatch, t) {
+function handleCheckoutBtn(cartProducts: ProductType[], navigateTo: any, dispatch: AppDispatch, t: TFunction) {
   const isThereAnyCartItem = cartProducts.length > 0;
 
   if (isThereAnyCartItem) navigateTo("/checkout");
   else showEmptyCartAlert(dispatch, t);
 }
 
-function showEmptyCartAlert(dispatch, t) {
+function showEmptyCartAlert(dispatch: AppDispatch, t: TFunction) {
   const alertText = t("toastAlert.cartEmpty");
-  const alertState = "warning";
-  dispatch(showAlert({ alertText, alertState, alertType: "alert" }));
+  dispatch(showAlert({ alertText, alertState: ALERT_STATE.WARNING, alertType: "alert" }));
 }

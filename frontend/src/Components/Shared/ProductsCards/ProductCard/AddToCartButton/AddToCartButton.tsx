@@ -7,12 +7,12 @@ import { compareDataByObjValue } from "src/Functions/conditions.ts";
 import { isItemFound } from "src/Functions/helper.ts";
 import SvgIcon from "../../../MiniComponents/SvgIcon.tsx";
 import s from "./AddToCartButton.module.scss";
-import type { Product, ProductDetailType } from "src/Types/product.ts";
+import type { ProductType, ProductDetailType } from "src/Types/product.ts";
 import type { RootState } from "src/Types/store.ts";
-import { STORAGE_KEYS } from "src/Types/common.ts";
+import { ALERT_STATE, STORAGE_KEYS } from "src/Types/common.ts";
 
 type Props = {
-  product: Product
+  product: ProductType | ProductDetailType;
 }
 
 const AddToCartButton = ({ product }: Props) => {
@@ -57,14 +57,14 @@ const AddToCartButton = ({ product }: Props) => {
     dispatch(
       showAlert({
         alertText: t(`toastAlert.${translateKey}`),
-        alertState: "warning",
+        alertState: ALERT_STATE.WARNING,
         alertType: "alert",
       })
     );
   }
 
   function addToCart() {
-    const addAction = addToArray({ key: "cartProducts", value: { ...product, quantity: 1 } });
+    const addAction = addToArray({ key: "cartProducts", value: {...product, stockQuantity: 1} });
     dispatch(addAction);
     dispatch(storeToStorage({ key: STORAGE_KEYS.CART_PRODUCTS }));
     setIconName("trashCan");
