@@ -1,6 +1,5 @@
 import { PAYMENT_METHOD } from '@prisma/client';
 import axios from 'axios';
-import { CreatingOrderRequest } from 'src/types/order.types';
 
 async function MoMoMethod(order_code: string, amount: string) {
     var partnerCode = process.env.MOMO_PARTNER_CODE as string;
