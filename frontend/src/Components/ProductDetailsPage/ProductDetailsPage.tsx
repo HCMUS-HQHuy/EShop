@@ -41,6 +41,11 @@ const ProductDetailsPage = () => {
     });
   }, [PRODUCT_DATA]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setProductData(undefined);
+  }, [PRODUCT_ID]);
+
   const productName = PRODUCT_DATA?.shortName.replaceAll(" ", "");
   const history = [
     t("history.products"),
