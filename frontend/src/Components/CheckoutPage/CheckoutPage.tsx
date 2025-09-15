@@ -17,7 +17,6 @@ import s from "./CheckoutPage.module.scss";
 import PaymentSection from "./PaymentSection/PaymentSection.tsx";
 import type { AppDispatch, RootState } from "src/Types/store.ts";
 import api from "src/Api/index.api.ts";
-import { getSubTotal } from "src/Functions/formatting.ts";
 import { ALERT_STATE } from "src/Types/common.ts";
 
 const CheckoutPage = () => {
@@ -31,8 +30,7 @@ const CheckoutPage = () => {
   const { values: billingValues, handleChange } = useFormData({
     initialValues: {
       receiverName: "",
-      streetAddress: "",
-      city: "",
+      shippingAddress: "",
       phoneNumber: "",
       email: "",
     },
@@ -69,18 +67,10 @@ const CheckoutPage = () => {
       showEmptyCartAlert(dispatch, t);
       return;
     }
-
-    const fees = {
-      totalAmount: getSubTotal(cartProducts),
-      shippingFee: 0,
-    };
-    console.log(fees);
+    
     const data = {
       shopId: (cartProducts[0]!).shop.shopId,
       ...billingValues,
-      totalAmount: fees.totalAmount,
-      shippingFee: fees.shippingFee,
-      finalAmount: fees.totalAmount + fees.shippingFee,
       items: cartProducts.map((product) => ({
         productId: product.productId,
         quantity: product.stockQuantity,

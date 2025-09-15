@@ -1,186 +1,122 @@
 import { Job, Queue, Worker } from "bullmq";
-import { Client } from "pg";
 import IORedis from "ioredis";
 
 import services from "./index.services";
-import database from "src/database/index.database";
 import { generateCode } from "src/utils/gencode.utils";
 import util from "src/utils/index.utils";
 import SOCKET_EVENTS from "src/constants/socketEvents";
 import { PRODUCT_STATUS } from "@prisma/client";
-import { CreatingOrderRequest, ItemInCart, OrderItemRequest } from "src/types/order.types";
+import { CreatingOrderRequest } from "src/types/order.types";
+import prisma from "src/models/prismaClient";
 
 const redis_config = new IORedis(process.env.REDIS_URL!, {
     maxRetriesPerRequest: null,
 });
 
-async function checkAndLockOrderItems(items: ItemInCart[], db: Client): Promise<OrderItemRequest[]> {
+async function processOrder(job: Job<{ orderData: CreatingOrderRequest, userId: number }>) {
+    const { orderData, userId } = job.data;
     try {
-        // Check existing of a cart item and gurantee its record doesn't change
-        const sql = `
-            WITH cart_data AS (
-                SELECT 
-                    unnest($1::int[]) AS product_id,
-                    unnest($2::int[]) AS quantity
-            )
-            SELECT
-                p.product_id,
-                c.quantity,
-                p.price,
-                p.discount
-            FROM
-                cart_data c
-            JOIN
-                products p ON p.product_id = c.product_id
-            WHERE
-                p.status = '${PRODUCT_STATUS.ACTIVE}'
-                AND p.stock_quantity >= c.quantity
-            FOR UPDATE OF p;
-        `;
-        const productIds = items.map(item => item.productId);
-        const quantities = items.map(item => item.quantity);
-        const result = await db.query(sql, [productIds, quantities]);
-        if (result.rows.length !== items.length) {
-            throw new Error("Invalid order items: One or more items are out of stock, inactive, or do not exist.");
-        }
-        const order_item: OrderItemRequest[] = result.rows.map(row => ({
-            orderId: 0, // placeholder, will be set when inserting order
-            productId: row.product_id,
-            quantity: row.quantity,
-            priceAtPurchase: row.price,
-            discountAtPurchase: row.discount
-        }));
-        return order_item;
-    } catch(error) {
-        console.error('Error checking order items:', error);
-        throw error;
-    }
-}
+        return await prisma.$transaction(async (tx) => {
+            const orderItems = await tx.products.findMany({
+                where: {
+                    productId: { in: orderData.items.map(item => item.productId) },
+                    status: PRODUCT_STATUS.ACTIVE
+                },
+                select: {
+                    productId: true,
+                    price: true,
+                    discount: true,
+                    stockQuantity: true
+                }
+            });
+            for (const item of orderData.items) {
+                const product = orderItems.find(p => p.productId === item.productId);
+                if (!product || product.stockQuantity < item.quantity) {
+                    throw new Error(`Product ${item.productId} is out of stock or inactive.`);
+                }
+            }
+            const orderCode = generateCode(String(userId));
+            const total: number = orderData.items.reduce((sum, item) => {
+                const product = orderItems.find(p => p.productId === item.productId);
+                const priceAtPurchase = product ? Number(product.price) : 0;
+                const discountAtPurchase = product ? Number(product.discount) : 0;
+                return sum + (priceAtPurchase * item.quantity * (100 - discountAtPurchase) / 100);
+            }, 0);
+            const discount: number = orderData.items.reduce((sum, item) => {
+                const product = orderItems.find(p => p.productId === item.productId);
+                const priceAtPurchase = product ? Number(product.price) : 0;
+                const discountAtPurchase = product ? Number(product.discount) : 0;
+                return sum + (priceAtPurchase * item.quantity * discountAtPurchase / 100);
+            }, 0);
+            const finalAmount = total - discount;
 
-async function reduceStockQuantities(orderItems: OrderItemRequest[], db: Client): Promise<void> {
-    console.log(`Reducing stock for ${orderItems.length} products...`);
-    const sql = `
-        UPDATE products
-        SET stock_quantity = stock_quantity - data.quantity
-        FROM (
-            SELECT unnest($1::int[]) as product_id, unnest($2::int[]) as quantity
-        ) AS data
-        WHERE products.product_id = data.product_id;
-    `;
-
-    const productIds = orderItems.map(item => item.productId);
-    const quantities = orderItems.map(item => item.quantity);
-
-    const result = await db.query(sql, [productIds, quantities]);
-    if (result.rowCount !== orderItems.length) {
-        throw new Error("Concurrency error: Failed to update stock for all items. Please try again.");
-    }
-    console.log("Stock quantities reduced.");
-}
-
-async function insertOrderItems(orderId: number, orderItems: OrderItemRequest[], db: Client): Promise<void> {
-    console.log(`Inserting ${orderItems.length} items for order ${orderId}...`);
-    const sql = `
-        INSERT INTO order_items (order_id, product_id, quantity, price_at_purchase)
-        SELECT $1, product_id, quantity, price_at_purchase
-        FROM UNNEST(
-            $2::int[],      -- product_ids
-            $3::int[],      -- quantities
-            $4::decimal[]   -- prices
-        ) AS t(product_id, quantity, price_at_purchase)
-    `;
-
-    const productIds = orderItems.map(item => item.productId);
-    const quantities = orderItems.map(item => item.quantity);
-    const prices = orderItems.map(item => item.priceAtPurchase);
-    console.log("Inserting order items with params:", [orderId, productIds, quantities, prices]);
-    await db.query(sql, [orderId, productIds, quantities, prices]);
-    console.log("All order items inserted.");
-}
-
-async function processOrder(job: Job<CreatingOrderRequest>) {
-    const orderData: CreatingOrderRequest = job.data;
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        await db.query('BEGIN');
-        const itemsInCart: ItemInCart[] = orderData.items;
-        const orderItems: OrderItemRequest[] = await checkAndLockOrderItems(itemsInCart, db);
-
-        if(!orderItems || !Array.isArray(orderItems)) {
-            throw Error;
-        }
-        const sqlCreateOrder = `
-            INSERT INTO orders (
-                user_id, 
-                shop_id,
-                receiver_name, 
-                street_address, 
-                city, 
-                phone_number,
-                email, 
-                total_amount, 
-                shipping_fee,
-                discount_amount,
-                final_amount,
-                created_at
-            )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-            RETURNING order_id
-        `;
-        const orderCode = generateCode(String(orderData.userId));
-        orderData.items = orderItems;
-        orderData.discountAmount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number * cur.priceAtPurchase * (cur.discountAtPurchase) / 100), 0);
-        orderData.totalAmount = orderItems.reduce((sum, cur) => sum + (cur.quantity as number) * cur.priceAtPurchase, 0) - orderData.discountAmount;
-        const orderParams = [
-            orderData.userId,
-            orderData.shopId,
-            orderData.receiverName,
-            orderData.streetAddress,
-            orderData.city,
-            orderData.phoneNumber,
-            orderData.email,
-            orderData.totalAmount,
-            orderData.shippingFee,
-            orderData.discountAmount,
-            orderData.finalAmount,
-            orderData.orderAt
-        ];
-
-        const orderResult = await db.query(sqlCreateOrder, orderParams);
-        if (!orderResult.rows.length) {
-            throw new Error("Failed to create order");
-        }
-        const orderId = orderResult.rows[0].order_id;
-        await insertOrderItems(orderId, orderItems, db);
-        await reduceStockQuantities(orderItems, db);
-        const paymentInfo = await services.payment.create(orderCode, orderData);
-        const sqlCreatePayment = `
-            INSERT INTO payments (payment_code, order_id, payment_method_code, amount)
-            VALUES ($1, $2, $3, $4)
-        `;
-        await db.query(sqlCreatePayment, [paymentInfo.paymentCode, orderId, paymentInfo.paymentMethodCode, paymentInfo.amount]);
-        await db.query(`COMMIT`);
-        console.log(`Order ${orderData.userId} created with items:`, orderData.items);
-        return util
-            .response
-            .success("Order created successfully", [{
-                isRedirect: paymentInfo.redirect,
-                url: paymentInfo.url
-            }]);
+            const { orderId } = await tx.orders.create({
+                data: {
+                    userId: userId,
+                    shopId: orderData.shopId,
+                    receiverName: orderData.receiverName,
+                    shippingAddress: orderData.shippingAddress,
+                    phoneNumber: orderData.phoneNumber,
+                    email: orderData.email,
+                    total: orderData.items.reduce((sum, item) => {
+                        const product = orderItems.find(p => p.productId === item.productId);
+                        const priceAtPurchase = product ? Number(product.price) : 0;
+                        const discountAtPurchase = product ? Number(product.discount) : 0;
+                        return sum + (priceAtPurchase * item.quantity * (100 - discountAtPurchase) / 100);
+                    }, 0),
+                    shippingFee: 0,
+                    discount: discount,
+                    final: finalAmount,
+                    createdAt: new Date(orderData.orderAt),
+                    orderItems: {
+                        createMany: {
+                            data: orderData.items
+                        }
+                    }
+                },
+                select: { orderId: true }
+            });
+            if (orderId === null) {
+                throw new Error("Failed to create order.");
+            }
+            await Promise.all(orderData.items.map(item =>
+                tx.products.update({
+                    where: {
+                        productId: item.productId,
+                        status: PRODUCT_STATUS.ACTIVE
+                    },
+                    data: {
+                        stockQuantity: {
+                            decrement: item.quantity
+                        }
+                    }
+                })
+            ));
+            const paymentInfo = await services.payment.create(orderCode, finalAmount, orderData.paymentMethodCode);
+            if (!paymentInfo) {
+                throw new Error("Failed to initiate payment.");
+            }
+            await tx.payments.create({
+                data: {
+                    paymentCode: paymentInfo.paymentCode,
+                    orderId: orderId,
+                    paymentMethodCode: orderData.paymentMethodCode,
+                    amount: paymentInfo.amount,
+                }
+            });
+            return util
+                .response
+                .success("Order created successfully", {
+                    isRedirect: paymentInfo.redirect,
+                    url: paymentInfo.url
+                });
+        });
     } catch (error) {
-        if (db) {
-            await db.query('ROLLBACK');
-        }
         throw error;
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
     }
 }
 
-const orderQueue = new Queue("orderQueue", {connection: redis_config});
+const orderQueue = new Queue("orderQueue", { connection: redis_config });
 const orderWorker = new Worker("orderQueue", processOrder, { connection: redis_config });
 
 orderWorker.on('completed', (job: Job) => {
@@ -198,11 +134,11 @@ orderWorker.on('failed', (job: Job | undefined, err: Error) => {
     }
 });
 
-async function create(orderData: CreatingOrderRequest) {
+async function create(userId: number, orderData: CreatingOrderRequest) {
     try {
         const hoursAgo = Math.floor((Date.now() - new Date(orderData.orderAt).getTime()) / 360000);
         const priority = Math.max(0, Math.min(1000 - hoursAgo, 1000));
-        const job = await orderQueue.add("createOrder", orderData, {
+        const job = await orderQueue.add("createOrder", { orderData, userId }, {
             priority: priority,
             attempts: 1, // attempts 3 có vẻ không hợp lý vì log lại user quá nhiều lần ! làm sao để xủ lý.
             // backoff: {

@@ -14,8 +14,7 @@ async function create(req: RequestCustom, res: express.Response) {
     }
     console.log(req.body);
     const parsedBody = schemas.order.creating.safeParse({
-        ...req.body,
-        userId: req.user?.userId
+        ...req.body
     });
     if (!parsedBody.success) {
         return res
@@ -25,7 +24,7 @@ async function create(req: RequestCustom, res: express.Response) {
     const orderData: CreatingOrderRequest = parsedBody.data;
 
     try {
-        await services.order.create(orderData);
+        await services.order.create(req.user?.userId!, orderData);
         return res
             .status(201)
             .json(util.response.success("Order created successfully. Please wait a moment for the system to confirm."));

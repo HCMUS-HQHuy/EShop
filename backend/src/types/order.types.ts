@@ -28,6 +28,5 @@ type OrderType = {
 
 type CreatingOrderRequest = z.infer<typeof schemas.order.creating>;
 type OrderItemRequest = z.infer<typeof schemas.order.item>;
-type ItemInCart = z.infer<typeof schemas.order.itemInCart>;
 
-export type { OrderType, OrderItemType, CreatingOrderRequest, OrderItemRequest, ItemInCart };
+export type { OrderType, OrderItemType, CreatingOrderRequest, OrderItemRequest };

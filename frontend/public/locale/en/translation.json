@@ -435,7 +435,7 @@
     "receiverName": "Receiver Name",
     "city": "City",
     "companyName": "Company Name",
-    "streetAddress": "Street Address",
+    "shippingAddress": "Shipping Address",
     "apartment": "Apartment, floor, etc. (optional)",
     "cityOrTown": "Town/City",
     "phoneNumber": "Phone Number",

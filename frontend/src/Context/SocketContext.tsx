@@ -6,6 +6,8 @@ import { setShopStatus } from 'src/ReduxSlice/sellerSlice.tsx';
 import { SOCKET_EVENTS } from 'src/Hooks/Socket/socketEvents.ts';
 import type { ConversationMessageType, ConversationType } from 'src/Types/conversation.ts';
 import type { AppDispatch, RootState } from 'src/Types/store.ts';
+import { showAlert } from 'src/ReduxSlice/alertsSlice.tsx';
+import { ALERT_STATE } from 'src/Types/common.ts';
 
 const SocketContext = createContext<Socket | null>(null);
 
@@ -44,8 +46,14 @@ const SocketProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
             dispatch(addMessageToConversation(message));
         };
         const redirectHandle = (data: any) => {
-            const { url, isRedirect } = data.data[0];
-            if (isRedirect === false) return;
+            if (data.error) {
+                dispatch(showAlert({alertState: ALERT_STATE.ERROR, alertText: data.error, alertType: "alert"}));
+            }
+            const { url, isRedirect } = data.data;
+            if (isRedirect === false) {
+
+                return;
+            }
             console.log("Redirecting to:", url);
             const width = 1000;
             const height = 700;

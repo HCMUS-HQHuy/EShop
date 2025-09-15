@@ -2,7 +2,7 @@ import { PAYMENT_METHOD } from '@prisma/client';
 import axios from 'axios';
 import { CreatingOrderRequest } from 'src/types/order.types';
 
-async function MoMoMethod(order_code: string, orderData: CreatingOrderRequest) {
+async function MoMoMethod(order_code: string, amount: number, ) {
     var partnerCode = process.env.MOMO_PARTNER_CODE as string;
     var accessKey = process.env.MOMO_ACCESS_KEY as string;
     var secretKey = process.env.MOMO_SECRET_KEY as string;
@@ -10,7 +10,6 @@ async function MoMoMethod(order_code: string, orderData: CreatingOrderRequest) {
     var redirectUrl = '';
     var ipnUrl = `${process.env.HOST_SERVER}${process.env.API_PREFIX}/user/payment/announce`;
     var requestType = "payWithMethod";
-    var amount = (Number(orderData.finalAmount) * 1000).toString() as string;
     var orderId = partnerCode + '-' + order_code;
     var requestId = orderId;
     var extraData = '';
@@ -60,14 +59,14 @@ async function MoMoMethod(order_code: string, orderData: CreatingOrderRequest) {
     }
 }
 
-async function create(order_code: string, orderData: CreatingOrderRequest) {
-    switch (orderData.paymentMethodCode) {
+async function create(order_code: string, amount: number, paymentMethodCode: PAYMENT_METHOD) {
+    switch (paymentMethodCode) {
         case PAYMENT_METHOD.MOMO:
-            return await MoMoMethod(order_code, orderData);
+            return await MoMoMethod(order_code, amount * 1000);
         default:
             return {
                 paymentCode: order_code,
-                amount: orderData.finalAmount,
+                amount: amount,
                 redirect: false,
                 url: `${process.env.HOST_CLIENT}`,
                 paymentMethodCode: PAYMENT_METHOD.COD
