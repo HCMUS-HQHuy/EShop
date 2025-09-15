@@ -26,7 +26,7 @@ const ProductPreview = ({ productData, handleZoomInEffect }: Props) => {
 
       <div className={s.previewImgHolder}>
         <img
-          src={previewImg!}
+          src={`${import.meta.env.VITE_PUBLIC_URL}/${previewImg!}`}
           alt={name}
           onMouseMove={handleZoomInEffect}
           onMouseEnter={() => setZoomInPreview(true)}

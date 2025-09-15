@@ -2,14 +2,20 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { SCREEN_SIZES } from "src/Data/globalVariables.tsx";
-import { removeById } from "src/ReduxSlice/productsSlice.tsx";
+import { removeById, storeToStorage } from "src/ReduxSlice/productsSlice.tsx";
 import { cartProductToolTipPos } from "src/Functions/tooltipPositions.ts";
 import useGetResizeWindow from "src/Hooks/Helper/useGetResizeWindow.tsx";
 import SvgIcon from "../../Shared/MiniComponents/SvgIcon.tsx";
 import ToolTip from "../../Shared/MiniComponents/ToolTip.tsx";
 import s from "./RemoveCartProductBtn.module.scss";
+import type { AppDispatch } from "src/Types/store.ts";
+import { STORAGE_KEYS } from "src/Types/common.ts";
 
-const RemoveCartProductBtn = ({ productId }) => {
+type Props = {
+  productId: number;
+};
+
+const RemoveCartProductBtn = ({ productId }: Props) => {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const { windowWidth } = useGetResizeWindow();
@@ -52,7 +58,8 @@ const RemoveCartProductBtn = ({ productId }) => {
 };
 export default RemoveCartProductBtn;
 
-function removeProduct(dispatch, productId) {
+function removeProduct(dispatch: AppDispatch, productId: number) {
   const removeAction = removeById({ key: "cartProducts", id: productId });
   dispatch(removeAction);
+  dispatch(storeToStorage({ key: STORAGE_KEYS.CART_PRODUCTS }));
 }

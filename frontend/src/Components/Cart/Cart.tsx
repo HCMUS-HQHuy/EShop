@@ -30,7 +30,7 @@ const Cart = () => {
 
           <div className={s.pageComponents} id="cart-page">
             <CartProducts />
-            <CartButtons />
+            {/* <CartButtons /> */}
 
             <div className={s.wrapper}>
               <AddCoupon />

@@ -22,7 +22,7 @@ const ProductImages = ({ img, productData, index }: Props) => {
       className={`${s.imgHolder} ${activeClass}`}
       onClick={() => setPreviewImg(additionalImages[index]!, dispatch)}
     >
-      <img src={img} alt={`${shortName} thumbnail image`} />
+      <img src={`${import.meta.env.VITE_PUBLIC_URL}/${img}`} alt={`${shortName} thumbnail image`} />
     </button>
   );
 };

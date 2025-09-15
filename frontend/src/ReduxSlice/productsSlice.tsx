@@ -52,7 +52,7 @@ const productsSlice = createSlice({
       state[key].push(value);
     },
     removeById: (state, { payload: { key, id } }) => {
-      const updatedState = state[key].filter((item: any) => item.id !== id);
+      const updatedState = state[key].filter((item: any) => item.productId !== id);
       state[key] = updatedState;
     },
     removeByKeyName: (state, { payload: { dataKey, itemKey, keyValue } }) => {

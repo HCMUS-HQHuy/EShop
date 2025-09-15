@@ -31,7 +31,6 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: P
   const noHoverClass = stopHover ? s.noHover : "";
   const hideDiscountClass = Number(discount) <= 0 || !showDiscount ? s.hide : "";
   const hideNewClass = shouldHideNewWord();
-  const { loadingProductDetails } = useSelector((state: RootState) => state.loading);
   const navigateTo = useNavigate();
   const iconsData = {
     showFavIcon,
@@ -47,7 +46,6 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: P
   }
 
   function navigateToProductDetails() {
-    if (loadingProductDetails) return;
     navigateTo(`/details?product=${productId}`);
   }
 

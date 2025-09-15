@@ -54,7 +54,7 @@ const ProductDetails = ({ productData }: Props) => {
 
           <section className={s.details}>
             <div className={`${s.zoomInPreview} ${activeClass}`}>
-              <img src={previewImg ? previewImg : ''} alt="product preview" ref={zoomInImgRef} />
+              <img src={`${import.meta.env.VITE_PUBLIC_URL}/${previewImg!}`} alt="product preview" ref={zoomInImgRef} />
             </div>
 
             <ProductFirstInfos productData={productData} />
