@@ -5,7 +5,7 @@ import { addToArray, storeToStorage } from "src/ReduxSlice/productsSlice.tsx";
 import { compareDataByObjValue } from "src/Functions/conditions.ts";
 import s from "./BuyButton.module.scss";
 import type { RootState } from "src/Types/store.ts";
-import { STORAGE_KEYS } from "src/Types/common.ts";
+import { ALERT_STATE, STORAGE_KEYS } from "src/Types/common.ts";
 
 const BuyButton = () => {
   const { selectedProduct, productQuantity, cartProducts, orderProducts } =
@@ -48,8 +48,9 @@ const BuyButton = () => {
   }
 
   function addToCart() {
+    if (selectedProduct == null) return;
     const clonedProduct = { ...selectedProduct };
-    clonedProduct.quantity = productQuantity;
+    clonedProduct.stockQuantity = productQuantity;
 
     dispatch(
       addToArray({
@@ -60,7 +61,7 @@ const BuyButton = () => {
     dispatch(
       showAlert({
         alertText: t(`toastAlert.productAddedToCart`),
-        alertState: "success",
+        alertState: ALERT_STATE.SUCCESS,
         alertType: "alert",
       })
     );
@@ -71,7 +72,7 @@ const BuyButton = () => {
     dispatch(
       showAlert({
         alertText: t(`toastAlert.${translateKey}`),
-        alertState: "warning",
+        alertState: ALERT_STATE.WARNING,
         alertType: "alert",
       })
     );
