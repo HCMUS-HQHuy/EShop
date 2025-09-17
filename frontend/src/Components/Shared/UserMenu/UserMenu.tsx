@@ -70,17 +70,17 @@ const UserMenu = ({ isActive, toggler }: Props) => {
           }}
         />
       </NavLink>
-
+{/* 
       <NavLink to="/cancellations" aria-label="Cancellations page">
         <SvgIcon name="cancel" />
         <span>{t("userMenuItems.cancellations")}</span>
-      </NavLink>
+      </NavLink> */}
 
-      <NavLink to="/reviews" aria-label="Reviews page">
+      {/* <NavLink to="/reviews" aria-label="Reviews page">
         <SvgIcon name="solidStar" />
         <span>{t("userMenuItems.reviews")}</span>
-      </NavLink>
-      
+      </NavLink> */}
+
       <a href="#" onClick={handleSignOut} onBlur={toggler} aria-label="Logout">
         <SvgIcon name="boxArrowLeft" />
         <span>{t("userMenuItems.logout")}</span>
