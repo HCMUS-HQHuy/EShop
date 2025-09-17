@@ -18,7 +18,6 @@ const UpdatingProductSchema = CreatingProductSchema.extend({
 });
 
 type CreatingProduct = z.infer<typeof CreatingProductSchema>;
-type UpdatingProduct = z.infer<typeof UpdatingProductSchema>;
 
 type ProductType = {
   productId: number;
@@ -31,40 +30,33 @@ type ProductType = {
   imageUrl: string;
   afterDiscount: string;
   createdAt: string;
-  // rate: number;
-  // votes: number;
   categoryIds: number[];
 }
 
 type OrderItemType = {
-    productId: number;
-    name: string;
-    image: string;
-    quantity: number;
-    price: number;
-    subtotal: number;
-};
-type OrderType = {
-    orderId: number;
-    shopId: number;
-    totalAmount: number;
-    shippingFee: number;
-    tax: number;
-    discount: number;
-    orderDate: string;
-    status: string;
-    customerInfo: {
-        name: string;
-        address: string;
-        phone: string;
-    };
-    products: OrderItemType[];
+  productId: number;
+  name: string;
+  image: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
 };
 
-type Color = {
-  name: string;
-  color: string;
-}
+type OrderType = {
+  orderId: number;
+  shop: { shopId: number; shopName: string; userId: number; };
+  totalAmount: number;
+  shippingFee: number;
+  discount: number;
+  orderDate: string;
+  status: string;
+  receiverInfo: {
+    name: string;
+    address: string;
+    phone: string;
+  };
+  products: OrderItemType[];
+};
 
 type ProductDetailType = ProductType & {
   description: string;
@@ -77,7 +69,7 @@ type ProductDetailType = ProductType & {
   additionalImages: string[];
 }
 
-export type { ProductType, Color, CreatingProduct, ProductDetailType, OrderType, OrderItemType };
+export type { ProductType, CreatingProduct, ProductDetailType, OrderType, OrderItemType };
 const ProductSchema = {
   CreatingRequest: CreatingProductSchema,
   EditingRequest: UpdatingProductSchema
