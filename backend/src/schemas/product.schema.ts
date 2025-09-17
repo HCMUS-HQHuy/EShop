@@ -69,7 +69,7 @@ const ProductParamsRequestSchema = z.object({
 });
 
 
-const ProductParamsRequest = z.object({
+const userParams = z.object({
     keywords: z.string().optional(),
     offset: z.coerce.number().int().min(0, "offset must be greater than or equal 0").default(0),
     limit: z.coerce.number().int().min(1, "Limit must be greater than 0").max(50, "Limit must be less than or equal to 100").default(10),
@@ -81,9 +81,16 @@ const ProductParamsRequest = z.object({
     }).default(process.env.SORT_ORDER as SORT_ORDERS),
 });
 
+const adminParams = userParams.extend({
+    isDeleted: z.boolean().optional(),
+    shopId: z.number().int().positive().optional(),
+    status: z.enum(PRODUCT_STATUS).optional()
+});
+
 const productSchemas = {
     information: ProductSchema,
-    userParams: ProductParamsRequest,
+    userParams: userParams,
+    adminParams: adminParams,
     paramsRequest: ProductParamsRequestSchema,
     userFilter: UserProductFilterSchema,
     sellerFilter: SellerProductFilterSchema,
