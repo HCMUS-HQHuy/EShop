@@ -185,7 +185,7 @@ const OrderHistory = () => {
                                             )}
                                             <div className={`${s.totalRow} ${s.finalTotal}`}>
                                                 <span>{t('orderHistory.grandTotal', 'Grand Total')}:</span>
-                                                <span>{formatCurrency(calSubTotalProduct(order.orderItems))}</span>
+                                                <span>{formatCurrency(order.total)}</span>
                                             </div>
                                         </div>
 

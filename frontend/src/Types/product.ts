@@ -36,7 +36,7 @@ type ProductType = {
 type OrderType = {
   orderId: number;
   shopId: number;
-  total: string;
+  total: number;
   shippingFee: number;
   discount: number;
   createdAt: string;
