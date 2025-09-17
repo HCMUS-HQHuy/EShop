@@ -4,6 +4,7 @@ import { PAGINATION_DEFAULT_PAGE, SORT_ATTRIBUTE, SORT_ORDER } from 'src/constan
 
 const CategoryUpdateSchema = z.object({
     name: z.string().min(1, 'Name is required'),
+    iconName: z.string().min(1, 'Icon name is required'),
     description: z.string().max(500, 'Description must not exceed 500 characters').optional(),
 });
 

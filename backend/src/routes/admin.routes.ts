@@ -16,20 +16,20 @@ adminRouter.post("/auth/login", controller.auth.login);
 adminRouter.post("/auth/signup", controller.auth.registerUser);
 
 // #### ACCOUNT MANAGEMENT ROUTES ####
-adminRouter.get('/account-management/list', mid.auth, controller.admin.account.list);
-adminRouter.put('/account-management/review-user',   mid.auth, controller.admin.account.reviewUser);
-adminRouter.put('/account-management/review-shop', mid.auth, controller.admin.account.reviewShop);
+adminRouter.get('/accounts',               mid.auth, controller.admin.account.list);
+adminRouter.put('/accounts/review-user',   mid.auth, controller.admin.account.reviewUser);
+adminRouter.put('/accounts/review-shop',   mid.auth, controller.admin.account.reviewShop);
 
 // #### CATEGORY ROUTES ####
+adminRouter.get('/categories',                 mid.auth, controller.admin.category.get);
 adminRouter.post('/categories/add',            mid.auth, controller.admin.category.add);
-adminRouter.get('/categories/list',            mid.auth, controller.admin.category.get);
-adminRouter.put('/categories/update/:name',    mid.auth, controller.admin.category.update);
-adminRouter.delete('/categories/delete/:name', mid.auth, controller.admin.category.remove);
+adminRouter.put('/categories/:name/update',    mid.auth, controller.admin.category.update);
+adminRouter.delete('/categories/:name/delete', mid.auth, controller.admin.category.remove);
 
 // #### PRODUCT ROUTES ####
-adminRouter.get('/products/list',           mid.auth, controller.admin.product.list);
-adminRouter.put('/products/:id/reject',     mid.auth, controller.admin.product.reject);
-adminRouter.put('/products/:id/approve',    mid.auth, controller.admin.product.approve);
-adminRouter.put('/products/:id/ban',        mid.auth, controller.admin.product.ban);
+adminRouter.get('/products',              mid.auth, controller.admin.product.list);
+adminRouter.put('/products/:id/reject',   mid.auth, controller.admin.product.reject);
+adminRouter.put('/products/:id/approve',  mid.auth, controller.admin.product.approve);
+adminRouter.put('/products/:id/ban',      mid.auth, controller.admin.product.ban);
 
 export default adminRouter;
