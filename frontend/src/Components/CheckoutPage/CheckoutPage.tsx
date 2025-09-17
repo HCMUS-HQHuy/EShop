@@ -3,13 +3,12 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { WEBSITE_NAME } from "src/Data/constants.tsx";
 import { showAlert } from "src/ReduxSlice/alertsSlice.tsx";
-import { transferCartToOrder, transferProducts } from "src/ReduxSlice/productsSlice.tsx";
+import { setEmptyArrays } from "src/ReduxSlice/productsSlice.tsx";
 import { blurInputs } from "src/Functions/componentsFunctions.ts";
 import {
   isCheckoutFormValid,
   showInvalidInputAlert,
 } from "src/Functions/validation.ts";
-import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
 import useFormData from "src/Hooks/Helper/useFormData.tsx";
 import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory.tsx";
 import BillingDetails from "./BillingDetails/BillingDetails.tsx";
@@ -17,16 +16,17 @@ import s from "./CheckoutPage.module.scss";
 import PaymentSection from "./PaymentSection/PaymentSection.tsx";
 import type { AppDispatch, RootState } from "src/Types/store.ts";
 import api from "src/Api/index.api.ts";
-import { ALERT_STATE } from "src/Types/common.ts";
+import { ALERT_STATE, STORAGE_KEYS } from "src/Types/common.ts";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutPage = () => {
-  useScrollOnMount(160);
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { saveBillingInfoToLocal, cartProducts } = useSelector(
     (state: RootState) => state.products
   );
   const { paymentType } = useSelector((state: RootState) => state.payment);
+  const navigate = useNavigate();
   const { values: billingValues, handleChange } = useFormData({
     initialValues: {
       receiverName: "",
@@ -58,7 +58,6 @@ const CheckoutPage = () => {
     event.preventDefault();
     blurInputs(inputs);
     showInvalidInputAlert(event);
-    // if (!saveBillingInfoToLocal) localStorage.removeItem("billingInfo");
 
     if (isInputFocused && isCheckboxFocused) return;
     if (!isFormValid) return;
@@ -78,12 +77,11 @@ const CheckoutPage = () => {
       paymentMethodCode: paymentType,
       orderAt: new Date().toISOString(),
     };
-    console.log("Submitting order data:", data);
     api.user
       .createOrder(data)
-      .then((response) => {
-        console.log("Order created successfully:", response);
+      .then(() => {
         finalizeOrder(dispatch, t);
+        navigate("/order");
       }).catch((error) => {
         console.error("Error creating order:", error);
         showAlertText(dispatch, "checkoutError");
@@ -140,7 +138,8 @@ function showEmptyCartAlert(dispatch: AppDispatch, t: any) {
 }
 
 function finalizeOrder(dispatch: AppDispatch, t: any) {
-  dispatch(transferCartToOrder());
+  dispatch(setEmptyArrays({keys: ["cartProducts"]}));
+  localStorage.removeItem(STORAGE_KEYS.CART_PRODUCTS);
 
   setTimeout(() => {
     dispatch(

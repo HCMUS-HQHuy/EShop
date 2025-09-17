@@ -53,11 +53,6 @@ type RemoveByKeyName<T extends ArrayKeys> = {
   keyValue: string | number;
 }
 
-type TransferProducts<T extends ArrayKeys> = {
-  from: ArrayKeys;
-  to: ArrayKeys;
-}
-
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async (_, {rejectWithValue}) => {
   try {
     const response = await api.user.fetchProducts();
@@ -101,18 +96,8 @@ const productsSlice = createSlice({
         state[key] = [];
       }
     },
-    transferProducts: <T extends ArrayKeys>(state: ProductsState, action: PayloadAction<TransferProducts<T>>) => {
-      const { from, to } = action.payload;
-      (state[to] as any) = state[to].concat(state[from]);
-      (state[from] as ProductType[] | OrderType[]) = [];
-    },
     storeToStorage: (state, { payload: {key} } : {payload: {key: keyof ProductsState}}) => {
       localStorage.setItem(key, JSON.stringify(state[key]));
-    },
-    transferCartToOrder: (state) => {
-      // state.orderProducts = state.orderProducts.concat(state.cartProducts.map(product => ({ ...product, status: ORDER_STATUS.PENDING })));
-      state.cartProducts = [];
-      localStorage.removeItem(STORAGE_KEYS.CART_PRODUCTS);
     }
   },
   extraReducers: (builder) => {
@@ -133,8 +118,6 @@ export const {
   removeById,
   removeByKeyName,
   setEmptyArrays,
-  transferProducts,
   storeToStorage,
-  transferCartToOrder
 } = productsSlice.actions;
 export default productsSlice.reducer;
