@@ -21,6 +21,8 @@ const useNavToolsProps = () => {
       ? signUpPage
       : notSignIn;
 
+    console.log("Selected Nav Props:", selectedNavProps);
+
     setNavToolsProps(selectedNavProps);
   };
 

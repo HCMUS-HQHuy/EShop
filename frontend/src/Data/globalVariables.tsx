@@ -69,17 +69,17 @@ export const DEFAULT_LOGIN_DATA = {
 
 export const NAV_PROPS = {
   signIn: {
-    showHeart: true,
     showCart: true,
     showUser: true,
+    showChat: true,
   },
   notSignIn: {
-    showHeart: false,
     showCart: false,
     showUser: false,
+    showChat: false,
   },
   signUpPage: {
-    showHeart: false,
+    showChat: false,
     showCart: false,
     showUser: false,
   },

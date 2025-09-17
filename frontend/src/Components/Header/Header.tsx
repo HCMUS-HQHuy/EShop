@@ -14,6 +14,7 @@ import SearchProductsInput from "../Shared/NavTools/SearchInput/SearchProductsIn
 const Header = () => {
   const navToolsProps = useNavToolsProps();
   const { userRole } = useSelector((state: RootState) => state.global);
+  const { loginInfo } = useSelector((state: RootState) => state.user);
   const { name } = useSelector((state: RootState) => state.seller.shopInfo);
   const headerName = userRole === USER_ROLE.SELLER ? name : WEBSITE_NAME;
   const headerNameLink = userRole === USER_ROLE.SELLER ? "/seller" : "/";
@@ -24,7 +25,7 @@ const Header = () => {
         <h1>
           <Link to={headerNameLink}>{headerName}</Link>
         </h1>
-        <SearchProductsInput />
+        {loginInfo.isSignIn && <SearchProductsInput />}
         <div className={s.headerContent}>
           <Nav />
           { userRole === USER_ROLE.CUSTOMER && <NavTools {...navToolsProps} /> }
