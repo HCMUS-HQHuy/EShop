@@ -31,12 +31,12 @@ const ProductsSlider = ({
 
   return (
     <>
-      {shouldDisplayButtons && (
+      {/* {shouldDisplayButtons && (
         <SliderButtons
           handleNextBtn={handleNextBtn}
           handlePrevBtn={handlePrevBtn}
         />
-      )}
+      )} */}
 
       <div className={s.productsSlider} ref={sliderRef} dir="ltr">
         {filteredProducts.map((product: ProductType) => (

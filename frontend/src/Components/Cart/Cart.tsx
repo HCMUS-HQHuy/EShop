@@ -1,18 +1,14 @@
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { WEBSITE_NAME } from "src/Data/constants.tsx";
-import useScrollOnMount from "src/Hooks/App/useScrollOnMount.tsx";
 import PagesHistory from "../Shared/MiniComponents/PagesHistory/PagesHistory.tsx";
 import s from "./Cart.module.scss";
-import CartButtons from "./CartButtons/CartButtons.tsx";
 import AddCoupon from "./CartInfo/AddCoupon.tsx";
 import CartInfoMenu from "./CartInfo/CartInfoMenu.tsx";
 import CartProducts from "./CartProducts/CartProducts.tsx";
 
 const Cart = () => {
   const { t } = useTranslation();
-
-  useScrollOnMount(110);
 
   return (
     <>

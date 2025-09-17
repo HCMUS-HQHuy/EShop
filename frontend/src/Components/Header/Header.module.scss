@@ -21,9 +21,9 @@
 .container {
   width: var(--container-width);
   margin: 0 auto;
-  display: grid;
+  display: flex;
   align-items: center;
-  grid-template-columns: 26% 1fr;
+  justify-content: space-between;
 }
 
 @include m.large {
@@ -43,7 +43,7 @@
 
 .container h1 {
   width: fit-content;
-  font-size: 1.5rem;
+  font-size: 2rem;
 }
 
 .container h1>a {

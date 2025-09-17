@@ -1,12 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import IconWithCount from "../../NavTools/IconWithCount/IconWithCount.tsx";
-import SearchProductsInput from "../../NavTools/SearchInput/SearchProductsInput.tsx";
 import UserMenuIcon from "../../NavTools/UserMenuIcon/UserMenuIcon.tsx";
 import s from "./NavTools.module.scss";
 import type { RootState } from "src/Types/store.ts";
 
-const NavTools = ({ showHeart = true, showCart = true, showUser = true, showChat = true }) => {
+const NavTools = ({ showCart = true, showUser = true, showChat = true }) => {
   const { t } = useTranslation();
   const { cartProducts } = useSelector((state: RootState) => state.products);
   const { conversations } = useSelector((state: RootState) => state.conversation);
@@ -14,7 +13,6 @@ const NavTools = ({ showHeart = true, showCart = true, showUser = true, showChat
 
   return (
     <div className={s.navTools}>
-      <SearchProductsInput />
       <div className={s.tools}>
         <IconWithCount
           props={{

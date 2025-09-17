@@ -1,10 +1,11 @@
-import { SCREEN_SIZES } from "../Data/globalVariables";
+import { SCREEN_SIZES } from "../Data/globalVariables.tsx";
 
 export function getElementWidth(element) {
   return element?.getBoundingClientRect()?.width;
 }
 
-export function getScrollSliderValue(sliderEle) {
+export function getScrollSliderValue(sliderEle: HTMLDivElement) {
+  if (!sliderEle) return 0;
   const GAP = 30;
   const { desktop, laptop } = SCREEN_SIZES;
   const sliderItemEle = sliderEle.children[0];

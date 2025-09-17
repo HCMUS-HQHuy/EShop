@@ -11,10 +11,6 @@ const CategoryCard = ({ categoryData }: { categoryData: CategoryInfor }) => {
   const { t } = useTranslation();
   const categoryTitleTrans = t(`categoriesData.${camelCase(title)}`);
 
-  // function navigateToCategory() {
-  //   navigateTo(`/category?type=${categoryType}`);
-  // }
-
   return (
     <Link
       to={`/category?title=${title}&id=${categoryId}`}
