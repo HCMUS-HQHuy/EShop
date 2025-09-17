@@ -1,6 +1,4 @@
 import express from 'express';
-import { Client } from 'pg';
-import database from 'src/database/index.database';
 import util from 'src/utils/index.utils';
 import schemas from 'src/schemas/index.schema';
 import { PRODUCT_STATUS } from '@prisma/client';
@@ -9,48 +7,6 @@ import { PAGINATION_LIMIT } from 'src/constants/globalVariables';
 import prisma from 'src/models/prismaClient';
 
 // #### DATABASE FUNCTIONS ####
-
-async function checkProductExists(productId: number, status?: PRODUCT_STATUS): Promise<boolean> {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            SELECT COUNT(*)
-            FROM products
-            WHERE product_id = $1 AND is_deleted = FALSE
-                AND ($2::text IS NULL OR status = $2)
-        `;
-        const result = await db.query(sql, [productId, status]);
-        return result.rows[0].count > 0;
-    } catch (error) {
-        console.error('Error checking product existence:', error);
-        throw error;
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
-    }
-}
-
-async function removeProduct(userId: number, productId: number): Promise<void> {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            UPDATE products
-            SET is_deleted = TRUE, deleted_at = NOW(), deleted_by = $1
-            WHERE product_id = $2
-        `;
-        await db.query(sql, [userId, productId]);
-    } catch (error) {
-        console.error('Error removing product:', error);
-        throw error;
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
-    }
-}
 
 async function listProducts(shopId: number, params: ProductParamsRequest) {
     try {
@@ -75,46 +31,6 @@ async function listProducts(shopId: number, params: ProductParamsRequest) {
     } catch (error) {
         console.error('Error listing products:', error);
         throw error;
-    }
-}
-
-async function hideProduct(productId: number): Promise<void> {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            UPDATE products
-            SET status = '${PRODUCT_STATUS.INACTIVE}'
-            WHERE product_id = $1 AND is_deleted = FALSE AND status = '${PRODUCT_STATUS.ACTIVE}'
-        `;
-        await db.query(sql, [productId]);
-    } catch (error) {
-        console.error('Error hiding product:', error);
-        throw error;
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
-    }
-}
-
-async function displayProduct(productId: number): Promise<void> {
-    let db: Client | undefined = undefined;
-    try {
-        db = await database.getConnection();
-        const sql = `
-            UPDATE products
-            SET status = '${PRODUCT_STATUS.ACTIVE}'
-            WHERE product_id = $1 AND status = '${PRODUCT_STATUS.INACTIVE}' AND is_deleted = FALSE
-        `;
-        await db.query(sql, [productId]);
-    } catch (error) {
-        console.error('Error displaying product:', error);
-        throw error;
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
     }
 }
 
@@ -147,8 +63,10 @@ async function remove(req: RequestCustom, res: express.Response) {
         return res.status(400).json(util.response.error('Invalid product ID', []));
     }
     try {
-        const productExists = await checkProductExists(productId);
-        if (!productExists) {
+        const cnt = await prisma.products.count({
+            where: { productId: productId, shopId: req.user?.shop?.shopId, isDeleted: false }
+        });
+        if (cnt <= 0) {
             return res.status(404).json(util.response.error('Product not found', []));
         }
     } catch (error) {
@@ -158,8 +76,11 @@ async function remove(req: RequestCustom, res: express.Response) {
 
     console.log("Removing product with ID:", productId);
     try {
-        await removeProduct(Number(req.user?.userId), productId);
-        res.status(204).json();
+        await prisma.products.update({
+            where: { productId: productId },
+            data: { isDeleted: true }
+        });
+        res.status(204).json(util.response.success('Product removed successfully'));
     } catch (error) {
         console.error('Error removing product:', error);
         res.status(500).json(util.response.internalServerError());
@@ -301,66 +222,12 @@ async function add(req: RequestCustom, res: express.Response) {
     }
 };
 
-async function hide(req: RequestCustom, res: express.Response) {
-    if (util.role.isAcceptedSeller(req.user) === false) {
-        return res.status(403).send({ error: 'Forbidden: Only sellers can hide products' });
-    }
-    const productId = Number(req.params.id);
-    if (isNaN(productId) || productId <= 0) {
-        return res.status(400).send({ error: 'Invalid product ID' });
-    }
-    try {
-        const productExists = await checkProductExists(productId, PRODUCT_STATUS.ACTIVE);
-        if (!productExists) {
-            return res.status(404).send({ error: 'Product not found' });
-        }
-    } catch (error) {
-        console.error('Error checking product existence:', error);
-        return res.status(500).send({ error: 'Internal server error' });
-    }
-    try {
-        await hideProduct(productId);
-    } catch (error) {
-        console.error('Error hiding product:', error);
-        return res.status(500).send({ error: 'Internal server error' });
-    }
-    res.status(200).send({ message: 'Product hidden successfully' });
-}
-
-async function display(req: RequestCustom, res: express.Response) {
-    if (util.role.isAcceptedSeller(req.user) === false) {
-        return res.status(403).send({ error: 'Forbidden: Only sellers can display products' });
-    }
-    const productId = Number(req.params.id);
-    if (isNaN(productId) || productId <= 0) {
-        return res.status(400).send({ error: 'Invalid product ID' });
-    }
-    try {
-        const productExists = await checkProductExists(productId, PRODUCT_STATUS.INACTIVE);
-        if (!productExists) {
-            return res.status(404).send({ error: 'Product not found' });
-        }
-    } catch (error) {
-        console.error('Error checking product existence:', error);
-        return res.status(500).send({ error: 'Internal server error' });
-    }
-    try {
-        await displayProduct(productId);
-    } catch (error) {
-        console.error('Error displaying product:', error);
-        return res.status(500).send({ error: 'Internal server error' });
-    }
-    res.status(200).send({ message: 'Product displayed successfully' });
-}
-
 const sellerProductController = {
     list,
     add,
     getById,
     remove,
     update,
-    hide,
-    display
 };
 
 export default sellerProductController;
