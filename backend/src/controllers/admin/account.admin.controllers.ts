@@ -1,13 +1,11 @@
 import express from "express";
-import { Client } from "pg";
-
 import util from "src/utils/index.utils";
 import schemas from "src/schemas/index.schema";
 
 import { SOCKET_EVENTS } from "src/constants/socketEvents";
 import { UpdateUserStatusRequest, UpdateSellerStatusRequest } from "src/types/index.types";
 import { RequestCustom } from "src/types/index.types";
-import {SHOP_STATUS, USER_STATUS} from "@prisma/client";
+import {SHOP_STATUS} from "@prisma/client";
 import prisma from "src/models/prismaClient";
 
 // #### CONTROLLER FUNCTIONS ####
@@ -16,7 +14,6 @@ async function list(req: RequestCustom, res: express.Response) {
     if (util.role.isAdmin(req.user) === false) {
         return res.status(403).json(util.response.authorError('Admin'));
     }
-    let db: Client | undefined = undefined;
     try {
         const result = await prisma.users.findMany({
             where: {

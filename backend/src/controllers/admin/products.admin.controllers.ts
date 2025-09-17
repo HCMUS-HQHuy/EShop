@@ -1,8 +1,5 @@
 import express from 'express';
-import { Client } from 'pg';
-
 import util from 'src/utils/index.utils';
-import database from 'src/database/index.database';
 import schemas from 'src/schemas/index.schema';
 import { PRODUCT_STATUS } from '@prisma/client';
 import { AdminProductFilter, ProductParamsRequest, RequestCustom } from 'src/types/index.types';
