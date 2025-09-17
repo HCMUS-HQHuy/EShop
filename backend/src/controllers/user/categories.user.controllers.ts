@@ -1,7 +1,5 @@
 import express from "express";
 
-import { Client } from "pg";
-import database from "src/database/index.database";
 import prisma from "src/models/prismaClient";
 import { CategoryInfor } from "src/types/category.types";
 import util from "src/utils/index.utils";
@@ -36,18 +34,12 @@ async function getCategories(parentId: number|null): Promise<CategoryInfor[]> {
 // #### CONTROLLER FUNCTIONS ####
 
 async function getCategoriesController(req: express.Request, res: express.Response) {
-    let db: Client | null = null;
     try {
-        db = await database.getConnection();
         const categories = await getCategories(null);
-        res.status(200).json(util.response.success('Fetched categories successfully', { categories: categories }));
+        res.status(200).json(util.response.success('Fetched categories successfully', { categories }));
     } catch (error: any) {
         console.error("Error in getCategoriesController:", error);
         res.status(500).json(util.response.internalServerError());
-    } finally {
-        if (db) {
-            await database.releaseConnection(db);
-        }
     }
 }
 

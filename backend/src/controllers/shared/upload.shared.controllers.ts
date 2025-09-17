@@ -1,5 +1,4 @@
 import express from 'express';
-import path from 'path';
 import util from 'src/utils/index.utils';
 import * as types from 'src/types/index.types';
 

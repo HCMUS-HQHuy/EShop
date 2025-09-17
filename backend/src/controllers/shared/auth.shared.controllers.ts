@@ -10,22 +10,6 @@ import prisma from "src/models/prismaClient";
 import { USER_ROLE } from "@prisma/client";
 import { LoginForm, RegisterForm, UserInfor } from "src/types/index.types";
 
-// async function deleteFromTokens(db: Client, userId: number, token: string): Promise<boolean> {
-//     console.log('delete token:', token);
-//     const tokenInDb = await db.query(`
-//         SELECT *
-//         FROM tokens
-//         WHERE user_id = $1 and token = $2 AND expires_at > NOW()
-//     `, [userId, token]);
-//     if (tokenInDb.rows.length === 0)
-//         return false;
-//     await db.query(`
-//         DELETE FROM tokens
-//         WHERE user_id = $1 AND token = $2
-//     `, [userId, token]);
-//     return true;
-// }
-
 async function validateToken(req: express.Request, res: express.Response) {
     const token = req.cookies["auth_jwt"];
     if (!token) {
