@@ -1,8 +1,6 @@
 import AccountPage from "src/Components/AccountPage/AccountPage.tsx";
 import Cart from "src/Components/Cart/Cart.tsx";
 import CheckoutPage from "src/Components/CheckoutPage/CheckoutPage.tsx";
-import Contact from "src/Components/Contact/Contact.tsx";
-import FavoritePage from "src/Components/FavoritePage/FavoritePage.tsx";
 import Home from "src/Components/Home/Home.tsx";
 import LogIn from "src/Components/LogIn/LogIn.tsx";
 import NotFoundPage from "src/Components/NotFoundPage/NotFoundPage.tsx";
@@ -12,7 +10,6 @@ import ProductsCategoryPage from "src/Components/ProductsCategory/ProductsCatego
 import ProductsPage from "src/Components/ProductsPage/ProductsPage.tsx";
 import SearchPage from "src/Components/Search/SearchPage.tsx";
 import SignUp from "src/Components/SignUp/SignUp.tsx";
-import WishList from "src/Components/WishList/WishList.tsx";
 import ResetPassword from "src/Components/ResetPassword/ResetPassword.tsx";
 import ForgotPassword from "src/Components/ForgotPassword/ForgotPassword.tsx";
 
@@ -28,12 +25,9 @@ import RejectedPage from "src/Components/SellerDashboard/StartSelling/RejectedPa
 
 export const ROUTES_CONFIG = [
   { path: "/", element: <Home /> },
-  { path: "/contact", element: <Contact /> },
   { path: "/details", element: <ProductDetailsPage /> },
   { path: "/category", element: <ProductsCategoryPage /> },
   { path: "/products", element: <ProductsPage /> },
-  { path: "/favorites", element: <FavoritePage /> },
-  { path: "/wishlist", element: <WishList /> },
   { path: "/cart", element: <Cart /> },
   { path: "/checkout", element: <CheckoutPage /> },
   { path: "/order", element: <OrderPage /> },

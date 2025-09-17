@@ -16,9 +16,8 @@ type Props = {
 }
 
 const UserMenu = ({ isActive, toggler }: Props) => {
-  const { wishList, orderProducts } = useSelector((state: RootState) => state.products);
+  const { orderProducts } = useSelector((state: RootState) => state.products);
   const { shopInfo } = useSelector((state: RootState) => state.seller);
-  const wishListLength = wishList.length;
   const orderProductsLength = orderProducts.length;
   const activeClass = isActive ? s.active : "";
   const navigate = useNavigate();
@@ -81,17 +80,7 @@ const UserMenu = ({ isActive, toggler }: Props) => {
         <SvgIcon name="solidStar" />
         <span>{t("userMenuItems.reviews")}</span>
       </NavLink>
-
-      <NavLink to="/wishlist" aria-label="Wishlist page">
-        <UserMenuItemWithCount
-          props={{
-            iconName: "save",
-            title: t("userMenuItems.wishlist"),
-            countLength: wishListLength,
-          }}
-        />
-      </NavLink>
-
+      
       <a href="#" onClick={handleSignOut} onBlur={toggler} aria-label="Logout">
         <SvgIcon name="boxArrowLeft" />
         <span>{t("userMenuItems.logout")}</span>

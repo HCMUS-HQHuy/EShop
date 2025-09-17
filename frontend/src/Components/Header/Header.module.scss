@@ -94,46 +94,30 @@
   }
 }
 
-// Arabic & Japanese styles
-@media (max-width: 1300px) {
-  :where([lang=ar], [lang=ja]) .container {
-    grid-template-columns: 17% 1fr;
-  }
-}
+// // Arabic & Japanese styles
+// @media (max-width: 1300px) {
+//   :where([lang=ar], [lang=ja]) .container {
+//     grid-template-columns: 17% 1fr;
+//   }
+// }
 
-@include m.large {
-  :where([lang=ar], [lang=ja]) .container {
-    grid-template-columns: unset;
-  }
-}
+// @include m.large {
+//   :where([lang=ar], [lang=ja]) .container {
+//     grid-template-columns: unset;
+//   }
+// }
 
-// Japanese styles
-@include m.medium {
-  [lang=ja] .headerContent {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
-}
+// // Japanese styles
+// @include m.medium {
+//   [lang=ja] .headerContent {
+//     flex-direction: column;
+//     align-items: flex-start;
+//     gap: 20px;
+//   }
+// }
 
-// French styles
-[lang=fr] .container {
-  width: var(--container-width);
-}
-
-// Hungarian styles
-[lang=hu] .container {
-  width: calc(var(--container-width) - 2%);
-  grid-template-columns: 17% 1fr;
-}
-
-@include m.large {
-  [lang=hu] .container {
-    grid-template-columns: unset;
-  }
-}
-
-// Russian styles
-[lang=ru] .container {
-  width: calc(var(--container-width) - 2%);
-}
+// @include m.large {
+//   [lang=hu] .container {
+//     grid-template-columns: unset;
+//   }
+// }

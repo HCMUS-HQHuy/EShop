@@ -3,10 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { checkDateBeforeMonthToPresent } from "src/Functions/time.ts";
 import AddToCartButton from "./AddToCartButton/AddToCartButton.tsx";
 import s from "./ProductCard.module.scss";
-import ProductCardIcons from "./ProductCardIcons/ProductCardIcons.tsx";
 import ProductCardInfo from "./ProductCardInfo/ProductCardInfo.tsx";
 import { productCardCustomizations } from "src/Data/staticData.tsx";
-import type { RootState } from "src/Types/store.ts";
 import type { ProductType } from "src/Types/product.ts";
 
 type Props = {
@@ -70,14 +68,6 @@ const ProductCard = ({ product, customization, removeFrom, loading = "eager"}: P
           )}
 
           <div className={`${s.new} ${hideNewClass}`}>New</div>
-
-          <ProductCardIcons
-            iconsData={iconsData}
-            productId={productId}
-            navigateToProductDetails={navigateToProductDetails}
-            product={product}
-            removeFrom={removeFrom}
-          />
           <AddToCartButton product={product} />
         </div>
       </div>

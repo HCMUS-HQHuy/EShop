@@ -6,11 +6,9 @@ import { STORAGE_KEYS } from "src/Types/common.ts";
 type ProductsState = {
   saveBillingInfoToLocal: boolean;
   productsList: ProductType[];
-  favoritesProducts: ProductType[];
   searchProducts: ProductType[];
   orderProducts: OrderType[];
   cartProducts: ProductType[];
-  wishList: ProductType[];
   productQuantity: number;
   selectedProduct: ProductDetailType | null;
   removeOrderProduct: string;
@@ -20,17 +18,15 @@ type ProductsState = {
 const initialState: ProductsState = {
   saveBillingInfoToLocal: false,
   productsList: [],
-  favoritesProducts: [],
   searchProducts: [],
   orderProducts: [],
   cartProducts: localStorage.getItem(STORAGE_KEYS.CART_PRODUCTS) ? JSON.parse(localStorage.getItem(STORAGE_KEYS.CART_PRODUCTS)!) : [],
-  wishList: [],
   numberOfProducts: 0,
   productQuantity: 1,
   selectedProduct: null,
   removeOrderProduct: "",
 };
-type ArrayKeys = "productsList" | "favoritesProducts" | "searchProducts" | "orderProducts" | "cartProducts" | "wishList";
+type ArrayKeys = "productsList" | "searchProducts" | "orderProducts" | "cartProducts";
 
 type UpdateProductsState<T extends keyof ProductsState>  = {
   key: T;

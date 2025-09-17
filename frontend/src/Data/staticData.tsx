@@ -251,9 +251,7 @@ export const mobileNavData = [
 
 export const getRestMobileNavData = ({
   cartProducts,
-  orderProducts,
-  favoritesProducts,
-  wishList,
+  orderProducts
 }) => {
   return [
     {
@@ -269,20 +267,6 @@ export const getRestMobileNavData = ({
       text: "my order",
       countLength: orderProducts.length,
       id: mobileNavData.length + 2,
-    },
-    {
-      iconName: "heart",
-      routePath: "/favorites",
-      text: "favorite",
-      countLength: favoritesProducts.length,
-      id: mobileNavData.length + 3,
-    },
-    {
-      iconName: "save",
-      routePath: "/wishlist",
-      text: "wishlist",
-      countLength: wishList.length,
-      id: mobileNavData.length + 4,
     },
   ];
 };

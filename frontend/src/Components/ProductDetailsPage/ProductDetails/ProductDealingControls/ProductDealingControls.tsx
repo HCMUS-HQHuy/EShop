@@ -1,4 +1,3 @@
-import AddToFavButton from "./AddToFavButton/AddToFavButton.tsx";
 import BuyButton from "./BuyButton/BuyButton.tsx";
 import ContactToShopButton from "./ContactToShopButton/ContactToShopButton.tsx";
 import CustomNumberInput from "./CustomNumberInput/CustomNumberInput.tsx";
@@ -16,7 +15,6 @@ const ProductDealingControls = ({ productData }: Props) => {
 
       <div className={s.buttons}>
         <BuyButton />
-        <AddToFavButton productData={productData} />
         <ContactToShopButton productData={productData}/>
       </div>
     </section>
