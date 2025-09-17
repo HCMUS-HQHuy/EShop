@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { USER_ROLE } from "src/Types/common.ts";
 import BackToUser from "./BackToUser.tsx";
 import SearchProductsInput from "../Shared/NavTools/SearchInput/SearchProductsInput.tsx";
+import AuthElements from "./AuthElements.tsx";
 
 const Header = () => {
   const navToolsProps = useNavToolsProps();
@@ -25,12 +26,18 @@ const Header = () => {
         <h1>
           <Link to={headerNameLink}>{headerName}</Link>
         </h1>
-        {loginInfo.isSignIn && <SearchProductsInput />}
-        <div className={s.headerContent}>
-          <Nav />
-          { userRole === USER_ROLE.CUSTOMER && <NavTools {...navToolsProps} /> }
-          { userRole === USER_ROLE.SELLER && <BackToUser/>}
-        </div>
+        {loginInfo.isSignIn
+          ?
+          <>
+            <SearchProductsInput />
+            <div className={s.headerContent}>
+              <Nav />
+              {userRole === USER_ROLE.CUSTOMER && <NavTools {...navToolsProps} />}
+              {userRole === USER_ROLE.SELLER && <BackToUser />}
+            </div>
+          </>
+          : <AuthElements />
+        }
 
         <MobileNavIcon />
       </div>

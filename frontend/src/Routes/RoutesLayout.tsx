@@ -15,10 +15,6 @@ import useOnlineStatus from "src/Hooks/Helper/useOnlineStatus.tsx";
 import { USER_ROLE } from "src/Types/common.ts";
 import type { RootState } from "src/Types/store.ts";
 
-function isAuthPathName(pathname: string) {
-  return pathname === "/login" || pathname === "/signup" || pathname === "/forgot-password" || pathname === "/reset-password";
-}
-
 const RoutesLayout = () => {
   const skipLinkSectionId = useCurrentSkipLinkId();
   const isWebsiteOnline = useOnlineStatus();
@@ -28,7 +24,7 @@ const RoutesLayout = () => {
     <div className="App" tabIndex={-1}>
       <SkipContentLink scrollTo={skipLinkSectionId} />
       <UpdateNotification />
-      {!isAuthPathName(pathname) && <Header />}
+      <Header />
       <MobileNav />
       <GlobalOverlay />
       <ScrollToTop />
