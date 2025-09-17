@@ -1,10 +1,9 @@
 import express from "express";
-import { Client } from "pg";
 import services from "src/services/index.services";
-import database from "src/database/index.database";
-import { OrderType, RequestCustom, CreatingOrderRequest } from "src/types/index.types";
+import { RequestCustom, CreatingOrderRequest } from "src/types/index.types";
 import util from "src/utils/index.utils";
 import schemas from "src/schemas/index.schema";
+import prisma from "src/models/prismaClient";
 
 // #### ORDER CONTROLLER ####
 
@@ -40,64 +39,27 @@ async function getAllOrders(req: RequestCustom, res: express.Response) {
         return res.status(403).json(util.response.authorError('users'));
     }
     const userId = req.user!.userId;
-    let db: Client | undefined = undefined;
     try {
-        db = await database.getConnection();
-        const sql = `
-            SELECT order_id as "orderId", created_at as "orderAt", shop_id as "shopId",
-                   total_amount as "totalAmount", shipping_fee as "shippingFee",
-                   discount_amount as "discountOrder", status,
-                   receiver_name as "name", street_address as "address", phone_number as "phone"
-            FROM orders
-            WHERE userId = $1
-            ORDER BY created_at DESC
-            OFFSET 0 LIMIT 20
-        `;
-        const result = await db.query(sql, [userId]);
-        if (result.rowCount === 0) {
-            return res
-                .status(404)
-                .json(util.response.error("No orders found for this user."));
-        }
-        const orders: OrderType[] = result.rows.map((row) => ({
-            orderId: row.orderId,
-            shopId: row.shopId,
-            totalAmount: row.totalAmount,
-            shippingFee: row.shippingFee,
-            tax: 0,
-            discount: row.discountOrder,
-            orderDate: row.orderAt,
-            status: row.status,
-            customerInfo: {
-                name: row.name,
-                address: row.address,
-                phone: row.phone,
+        const orders = await prisma.orders.findMany({
+            where: { userId: userId },
+            select: {
+                orderId: true,
+                shopId: true,
+                total: true,
+                shippingFee: true,
+                discount: true,
+                createdAt: true,
+                final: true,
+                status: true,
+                email: true,
+                receiverName: true,
+                shippingAddress: true,
+                phoneNumber: true,
+                orderItems: { select: { product: { select: { productId: true, name: true, imageUrl: true } }, quantity: true, price: true, discount: true } }
             },
-            products: []
-        }));
-        for (const order of orders) {
-            const itemsSql = `
-                SELECT
-                    oi.product_id as "productId", 
-                    p.name as "name", 
-                    p.image_url as "imageUrl",
-                    oi.quantity, 
-                    oi.price_at_purchase as "unitPrice",
-                    oi.discount_at_purchase as "discountAtPurchase"
-                FROM order_items oi
-                JOIN products p ON oi.product_id = p.product_id
-                WHERE oi.order_id = $1
-            `;
-            const itemsResult = await db.query(itemsSql, [order.orderId]);
-            order.products = itemsResult.rows.map((itemRow) => ({
-                productId: itemRow.productId,
-                name: itemRow.name,
-                image: `${process.env.PUBLIC_URL}/${itemRow.imageUrl}`,
-                quantity: itemRow.quantity,
-                price: itemRow.unitPrice,
-                subtotal: itemRow.unitPrice * itemRow.quantity * (100 - itemRow.discountAtPurchase) / 100,
-            }));
-        }
+            orderBy: { createdAt: 'desc' },
+            take: 20,
+        });
         return res
             .status(200)
             .json(util.response.success("Orders retrieved successfully", {orders}));
@@ -106,8 +68,6 @@ async function getAllOrders(req: RequestCustom, res: express.Response) {
         return res
             .status(500)
             .json(util.response.internalServerError());
-    } finally {
-        await database.releaseConnection(db);
     }
 }
 

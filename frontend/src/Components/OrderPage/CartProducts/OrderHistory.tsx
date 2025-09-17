@@ -1,22 +1,32 @@
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import s from "./OrderHistory.module.scss";
 import type { RootState } from "src/Types/store.ts";
 import { ORDER_STATUS } from "src/Types/common.ts";
 import type { OrderItemType, OrderType } from "src/Types/product.ts";
+import api from "src/Api/index.api.ts";
 
 const OrderHistory = () => {
     const { t } = useTranslation();
-    const ordersData = useSelector((state: RootState) => state.products.orderProducts) as OrderType[];
+    const [orderData, setOrderData] = useState<OrderType[]>(useSelector((state: RootState) => state.products.orderProducts));
     const [selectedStatus, setSelectedStatus] = useState<string>('all');
     const [expandedOrders, setExpandedOrders] = useState<number | null>(null);
+
+    useEffect(() => {
+        api.user.getOrders().then((res) => {
+            console.log("Fetched Orders:", res);
+            setOrderData(res.data.orders);
+        });
+    }, []);
 
     const orderStatusLabels = "orderHistory.status";
 
     const filteredOrders = selectedStatus === 'all'
-        ? ordersData
-        : ordersData.filter((order: OrderType) => order.status === selectedStatus);
+        ? orderData
+        : orderData.filter((order: OrderType) => order.status === selectedStatus);
+
+    console.log("Filtered Orders:", filteredOrders);
 
     const toggleOrderDetails = (orderId: number) => {
         if (expandedOrders === orderId) {
@@ -26,18 +36,8 @@ const OrderHistory = () => {
         }
     };
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
-
     const formatCurrency = (amount: number) => {
+        console.log("Formatting amount:", amount);
         // return new Intl.NumberFormat('vi-VN', {
         //     style: 'currency',
         //     currency: 'VND'
@@ -68,7 +68,7 @@ const OrderHistory = () => {
                                             {t('orderHistory.orderNumber', 'Order')}: #{order.orderId}
                                         </h3>
                                         <p className={s.orderDate}>
-                                            Order At: {formatDate(order.orderDate)}
+                                            Order At: {formatDate(order.createdAt)}
                                         </p>
                                         <p className={s.orderDate}>
                                             Payment Method: {t('orderHistory.paymentMethod.creditCard', 'Credit Card')}
@@ -107,7 +107,7 @@ const OrderHistory = () => {
                                                 {t('orderHistory.total', 'Total')}:
                                             </span>
                                             <span className={s.totalValue}>
-                                                {formatCurrency(order.totalAmount)}
+                                                {formatCurrency(order.final)}
                                             </span>
                                         </div>
                                     </div>
@@ -126,15 +126,15 @@ const OrderHistory = () => {
                                             <div className={s.infoGrid}>
                                                 <div className={s.infoRow}>
                                                     <span className={s.label}>{t('orderHistory.recipient', 'Recipient')}:</span>
-                                                    <span className={s.value}>{order.customerInfo.name}</span>
+                                                    <span className={s.value}>{order.receiverName}</span>
                                                 </div>
                                                 <div className={s.infoRow}>
                                                     <span className={s.label}>{t('orderHistory.phone', 'Phone')}:</span>
-                                                    <span className={s.value}>{order.customerInfo.phone}</span>
+                                                    <span className={s.value}>{order.phoneNumber}</span>
                                                 </div>
                                                 <div className={s.infoRow}>
                                                     <span className={s.label}>{t('orderHistory.address', 'Address')}:</span>
-                                                    <span className={s.value}>{order.customerInfo.address}</span>
+                                                    <span className={s.value}>{order.shippingAddress}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -142,25 +142,24 @@ const OrderHistory = () => {
                                         {/* Products */}
                                         <div className={s.productsSection}>
                                             <h4 className={s.sectionTitle}>
-                                                {t('orderHistory.products', 'Products')} ({order.products.length})
+                                                {t('orderHistory.products', 'Products')} ({order.orderItems.length})
                                             </h4>
                                             <div className={s.productsList}>
-                                                {order.products.map((product: OrderItemType) => (
-                                                    <div key={product.productId} className={s.productItem}>
+                                                {order.orderItems.map((item: OrderItemType) => (
+                                                    <div key={item.product.productId} className={s.productItem}>
                                                         <div className={s.productImageContainer}>
                                                             <img
-                                                                src={product.image}
-                                                                alt={product.name}
+                                                                src={`${import.meta.env.VITE_PUBLIC_URL}/${item.product.imageUrl}`}
+                                                                alt={item.product.name}
                                                                 className={s.productImage}
                                                             />
                                                         </div>
                                                         <div className={s.productInfo}>
-                                                            <h5 className={s.productName}>{product.name}</h5>
-                                                            <p className={s.productId}>ID: {product.productId}</p>
+                                                            <h5 className={s.productName}>{item.product.name}</h5>
                                                             <div className={s.productPricing}>
-                                                                <span className={s.price}>{formatCurrency(product.price)}</span>
-                                                                <span className={s.quantity}>x {product.quantity}</span>
-                                                                <span className={s.subtotal}>{formatCurrency(product.subtotal)}</span>
+                                                                <span className={s.price}>{formatCurrency(item.price)}</span>
+                                                                <span className={s.quantity}>x {item.quantity}</span>
+                                                                <span className={s.subtotal}>{formatCurrency(item.price)}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -172,15 +171,11 @@ const OrderHistory = () => {
                                         <div className={s.totalBreakdown}>
                                             <div className={s.totalRow}>
                                                 <span>{t('orderHistory.subtotal', 'Subtotal')}:</span>
-                                                <span>{formatCurrency(order.products.reduce((sum: number, p: OrderItemType) => sum + p.subtotal, 0))}</span>
+                                                <span>{formatCurrency(calSubTotalProduct(order.orderItems))}</span>
                                             </div>
                                             <div className={s.totalRow}>
                                                 <span>{t('orderHistory.shipping', 'Shipping')}:</span>
                                                 <span>{formatCurrency(order.shippingFee)}</span>
-                                            </div>
-                                            <div className={s.totalRow}>
-                                                <span>{t('orderHistory.tax', 'Tax')}:</span>
-                                                <span>{formatCurrency(order.tax)}</span>
                                             </div>
                                             {order.discount && order.discount > 0 && (
                                                 <div className={s.totalRow}>
@@ -190,7 +185,7 @@ const OrderHistory = () => {
                                             )}
                                             <div className={`${s.totalRow} ${s.finalTotal}`}>
                                                 <span>{t('orderHistory.grandTotal', 'Grand Total')}:</span>
-                                                <span>{formatCurrency(order.totalAmount)}</span>
+                                                <span>{formatCurrency(calSubTotalProduct(order.orderItems))}</span>
                                             </div>
                                         </div>
 
@@ -223,5 +218,21 @@ const OrderHistory = () => {
         </div>
     );
 };
+
+function calSubTotalProduct(items: OrderItemType[]) {
+    return items.reduce((sum: number, p: OrderItemType) => sum + p.price * p.quantity, 0);
+}
+
+const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+};
+
 
 export default OrderHistory;

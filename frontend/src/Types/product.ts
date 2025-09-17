@@ -33,30 +33,32 @@ type ProductType = {
   categoryIds: number[];
 }
 
-type OrderItemType = {
-  productId: number;
-  name: string;
-  image: string;
-  quantity: number;
-  price: number;
-  subtotal: number;
-};
-
 type OrderType = {
   orderId: number;
-  shop: { shopId: number; shopName: string; userId: number; };
-  totalAmount: number;
+  shopId: number;
+  total: string;
   shippingFee: number;
   discount: number;
-  orderDate: string;
+  createdAt: string;
+  final: number;
   status: string;
-  receiverInfo: {
+  email: string;
+  receiverName: string;
+  shippingAddress: string;
+  phoneNumber: string;
+  orderItems: OrderItemType[];
+}
+
+type OrderItemType = {
+  product: {
+    productId: number;
     name: string;
-    address: string;
-    phone: string;
+    imageUrl: string;
   };
-  products: OrderItemType[];
-};
+  quantity: number;
+  price: number;
+  discount: number;
+}
 
 type ProductDetailType = ProductType & {
   description: string;
