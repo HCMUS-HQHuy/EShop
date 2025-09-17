@@ -50,7 +50,7 @@ async function processOrder(job: Job<{ orderData: CreatingOrderRequest, userId: 
             }, 0);
             const finalAmount = total - discount;
 
-            const { orderId } = await tx.orders.create({
+            const { orderId, orderItems: createdOrderItems } = await tx.orders.create({
                 data: {
                     userId: userId,
                     shopId: orderData.shopId,
@@ -70,12 +70,18 @@ async function processOrder(job: Job<{ orderData: CreatingOrderRequest, userId: 
                     createdAt: new Date(orderData.orderAt),
                     orderItems: {
                         createMany: {
-                            data: orderData.items
+                            data: orderItems.map(product => ({
+                                productId: product.productId,
+                                price: product.price,
+                                discount: product.discount, 
+                                quantity: orderData.items.find(item => item.productId === product.productId)?.quantity || 0
+                            }))
                         }
                     }
                 },
-                select: { orderId: true }
+                select: { orderId: true, orderItems: true }
             });
+            console.log("Order created with ID:", orderId, "and items:", createdOrderItems, orderData.items);
             if (orderId === null) {
                 throw new Error("Failed to create order.");
             }
